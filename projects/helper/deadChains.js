@@ -1,7 +1,18 @@
+const sdk = require('@defillama/sdk')
 
-module.exports = ['heco', 'astrzk', 'real', 'milkomeda', 'milkomeda_a1', 'eos_evm', 'eon', 'plume', 'bitrock', 'rpg', 'kadena', 'migaloo', 'kroma', 'qom', 'airdao',
-  'kardia', 'boba_bnb', 'dfs', 'nos',
-   'saga', // chain paused after the hack
-   'curio', 'cube',
-   'vision',
+module.exports =  [
+  'echelon',
+  'milkomeda',
+  'milkomeda_a1',
+  'dexit',
+  'clv',
+  'fusion',
+  'kardia',
+  'winr',
+  'plume',
+  'inevm',
+  'hoo',
+  'rari',
+  'nova',
+  ...sdk.chainUtils.getDeadChains()
 ]

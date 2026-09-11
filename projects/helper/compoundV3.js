@@ -1,6 +1,5 @@
-const sdk = require("@defillama/sdk");
 const { lendingMarket } = require("./methodologies");
-const { sumTokens2 } = require('./unwrapLPs') 
+const { sumTokens2 } = require('./unwrapLPs')
 
 module.exports = {
   compoundV3Exports: config => {
@@ -16,22 +15,21 @@ module.exports = {
       const { markets } = config[chain]
 
       async function borrowed(api) {
-        const balances = {}
         const tokens = await api.multiCall({ abi: 'address:baseToken', calls: markets })
         const bals = await api.multiCall({ abi: 'uint256:totalBorrow', calls: markets })
-        bals.forEach((v, i) => sdk.util.sumSingleBalance(balances, tokens[i], v, api.chain))
-        return balances
+        api.add(tokens, bals)
       }
 
       async function tvl(api) {
         const toa = []
-        await Promise.all(markets.map(async (m, i) => {
+        for (const m of markets) {
           const items = await api.fetchList({ lengthAbi: abi.numAssets, itemAbi: abi.getAssetInfo, target: m })
           const tokens = items.map(i => i.asset)
           const baseToken = await api.call({ abi: 'address:baseToken', target: m })
           tokens.push(baseToken)
           toa.push([tokens, m])
-        }))
+        }
+
         return sumTokens2({ api, ownerTokens: toa })
       }
       exportsObj[chain] = { tvl, borrowed }

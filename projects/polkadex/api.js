@@ -1,6 +1,6 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const sdk = require('@defillama/sdk')
-const {fetchURL} = require("../helper/utils");
+const { getConfig } = require("../helper/cache");
 
 const rpcNodes = ["wss://polkadex.api.onfinality.io/public-ws", "wss://polkadex.public.curie.radiumblock.co/ws"];
 const orderbookWallet = "esoEt6uZ3GuFV8EzKB2EAREe3KE9WuRVfmhK1RRtwffY78ArH"
@@ -57,14 +57,14 @@ async function staking(_api) {
 }
 
 async function getAssetMappings() {
-  let coingeckoMappings = await fetchURL("https://integration-api.polkadex.trade/v1/assets");
+  let coingeckoMappings = await getConfig('polkadex', "https://integration-api.polkadex.trade/v1/assets");
   let assetMapping = {};
 
-  if(coingeckoMappings.data === null)
+  if(!coingeckoMappings)
     return assetMapping;
 
-  Object.keys(coingeckoMappings.data).forEach(function(key) {
-    assetMapping[coingeckoMappings.data[key].asset_id] = coingeckoMappings.data[key].coingecko_id;
+  Object.keys(coingeckoMappings).forEach(function(key) {
+    assetMapping[coingeckoMappings[key].asset_id] = coingeckoMappings[key].coingecko_id;
   })
 
   return assetMapping;

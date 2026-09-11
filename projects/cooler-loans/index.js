@@ -25,7 +25,7 @@ const { graphQuery } = require("../helper/http");
 const COOLER_SUBGRAPH = "4Vicyh7DiEGj6aSamLpAhwydcnaU1CPQgvWApWv7H9Rh";
 
 const GOHM = "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f";
-const USDS = "0xdC035D45d973E3EC169d2276DDab16f1e407384F";
+const USDS = ADDRESSES.ethereum.USDS;
 
 // V1 Clearinghouse addresses
 const CLEARINGHOUSES = [

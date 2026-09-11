@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
-const { sumTokens, sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
 
 const stakingContract = "0x7eb5af418f199ea47494023c3a8b83a210f8846f";
 const stakingContract_APX = "0x6bE863e01E17A226c945e3629D0D9Cb6E52Ce90E";
@@ -55,13 +55,13 @@ const ALPTokens = [
   TOKEN_CAKE,
 ]
 
-async function bscTVL(timestamp, _block, { bsc: block }) {
+async function bscTVL(api) {
   const toa = [
     ...TreasureTokens.map((t) => [t, treasureContract]),
     ...TreasureTokens.map((t) => [t, treasureContractV2]),
     ...ALPTokens.map((t) => [t, ALPContract]),
   ]
-  return sumTokens({}, toa, block, "bsc");
+  return api.sumTokens({ tokensAndOwners: toa });
 }
 
 module.exports = {

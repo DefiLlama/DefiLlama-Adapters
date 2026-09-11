@@ -17,7 +17,7 @@ const abi = {
     singlePSM: ADDRESSES.bsc.BUSD,
   },
   fantom: {
-    DAI: ADDRESSES.fantom.DAI,
+    DAI: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
     pools: [
       "0x30463d33735677b4e70f956e3dd61c6e94d70dfe",
       "0xaebd31E9FFcB222feE947f22369257cEcf1F96CA",

@@ -1,13 +1,3 @@
-/**
- * Kandle Finance - DeFiLlama TVL Adapter
- *
- * This adapter tracks Total Value Locked (TVL) for Kandle Finance.
- * Kandle Finance is a yield and fixed income protocol with ERC4626-compliant vaults.
- *
- * Protocol: https://kandle.fi
- * Docs: https://docs.kandle.fi
- * Deployed on: Arbitrum (Chain ID: 42161)
- */
 
 const VAULTS = [
     "0x9a7F9C48100cbaCB431F19B8407f73bec39D3eCD", // Yield Vault V1

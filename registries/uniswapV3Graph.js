@@ -34,6 +34,7 @@ const configs = {
   },
   'kittenswap-algebra': {
     hyperliquid: { graphURL: 'https://api.goldsky.com/api/public/project_cmcxkn8h7pwwc01x30a5e6t39/subgraphs/cl-analytics-prod/v1.0.0/gn', name: 'kittenswap-algebrahyperliquid', blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'] },
+    robinhood: { graphURL: 'https://api.goldsky.com/api/public/project_cmtligog3luwl01y36sh55iex/subgraphs/analytics/v1.0.0/gn', name: 'kittenswap-algebrarobinhood' },
   },
   'hydradex-v3': {
     misrepresentedTokens: true,
@@ -65,6 +66,9 @@ const configs = {
   },
   'cytoswap': {
     hela: { graphURL: 'https://subgraph.snapresearch.xyz/subgraphs/name/cytoswap-mainnet', name: 'cytoswap-hela' },
+  },
+  'shido-dex-v3': {
+    shido: { graphURL: 'https://prod-v2-graph-node.shidoscan.com/subgraphs/name/shido/mainnet', name: 'shido-dex-v3-shido' },
   },
 }
 

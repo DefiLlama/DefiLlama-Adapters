@@ -1,6 +1,11 @@
 const { sumTokensExport } = require('../helper/sumTokens');
 const ADDRESSES = require('../helper/coreAssets.json');
-const { getTotalSupply } = require("./helper");
+const { call } = require('../helper/chain/stacks-api');
+
+const getTotalSupply = async (token) => {
+  const supply = await call({ target: token, abi: 'get-total-supply' })
+  return Number(supply)
+}
 
 module.exports = {
     methodology: "TVL of Brotocol is the sum of the tokens locked in its contracts",

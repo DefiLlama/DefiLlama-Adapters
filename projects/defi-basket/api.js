@@ -11,7 +11,9 @@ async function tvl(api) {
     lengthAbi: abis.tokenCounter,
     target: factory,
   })
-  return sumTokens2({ owners: wallets, fetchCoValentTokens: true, api, blacklistedTokens, });
+  return sumTokens2({ owners: wallets, fetchCoValentTokens: true, api, blacklistedTokens, tokenConfig: {
+    onlyUseExistingCache: true,
+  }});
 }
 
 module.exports = {

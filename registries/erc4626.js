@@ -31,12 +31,6 @@ const configs = {
     arbitrum: ['0xd8dd54df1a7d2ea022b983756d8a481eea2a382a'],
     avax: ['0xbE6eB54D1e96CC59338BE9A281d840AcE82df095'],
   },
-  'kaia-superEarn': {
-    klaytn: [
-      '0x3B37DB3AC2a58f2daBA1a7d66d023937d61Fc95b',
-      '0x4E4654cE4Ca7ff0ba66a0A4a588A4bd55A6f9A33',
-    ],
-  },
   'k-bit': {
     methodology: "K-BIT Vault is a core component of the K-BIT ecosystem, enabling users to participate in the platform by depositing USDT and receiving KLP tokens in return.",
     klaytn: [
@@ -49,7 +43,11 @@ const configs = {
     ethereum: ['0x8DB2350D78aBc13f5673A411D4700BCF87864dDE'],
   },
   'snowbl-capital': {
-    base: ['0xd61bfc9ca1d0d2b03a3dd74e2ab81df8e5f606e8'],
+    base: [
+      '0x0e1a8354e10057092ecb7218b784c0c21710db91', // sUSD
+      '0xffa67bd20e656f1c7873525df81728e9d26c8ee2', // sETH
+      '0xf423393e84ca810e1955a7806d1cd84d18099809', // sBTC
+    ],
   },
   'return-finance': {
     doublecounted: true,
@@ -92,6 +90,19 @@ const configs = {
       '0x36213ca1483869c5616be738Bf8da7C9B34Ace8d',
     ],
   },
+  'earngrid': {
+    methodology: 'Automated USDC yield vault on Base — aggregates MetaMorpho strategies. TVL via totalAssets().',
+    doublecounted: true,
+    base: ['0x8694D7D44309665D51Cb5002fceC0454f1c233dE', '0xbDacA8B7782C66cc0ee32Cf70F835EBe86cb20D3'],
+  },
+  'eva': {
+    ethereum: [
+      '0x741bD193B6b40f8703d2e116FD1965421f290F58', // USDC vault
+      '0x501eBf66d76A96D4FB26ccead42957653e16B8B8', // USDT vault
+      '0xdBECD077c1C2feFDCB75f547d1b5a73BF8207e4C', // WETH vault
+    ],
+    start: '2026-03-24',
+  },
   'astake': {
     methodology: "Calculates the total amount of ASTR tokens deposited in the ERC4626 vault",
     astar: ['0x0DC6E8922ac0ECa8287ba22Db14C9Ac9317ed18F'],
@@ -121,9 +132,8 @@ const configs = {
       '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A',
     ],
   },
-  'paimon': {
-    bsc: ['0x8505c32631034A7cE8800239c08547e0434EdaD9'],
-  },
+  'paimon': { bsc: ['0x8505c32631034A7cE8800239c08547e0434EdaD9'], },
+  'sova': { base: ['0xdFc4047620bd71F3dd781f1048f6890b76281D36'], },
   'altura': {
     hyperliquid: ['0xd0Ee0CF300DFB598270cd7F4D0c6E0D8F6e13f29'],
   },
@@ -137,11 +147,12 @@ const configs = {
     ],
   },
   'RockSolid': {
-    methodology: 'Calls totalAssets() on the RockSolid rock.rETH and rock.loopedETH vaults to get the total amount of rETH and ETH managed by the vaults.',
+    methodology: 'Calls totalAssets() on the RockSolid rock.rETH, rock.loopedETH, and rockUSDm vaults to get the total amount of rETH, ETH, and USDC managed by the vaults.',
     start: 1756339201,
     ethereum: [
       '0x936facdf10c8c36294e7b9d28345255539d81bc7',
       '0x7a12D4B719F5aA479eCD60dEfED909fb2A37e428',
+      '0xba71097e426983d840569edfa1a01396b56d86ad'
     ],
   },
   'avon': {
@@ -173,6 +184,337 @@ const configs = {
     start: "2025-11-12",
     ethereum: ['0xa260b049ddD6567E739139404C7554435c456d9E'],
   },
+  'steth-exchange': {
+    ethereum: ['0xee15D71D8322eA88138c323AddbD0dd123A2dFB2'],
+  },
+  'twoxswap': {
+    methodology: 'TVL is the total USDC deposited in the X2Pool ERC-4626 vault, measured via totalAssets().',
+    ethereum: ['0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3']
+  },
+  'yld': {
+    doublecounted: true,
+    ethereum: [
+      '0xCa960E6DF1150100586c51382f619efCCcF72706',
+      '0x8ED5AB1BA2b2E434361858cBD3CA9f374e8b0359',
+    ],
+  },
+  'quell': {
+    doublecounted: true,
+    methodology: "TVL is the total USDC deposited in the Quell ERC4626 RWAVaults, measured via totalAssets(). The protocol launched on Base in 2025 routing into the Steakhouse USDC MetaMorpho vault, then migrated to Arbitrum One in March 2026 where it routes into Spark sUSDC. Historical Base + early Arbitrum vaults are retained for chain TVL history; the live yield route on the current Arbitrum RWAVault is Spark sUSDC.",
+    base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
+    arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051', '0x82bDeB9239d33AAE4b8c38C0C0ef3B088b0Fc791'],
+  },
+  'zensats': {
+    doublecounted: true,
+    methodology: "TVL is the total assets held in ZenSats ERC4626 vaults, measured via totalAssets().",
+    hallmarks: [
+      ['2026-06-13', 'V2 launch — StakeDao Llamaloan Strategy vaults (WBTC/wstETH)'],
+    ],
+    ethereum: [
+      "0x617A6877f0a55D1eF2B64b5861A2bB5Fe6FEB739",
+      "0xbaEc8343B610A5ee7Ca2c5b93507AC7def98E2B1",
+      "0x7d5281D590Fb0647aDc7d8494a2c8Fb8C2B23cBD",
+      "0x18E2F4F2E6565187fce73ECC707579E5F7933f74", // ZenjiWbtcLlamaUsdtStakeDao (V2 - StakeDao Llamaloan Strategy)
+      "0x23F189dE34EED95f6303CfF1C77f7676F211Dd2c", // ZenjiWstEthLlamaUsdtStakeDao (V2 - StakeDao Llamaloan Strategy)
+    ],
+  },
+  'loopfi-site': {
+    doublecounted: true,
+    bsc: ['0xE486C62145ba4Cf83aBc186c60b175b132F41c19'],
+    arbitrum: [
+      '0x466d5d9f5eff81C894D3B9dfF8E54D9D334c27d5',
+      '0x1e9102AbDFEedfDFDA1D250600e9A1271fc6cd6C',
+    ],
+    avax: [
+      '0xD67DBfFa04298ec8a0e8119d1f3170164f8c8E6A',
+      '0xdA898Ca31bD7563B7fD308b633631a4B28809DE8',
+    ],
+  },
+  'goevolve': {
+    doublecounted: true,
+    methodology: "TVL is the total assets deposited into the eUSD vault",
+    sei: ['0xf2282e641cd3ceeafd4e24663d409fcb68edc1df']
+  },
+  'sprinter': {
+    doublecounted: true,
+    methodology: "TVL reads total hub vault assets (USDC)",
+    base: ['0xa593A9bBBc65be342FF610a01e96da2EB8539FF2']
+  },
+  'arche-money': {
+    'ethereum': [
+      '0x33ffc177a7278ff84aab314a036bc7b799b7cc15', // arUSD
+    ],
+  },
+  'tulpea': {
+    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy's (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
+    start: '2026-04-09',
+    megaeth: ['0xa21eAFee50DA331521B6Ec4Dd33dEd3F9E1bD2Ea']
+  },
+  'aspe-labs': {
+    methodology: "TVL is totalAssets() of the ERC4626 vault, including USDC held in the vault contract, USDC reserved for claimable redemptions, and equity value in the HyperCore agent wallet deployed for grid trading.",
+    start: '2026-04-02',
+    doublecounted: true,
+    hyperliquid: ['0xe67c82f0970D66d8b84dB43F2392E77CE7e4ED75']
+  },
+  'yfarmer': {
+    start: '2026-04-11',
+    base: ['0x71c298a6eb10e7958ce25a450a706330a4c946c0']
+  },
+  'r25': {
+    pharos: Object.values({
+      vRPCWeeklyVault: '0x1c2bc8b553d9a7e61f7531a3a4bf2162f4569268',
+      vRPCQuarterlyVault: '0x94f7ebc6ae0819a4b4e231ae6ddaaf9bfd2a1a86',
+      vRPCSemiYearlyVault: '0xee26bb0989691735c997dfdc49a4a607f75e190b',
+      pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
+      apcVault: '0xd0428799fbc35557834d33121ba4472692c8908a',
+      hybVault: '0x6Ce4bc043398Ac40392d1E063328048072b2075d',
+    }),
+    methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
+  },
+  'visionboard-vault': {
+    timetravel: false,
+    hyperliquid: ['0x0a5e236425aca07fd087904F8863CAd554675E06'],
+    methodology: 'TVL is calculated from VisionBoard Vault totalAssets() on HyperEVM. Deposits mint VBV vault shares backed by the vault asset, currently USDC.'
+  },
+  'defimarketplus': {
+    arbitrum: ['0x07fF8bCe905CB285220e4D96d8443cfCF141af8b'],
+    methodology: 'TVL = SafeUsdVault.totalAssets() (idle USDC + USDC deployed to whitelisted lending strategies, minus unvested locked-profit).'
+  },
+  'xeno-money': {
+    base: ['0xC6Aad7c41c66bDC5E138fbd4180cDd3dB0F4fB3F'],
+    methodology: 'TVL is the total ISKe deposited in the sISKe ERC-4626 earn vault, measured via totalAssets().'
+  },
+  'gremlix': {
+    arbitrum: ['0x973Ae12aC9078E9f9B1708C477A9670bB3fB0886','0xd519EF317Be061b310D3caA4565Fa1ef466c36C8'],
+    methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.'
+  },
+  'xax': {
+    ethereum: ['0xc452B6D5bf3a7712A9AF9F70BF32f37A531ff220'],
+    methodology: 'Counts USDT backing the XAUSD ERC-4626 vault.'
+  },
+  'arcis': {
+    base: ['0x00325d9da832b38179ed2f0dabd4062d93e325a7'],
+    methodology: 'TVL is calculated as the total USDC held in the ArcisVault contract, including both reserve and deployed capital across yield strategies.'
+  },
+  'crystalclear': {
+    methodology: "TVL is the sum of totalAssets() across all live CrystalClear ERC-4626 vaults on HyperEVM. Each vault holds USDC and trades perpetuals on Hyperliquid via a delegated agent.",
+    hyperliquid: [
+      '0x231f66c336512e897855420a2788B83e164C6Adf', // Onyx
+      '0x1b463561f264114F9D4db6FF9eE2771B33076B13', // Amber
+      '0xb44169e66C898FF70029f9CF2fdB9685d7bC99c6', // Ruby
+      '0x015A70185a80D8C8c034e3d360E25A14c7FB8cF0', // Moonstone
+      '0x1efAE1f600947cA5dc0E87AA18657f36c559A40b', // Emerald
+      '0x2D7ACD39B634B50Cd37883FE374E1f430e27Ea50', // Peridot
+      '0x6B88f2975B784531DB1159D37CFf9f1629e93fa8', // Sapphire
+      '0x89C08a6F468CA5AF65E7D48bC091E5c4025b42C2', // Opal
+    ],
+  },
+  'stashfun': {
+    methodology: "TVL is the sum of assets across all stash.fun ERC-4626 vaults on HyperEVM. Each vault holds USDC and trades perpetual futures (stocks, crypto, commodities, forex, indices) on Hyperliquid.",
+    hyperliquid: [
+      '0x8F6034Fe423f696DB08fB8C536B88D9B9389dE34', // Metals Vault
+      '0xfE937fED2219D06e2BAD986933ea96065D8BE177', // Energy Vault
+      '0xe626CFC0395719D59dA210270051a9A03C210bdd', // Broad Vault
+    ],
+  },
+  'acre': {
+    start: 1757707931,
+    doublecounted: true,
+    methodology: "TVL is calculated by calling totalAssets() on the acreBTC ERC-4626 vault, which returns the total tBTC backing all acreBTC shares.",
+    ethereum: ['0x19531C886339dd28b9923d903F6B235C45396ded'],
+  },
+  'protectorate': {
+    ethereum: ['0xaF53431488E871D103baA0280b6360998F0F9926'],
+  },
+  'hlp0': {
+    methodology: "TVL is calculated by summing the total assets of the HLP0 vault on Arbitrum. The HLP0 token is a LayerZero OFT, but the underlying assets are held in the Arbitrum vault.",
+    arbitrum: ['0x3D75F2BB8aBcDBd1e27443cB5CBCE8A668046C81'],
+  },
+  'rivera_money': {
+    doublecounted: true,
+    mantle: [
+      '0xfa944c1996efBF9FbFF1a378903F4AD82C172D72',
+      '0x945438ef559EFf400429DFb101e57a6299B5ceE2',
+      '0xA25d1843eedE1E1D0631b979da605606412e64f7',
+      '0xAa81F912D09Fd313Bbc1d5638632aB6bf59aB495',
+      '0x0DB2BA00bCcf4F5e20b950bF954CAdF768D158Aa',
+      '0x713C1300f82009162cC908dC9D82304A51F05A3E',
+      '0xDc63179CC57783493DD8a4Ffd7367DF489Ae93BF',
+      '0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA',
+      '0xCbb95e8a63cd37D09c2948A22c12632469fb0BC7',
+      '0x907a942ce79ca4Cf063d2e987024dc9E88C5ac98',
+      '0xB2b593Ab057e99edbAA33258b5613227F64c80C6',
+      '0x38B73D78c45b39B7658635fA753EfBE2d4077A33',
+      '0x0ca817970d1Bf8789CCB26aC0a6b69d02b6dF34e',
+      '0x16d6e3B2979C61D3fa399Cc7D65EFFaadd46682c',
+    ],
+    manta: [
+      '0x713C1300f82009162cC908dC9D82304A51F05A3E',
+      '0x0DB2BA00bCcf4F5e20b950bF954CAdF768D158Aa',
+      '0xDc63179CC57783493DD8a4Ffd7367DF489Ae93BF',
+      '0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA',
+      '0x45C3BB1a0f0827bF03C089842334B861474e7714',
+      '0x241d09eC72809C4C390BC81b81dEF4d1E0e88626',
+    ],
+    telos: [
+      '0x67e07BFfce318ADbA7b08618CBf4B8E271499197',
+      '0x70527810CB658FaDBe16845485fC79EC7722c860',
+      '0xA0dD02ef78570a4d93b7eE334EA9c593F7A0ebc4',
+      '0x4778CAAa0E52F0B58eAF5e947Ae81A0a10cDe707',
+    ],
+    arbitrum: ['0x8E99B66dE170b53b39D9B54f189a12D7c6AC0cd9'],
+    degen: [
+      '0xA95417805d18d00844c3C6FB7742577Cd263fE05',
+      '0x39dD79E8b1e74E8B514D7e133b3671435Ec3Da42',
+      '0xE45F416eE25844281edF2780247E28569303c7Cd',
+      '0xB9107C1Ad02bD2E20692499156F99411297d23F5',
+      '0x17A6b417249D92A2F3F7a88384c5Aa88D0d95A28',
+    ],
+    bsquared: [
+      '0xBC91a7a0eE37085af193C61747ecE693979Ec0C1',
+      '0xD57a87a9101d567C4139247CdF149b1DA4c8604A',
+    ],
+    polygon: ['0x67e07BFfce318ADbA7b08618CBf4B8E271499197'],
+    core: [
+      '0xBC91a7a0eE37085af193C61747ecE693979Ec0C1',
+      '0x018BeE125A17D456E6dacE22A66E8B9aF3c69449',
+    ],
+  },
+  'primestaking-xyz': {
+    xdc: ['0xDc74c0DaED82ae94486DeeF22991d2F54173c734'],
+  },
+  'y10k-capital': {
+    methodology: 'Sum of assets deposited in Y10k Capital vaults. Marked as double counted: risk operations on these vaults are run by RockawayX, and both vaults are already counted under projects/rockawayx (ethereum eY10K, sei PYUSD0).',
+    doublecounted: true,
+    ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'], // eY10K - also in rockawayx EMBER_VAULTS
+    sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'], // PYUSD0 - also in rockawayx sei.morpho
+  },
+  'apyee': {
+    methodology: "Sum of totalAssets() reported by each Apyee VaultV2 across supported chains — includes idle USDC plus assets currently deployed into whitelisted DeFi lending strategies (Aave V3, Compound V3, Morpho MetaMorpho, Fluid, Venus, Spark).",
+    ethereum: ['0xE46aac58214B963125a3A88541e1DBE56c4eD5f7'],
+    base: ['0xeA8FB89F44A1fa47E52354D44E7e6D4682C8529a','0x87922c630A980e431fb045A178e53F58d3f07F85'],
+    arbitrum: ['0x94f89d1E2825d40627CD2aE24Eba8590F675049C'],
+    bsc: ['0x27DB5a2B203D6bd3C9490E8EA4488B968675f5Bf'],
+  },
+  'ammalgam-vaults': {
+    methodology: 'Counts the reported total assets of the Ammalgam USDC and WETH ERC-4626 vaults.',
+    ethereum: [
+      '0x8417430a31851ae0a36a854394227c5d86be8fc9', // USDC
+      '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH
+    ],
+  },
+  'aihedge': {
+    ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400'],
+    base: ['0x100F0aC3be2c93c76b2ee1B8cA98d8928cDC0871'],
+  },
+  'secured-finance-vaults': {
+    ethereum: ['0x7a6E3635694952dC00F6bA4d4AD1a7B892028789']
+  },
+  'atoma': {
+    methodology: "TVL is the sum of totalAssets() across both Atoma ERC-4626 vaults on Arbitrum. Deposited USDC is held idle in the vault or deployed as margin/equity on perpetual exchanges (Extended, Nado, Lighter, XYZ) via an operator-controlled trading account; totalAssets is updated on-chain roughly hourly to reflect off-chain venue equity plus idle USDC.",
+    start: '2026-05-05',
+    arbitrum: [
+      '0xCC56410e1a136aF0eCEb7241c6aE394F4d8b581c', // Vault 1 - Extended x Nado
+      '0x1C788E14d8e5B446e3F71B5142e2edaBcAB36da1', // Vault 2 - Lighter x XYZ
+    ],
+  },
+  'yieldfy': {
+    doublecounted: true,
+    methodology: "TVL is the sum of totalAssets() across the Yieldfy ERC-4626 USDG vaults on Robinhood Chain. This counts USDG sitting idle in a vault plus USDG the optimizer has routed into an external venue (Morpho, Steakhouse), which a raw balance check would miss. Marked doublecounted because deployed USDG is also counted by those underlying venues.",
+    start: '2026-07-19',
+    robinhood: [
+      '0x4a32cf41315DA5cDe593C56df35D7beFA40Cc01a', // Beta-1 — live
+      '0x8f55eF1cd2B62197742c3E985DB1Cd0f63622e9F', // Beta-0 — retired 2026-07-22, still holds dust
+    ],
+  },
+  'agua': {
+    doublecounted: true,
+    methodology: 'TVL is the sum of assets deposited into Agua\'s ERC-4626 vault(s), read via totalAssets() (net asset value) and denominated in the underlying asset (USDC). Deposits are allocated into external lending markets (Aave, Morpho, Euler, ...) already tracked by DefiLlama, so this TVL is double-counted.',
+    ethereum: ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f'],
+    monad: ['0x2ABc42250154752273a4560e875c858623F83ecC'],
+  },
+  'dyield': {
+    doublecounted: true,
+    methodology: 'Sum of totalAssets() across the three dyield wrapper vaults on Base. Double counted with Morpho.',
+    base: [
+      '0xc7792360347D5f868bd82F38fDC8D4BA59c986d9', // dyield Prime — d$P
+      '0x0463A5e9f71ff654040c3207e47864aeFcd4f609', // dyield High  — d$H
+      '0xCeAba2465d51FF0Ce00c9136dA8e7965a2B0aB79', // dyield Ultra — d$U
+    ],
+  },
+  'aumo': {
+    doublecounted: true,
+    methodology: 'TVL is the total USDT0 under management in the AumoPool ERC-4626 vault on X Layer, read from totalAssets() (idle buffer plus principal deployed across allowlisted venues).',
+    xlayer: ['0x8a98A4A868e5FBAc05B9d1dC0742BD008354114F']
+  },
+  'townsquare-rwa-vaults': {
+    methodology: "TVL is the total assets of the rwa vault tokens (trwaUSD, trwaUSDi).",
+    ethereum: ["0x3FE52A92DC3F902D53b2139f95CedA8FeDfe1C18", "0xF2ADf2Bc428284ad59376b836b7f27eaA8Ac44ed"],
+    base: ["0x27B1E0FC9eeBFcA90d7BDe3958723fa0aB937CFA", "0xFbB5e8B7109252FA1d2B208a96Dfd508BFAb023C"],
+    xlayer: ["0x1f5575b690bbb049FC50933A66F52eFA81904978", "0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"],
+    robinhood: ["0x5B8dC679EDAE1Ad507c433EF55d5B4bA620F1919", "0x1f5575b690bbb049FC50933A66F52eFA81904978"],
+    ink: ["0x1f5575b690bbb049FC50933A66F52eFA81904978"],
+    monad: ["0x50AF964d81c18ed885dBf741cDc3366239a3cC10", "0x73F0c2ed71b5c750Cf4900220F901B732EA71Ff0"],
+    arbitrum: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"],
+    pharos: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"]
+  },
+  'syntetika': {
+    methodology: "TVL is the net asset value of the Syntetika strategy vaults, read on-chain as totalAssets() - the outstanding supply of vault share tokens valued at the independently attested NAV per share - and denominated in the vault deposit asset (cbBTC).",
+    doublecounted: true,
+    base: ["0x9C2dCDbDB3F0A0F628D1112bBCABD9AE75353df3"]
+  },
+  'fija-finance': {
+    start: '2023-10-02',
+    doublecounted: true,
+    misrepresentedTokens: true,
+    methodology: 'TVL is the sum of totalAssets() across fija Finance terminal strategy contracts on Ethereum and Arbitrum. User-facing vaults and intermediate wrapper strategies are excluded because multiple vaults can route into the same terminal strategy. Each strategy is reported in its accounting asset. These assets are deployed into external protocols including Curve, Convex, Aave, GMX, and Morpho, so this TVL is double-counted with those protocols.',
+    ethereum: [
+      '0x833225309dA2267d637CC05788ad5E3B113e698E',
+      '0xCF8EafC3b1d92801238faAdC22D2a7B83FB96C10',
+      '0xf0B8904b2C1C122e47a5CCD6898feD7301282beB',
+      '0x6155C331Aa73a9872B22871EB6D7516c6Fb52a69',
+      '0x13acF63100DAB1935f698B7B08eAa311ce1dCAeA',
+      '0x6EF41Dea92e3be6a5F3D5303F5eA0eF62382d2A6',
+      '0x49A991e33B80d6c5F727242C778DbFeb606b6259',
+    ],
+    arbitrum: [
+      '0xea7aaf1713348be6f3556d4b94a44ddff20f9e4b',
+      '0x3163a647ff4c819b6286d2dbc8405a124c93eba6',
+      '0x645c2712fda24a41ed61064054429e00cb4293bb',
+      '0x3b1ef6cca0672bb08df2c817b37dca22a69b005f',
+      '0x748c04f19b35e1a7f3e01c5ca4a7cdc0e5652c37',
+      '0x187478fcfe9ffd22b1a00d81d59e7b58042ef384',
+      '0xb3881520f0ff13ddf910ad91d35d5c0a1c3d7e38',
+      '0xadbb6ec1d07b0e9708451fd657e7812327ec6501',
+      '0xaa38b9475d7a9ea7a2a2bada7e41d56c5db132b8',
+      '0x0eca3aa20cd8179968ed259d579241aa7d56f153',
+      '0xaad007b3e4fb25c73fa05b160f756e3ea7f41c40',
+      '0x96cf061342bf05a32f7086a3f9837231feec36af',
+      '0x87cab1a26f2e9d834be36311dd17619596c4c580',
+      '0x0ce1b4a31a5e60ca7fb26658388a54b1cf8f908d',
+      '0x864fa4246254ea9136507426022c067eb6ec0f0d',
+      '0x4581124613f145d6f3f07e7acfd46eaca97ca205',
+      '0x8c2bb72f96df793a361cfd9fdec03e7dc020b59f',
+      '0x5b933af326575bf39e00d0dfd272e3ef84fddbee',
+      '0x78b01ff3bc9d2393dbfc880e3e50ec6e39c5fd56',
+      '0xa43a52c0c7179ccdd52216999b240ca371bfaf18',
+      '0x547b8ae8faacbe4077420b0fd94813c58b800462',
+      '0xc8b7753b1e6307caec24938b319b3b03f2804579',
+      '0xd77e220612f92f493172e23654b502d7f1f6b5c6',
+      '0xf1d4847110aff666fd6c870341d3ecefe143838a',
+      '0x7d71f0849a180a192dd2014230ce07c6635805b1',
+    ],
+  },
+  'southpole': {
+    methodology: "TVL counts the USDC deposited into the SouthPole USDC vault (a standard ERC-4626 vault) on Arbitrum.",
+    arbitrum: ['0xeA59d9343FF0d70470DD6709cfCD5Bc735d9aDBC']
+  },
+  'otomate': {
+    start: '2026-03-12',
+    doublecounted: true,
+    methodology: "Underlying assets in Otomate ERC-4626 vaults on Ink, measured with totalAssets net of accrued protocol fees. Assets are supplied to Tydro and already included in Tydro TVL.",
+    ink: ['0x919C57BF59484798Ff2f90018640fd0A08242aC2', '0x2baA4C3f66Fa6f0c2d56242BaAE446a4De878B98', '0xcc7DcF43b17D8EdC437a6e33a6A325C57eba1ED7', '0x59046e5a0cbb5b64981b4668a31ab3a5ed0e7dd0']
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

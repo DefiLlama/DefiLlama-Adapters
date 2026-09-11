@@ -5,6 +5,7 @@ const ROUTER_CONTRACT = '0xd35C85FbA82587c15D2fa255180146A046B67237';
 const WEDU_CONTRACT = ADDRESSES.occ.WEDU;
 const dEDU_CONTRACT = "0x597FFfA69e133Ee9b310bA13734782605C3549b7";
 const CHAIN = 'occ';
+const UPGRADE_BLOCK = 33029078; 
 
 /**
  * Fetch total supply of dEDU token and add to TVL
@@ -28,11 +29,23 @@ async function addDEDUSupplyToTVL(api) {
  * @returns {Promise<Array<[string, string]>>} - List of [token, owner] pairs
  */
 async function getTokenPairsDEDU(api) {
-  const pairs = await api.call({
-    target: ROUTER_CONTRACT,
-    abi: 'function pairs() external view returns (address[] memory)',
-    chain: CHAIN,
-  });
+  let pairs = []
+  const block = await api.getBlock()
+  // Router was upgraded to impl with broken pairs()
+  if(block < UPGRADE_BLOCK) {
+    pairs = await api.call({
+      target: ROUTER_CONTRACT,
+      abi: 'function pairs() external view returns (address[] memory)',
+      chain: CHAIN,
+    });
+  } else {
+    pairs = [
+      '0xE9DDDDAB75354Ab7ea2365e66902CA61930796C4',
+      '0xa7Ac8F0446A07E98604515dD5F3592fd9C609FCd',
+      '0x36e7fA8F3E64Aa5F009eF838E580904486B6C458'
+    ]
+  }
+  
 
   const reserves = await Promise.all(
     pairs.map(async (pair) => {

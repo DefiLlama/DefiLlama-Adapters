@@ -1,6 +1,6 @@
 const abi = require("../helper/abis/morpho.json");
 const BigNumber = require("bignumber.js");
-const { morphoAaveV2MainnetLens } = require("./addresses");
+const morphoAaveV2MainnetLens = "0x507fa343d0a90786d86c7cd885f5c49263a91ff4";
 
 
 const getMetrics = async (api, borrowed) => {

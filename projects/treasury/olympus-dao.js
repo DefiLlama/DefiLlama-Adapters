@@ -1,4 +1,7 @@
-module.exports = require("../olympus/index");
+const index = require("../olympus/index");
+const ethereum = { ...index.ethereum };
 
-delete module.exports.ethereum.staking
-delete module.exports.ethereum.borrowed
+delete ethereum.staking
+delete ethereum.borrowed
+
+module.exports = { ...index, ethereum };

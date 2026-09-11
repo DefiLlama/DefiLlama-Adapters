@@ -7,6 +7,8 @@ const SUI_PACKAGE_ID =
 
 const SUI_CHAIN_IDENTIFIER = "sui";
 const ETHEREUM_CHAIN_IDENTIFIER = "ethereum";
+const PHAROS_CHAIN_IDENTIFIER = "pharos";
+const BASE_CHAIN_IDENTIFIER = "base";
 
 // there are only one deposit address
 const blacklistedVaults = [
@@ -15,10 +17,10 @@ const blacklistedVaults = [
 
 async function suiTvl(api) {
   const vaults = (
-    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v2/vaults`)
+    await getConfig('ember-protocol/vaults', `https://vaults.api.prod.ember.so/api/v2/vaults`)
   );
   for (const vault of Object.values(vaults)) {
-    
+
     const suiVault = vault.detailsByChain[SUI_CHAIN_IDENTIFIER];
     if (!suiVault || blacklistedVaults.includes(suiVault.address)) {
       continue;
@@ -34,19 +36,19 @@ async function suiTvl(api) {
   }
 }
 
-async function ethereumTvl(api) {
+async function evmTvl(api, chainIdentifier) {
   const vaults = (
-    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v2/vaults`)
+    await getConfig('ember-protocol/vaults', `https://vaults.api.prod.ember.so/api/v2/vaults`)
   );
-  const ethereumVaultAddresses = []
+  const vaultAddresses = []
   for (const vault of Object.values(vaults)) {
-      const ethereumVault = vault.detailsByChain[ETHEREUM_CHAIN_IDENTIFIER];
-      if (!ethereumVault) {
+      const chainVault = vault.detailsByChain[chainIdentifier];
+      if (!chainVault) {
         continue;
       }
-      ethereumVaultAddresses.push(ethereumVault.address);
+      vaultAddresses.push(chainVault.address);
   }
-  await sumERC4626Vaults({ api, calls: ethereumVaultAddresses, isOG4626: true});
+  await sumERC4626Vaults({ api, calls: vaultAddresses, isOG4626: true});
 }
 
 module.exports = {
@@ -54,6 +56,12 @@ module.exports = {
     tvl: suiTvl,
   },
   ethereum: {
-    tvl: ethereumTvl,
+    tvl: (api) => evmTvl(api, ETHEREUM_CHAIN_IDENTIFIER),
   },
+  pharos: {
+    tvl: (api) => evmTvl(api, PHAROS_CHAIN_IDENTIFIER),
+  },
+  base: {
+    tvl: (api) => evmTvl(api, BASE_CHAIN_IDENTIFIER),
+  }
 };

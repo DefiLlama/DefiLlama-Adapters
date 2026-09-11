@@ -1,4 +1,4 @@
-const { erc4626Abi, fortyAcresAbi, portfolioAbi } = require('./abi');
+const sdk = require('@defillama/sdk');
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 
 const vaultMapping = {
@@ -36,17 +36,17 @@ const veNftMapping = {
     blackhole: '0xEac562811cc6abDbB2c9EE88719eCA4eE79Ad763' //veBLACK
   }
 }
-
-const avaxPortfolioFactory = "0x52d43C377e498980135C8F2E858f120A18Ea96C2";
+const portfolioManager = "0x40ac2e40acb7bdd6ec83e468143262fe216529ec";
+const avaxPortfolioFactory = '0x52d43C377e498980135C8F2E858f120A18Ea96C2';
 const paraohVoterModule = "0x34F233F868CdB42446a18562710eE705d66f846b";
 
-// get the underlying asset of each erc4626 vault
-const get4626VaultToken = async (api, addresses) => {
-  return api.multiCall({ calls: addresses, abi: erc4626Abi.asset, });
-}
+const assetAbi = 'address:asset';
+const activeAssetsAbi = 'uint256:activeAssets';
+const portfolioAbi = 'address[]:getAllPortfolios';
+const allFactoriesAbi = 'address[]:getAllFactories';
 
 async function getVaultBalance(api) {
-  const vaultToken = await api.multiCall({ calls: vaultMapping[api.chain], abi: erc4626Abi.asset, });
+  const vaultToken = await api.multiCall({ calls: vaultMapping[api.chain], abi: assetAbi, });
   const vaultBalance = await api.multiCall({
     abi: 'erc20:balanceOf', calls:
       vaultToken.map((token, i) =>
@@ -64,11 +64,11 @@ async function getVaultBalance(api) {
 
 async function getBorrowed(api) {
   const borrowed = await api.multiCall({
-    abi: fortyAcresAbi.activeAssets,
+    abi: activeAssetsAbi,
     calls: fortyAcresMapping[api.chain],
   });
 
-  const vaultToken = await api.multiCall({ calls: vaultMapping[api.chain], abi: erc4626Abi.asset, });
+  const vaultToken = await api.multiCall({ calls: vaultMapping[api.chain], abi: assetAbi, });
 
   for(const [i,borrows] of borrowed.entries())
       api.addTokens([vaultToken[i]], [borrows])
@@ -76,10 +76,10 @@ async function getBorrowed(api) {
 }
 
 async function getAvaxTvl(api) {
+  const chain = 'avax'
   const portfolioList = await api.call({
     target: avaxPortfolioFactory,
     abi: portfolioAbi,
-    chain: 'avax'
   });
 
   const portfolioBalances = await api.multiCall({
@@ -92,18 +92,32 @@ async function getAvaxTvl(api) {
     })
   });
 
-  portfolioBalances.forEach(balance => api.addTokens(baseTokenMapping['avax']['pharaoh'], balance));
+  portfolioBalances.forEach(balance => api.add(baseTokenMapping[chain]['pharaoh'], balance));
 
-    await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping['avax']['blackhole'], veNft: veNftMapping['avax']['blackhole'], owner:fortyAcresMapping['avax'][1],isAltAbi:true});
+    await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[chain]['blackhole'], veNft: veNftMapping[chain]['blackhole'], owner:fortyAcresMapping[chain][1],isAltAbi:true});
+}
+
+async function getPortfolioVeNftTvl(api) {
+  const chain = api.chain;
+  const factories = await api.call({ target: portfolioManager, abi: allFactoriesAbi })
+  const portfolios = await api.multiCall({ calls: factories.map(f => ({target: f})), abi: portfolioAbi});
+  const allPortfolios = [...new Set(portfolios.flat().map(a => a.toLowerCase()))]
+  
+  await sdk.util.runInPromisePool({
+    items: allPortfolios,
+    concurrency: 10,
+    processor: owner => unwrapSolidlyVeNft({
+      api,
+      baseToken: baseTokenMapping[chain],
+      veNft: veNftMapping[chain],
+      owner,
+    }),
+  });
 }
 
 module.exports = {
-  get4626VaultToken,
   getVaultBalance,
-  fortyAcresMapping,
-  baseTokenMapping,
-  vaultMapping,
-  veNftMapping,
   getBorrowed,
   getAvaxTvl,
+  getPortfolioVeNftTvl,
 }

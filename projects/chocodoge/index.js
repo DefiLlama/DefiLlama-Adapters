@@ -27,7 +27,7 @@ module.exports = unknownTombs({
 module.exports[chain].tvl = sumTokensExport({ chain, owner: genesisPool, tokens: [
   ADDRESSES.dogechain.DC,
   '0x68609eA0b8393258d0d7EF21401E1Cd3B00A714e',
-  ADDRESSES.shiden.ETH,
+  "0x765277eebeca2e31912c9946eae1021199b39c61",
   ADDRESSES.dogechain.WWDOGE,
 ], useDefaultCoreAssets: true, })
 module.exports.misrepresentedTokens = true

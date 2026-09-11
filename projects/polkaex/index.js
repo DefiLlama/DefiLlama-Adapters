@@ -24,14 +24,14 @@ const TOKENS = {
         WASTAR: NATIVE_TOKENS.WASTAR,
     },
     shiden: {
-        // KAC: ADDRESSES.harmony.AVAX,
+        // KAC: ADDRESSES.dogechain.QUICK,
         STND: ADDRESSES.shiden.STND,
-        USDC: ADDRESSES.telos.ETH,
-        USDT: ADDRESSES.telos.USDC,
-        JPYC: ADDRESSES.shiden.JPYC,
-        BNB: ADDRESSES.dogechain.BUSD,
-        BUSD: ADDRESSES.shiden.BUSD,
-        ETH: ADDRESSES.shiden.ETH,
+        USDC: "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
+        USDT: "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
+        JPYC: "0x735abe48e8782948a37c7765ecb76b98cde97b0f",
+        BNB: '0x332730a4f6e03d9c55829435f10360e13cfa41ff',
+        BUSD: '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a',
+        ETH: "0x765277eebeca2e31912c9946eae1021199b39c61",
         WSDN: NATIVE_TOKENS.WSDN
     },
     bsc: {
@@ -46,7 +46,7 @@ const TOKENS = {
 
 const PKEX = {
     astar: "0x1fE622E91e54D6AD00B01917351Ea6081426764A",
-    shiden: ADDRESSES.dogechain.MATIC,
+    shiden: "0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98",
     ethereum: "0xe6f143a0e0a8f24f6294ce3432ea10fad0206920",
     bsc: "0x68edF56289134b41C6583c0e8fc29fbD7828aCa4",
     polygon: "0xd13eB71515DC48a8a367D12F844e5737bab415dF"
@@ -86,22 +86,9 @@ module.exports = {
     methodology: "PolkaEx Tvl Calculation",
     astar: {
         tvl: tvls.astar,
-        staking: async (timestamp, _ethBlock, chainBlocks) => {
-            const pkexStaking = await stakings(
-                STAKING_CONTRACTS.astar,
-                PKEX.astar,
-                "astar",
-                PKEX.ethereum
-            )(timestamp, _ethBlock, chainBlocks);
-
-            const dotStaking = await stakings(
-                STAKING_CONTRACTS.astar,
-                TOKENS.astar.DOT,
-                "astar"
-            )(timestamp, _ethBlock, chainBlocks);
-
-            const result = { ...pkexStaking, ...dotStaking };
-            return result;
+        staking: async (api) => {
+            await stakings(STAKING_CONTRACTS.astar, [PKEX.astar, TOKENS.astar.DOT])(api);
+            return api.getBalances();
         },
     },
     shiden: {

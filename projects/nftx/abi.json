@@ -1,4 +1,0 @@
-{
-  "vaultsLength": "uint256:vaultsLength",
-  "xToken": "function xToken(uint256 vaultId) view returns (address)"
-}

@@ -131,6 +131,18 @@ const pools = [
     assetId: 2200000000,
     fAssetId: 3184331789,
   },
+  // WBTC_NTT
+  {
+    appId: 3514794123,
+    assetId: 3495558025,
+    fAssetId: 3514808410,
+  },
+  // WETH_NTT
+  {
+    appId: 3514795114,
+    assetId: 3495722210,
+    fAssetId: 3514808788,
+  },
 ];
 
 const oracleAppId = 1040271396;

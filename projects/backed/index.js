@@ -42,6 +42,10 @@ async function tvl(api) {
 
 const chains = ["ethereum", "polygon", 'xdai', 'bsc', "avax", "fantom", "base", "arbitrum"]
 
+module.exports = {
+  hallmarks: [['2026-03-25', 'Announced xStocks']],
+}
+
 chains.forEach(chain => {
   module.exports[chain] = { tvl }
 })

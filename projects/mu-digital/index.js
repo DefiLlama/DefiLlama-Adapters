@@ -4,6 +4,7 @@ const tokens = [
 ]
 
 module.exports = {
+  deadFrom: '2026-07-14',
   monad: {
     tvl: async (api) => api.add(tokens, await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' })),
   }

@@ -1,13 +1,19 @@
-const AAVE_TOKEN_ADDRESS = '0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB';
+// Aave V3 aToken addresses (Base)
+const BASE_AAVE_POOLS = {
+    USDC: '0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB',
+    WETH: '0xD4a0e0b9149BCee3C920d2E00b5dE09138fd8bb7',
+    wstETH: '0x99cbc45ea5bb7ef3a5bc08fb1b7e56bb2442ef0d',
+    cbBTC: '0xBdb9300b7CDE636d9cD4AFF00f6F009fFBBc8EE6',
+};
 const FLUID_POOL_ADDRESSES = {
-    'USDC': '0xf42f5795D9ac7e9D757dB633D693cD548Cfd9169'
+    'USDC': '0xf42f5795D9ac7e9D757dB633D693cD548Cfd9169',
+    'wstETH': '0x896E39f0E9af61ECA9dD2938E14543506ef2c2b5'
 };
 const MORPHO_POOL_ADDRESSES = {
     'Universal - USDC': '0xB7890CEE6CF4792cdCC13489D36D9d42726ab863',
     // 'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
     'Seamless USDC Vault': '0x616a4E1db48e22028f6bbf20444Cd3b8e3273738',
     'HighYield Clearstar USDC': '0xE74c499fA461AF1844fCa84204490877787cED56',
-    'Clearstar Reactor OpenEden Boosted USDC': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
     'Gauntlet USDC Prime': '0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61',
     'Gauntlet USDC Core': '0xc0c5689e6f4D256E861F65465b691aeEcC0dEb12',
     'Gauntlet USDC Frontier': '0x236919F11ff9eA9550A4287696C2FC9e18E6e890',
@@ -16,7 +22,23 @@ const MORPHO_POOL_ADDRESSES = {
     'Spark USDC Vault': '0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A',
     'Steakhouse Prime USDC': '0xBEEFE94c8aD530842bfE7d8B397938fFc1cb83b2',
     'Steakhouse High Yield USDC': '0xBEEFA7B88064FeEF0cEe02AAeBBd95D30df3878F',
-    'Clearstar USDC Reactor': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657'
+    'Clearstar USDC Reactor': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
+    'Moonwell Flagship ETH': '0xa0E430870c4604CcfC7B38Ca7845B1FF653D0ff1',
+    'Seamless WETH Vault': '0x27D8c7273fd3fcC6956a0B370cE5Fd4A7fc65c18',
+    'Gauntlet WETH Core': '0x6b13c060F13Af1fdB319F52315BbbF3fb1D88844',
+    'Gauntlet cbBTC Core': '0x6770216aC60F634483Ec073cBABC4011c94307Cb',
+    'Steakhouse EURC V1': '0xBeEF086b8807Dc5E5A1740C5E3a7C4c366eA6ab5',
+    'Steakhouse Prime EURC': '0xbeef009F28cCf367444a9F79096862920e025DC1',
+    'Gauntlet EURC Core': '0x1c155be6bC51F2c37d472d4C2Eba7a637806e122',
+    'Gauntlet EURC Balanced': '0x94Af495DE1F56Aa5576dEB17986bDCeE5Dd9778D',
+    'Moonwell Frontier cbBTC': '0x543257eF2161176D7C8cD90BA65C2d4CaEF5a796',
+    'Clearstar cbAssets Vault': '0x91C056B6d4311a743614FBc03ac32d4E6A2d3a3c',
+    'Moonwell Flagship EURC': '0xf24608E0CCb972b0b0f4A6446a0BBf58c701a026',
+    'RockawayX Midas USDC Prime': '0xAE4181CFB5aaA08bbE77d269c6B595672b9F9Edc',
+    'Ethena x Steakhouse USDC': '0xBeEfF0be997Cca5B1c13A7433c2004637975739e',
+    'Gauntlet USDC Frontier V2': '0x1deEfABEe758AAbdC29a542B24ca3b75aFD56765',
+    'Clearstar Core ETH V2': '0xBCA4E2E24A7cFa776E4282CC8Eb06f04738b71da',
+    'Steakhouse High Yield USDC V2': '0xbeeff7aE5E00Aae3Db302e4B0d8C883810a58100'
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
@@ -31,9 +53,17 @@ const MOONWELL_POOL_ADDRESSES = {
 const HARVEST_POOLS = {
     'USDC': '0x90613e167D42CA420942082157B42AF6fc6a8087', 
     'USDC - Autopilot': '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4',
-    'USDC - 40 Acres': '0xC777031D50F632083Be7080e51E390709062263E'
+    'USDC - 40 Acres': '0xC777031D50F632083Be7080e51E390709062263E',
+    'WETH - Autopilot': '0x7872893e528Fe2c0829e405960db5B742112aa97',
+    'AAPLc - IPOR Carry Trade': '0x35eF1F2F187b326A93a3D74441F38fDcfF85Ce48',
+    'METAc - IPOR Carry Trade': '0xfE63614d41C70DeccdF6b5770A8500e287A654A4',
+    'GOOGLc - IPOR Carry Trade': '0x23cd4F9A8251193b3AC798E4E52B542d63634438',
 };
-const WASABI_POOLS = { 'USDC': '0x1C4a802FD6B591BB71dAA01D8335e43719048B24' };
+const WASABI_POOLS = {
+    USDC: '0x1C4a802FD6B591BB71dAA01D8335e43719048B24',
+    sWETH: '0x197D5C29072C1444Acb4F0935C219738A47E4a18',
+    cbBTC: '0xb152E957ab1210153BA0ef07c52f5B559f1Ad8c9',
+};
 const AURA_POOLS = { 'USDC - GHO': "0x28a002a98F4DA7A7B541b5e4d7a42E0F64E4aeF1"};
 const YIELDFI_BASE_POOLS = {
     'yUSD': '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
@@ -41,7 +71,40 @@ const YIELDFI_BASE_POOLS = {
 };
 const BASE_EULER_POOLS = {
     'AlphaGrowth': '0x4C1aeda9B43EfcF1da1d1755b18802aAbe90f61E',
+    'AlphaGrowth WETH': '0x859160DB5841E5cfB8D3f144C6b3381A85A4b410',
+    'Euler Base cbBTC': '0x882018411Bc4A020A879CEE183441fC9fa5D7f8B',
+    'Clearstar ETH Fusion': '0xdc4efb20ce286b421f6361734a2a006a1f24af8d',
+    'AlphaGrowth cbETH': '0x358f25F82644eaBb441d0df4AF8746614fb9ea49',
 };
+
+const SUPERFORM_POOLS = {
+    'Flagship Base USDC SuperVault': '0x11820afe50ea96851ee2bdbae329d97771e41ec6',
+    'Flagship Base WETH SuperVault': '0x0e70c10fa06931f7b878653a15aecc86145c1af7', 
+    'Flagship Base CBBTC SuperVault': '0xfc8a6526ffcd8248b8d0f8dac8037dbe438924ce',
+    'NVDAC': '0xc441a2cc3a528b6312740448a70cc4d40f4d7bfc',
+};
+
+const BASE_YEARN_POOLS = {
+    'True Yield Dollar': '0xb13CF163d916917d9cD6E836905cA5f12a1dEF4B',
+};
+
+const IPOR_POOLS = {
+    WETH: '0x17d0f109ee895bad0b68aa104aa72bd0b003ad8e',
+    'cbETH Looper': '0x5900c3b72458f12967dc1bef35b92d271f5cdbc1',
+    'TAU cbETH Dynamic Looping': '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
+    'Nvidia Carry Trade': '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
+    'Apple Carry Trade': '0x31744e44d6af88225c1dbefbe5df8308faea641b',
+    'Meta Carry Trade': '0xcd19f18884bf388b866d05cdd1ae351133821f01',
+    'Google Carry Trade': '0x01dbdb9748ecf71b1ffbb62f5cb41318531ba362',
+};
+
+// const BASE_YO_PROTOCOL_POOLS = {
+//     yoEUR: '0x50c749aE210D3977ADC824AE11F3c7fd10c871e9',
+// };
+
+// const BASE_LAZY_SUMMER_POOLS = {
+//     'Lower Risk EURC': '0x64Db8f51f1bf7064BB5A361a7265F602d348E0f0',
+// };
 
 const allPoolTokens = [
     ...Object.values(HARVEST_POOLS),
@@ -53,8 +116,13 @@ const allPoolTokens = [
     ...Object.values(MORPHO_POOL_ADDRESSES),
     ...Object.values(FLUID_POOL_ADDRESSES),
     ...Object.values(BASE_EULER_POOLS),
+    ...Object.values(BASE_YEARN_POOLS),
+    ...Object.values(IPOR_POOLS),
+    // ...Object.values(BASE_YO_PROTOCOL_POOLS),
+    // ...Object.values(BASE_LAZY_SUMMER_POOLS),
     COMPOUND_TOKEN_ADDRESS,
-    AAVE_TOKEN_ADDRESS,
+    ...Object.values(BASE_AAVE_POOLS),
+    ...Object.values(SUPERFORM_POOLS),
 ]
 
 module.exports = {

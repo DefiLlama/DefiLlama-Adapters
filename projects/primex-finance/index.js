@@ -1,6 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const { abi } = require('./abi')
+const abi = {
+  allBuckets: 'function allBuckets() external view returns (address[])',
+  borrowedAsset: 'address:borrowedAsset',
+}
 
 const config = {
   polygon: {

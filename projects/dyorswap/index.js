@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require("../helper/unknownTokens")
 
 const config = {
@@ -13,6 +14,14 @@ const config = {
   soneium: '0x4f0c1b4c6FdF983f2d385Cf24DcbC8c68f345E40',
   unichain: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
   plasma: '0xA9F2c3E18E22F19E6c2ceF49A88c79bcE5b482Ac',
+  stable: '0x61a425ab7e1f6b3fa1eb6af6162cf471fa0e7c62',
+}
+
+const coreAssets = {
+  stable: [
+    ...Object.values(ADDRESSES.stable),
+    '0x817997Ca8394E26CCE3dE3A076a4889b27DbF9dE',
+  ],
 }
 
 module.exports = {
@@ -21,6 +30,10 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true }),
+    tvl: getUniTVL({
+      factory: config[chain],
+      coreAssets: coreAssets[chain],
+      useDefaultCoreAssets: true,
+    }),
   }
 })

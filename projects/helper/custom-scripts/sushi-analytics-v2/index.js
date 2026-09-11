@@ -6,22 +6,22 @@ process.on('uncaughtException', function (err) {
   console.log('Caught exception: ', err);
 })
 
+const isRefillMode = process.env.REFILL_MODE === 'true'
+
 const adaptersDir = '../../../'
 const { bulky, hourlyRun } = require('./adapterMapping')
-const { readFromElastic, writeToElastic } = require('./cache')
+const { readFromElastic, writeToElastic, time, getTimeString, } = require('./cache')
+const deadChains = new Set(require('../../deadChains'))
 const sdk = require("@defillama/sdk");
 const { PromisePool } = require('@supercharge/promise-pool')
 
-function time() {
-  return Math.round(Date.now() / 1e3);
-}
 
 const log = sdk.log
 const error = console.error
 
 async function updateProject({ tvlFunction, project, chain, tvlKey }) {
-  const existingData = await readFromElastic({ tvlKey, timestamp: time(), range: 8 * 3600, project, throwIfMissing: false })
-  if (existingData && !process.env.RUN_ONLY) {
+  const existingData = await readFromElastic({ tvlKey, timestamp: time() * 1000, range: 8 * 3600 * 1000, project, throwIfMissing: false })
+  if (existingData && (!process.env.RUN_ONLY && !isRefillMode)) {
     log('[skipped]', project, chain, 'data already exists in elastic')
     return;
   }
@@ -29,23 +29,41 @@ async function updateProject({ tvlFunction, project, chain, tvlKey }) {
   const startTime = time()
   try {
     const timestamp = time()
-    log('[start]', project, chain)
-    const api = new sdk.ChainApi({ chain, timestamp: Math.floor(new Date() / 1e3), })
+
+    if (!isRefillMode)
+      log('[start]', project, chain)
+
+    const api = new sdk.ChainApi({ chain, timestamp, })
     api.timestamp = timestamp
     const balances = await tvlFunction(api, undefined, {}, { api, chain, storedKey: project })
+
+    if (isRefillMode) {
+      const dataApi = new sdk.Balances({ chain, timestamp, })
+      dataApi.addBalances(balances)
+      console.log(tvlKey, getTimeString(), sdk.humanizeNumber(await dataApi.getUSDValue()))
+    }
+
     await writeToElastic({ project, tvlKey, chain, balances })
 
   } catch (e) {
     error(`Error updating project ${project} on chain ${chain}:`, e)
   }
 
-  log('[done]', project, tvlKey, 'time taken: ', time() - startTime)
+  if (!isRefillMode)
+    log('[done]', project, tvlKey, 'time taken: ', time() - startTime)
 }
 
 async function main() {
   const adapterKey = process.env.RUN_ONLY
   let items = []
-  const allAdapterGroups = [...hourlyRun, ...bulky].flat()
+  const runGroup = process.env.RUN_GROUP // 'hourly' | 'bulky' | undefined (run all)
+  let selectedGroups
+  switch (runGroup) {
+    case 'hourly': selectedGroups = hourlyRun; break;
+    case 'bulky': selectedGroups = bulky; break;
+    default: selectedGroups = [...hourlyRun, ...bulky];
+  }
+  const allAdapterGroups = selectedGroups.flat()
 
 
   allAdapterGroups.flat().forEach(group => {
@@ -57,6 +75,10 @@ async function main() {
 
         Object.entries(projectModule).forEach(([chain, exports]) => {
           if (typeof exports !== 'object' || !exports || Array.isArray(exports)) return;
+          if (deadChains.has(chain)) {
+            log('[skipped]', name, chain, 'chain is dead')
+            return;
+          }
           Object.entries(exports).forEach(([exportKey, exported]) => {
             if (typeof exported === 'function') {
               items.push({ project: name, chain, tvlKey: `${chain}-${exportKey}`, tvlFunction: exported })
@@ -79,19 +101,24 @@ async function main() {
   await PromisePool.withConcurrency(7)
     .for(items).process(async (query) => {
       const startTime = time()
-      log('[start]', query.project, query.chain, query.tvlKey)
+
+      if (!isRefillMode)
+        log('[start]', query.project, query.chain, query.tvlKey)
+
       try {
         await updateProject(query)
       }
       catch (e) {
         console.error(e)
       }
-      log('[done]', query.project, query.chain, query.tvlKey, 'time taken: ', time() - startTime)
+
+      if (!isRefillMode)
+        log('[done]', query.project, query.chain, query.tvlKey, 'time taken: ', time() - startTime)
     })
 }
 
 main().then(() => {
-  console.log('Done, exiting...')
+  // console.log('Done, exiting...')
   process.exit(0)
 })
 
@@ -104,7 +131,10 @@ function exitScript() {
 // Schedule the script to exit after 3 hours
 const durationInMinutes = 3 * 60; // 3 hours
 const durationInMilliseconds = durationInMinutes * 60 * 1000;
-console.log(`Will auto exit in ${durationInMinutes} minutes`);
+
+if (!isRefillMode)
+  console.log(`Will auto exit in ${durationInMinutes} minutes`);
+
 setTimeout(exitScript, durationInMilliseconds);
 
 process.on('unhandledRejection', (reason, promise) => {

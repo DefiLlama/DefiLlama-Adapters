@@ -1,6 +1,13 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const swap = require("./swap");
+const { getUniTVL } = require('../helper/unknownTokens');
 const { stakings } = require("../helper/staking");
+
+const swap = {
+  tvl: getUniTVL({
+    factory: '0x1998E4b0F1F922367d8Ec20600ea2b86df55f34E',
+    useDefaultCoreAssets: true,
+  })
+}
 
 const VOLT_TOKEN = ADDRESSES.fuse.VOLT.toLowerCase();
 const VOLT_BAR = "0x97a6e78c9208c21afaDa67e7E61d7ad27688eFd1".toLowerCase();

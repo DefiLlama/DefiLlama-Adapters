@@ -11,6 +11,10 @@ const OP_TOKEN_ADDRESS = ADDRESSES.optimism.OP;
 const USDC_OP_TOKEN_ADDRESS = ADDRESSES.optimism.USDC_CIRCLE;
 const ITP_STAKED_ABI = "function getVaultInfo() view returns (uint256, uint256, uint256, uint256, uint256, uint256[], uint256)";
 
+// === stSATO (Ethereum) ===
+const STSATO_ON_ETHEREUM = '0xdeE7f7A032326148E65EC3068F1c9b29E26B75b3'
+const SATO_ON_ETHEREUM = '0x829f4B62EEBE12Af653b4dD4fFc480966F7d7f09'
+
 // === Auto-compounder vault contracts and their corresponding LP tokens (Optimism) ===
 const AUTO_COMPOUNDERS = [
   { vault: "0x569D92f0c94C04C74c2f3237983281875D9e2247", lp: "0xC04754F8027aBBFe9EeA492C9cC78b66946a07D1" }, // ITP/VELO
@@ -128,12 +132,21 @@ const getCbEggsTVL = async (api) => {
   
   // Add native ETH balance
   api.add(ADDRESSES.null, ethBalance)
-  
+
   return api.getBalances()
 }
 
+// stSATO TVL on Ethereum: the SATO backing the stSATO token, read on-chain via getBacking()
+const getStsatoTVL = async (api) => {
+  const backing = await api.call({ target: STSATO_ON_ETHEREUM, abi: 'uint256:getBacking' })
+  api.add(SATO_ON_ETHEREUM, backing)
+}
+
 module.exports = {
-  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens on Optimism), dHEDGE vaults managed by the DAO across multiple chains (~$300k AUM), and cbEGGS.finance protocol TVL (ETH backing on Base). cbEGGS is owned by Infinite Trading.",
+  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens on Optimism), dHEDGE vaults managed by the DAO across multiple chains (~$300k AUM), cbEGGS.finance protocol TVL (ETH backing on Base), and stSATO TVL on Ethereum from on-chain SATO backing via getBacking(). cbEGGS is owned by Infinite Trading.",
+  ethereum: {
+    tvl: getStsatoTVL,
+  },
   optimism: {
     tvl: async (api) => {
       await getAutoCompounderTVL(api)

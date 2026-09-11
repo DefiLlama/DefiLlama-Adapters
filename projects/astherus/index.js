@@ -13,6 +13,8 @@ const blacklistedTokens = [
   '0x78f5d389f5cdccfc41594abab4b0ed02f31398b3', // apx
   '0x000ae314e2a2172a039b26378814c252734f556a', // aster
 ]
+const ASTER_TOKEN = '0x000ae314e2a2172a039b26378814c252734f556a'
+
 module.exports = {
   start: '2024-01-31', // 02/01/2024 @ 00:00:00pm (UTC)
 }
@@ -28,7 +30,13 @@ Object.keys(config).forEach(chain => {
       const { data } = await getConfig(`astherus/${api.chain}`, `https://astherus.finance/bapi/futures/v1/public/future/web3/ae-deposit-asset?chainId=${api.chainId}`)
       const tokens = data.map(i => i.contractAddress).filter(checkEvmAddress)
       return api.sumTokens({ owner: vault, tokens, blacklistedTokens })
-    }
+    },
+    ...(chain === 'bsc' && {
+      staking: async (api) => {
+        const { data } = await getConfig('astherus/aster-staking', 'https://www.asterdex.com/bapi/staking/v3/public/staking/validators')
+        api.add(ASTER_TOKEN, data.networkTotalStake * 1e18)
+      }
+    })
   }
 })
 

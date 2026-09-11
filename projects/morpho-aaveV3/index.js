@@ -2,7 +2,23 @@ const abi = require("../helper/abis/morpho.json");
 const erc20 = require("../helper/abis/erc20.json");
 const {morphoAaveV3} = require("./addresses");
 const BigNumber = require("bignumber.js");
-const fetchMarketsData = require("./markets");
+
+// inlined from markets.js
+const fetchMarketsData = async (underlyings, api) => (await api.multiCall({
+  calls: underlyings,
+  target: morphoAaveV3,
+  abi: abi.morphoAaveV3.market
+})).map((output, i) => {
+  return {
+    aToken: output.aToken,
+    underlying: underlyings[i],
+    debtToken: output.variableDebtToken,
+    scaledP2PSupply: output.deltas.supply.scaledP2PTotal,
+    scaledP2PBorrow: output.deltas.borrow.scaledP2PTotal,
+    p2pSupplyIndex: output.indexes.supply.p2pIndex,
+    p2pBorrowIndex: output.indexes.borrow.p2pIndex,
+  }
+});
 
 const getMetrics = async (api, borrowed) => {
   const markets = await api.call({    target: morphoAaveV3,    abi: abi.morphoAaveV3.marketsCreated,  });

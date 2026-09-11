@@ -6,8 +6,7 @@ const { getUniqueAddresses } = require('../helper/utils')
 
 const blacklistedTokens = [
   ADDRESSES.ethereum.sUSD_OLD,
-  // TODO: We shouldn't need to lowercase here
-  ADDRESSES.ethereum.SAI.toLowerCase(),
+  ADDRESSES.ethereum.SAI,
   ADDRESSES.ethereum.MKR,
 ]
 

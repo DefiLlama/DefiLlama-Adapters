@@ -68,12 +68,20 @@ const PAIRS = [
   "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-pbtc-bdc-v-1-1",
   "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-pbtc-liq-v-1-1",
   "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-pusdh-roons-v-1-1",
-  "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-pbtc-satoshi-v-1-1"
+  "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-pbtc-satoshi-v-1-1",
+  
+  "SM1FKXGNZJWSTWDWXQZJNF7B5TV5ZB235JTCXYXKD.dlmm-pool-sbtc-usdcx-v-1-bps-10",
+  "SM1FKXGNZJWSTWDWXQZJNF7B5TV5ZB235JTCXYXKD.dlmm-pool-stx-usdcx-v-1-bps-1",
+  "SM1FKXGNZJWSTWDWXQZJNF7B5TV5ZB235JTCXYXKD.dlmm-pool-stx-sbtc-v-1-bps-15",
+  "SM1FKXGNZJWSTWDWXQZJNF7B5TV5ZB235JTCXYXKD.dlmm-pool-aeusdc-usdcx-v-1-bps-1",
+  "SM1FKXGNZJWSTWDWXQZJNF7B5TV5ZB235JTCXYXKD.dlmm-pool-stx-usdcx-v-1-bps-4",
+  "SM1FKXGNZJWSTWDWXQZJNF7B5TV5ZB235JTCXYXKD.dlmm-pool-sbtc-usdcx-v-1-bps-1",
+  "SM1FKXGNZJWSTWDWXQZJNF7B5TV5ZB235JTCXYXKD.dlmm-pool-stx-usdcx-v-1-bps-10"
 ]
 
 
 const BATCH_SIZE = 5;
-const DELAY = 2000;
+const DELAY = 100;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -84,7 +92,7 @@ async function tvl(api) {
 
   for (let i = 0; i < PAIRS.length; i += BATCH_SIZE) {
     const batch = PAIRS.slice(i, i + BATCH_SIZE);
-    await sumTokens({ chain: 'stacks', owners: batch, api, balances })
+    await sumTokens({ chain: 'stacks', owners: batch, api, balances, blacklistedTokens: PAIRS })  // exclude LP tokens minted by the pool contracts themselves
     await sleep(DELAY);
   }
 
@@ -94,4 +102,5 @@ async function tvl(api) {
 module.exports = {
   methodology: "Total Liquidity Added to DEX Trading Pools",
   stacks: { tvl },
+  isHeavyProtocol: true,
 };

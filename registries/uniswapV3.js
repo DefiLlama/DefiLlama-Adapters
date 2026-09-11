@@ -1,13 +1,27 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'noxa-fi-v3': {
+    megaeth: { factory: '0x1201EB5081eabc99b23DD952C1BFA5ea090d8779', fromBlock: 249856 },
+    monad: { factory: '0x35af92183701E54f751f8b0376da7F9b151bf5A5', fromBlock: 42804409 },
+    berachain: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 16694222 },
+    sonic: { factory: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4', fromBlock: 11885860 },
+    somnia: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 152175636 },
+    '0g': { factory: '0xCd0BB681056b6Fc96E86a4cE0A9644B39bC90a53', fromBlock: 32000000 },
+    plasma: { factory: '0xE7d4E64079FE467A21801B36Ccc6D9B3F66BD372', fromBlock: 1871468 },
+    stable: { factory: '0x8b051B804684A0914a62a22145206bE5AB022D8f', fromBlock: 10757086 },
+    katana: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 3425888 },
+    hyperliquid: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 10002856 },
+  },
   // --- previously consolidated ---
   'blasterswap-v3': { blast: { factory: '0x1A8027625C830aAC43aD82a3f7cD6D5fdCE89d78', fromBlock: 4308657 } },
   'comet-swap-v3': { astar: { factory: '0x2C1EEf5f87F4F3194FdAAfa20aE536b1bA49863b', fromBlock: 12168518 } },
   'warpx-v3': { megaeth: { factory: '0xf67cF9d6FC433e97Ec39Ae4b7E4451B56B171C8a', fromBlock: 4630394 } },
   'sailfish-v3': { occ: { factory: '0x963A7f4eB46967A9fd3dFbabD354fC294FA2BF5C', fromBlock: 142495 } },
   'tradegpt': { '0g': { factory: '0x6F3945Ab27296D1D66D8EEb042ff1B4fb2E0CE70', fromBlock: 5711733 } },
+  'bond': { '0g': { factory: '0xBDDB3aCF0A90029a1e7ebC3F82C7D9391C429A75', fromBlock: 32738449 } },
   'ultrasolid-v3': { hyperliquid: { factory: '0xD883a0B7889475d362CEA8fDf588266a3da554A1', fromBlock: 10742640 } },
   'juiceswap': { citrea: { factory: '0xd809b1285aDd8eeaF1B1566Bf31B2B4C4Bba8e82', fromBlock: 2651539 } },
   'weero-v3': { klaytn: { factory: '0x6603E53b4Ae1AdB1755bAF62BcbF206f90874178', fromBlock: 186673202 } },
@@ -26,15 +40,22 @@ const uniV3Configs = {
     bsc: { factory: '0x30D9e1f894FBc7d2227Dd2a017F955d5586b1e14', fromBlock: 42363117, staking: ['0xb4d117f9c404652030f3d12f6de58172317a2eda', '0x701aca29ae0f5d24555f1e8a6cf007541291d110'] },
   },
   'basexfi': {
-    methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
     base: { factory: '0xdC323d16C451819890805737997F4Ede96b95e3e', fromBlock: 4159800 },
   },
   'basex': {
-    methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
+  'bdex-v3': {
+    bot: {
+      factory: '0x1C51c173323ec11BB4e3C4fD2314c225Dc4b5419',
+      fromBlock: 143372,
+    },
+  },
+  'betterswap-v3': {
+    vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
+  },
   'mute-cl': {
-    era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523 },
+    era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523, permitFailure: true },
   },
   'solidly-v3': {
     hallmarks: [['2023-09-03', 'Solidly V3 launch']],
@@ -46,16 +67,15 @@ const uniV3Configs = {
     sonic: { factory: '0x777fAca731b17E8847eBF175c94DbE9d81A8f630', fromBlock: 514659, permitFailure: true },
   },
   'prism-dex': {
-    methodology: 'Counts TVL from all Uniswap V3 pools deployed via the factory contract at 0x1adb8f973373505bb206e0e5d87af8fb1f5514ef',
     start: 7845865,
+    deadFrom: '2026-09-09',
+    hallmarks: [['2026-09-09', 'Prism DEX shut down']],
     megaeth: { factory: '0x1adb8f973373505bb206e0e5d87af8fb1f5514ef', fromBlock: 7845865 },
   },
   'superswap-v3': {
-    methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
     optimism: { factory: '0xe52a36Bb76e8f40e1117db5Ff14Bd1f7b058B720', fromBlock: 124982239 },
   },
   'summitx-finance': {
-    methodology: 'TVL is calculated by summing the token balances in all SummitX V3 pools on Camp Network using the standard Uniswap V3 helper functions for accurate pricing.',
     camp: { factory: '0xBa08235b05d06A8A27822faCF3BaBeF4f972BF7d', fromBlock: 1 },
   },
   'stationdex-v3': {
@@ -255,6 +275,7 @@ const uniV3Configs = {
     morph: {
       factory: '0xFf8578C2949148A6F19b7958aE86CAAb2779CDDD',
       fromBlock: 25159,
+      onlyUseExistingCache: true,
       blacklistedTokens: [
         '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a',
         '0xe3C0FF176eF92FC225096C6d1788cCB818808b35',
@@ -310,16 +331,6 @@ const uniV3Configs = {
     mantle: {
       factory: '0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42',
       fromBlock: 34710765,
-    },
-  },
-  'cmswap': {
-    jbc: {
-      factory: '0x5835f123bDF137864263bf204Cf4450aAD1Ba3a7',
-      fromBlock: 4990175,
-    },
-    bitkub: {
-      factory: '0x090C6E5fF29251B1eF9EC31605Bdd13351eA316C',
-      fromBlock: 25033350,
     },
   },
   'corexswap': {
@@ -432,6 +443,7 @@ const uniV3Configs = {
     era: {
       factory: '0x52a1865eb6903bc777a02ae93159105015ca1517',
       fromBlock: 7790768,
+      permitFailure: true,
     },
     base: {
       factory: '0xeddef4273518b137cdbcb3a7fa1c6a688303dfe2',
@@ -538,6 +550,7 @@ const uniV3Configs = {
     flow: {
       factory: '0xca6d7Bb03334bBf135902e1d919a5feccb461632',
       fromBlock: 42141486,
+      blacklistedTokens: ['0x2c23fa3f22273194f7a046281861551996183e8d']
     },
   },
   'fluxion-network': {
@@ -587,7 +600,7 @@ const uniV3Configs = {
     bsquared: {
       factory: '0x02eAFbE9dE030f69aF02B7D3F2f69B28016f3C83',
       fromBlock: 1,
-      blacklistedTokens: ['0x796e4d53067ff374b89b2ac101ce0c1f72ccaac2'],
+      blacklistedTokens: [ADDRESSES.bsquared.UBTC],
     },
   },
   'glyph-v4': {
@@ -679,6 +692,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0x2dC0Ec0F0db8bAF250eCccF268D7dFbF59346E5E',
       fromBlock: 6523521,
+      permitFailure: true,
     },
   },
   'hydrex': {
@@ -705,6 +719,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0x1Cd8363DfAdA19911f745BA984fce02b42c943bF',
       fromBlock: 20255136,
+      permitFailure: true, // pools with hyperliquid pseudo-token addresses (0x333..., 0xccc...) revert balanceOf
     },
   },
   'icecreamswap-v3': {
@@ -776,12 +791,24 @@ const uniV3Configs = {
       blacklistedTokens: [],
     },
   },
+  'kittypunch-kona-v3': {
+    abstract: {
+      factory: '0xfeD3612D6865ca46F080f19fc34AA8Cac0C92cF6',
+      fromBlock: 64955000,
+    },
+  },
   'kodiak-v3': {
     berachain: {
       factory: '0xD84CBf0B02636E7f53dB9E5e45A616E05d710990',
       fromBlock: 12314,
       permitFailure: true,
       blacklistedOwners: ['0x24619368bad314d1635a54027c5231b9b83c4a7e', '0xe9703de93406cc31441a57ce5d08272ed545d32b'],
+    },
+  },
+  'krown-dex': {
+    krown: {
+      factory: '0x10ba7a9b45267caf016028cd398e68a19632bed2',
+      fromBlock: 50555,
     },
   },
   'kuraswap-cl': {
@@ -795,6 +822,13 @@ const uniV3Configs = {
       factory: '0x40059A6F242C3de0E639693973004921B04D96AD',
       fromBlock: 592235,
       blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'],
+    },
+  },
+  'liberty-swap': {
+    start: '2026-05-25',
+    pulse: {
+      factory: '0x796fcbDC956b85797EFe21145Aa97599B7FB36a6',
+      fromBlock: 26620000,
     },
   },
   'linehub-v3': {
@@ -847,7 +881,7 @@ const uniV3Configs = {
     scroll: {
       factory: '0x9367c561915f9D062aFE3b57B18e30dEC62b8488',
       fromBlock: 77008,
-      blacklistedTokens: ['0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f'],
+      blacklistedTokens: [ADDRESSES.linea.WETH],
     },
   },
   'methlab-xyz': {
@@ -879,13 +913,6 @@ const uniV3Configs = {
     xrplevm: {
       factory: '0x678100B9095848FCD4AE6C79A7D29c11815D07fe',
       fromBlock: 1,
-    },
-  },
-  'molten-v4': {
-    core: {
-      factory: '0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597',
-      fromBlock: 15770796,
-      isAlgebra: true,
     },
   },
   'monday-trade-spot': {
@@ -931,6 +958,15 @@ const uniV3Configs = {
       fromBlock: 74340484,
     },
   },
+  'morpheus': {
+    start: '2026-08-13',
+    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain.',
+    robinhood: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 35371149,
+      isAlgebra: true,
+    },
+  },
   'naka-dex': {
     naka: {
       factory: '0xf6632D6fF6fc71DAf1fA96AbAd1bC269bD507dF8',
@@ -943,6 +979,7 @@ const uniV3Configs = {
       factory: '0xF77Bd082c627aA54591cF2f2EaA811fd1AB3b1F3',
       fromBlock: 17877130,
       isAlgebra: true,
+      blacklistedTokens: ['0x9d0e8f5b25384c7310cb8c6ae32c8fbeb645d083'],
       blacklistedOwners: ['0xbAd2fB864FBD3f8b9bCC81512D7C8Ee1Aa0a8D6C'],
     },
   },
@@ -1083,6 +1120,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0xff7b3e8c00e57ea31477c32a5b52a58eea47b072',
       fromBlock: 7876741,
+      permitFailure: true,
     },
   },
   'quickswap-v3': {
@@ -1092,7 +1130,7 @@ const uniV3Configs = {
       isAlgebra: true,
       permitFailure: true,
     },
-    dogechain: { tvl: () => ({ }) },
+    dogechain: { tvl: () => ({}) },
     polygon_zkevm: {
       factory: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
       fromBlock: 300,
@@ -1133,15 +1171,23 @@ const uniV3Configs = {
       factory: '0xaa2cd7477c451e703f3b9ba5663334914763edf8',
       fromBlock: 90593047,
     },
-    hyperliquid: {
-      factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
-      fromBlock: 17985840,
-    },
   },
-  'ramses-hl-cl': {
+  'ramses-cl-v2': {
     hyperliquid: {
       factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
       fromBlock: 18149975,
+    },
+    polygon: {
+      factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
+      fromBlock: 82177771,
+    },
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
+    },
+    robinhood: {
+      factory: '0xE0c4ceb92d08CA985bB70fe0a22fEb121A9854A8',
+      fromBlock: 15761673,
     },
   },
   'reservoir-tools-v3': {
@@ -1153,16 +1199,8 @@ const uniV3Configs = {
       factory: '0xA1160e73B63F322ae88cC2d8E700833e71D0b2a1',
       fromBlock: 1,
     },
-    shape: {
-      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
-      fromBlock: 1,
-    },
     redstone: {
       factory: '0xece75613Aa9b1680f0421E5B2eF376DF68aa83Bb',
-      fromBlock: 1,
-    },
-    ink: {
-      factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424',
       fromBlock: 1,
     },
   },
@@ -1183,6 +1221,7 @@ const uniV3Configs = {
     hedera: {
       factory: '0x00000000000000000000000000000000003c3951',
       fromBlock: 55651154,
+      permitFailure: true,
     },
   },
   'scribe-v4': {
@@ -1208,6 +1247,12 @@ const uniV3Configs = {
     sonic: {
       factory: '0xcD2d0637c94fe77C2896BbCBB174cefFb08DE6d7',
       fromBlock: 1705910,
+    },
+  },
+  'shapeswap-v3': {
+    shape: {
+      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
+      fromBlock: 6022152,
     },
   },
   'sheepdex': {
@@ -1444,18 +1489,23 @@ const uniV3Configs = {
       fromBlock: 2445228,
     },
   },
+  'tsunami-v3': {
+    ink: {
+      factory: '0xD8B0826150B7686D1F56d6F10E31E58e1BCF1193',
+      fromBlock: 39943040,
+      permitFailure: true,
+    },
+  },
+  'krokoswap-v3': {
+    kasplex: {
+      factory: '0x0dfb1Bb755d872EA1fa4d95E4ad0c2E6317Ce9B9',
+      fromBlock: 14294547,
+    },
+  },
   'tesseractworld': {
     ace: {
       factory: '0x699cf93f5dec3a3e314f0a31c1f885fb11b983c3',
       fromBlock: 197972,
-    },
-  },
-  'thena-integral': {
-    bsc: {
-      factory: '0x30055F87716d3DFD0E5198C27024481099fB4A98',
-      fromBlock: 44121855,
-      isAlgebra: true,
-      blacklistedTokens: ['0x39e3ca118ddfea3edc426b306b87f43da3251b4a'],
     },
   },
   'thena-v3': {
@@ -1504,6 +1554,13 @@ const uniV3Configs = {
     base: {
       factory: '0xAC900f12fB25d514e3ccFE8572B153A9991cA4e7',
       fromBlock: 25118568,
+      isAlgebra: true,
+    },
+  },
+  'trebleswap-v2': {
+    base: {
+      factory: '0x6e606Cf94A4DDc01aEed2Fce16d1b4f5B33e0A31',
+      fromBlock: 39029383,
       isAlgebra: true,
     },
   },
@@ -1584,6 +1641,12 @@ const uniV3Configs = {
       fromBlock: 33104424,
     },
   },
+  'capybara-v3': {
+    klaytn: {
+      factory: '0xC4C8310080F209629EC4c349cb2A3c6720e1176D',
+      fromBlock: 172328824,
+    },
+  },
   'winnieswap': {
     berachain: {
       factory: '0x76fD9D07d5e4D889CAbED96884F15f7ebdcd6B63',
@@ -1602,21 +1665,21 @@ const uniV3Configs = {
     xdc: {
       factory: '0x30F317A9EC0f0D06d5de0f8D248Ec3506b7E4a8A',
       fromBlock: 59782067,
-      methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
       permitFailure: true,
     },
   },
-  'xtrade': {
-    xlayer: {
-      factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172',
-      fromBlock: 813172,
-      isAlgebra: true,
-    },
-  },
+  'xtrade': { xlayer: { factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172', fromBlock: 813172, isAlgebra: true, }, },
+  'sheriff-v3': { robinhood: { factory: '0x21Fd9aB06cc927E66013e89b045c26b3eDE7bB20', fromBlock: 1, isAlgebra: true, }, },
   'zebra-v2': {
     scroll: {
       factory: '0x96a7F53f7636c93735bf85dE416A4Ace94B56Bd9',
       fromBlock: 810032,
+    },
+  },
+  'kayen-v3': {
+    chz: {
+      factory: '0x4bC8BDF50843Cc503E196Be4A9560134d358bb3C',
+      fromBlock: 32422500,
     },
   },
   'zendex': {
@@ -1660,6 +1723,99 @@ const uniV3Configs = {
       factory: '0x2e50b586d5bcD04cb6125E028A6a669f7f3cF1C2',
       fromBlock: 1440863,
     },
+  },
+  'virtus-protocol-cl': {
+    base: {
+      factory: '0x0e5Ab24beBdA7e5Bb3961f7E9b3532a83aE86B48',
+      fromBlock: 42960000,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+      extraKey: 'v1'
+    },
+  },
+  'stableswap-xyz-v3': {
+    stable: {
+      factory: '0x88F0a512eF09175D456bc9547f914f48C013E4aA',
+      fromBlock: 4874220,
+      extraKey: 'v3',
+      blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
+    }
+  },
+  'phlox': {
+    lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
+  },
+  'fluxflow-v3': {
+    fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672 }
+  },
+  'topaz-cl': {
+    bsc: {
+      factory: '0x73DC984D9490286E735548f61dfCCec67Af82ed9',
+      fromBlock: 98756164,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    }
+  },
+  'turbo': {
+    hyperliquid: { factory: '0xc72d2695A203696243Aa3EdD6CC98E43262E007E', fromBlock: 36463669 },
+  },
+  'kublerx-v3': {
+    bitkub: { factory: '0xD679d310008A2595B8d3DeB83bb93EB23F9b0942', fromBlock: 31936260 }
+  },
+  'intrinsic': {
+    rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
+  },
+  'hyperlynx-v3': {
+    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735, permitFailure: true }
+  },
+  'machima': {
+    base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
+  },
+  'robinswap-v3': {
+    robinhood: { factory: '0xea561e058313b96011e5070ca7d0f027a44e3748', fromBlock: 6027503 },
+  },
+  'swaphood-v3': {
+    robinhood: { factory: '0x0Ec554F0BfF0Be6C99d1e95C8015bb0950f6A2C7', fromBlock: 6052562 },
+  },
+  'up-v3': {
+    start: '2026-07-10',
+    robinhood: {
+      factory: '0x1ac9dB4a2608ba45D6127B1737949b51Bb54B7F3',
+      fromBlock: 6184096,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
+  },
+  'parityswap-v3': {
+    robinhood: { factory: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA', fromBlock: 14320075 },
+  },
+  'giga-dex-cl': {
+    robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
+  },
+  'alandale': {
+    start: '2026-08-04',
+    methodology: 'Value of the tokens locked in the concentrated liquidity pools.',
+    robinhood: {
+      factory: '0x16494A80E08Bcb9285D87b67149d7b01774D82F8',
+      fromBlock: 27941500,
+      isAlgebra: true,
+    },
+  },
+  'brownfi-clamm': {
+    hemi: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 4904397,
+      isAlgebra: true,
+    },
+  },
+  'helios-v3': {
+    start: '2026-05-31',
+    rise: { factory: '0xbF30bD8567628Dc4E120b7536d051EaFaA3fD0fa', fromBlock: 12557099 },
+  },
+  'phera-dex': {
+    start: '2026-08-25',
+    methodology: 'Value of the tokens locked in PheraDEX concentrated liquidity pools.',
+    // Generation-2 PheraCLFactory. The retired generation-1 factory (0xA7e3cBf3A9F12da335531e1dd986B616b6d6ed7c) never created a pool.
+    robinhood: { factory: '0x185f43b9E3e956798b7b9CF0a4FE00463aEe064B', fromBlock: 45979598 },
   },
 }
 

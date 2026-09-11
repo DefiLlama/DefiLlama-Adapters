@@ -11,6 +11,7 @@ const CONFIG = {
   },
   arbitrum: {
     susdc: '0x940098b108fB7D0a7E374f6eDED7760787464609',
+    sparkVaultUsdt: '0x45d91340B3B7B96985A72b5c678F7D9e8D664b62',
   },
   optimism: {
     susdc: '0xCF9326e24EBfFBEF22ce1050007A43A3c0B6DB55',
@@ -19,7 +20,13 @@ const CONFIG = {
     susdc: '0x14d9143BEcC348920b68D123687045db49a016C6',
   },
   avax: {
-    sparkVaultUsdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d'
+    sparkVaultUsdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d',
+  },
+  xlayer: {
+    sparkVaultUsdt: '0xc358c90D32375721Cb3924320Fdc2F8B694347Ca',
+  },
+  robinhood: {
+    sparkVaultUsdg: '0xde770c84FE66E063336b31737cFE9790f18c4087',
   }
 }
 

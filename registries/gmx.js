@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { gmxExports, gmxExportsV2 } = require('../projects/helper/gmx')
 const { buildProtocolExports } = require('./utils')
 
@@ -207,11 +208,11 @@ const configs = {
   'flux-exchange': {
     fantom: {
       vault: '0xc050733A325eEe50E544AcCbD38F6DACEd60ea6D',
-      staking: ['0x136F1bD4Bb930cD931Ed30310142c2f03a946AC0', '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83'],
+      staking: ['0x136F1bD4Bb930cD931Ed30310142c2f03a946AC0', ADDRESSES.fantom.WFTM],
     },
     era: {
       vault: '0x09Aa1138dfdfF855Df18DDAf08e92186D213700e',
-      staking: ['0xFae2784FaE4D47316B487Bc0087a7C78D4809753', '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91'],
+      staking: ['0xFae2784FaE4D47316B487Bc0087a7C78D4809753', ADDRESSES.era.WETH],
     },
   },
   'golden-finance': {
@@ -225,7 +226,7 @@ const configs = {
     ],
     arbitrum: {
       vault: '0x489ee077994B6658eAfA855C308275EAd8097C4A',
-      staking: ['0x908C4D94D34924765f1eDc22A1DD098397c59dD4', '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a'],
+      staking: ['0x908C4D94D34924765f1eDc22A1DD098397c59dD4', ADDRESSES.arbitrum.GMX],
     },
     avax: {
       vault: '0x9ab2De34A33fB459b538c43f251eB825645e8595',
@@ -398,6 +399,10 @@ const configs = {
       eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
       fromBlock: 117906,
     },
+    megaeth: {
+      eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
+      fromBlock: 5661063,
+    },
   },
   'modemax-perp': {
     mode: {
@@ -409,6 +414,12 @@ const configs = {
     core: {
       eventEmitter: '0x29792F84224c77e2c672213c4d942fE280D596ef',
       fromBlock: 13558258,
+    },
+  },
+  'updown': {
+    celo: {
+      eventEmitter: '0x6db23e3B53958c449b7DF6D639A1333ca99EB937',
+      fromBlock: 57687338,
     },
   },
 }

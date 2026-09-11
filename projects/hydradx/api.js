@@ -3,14 +3,10 @@ const { ApiPromise, WsProvider } = require("@polkadot/api")
 
 // Omnipool constants
 const omnipoolAccountId = "7L53bUTBbfuj14UpdCNPwmgzzHSsrsTWBHX5pys32mVWM3C1"
-const stablepoolAccountId = "7JP6TvcH5x31TsbC6qVJHEhsW7UNmpREMZuLBpK2bG1goJRS"
-const stablepoolAccountId2 = "7MaKPwwnqN4cqg35PbxsGXUo1dfvjXQ3XfBjWF9UVvKMjJj8"
-const stablepoolAccountId3 = "7LVGEVLFXpsCCtnsvhzkSMQARU7gRVCtwMckG7u7d3V6FVvG"
-const stablepoolAccountId4 = "167UdiHenqFRAFeb8GxRYGT89BpKi2VPDnUjDFT8H8efqueB"
 
 const cgMapping = {
   DAI: 'dai',
-  INTR: 'interlay',
+  // INTR: 'interlay',
   GLMR: 'moonbeam',
   vDOT: 'voucher-dot',
   ZTG: 'zeitgeist',
@@ -23,7 +19,7 @@ const cgMapping = {
   USDT: 'tether',
   ASTR: 'astar',
   WBTC: 'wrapped-bitcoin',
-  iBTC: 'interbtc',
+  // iBTC: 'interbtc',
   HDX: 'hydradx',
   tBTC: 'tbtc',
   AAVE: 'aave',
@@ -40,21 +36,79 @@ const cgMapping = {
   UNQ: 'unique-network',
   MYTH: 'mythos',
   WUD: 'gawun-wud',
+  ETH: 'ethereum',
+  SUB: 'subsocial',
+  NODL: 'nodle-network',
+  PLMC: 'polimec',
+  AJUN: 'ajuna-network',
+  TRAC: 'origintrail',
+  NEURO: 'neurowebai',
+  SQD: 'subsquid',
+  ENA: 'ethena',
+  PAXG: 'pax-gold',
+  jitoSOL: 'jito-staked-sol',
+  EURC: 'euro-coin',
+  PRIME: 'hastra-prime',
+  LAOS: 'laos-network',
+  wstETH: 'wrapped-steth',
+  LBTC: 'lombard-staked-btc',
+  sUSDe: 'ethena-staked-usde',
+  sUSDS: 'susds',
+  HOLLAR: 'hydrated-dollar',
+  PEN: 'pendulum-chain',
   // GDOT: 'gigadot' // skip for doublecount 
 };
 
-const RAW_STATIC_XYK_POOL_DATA = [
-  [["15L6BQ1sMd9pESapK13dHaXBPPtBYnDnKTVhb2gBeGrrJNBx"], [30, 5]], // DOT/MYTH
-  [["15BuQdFibo2wZmwksPWCJ3owmXCduSU56gaXzVKDc1pcCcsd"], [1000085, 5]], // WUD/DOT
-  [["15nzS2D2wJdh52tqZdUJVMeDQqQe7wJfo5NZKL7pUxhwYgwq"], [5, 252525]],  // DOT/EWT
-  [["15sjxrJkJRCXs64J7wvxNE3vjJ8CGjDPggqeNwEyijvydwri"], [5, 25]],      // DOT/UNQ
-  [["12NzWeY2eDLRbdmjUunmLVE3TBnkgFGy3SCFH2hmDbhLs8qB"], [1000082, 5]]  // WIFD/DOT
-];
+// Everything is read from chain state - the Hydration indexer
+// (orca-main-aggr-indx.indexer.hydration.cloud) has extended outages.
+
+// Fetch all stableswap pool account IDs from chain state.
+// Pool account = blake2_256("sts" ++ u32_le(pool_id)) - see StableswapAccountIdConstructor
+// and POOL_IDENTIFIER in galacticcouncil/hydration-node.
+async function fetchStablepoolAccounts(polkadotApi) {
+  const { blake2AsU8a } = require('@polkadot/util-crypto');
+  const { u8aConcat, stringToU8a } = require('@polkadot/util');
+  const pools = await polkadotApi.query.stableswap.pools.entries();
+  return pools.map(([key]) => {
+    const buf = new Uint8Array(4);
+    new DataView(buf.buffer).setUint32(0, key.args[0].toNumber(), true);
+    return blake2AsU8a(u8aConcat(stringToU8a('sts'), buf), 256);
+  });
+}
+
+// Fetch all XYK pool account IDs and their asset pairs from chain state.
+async function fetchXykPools(polkadotApi) {
+  const pools = await polkadotApi.query.xyk.poolAssets.entries();
+  return pools.map(([key, assets]) => {
+    const [assetIdA, assetIdB] = assets.unwrap();
+    return {
+      poolAccountId: key.args[0].toString(),
+      assetIdA: assetIdA.toNumber(),
+      assetIdB: assetIdB.toNumber(),
+    };
+  });
+}
+
+// Map aToken asset IDs to the underlying asset's CoinGecko ID using the on-chain
+// asset registry metadata (symbols like 'aUSDT' map assetId -> cgMapping['USDT']).
+function buildATokenMapping(processedAssetMetadata) {
+  const mapping = new Map();
+  for (const { assetId, symbol } of processedAssetMetadata) {
+    if (!symbol || !/^a[A-Z]/.test(symbol)) continue;
+    const cgId = cgMapping[symbol.slice(1)];
+    if (cgId) mapping.set(assetId, cgId);
+  }
+  return mapping;
+}
+
 
 async function omnipoolTvl(api) {
   const provider = new WsProvider("wss://rpc.hydradx.cloud");
   const polkadotApi = await ApiPromise.create({ provider });
   await polkadotApi.isReady;
+
+  try {
+  const stablepoolAccounts = await fetchStablepoolAccounts(polkadotApi);
 
   const processedAssetMetadata = [];
   // Use assets.entries() to fetch all registered assets robustly
@@ -63,17 +117,16 @@ async function omnipoolTvl(api) {
   for (const [key, metaOpt] of allAssets) {
     if (metaOpt.isSome) {
       const meta = metaOpt.unwrap()
-      // Extract assetId from the storage key
-      // The exact method might vary slightly based on key structure, .args[0] is common
-      const assetIdFromKey = key.args[0].toNumber()
+      // Use toBigInt() to avoid silent truncation of IDs > Number.MAX_SAFE_INTEGER
+      const assetIdBigInt = key.args[0].toBigInt()
+      if (assetIdBigInt === 0n || assetIdBigInt > BigInt(Number.MAX_SAFE_INTEGER)) continue;
+      const assetIdFromKey = Number(assetIdBigInt)
 
-      if (assetIdFromKey !== 0) { // Skip asset 0 (HDX) as it's handled separately
-        processedAssetMetadata.push({
+      processedAssetMetadata.push({
           assetId: assetIdFromKey,
           symbol: meta.symbol.toHuman(),
           decimals: +meta.decimals,
         })
-      }
     }
   }
 
@@ -88,8 +141,8 @@ async function omnipoolTvl(api) {
         const issuance = await polkadotApi.query.tokens.totalIssuance(assetId)
         add(cgId, Number(issuance) / (10 ** decimals))
       } else {
-        const bals = await Promise.all([omnipoolAccountId, stablepoolAccountId, stablepoolAccountId2, stablepoolAccountId3].map(accId =>
-          polkadotApi.query.tokens.accounts(accId, assetId)
+        const bals = await Promise.all([omnipoolAccountId, ...stablepoolAccounts].map(accId =>
+          polkadotApi.call.currenciesApi.account(assetId, accId)
         ))
         const total = bals.reduce((acc, bal) => acc + Number(bal.free), 0) / (10 ** decimals)
         add(cgId, total)
@@ -97,80 +150,64 @@ async function omnipoolTvl(api) {
     }
   }
 
-  // Process balances for the gdot stablepool
-  const gdotStablePoolAssets = [
-    { id: 15, cgKey: 'vDOT' },    // Asset ID 15 is vDOT
-    { id: 1001, cgKey: 'DOT' },   // Asset ID 1001 is aDOT, treat as DOT for Coingecko
-  ];
+  // Dynamically query aToken balances across all stablepool accounts.
+  const aTokenMapping = buildATokenMapping(processedAssetMetadata);
 
-  for (const asset of gdotStablePoolAssets) {
-    const balanceData = await polkadotApi.call.currenciesApi.account(asset.id, stablepoolAccountId4);
-    const freeBalance = balanceData.free.toBigInt();
-
-    if (freeBalance > 0n) {
-      const cgId = cgMapping[asset.cgKey];
-      const meta = processedAssetMetadata.find(m => m.assetId === asset.id);
-
-      if (cgId && meta && typeof meta.decimals === 'number' && !isNaN(meta.decimals)) {
-        const readableBalance = Number(freeBalance) / (10 ** meta.decimals);
-        add(cgId, readableBalance);
-      } else {
-        console.warn(`HydraDX: Could not find Coingecko ID or metadata for asset ${asset.id} (${asset.cgKey}) in new stablepool.`);
-      }
+  for (const [aTokenAssetId, underlyingCgId] of aTokenMapping) {
+    const meta = processedAssetMetadata.find(m => m.assetId === aTokenAssetId);
+    if (!meta) continue;
+    let total = 0n;
+    for (const accId of stablepoolAccounts) {
+      const balanceData = await polkadotApi.call.currenciesApi.account(aTokenAssetId, accId);
+      total += balanceData.free.toBigInt();
+    }
+    if (total > 0n) {
+      add(underlyingCgId, Number(total) / (10 ** meta.decimals));
     }
   }
 
-  // Add XYK Pool TVL using the refined static list
-  const staticXykPools = RAW_STATIC_XYK_POOL_DATA.map(entry => {
-    // Basic validation for the entry structure
-    if (!entry || !entry[0] || !entry[0][0] || !entry[1] || typeof entry[1][0] === 'undefined' || typeof entry[1][1] === 'undefined') {
-      return null;
-    }
-    return {
-      poolAccountId: entry[0][0],
-      assetIdA: entry[1][0],
-      assetIdB: entry[1][1],
-    };
-  }).filter(p => p !== null);
+  // Add XYK Pool TVL fetched dynamically from chain state
+  const xykPools = await fetchXykPools(polkadotApi);
 
-  try {
-    for (const { poolAccountId, assetIdA, assetIdB } of staticXykPools) {
+  for (const { poolAccountId, assetIdA, assetIdB } of xykPools) {
+    try {
       for (const assetId of [assetIdA, assetIdB]) {
-        if (typeof assetId !== 'number') {
+        if (typeof assetId !== 'number' || isNaN(assetId) || assetId > Number.MAX_SAFE_INTEGER) {
           continue;
         }
-        const tokenInfo = await polkadotApi.query.assetRegistry.assets(assetId);
-        if (!tokenInfo.isSome) {
-          continue;
-        }
-        const decimals = +tokenInfo.unwrap().decimals;
-        const rawSymbol = tokenInfo.unwrap().symbol;
-        const symbol = rawSymbol.isSome ? rawSymbol.unwrap().toUtf8() : null;
-
-        if (!symbol) {
+        // Use already-fetched metadata instead of a separate on-chain call to avoid
+        // overflow issues with large asset IDs encoded as storage keys.
+        // assetId 0 is HDX, which is omitted from processedAssetMetadata — handle it explicitly.
+        const meta = assetId === 0
+          ? { symbol: 'HDX', decimals: 12 }
+          : processedAssetMetadata.find(m => m.assetId === assetId);
+        if (!meta || !meta.symbol) {
           continue;
         }
 
-        const coingeckoId = cgMapping[symbol];
+        const coingeckoId = cgMapping[meta.symbol];
         if (!coingeckoId) {
           continue;
         }
 
-        const balanceEntry = await polkadotApi.query.tokens.accounts(poolAccountId, assetId);
+        const balanceEntry = await polkadotApi.call.currenciesApi.account(assetId, poolAccountId);
         const balance = balanceEntry.free.toBigInt();
 
         if (balance > 0n) {
-          const readableBalance = Number(balance) / (10 ** decimals);
+          const readableBalance = Number(balance) / (10 ** meta.decimals);
           add(coingeckoId, readableBalance);
         }
       }
+    } catch (error) {
+      console.error(`HydraDX: Error processing XYK pool ${poolAccountId}:`, error);
     }
-  } catch (error) {
-    console.error("Error fetching or processing XYK pool TVL from static list:", error);
   }
 
-  await polkadotApi.disconnect();
   return api.getBalances();
+
+  } finally {
+    await polkadotApi.disconnect();
+  }
 
   function add(token, bal) {
     api.add(token, bal, { skipChain: true });

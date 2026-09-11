@@ -43,19 +43,23 @@ pipelineJob('tvl-custom-scripts/metadao') {
     }
 }
 
-// fuel Job
-pipelineJob('tvl-custom-scripts/fuel') {
-    displayName('Fuel TVL')
-    description('Calculates Fuel TVL')
+// sushi v2 Job - hourly adapters
+pipelineJob('tvl-custom-scripts/sushi-analytics-v2-hourly') {
+    displayName('Sushi Analytics V2 TVL (hourly)')
+    description('Calculates Sushi Analytics V2 TVL - hourly adapter group')
 
     // Keep last 21 builds
     logRotator {
         numToKeep(21)
     }
 
-    // Build triggers - run every 8 hours
+    // Build triggers - run every hour
     triggers {
-        cron('0 */8 * * *')
+        cron('H * * * *')
+    }
+
+    parameters {
+        stringParam('RUN_GROUP', 'hourly', 'Adapter group to run (hourly/bulky)')
     }
 
     definition {
@@ -68,24 +72,63 @@ pipelineJob('tvl-custom-scripts/fuel') {
                     branches('main')
                 }
             }
-            scriptPath("${customScriptsPath}/fuel/jfile")
+            scriptPath("${customScriptsPath}/sushi-analytics-v2/jfile")
         }
     }
 }
 
-// sushi v2 Job
-pipelineJob('tvl-custom-scripts/sushi-analytics-v2') {
-    displayName('Sushi Analytics V2 TVL')
-    description('Calculates Sushi Analytics V2 TVL')
+// sushi v2 Job - heavy/bulky adapters
+pipelineJob('tvl-custom-scripts/sushi-analytics-v2-heavy') {
+    displayName('Sushi Analytics V2 TVL (heavy)')
+    description('Calculates Sushi Analytics V2 TVL - heavy adapter group')
 
     // Keep last 21 builds
     logRotator {
         numToKeep(21)
     }
 
-    // Build triggers - run every hour
+    // Build triggers - run every 8 hours
     triggers {
-        cron('31 * * * *')
+        cron('H */6 * * *')
+    }
+
+    parameters {
+        stringParam('RUN_GROUP', 'bulky', 'Adapter group to run (hourly/bulky)')
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url(repoUrl)
+                    }
+                    branches('main')
+                }
+            }
+            scriptPath("${customScriptsPath}/sushi-analytics-v2/jfile")
+        }
+    }
+}
+
+// PCS V2 Job
+pipelineJob('tvl-custom-scripts/pcs-v2') {
+    displayName('PCS V2 TVL')
+    description('Calculates PancakeSwap V2 TVL on-chain')
+
+    // Keep last 21 builds
+    logRotator {
+        numToKeep(21)
+    }
+
+    // Build triggers - run every 8 hours
+    triggers {
+        cron('H */8 * * *')
+    }
+
+    parameters {
+        stringParam('RUN_ONLY', 'pcs-v2', 'Run only this adapter')
+        stringParam('PCS_PULL', 'true', 'Enable PCS pull')
     }
 
     definition {

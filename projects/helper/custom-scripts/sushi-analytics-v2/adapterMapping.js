@@ -2,19 +2,21 @@ module.exports = {
   hourlyRun: [
     [
       {
-        'fxdao': '/fxdao/api.js',
+        // 'fxdao': '/fxdao/api.js',
         'harvest': '/harvest.js',
         'astar-dapps-staking': '/astar-dapps-staking/api',
         'injective-orderbook': '/injective-orderbook/api',
-        'lisa': '/lisa/api',
-        'chutes': '/chutes/api',
-        'zest': '/zest/api',
+        // 'lisa': '/lisa/api',
+        // 'zest': '/zest/api',
+        // 'hermetica-hbtc': '/hermetica-hbtc/api',
       },
       {
+        // 'hermetica': '/hermetica/api',
         'bifrost-staking': '/bifrost-staking/api',
         'sora': '/sora/api',
         'bifrost-dex': '/bifrost-dex/api',
         'bifrost-liquid-crowdloan': '/bifrost-liquid-crowdloan/api',
+        'hatom-tao-bridge': '/hatom-tao-bridge/api',
       },
       // {
         // 'blend-pools': '/blend-pools/api.js',  // moved to rpc proxy
@@ -31,16 +33,16 @@ module.exports = {
         // 'parallel-stream': '/parallel-stream/api',
         // 'polkadex': '/polkadex/api', // dead/paused ??
       // },
-      {
-        'interlay-btc': '/interlay-btc/api',
-        'interlay-staking': '/interlay-staking/api',
-        'interlay-collateral': '/interlay-collateral/api',
-        'interlay-dex': '/interlay-dex/api',
-        'interlay-lending': '/interlay-lending/api',
-      },
+      // {  // interlay chain is shutdown
+      //   'interlay-btc': '/interlay-btc/api',
+      //   'interlay-staking': '/interlay-staking/api',
+      //   'interlay-collateral': '/interlay-collateral/api',
+      //   'interlay-dex': '/interlay-dex/api',
+      //   'interlay-lending': '/interlay-lending/api',
+      // },
       {
         'hydradx': '/hydradx/api.js',
-        'zest-v2': '/zest-v2/api.js',
+        // 'zest-v2': '/zest-v2/api.js',
       },
       {
         'manta-atlantic-stake': '/manta-atlantic-stake/api',
@@ -60,16 +62,16 @@ module.exports = {
         'karura-dex': '/karura-dex/api',
       },
       {
-        'kintsugi': '/kintsugi/api',
-        'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
-        'jewelswap-nft': '/jewelswap-nft/index',
+        // 'kintsugi': '/kintsugi/api',   // kintsugi chain is shutdown
+        // 'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
+        // 'jewelswap-nft': '/jewelswap-nft/index',
 
       },
       {
-        'newbitcoin': '/newbitcoin/index',
+        // 'newbitcoin': '/newbitcoin/index', // is dead
         'nemoswap': '/nemoswap/index',
-        'stackingdao': '/stackingdao/api',
-        'stacks': '/stacks/api',
+        // 'stackingdao': '/stackingdao/api',
+        // 'stacks': '/stacks/api',
       },
     ],
   ],
@@ -77,10 +79,11 @@ module.exports = {
     [{
       // 'quantumx-network': '/quantumx-network/index',
       'polkadot': '/treasury/polkadot-api',
-      'stackswap': '/stackswap/api',
-      'velar-amm': '/velar-amm/api',
-      'alexlab': '/alexlab/api',
-      'satoshi-dex': '/satoshi-dex/api',
+      'pcs-v2': '/pancake-swap/pcs-v2-onchain',
+      // 'stackswap': '/stackswap/api',
+      // 'velar-amm': '/velar-amm/api',
+      // 'alexlab': '/alexlab/api',
+      // 'satoshi-dex': '/satoshi-dex/api',
       'raydium': '/raydium/index',
       // 'vitcswap': '/vitcswap/api',
       'defichain-loans': '/defichain-loans',
@@ -88,16 +91,17 @@ module.exports = {
       // '1inch': '/1inch/apiCache',
       'izumi': '/izumi/api',
       // 'summer-fi': '/summer-fi/index',
-      // 'sunswap-v2': '/sunswap-v2/index',
+      'sunswap-v2': '/sunswap-v2/api',
       unicrypt: '/unicrypt/apiCache',
       deeplock: '/deeplock/apiCache',
-      pinksale: '/pinksale/apiCache',
-      'team-finance': '/team-finance/apiCache',
+      pinksale: '/pinksale/index',
+      'team-finance': '/team-finance/api',
       // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
       blum: '/blum/api',
-      'yodeswap': '/yodeswap/api',
-      'dogeswap-org': '/dogeswap-org/api',
+      // 'yodeswap': '/yodeswap/api',  // dogechain is dead
+      // 'dogeswap-org': '/dogeswap-org/api',  // dogechain is dead
+      'o2': '/o2/api',
 
       // breaks often
       // 'equilibrium': '/equilibrium/api',
