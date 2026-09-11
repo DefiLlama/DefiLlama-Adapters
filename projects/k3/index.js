@@ -38,6 +38,15 @@ const configs = {
         "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
         "0xD5F9aFc441ca3f72B22d0B60d53e55b966c8dE64",
         "0xe1Ce9AF672f8854845E5474400B6ddC7AE458a10",
+        "0xaF5372792a29dC6b296d6FFD4AA3386aff8f9BB2",
+        "0x56B829e465170c3aCcAd33a3E0512b239b202242",
+        "0x4BC68f0CC010A0BedA0E3f63CfBEcDee5Ad55A18",
+        "0x9bD52F2805c6aF014132874124686e7b248c2Cbb",
+        "0xba98fC35C9dfd69178AD5dcE9FA29c64554783b5",
+        "0xdB6165bd1F90cb507F30AbDb42c4596CE4D894f4",
+        "0xE1d2a34e34039711a655aC06Bc1dba6F7ab786B3",
+        "0xAB2726DAf820Aa9270D14Db9B18c8d187cbF2f30",
+        "0x660750B98c3a53DD1303f2e43F543eF037d3F625",
       ],
     },
     bsc: {
@@ -68,6 +77,9 @@ const configs = {
     },
     arbitrum: {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
+    },
+    hyperliquid: {
+      erc4626: ["0x589a57196c16d0CfAB3Ed229Fcfa959f65cA00bf"],
     },
     optimism: {
       midasTokens: [
