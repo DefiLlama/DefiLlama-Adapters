@@ -14,7 +14,10 @@ async function getProtocols() {
   for (const name of names) {
     await sleep(200)
     const details = await query(ADMIN_CONTRACT, { protocol: name })
-    if (details?.contracts) protocols.push({ name, network: details.network, ...details.contracts })
+    const { leaser, lpp, oracle } = details?.contracts ?? {}
+    if (![leaser, lpp, oracle].every(address => typeof address === 'string' && address.length > 0))
+      throw new Error(`[admin] incomplete contracts for ${name}`)
+    protocols.push({ name, network: details.network, leaser, lpp, oracle })
   }
   return protocols
 }
@@ -37,7 +40,7 @@ async function addLppTvl(api, protocol) {
   const ticker = await query(protocol.lpp, { lpn: [] })
   const currencies = await getCurrencies(protocol.oracle)
   const { balance } = await query(protocol.lpp, { lpp_balance: [] })
-  api.add(`solana:${getMint(currencies, ticker, protocol.name)}`, Number(balance?.amount || 0), { skipChain: true })
+  api.add(`solana:${getMint(currencies, ticker, protocol.name)}`, balance?.amount ?? 0, { skipChain: true })
 }
 
 async function addLeaseTvl(api, protocol) {
