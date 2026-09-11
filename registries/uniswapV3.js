@@ -1821,6 +1821,14 @@ const uniV3Configs = {
     // Generation-2 PheraCLFactory. The retired generation-1 factory (0xA7e3cBf3A9F12da335531e1dd986B616b6d6ed7c) never created a pool.
     robinhood: { factory: '0x185f43b9E3e956798b7b9CF0a4FE00463aEe064B', fromBlock: 45979598 },
   },
+  'raphael-cl': {
+    robinhood: {
+      factory: '0x5481864ddd46a2D798Df0925C23B7846e776E5E3',
+      fromBlock: 56766250,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
