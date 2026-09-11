@@ -928,5 +928,11 @@ module.exports = {
     "arbitrum": {
       "tvl": { "owners": ["0xdefcC8E8dB82D1D722045f704f8af29F94207439"], "tokens": [ADDRESSES.arbitrum.USDT] }
     }
+  },
+  "ref-market": {
+    "methodology": "USDC held by the ref_market ReferralEscrow contracts on Base: rewards, protocol fees and dispute stakes escrowed for open offers and claims in flight, plus settled balances not yet withdrawn.",
+    "base": {
+      "tvl": { "owners": ["0xa9f96c74230810205023c3E3AFEe33d3151e5Ee8", "0xA4bFddBc6Bb8F589a92A4d4595c6902e95eb9a38"], "tokens": [ADDRESSES.base.USDC] }
+    }
   }
 }
