@@ -114,5 +114,5 @@ module.exports = {
     tvl,
     staking 
   },
-  methodology: "TVL includes all tokens in StakePoint staking vaults and locked LP tokens (unwrapped to underlying assets), including Token-2022 assets."
+  methodology: "TVL counts tokens held in StakePoint token locks, LP locks and staking pools. Locked and staked assets sit in Program Derived Addresses controlled by the StakePoint program, with no private keys, so they cannot be withdrawn before their unlock date. LP positions are unwrapped to their underlying assets. SPL and Token-2022 assets are both included, and SPT staking is reported separately under staking."
 };
