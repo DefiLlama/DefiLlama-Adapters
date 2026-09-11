@@ -240,6 +240,10 @@ const config = {
     morphoBlue: "0x363D2Ba422Db2552752f2EB10b419f0Eb5defD31",
     fromBlock: 6149533,
   },
+  morph: {
+    morphoBlue: "0xAd10d07901Dc3195c3cb5e78E061F4EA8D9B4905",
+    fromBlock: 23180020,
+  }
 }
 
 module.exports = { config }
