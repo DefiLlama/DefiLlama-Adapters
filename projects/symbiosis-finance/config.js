@@ -168,6 +168,7 @@ module.exports = {
         '0x4200000000000000000000000000000000000006', // WETH
         '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA', // USDbC
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
+        '0x122283fBE84a3C387B24684D452cD53aD5906C92', // DROPEE
         '0x5c97D726bf5130AE15408cE32bc764e458320D2f', // QUAI
       ],
       holders: [
@@ -316,7 +317,7 @@ module.exports = {
     {
       name: 'cronos',
       tokens: [
-        '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59', // USDC
+        '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59', // USDC.e
       ],
       holders: [
         '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal
@@ -356,6 +357,7 @@ module.exports = {
       tokens: [
         'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', // USDT
         // 'EQBKMfjX_a_dsOLm-juxyVZytFP7_KKnzGv6J01kGc72gVBp', // EVAA - excluded not user deposit
+        'EQDPGjm4PU81Dez2rmQFQU2hw_i8hut5GTU91HOtzZbPEWf8', // DROPEE
       ],
       holders: [
         'EQBZh9CpLZyNlwI7am0PHpVy8T8zdJxAhlG3m3xMi0BoVaUh' // portal
@@ -497,18 +499,28 @@ module.exports = {
       name: 'monad',
       tokens: [
         '0x754704Bc059F8C67012fEd69BC8A327a5aafb603', // USDC
+        '0xe7cd86e13AC4309349F30B3435a9d337750fC82D', // USDT0
+        '0x111111d2bf19e43C34263401e0CAd979eD1cdb61', // USD1
+        '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a', // AUSD
+        '0xEE8c0E9f1BFFb4Eb878d8f15f368A02a35481242', // WETH
+        '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', // WBTC
+        '0x10Aeaf63194db8d453d4D85a06E5eFE1dd0b5417', // wstETH
+        '0xaE4EFbc7736f963982aACb17EFA37fCBAb924cB3', // solvBTC
+        '0x01bFF41798a0BcF287b996046Ca68b395DbC1071', // xAUT0
+        '0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A', // WMON
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
     },
     {
-      name: 'citrea',
+      name: 'quai',
       tokens: [
-        // '0x384157027B1CDEAc4e26e3709667BB28735379Bb', // syBTC - counted at source - bitcoin
+        '0x006C3e2AaAE5DB1bCd11A1a097cE572312EADdBB', // WQUAI
+        '0x0049F7cbCa3556C2DfaE62Aafa7015F99de1b8f5', // USDT
       ],
       holders: [
-        '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
+        '0x003d9F9666853fD4A10351FF5364c602470A7cF6' // portal
       ]
     },
     {
@@ -520,5 +532,24 @@ module.exports = {
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
       ]
     },
+    {
+      name: 'robinhood',
+      tokens: [
+        '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', // USDG
+        '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', // WETH
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'stable',
+      tokens: [
+        '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USDT0
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    }
   ]
 }

@@ -4,6 +4,7 @@ const adapterRoutes = [
   './deadAdapters.json',
   './uniswapV3.js',
   './uniswapV2.js',
+  './uniswapV2Logs.js',
   './aaveV3.js',
   './aave.js',
   './compound.js',
@@ -21,6 +22,7 @@ const adapterRoutes = [
   './curators.js',
   './sumTokens.js',
   './friend-tech.js',
+  './txBridge.js',
   '../cex/index.js',
 ]
 const allProtocols = {}

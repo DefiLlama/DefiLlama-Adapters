@@ -134,7 +134,9 @@ const configs = {
   'balancer-v3': {
     _options: { helperType: 'v3' },
     xdai: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 37360338 },
-    ethereum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 21332121 },
+    ethereum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 21332121, blacklistedTokens: [
+      '0x8399c8fc273bd165c346af74a02e65f10e4fd78f', // vgUSDC
+    ] },
     arbitrum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 297810187 },
     base: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 25343854 },
     optimism: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 133969439 },
@@ -165,7 +167,7 @@ const configs = {
       ADDRESSES.ethereum.sUSD_OLD,
       "0x00f109f744B5C918b13d4e6a834887Eb7d651535", "0x645F7dd67479663EE7a42feFEC2E55A857cb1833", "0x4922a015c4407F87432B179bb209e125432E4a2A",
       "0xdA16D6F08F20249376d01a09FEBbAd395a246b2C", "0x9be4f6a2558f88A82b46947e3703528919CE6414",
-    ]},
+    ], permitFailure: true }, // several paused tokens (PieDAO pies etc.) revert balanceOf
   },
 }
 

@@ -74,7 +74,8 @@ module.exports = {
   solana: {
     owners: [
       "5PAhQiYdLBd6SVdjzBQDxUAEFyDdF5ExNPQfcscnPRj5",
-      "ASTyfSima4LLAdDgoFGkgqoKowG1LZFDr9fAQrg7iaJZ"
+      "ASTyfSima4LLAdDgoFGkgqoKowG1LZFDr9fAQrg7iaJZ",
+      "FTAfm7jKGmX9cKtyBVJXLJB5pnovHmuo6W2RLJ2b9mig"
     ],
   },
   aptos: {

@@ -3,7 +3,9 @@ const { getConfig } = require("../helper/cache");
 // T3tris ecosystem API — authoritative list of vaults with curation flags
 const VAULTS_API = "https://ecosystem.t3tris.finance/vaults";
 const getGrossTvlAbi = "function getGrossTVL() external view returns (uint256 totalManagedAssets, uint256 pendingDeposits, uint256 claimableRedeems, uint256 grossTVL)";
-const CHAINS = ['arbitrum'];
+// Vaults are auto-discovered from the ecosystem API per chain via api.chainId,
+// so a chain surfaces its TVL as soon as verified vaults are published there.
+const CHAINS = ['arbitrum', 'robinhood'];
 
 async function getVerifiedVaults(chainId) {
   const all = await getConfig("t3tris-finance/vaults", VAULTS_API);

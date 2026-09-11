@@ -1,5 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { get } = require("../helper/http");
+const { getConfig } = require("../helper/cache");
 
 const dexalotTradingAPI = "https://api.dexalot.com/privapi/trading"
 
@@ -14,8 +14,8 @@ const supportedChains = {
 
 function getTVL(env, contractName) {
   return async (api) => {
-    const contract = await get(`${dexalotTradingAPI}/deployment?contracttype=${contractName}&env=${env}`)
-    const allTokens = await get(`${dexalotTradingAPI}/tokens`)
+    const contract = await getConfig(`dexalot/${contractName}-${env}`, `${dexalotTradingAPI}/deployment?contracttype=${contractName}&env=${env}`)
+    const allTokens = await getConfig('dexalot/tokens', `${dexalotTradingAPI}/tokens`)
     const tokens = allTokens.filter((t) => t.env === env).map((t) => t.address)
     return sumTokens2({ api, owner: contract[0].address, tokens, permitFailure: true })
   }

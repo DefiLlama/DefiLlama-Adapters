@@ -33,6 +33,9 @@ const configs = {
       factories: ['0x3357f02fB3aA78fc86D3Bccdc5Edf039D4b952B5', { factory: '0x217da3e53F221D1f36e8b09bc7d55d4012C0aa70', isLb: true }],
     },
     megaeth: '0x304BaEB300dD71CD76f771343E74612C2237a320',
+    robinhood: {
+      factories: ['0x3d8Dc63dDC9b992cfDe89f7AEa6f18717E84687D', { factory: '0xea982d35ee551cd143538c3acae7e1edb72cc396', isLb: true }],
+    },
   },
   'E3': {
     fantom: '0x8597dB3ba8dE6BAAdEDa8cBa4dAC653E24a0e57B',
@@ -76,6 +79,12 @@ const configs = {
   },
   'metropolis-exchange-dlmm': {
     sonic: '0x39D966c1BaFe7D3F1F53dA4845805E15f7D6EE43',
+  },
+  'ramses-dlmm': {
+    robinhood: '0xdcD5F77697914E27f56FD263EF82923C8524AbAc',
+  },
+  'hoodit': {
+    robinhood: '0x22602d966DeFd638ee94E97A92e2Eb0934c3fE1B',
   },
 }
 

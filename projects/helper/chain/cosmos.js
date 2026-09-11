@@ -38,10 +38,12 @@ const endPoints = {
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
+  akash: "https://rest.cosmos.directory/akash",
   // neutron: "https://rest-solara.neutron-1.neutron.org",
   neutron: "https://neutron-rest.publicnode.com",
   quasar: "https://quasar-api.polkachu.com",
-  gravitybridge: "https://gravitychain.io:1317/",
+  // gravitybridge: "https://gravitychain.io:1317/",
+  gravitybridge: "https://gravity-api.polkachu.com",
   // sei: "https://sei-api.polkachu.com",
   sei: "https://rest.sei-apis.com",
   // aura: "https://aura-api.polkachu.com/",
@@ -64,8 +66,10 @@ const endPoints = {
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
+  dungeon: 'https://api.dungeongames.io',
   carbon: 'https://api.carbon.network',
   evmos: 'https://evmos-api.polkachu.com',
+  fetchhub: 'https://rest-fetchhub.fetch.ai',
   regen: 'https://rest-regen.ecostake.com',
   // sommelier: 'https://sommelier-rpc.polkachu.com',
   sommelier: 'https://rest.cosmos.directory/sommelier',
@@ -81,6 +85,7 @@ const endPoints = {
   inertia: 'https://rest.inrt.fi',
   union: 'https://rest.union.build',
   zigchain: 'https://public-zigchain-lcd.numia.xyz',
+  axiome: 'http://api-docs.axiomeinfo.org:1317',
 };
 
 const chainSubpaths = {

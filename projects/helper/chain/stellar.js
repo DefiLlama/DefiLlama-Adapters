@@ -1,6 +1,5 @@
 const { get, post } = require('../http')
 const { transformBalances } = require('../portedTokens')
-const { stellar } = require('./rpcProxy')
 const base32 = require('hi-base32')
 
 const SOROBAN_RPC_URL = 'https://soroban-rpc.creit.tech/'
@@ -45,11 +44,11 @@ async function sumTokens(config) {
 /**
  * Read the "balance" function of a token for a given address
  * @param {string} token
- * @param {string} address 
+ * @param {string} address
  * @returns {Promise<bigint>}
  */
 async function getTokenBalance(token, address) {
-  return stellar.getTokenBalance({ token, address })
+  return callSoroban(token, 'balance', [address])
 }
 
 // Helpers for interacting with Soroban smart contracts via RPC without using @stellar/stellar-sdk.
@@ -58,7 +57,8 @@ async function getTokenBalance(token, address) {
 const SC_VAL = {
   BOOL: 0, VOID: 1, U32: 3, I32: 4, U64: 5, I64: 6,
   U128: 9, I128: 10, BYTES: 13, STRING: 14, SYMBOL: 15,
-  VEC: 16, MAP: 17, ADDRESS: 18
+  VEC: 16, MAP: 17, ADDRESS: 18,
+  CONTRACT_INSTANCE: 19, LEDGER_KEY_CONTRACT_INSTANCE: 20,
 }
 
 // SC_ADDRESS sub-type tags (used inside ScVal::Address values).
@@ -166,6 +166,25 @@ function _parseScVal(buf, offset) {
       const addrBytes = Buffer.from(buf.slice(offset, offset + 32)); offset += 32
       return { value: _encodeStrKey(version, addrBytes), offset }
     }
+    case SC_VAL.LEDGER_KEY_CONTRACT_INSTANCE: return { value: null, offset } // void body
+    case SC_VAL.CONTRACT_INSTANCE: {
+      // SCContractInstance { ContractExecutable executable; SCMap* storage; }
+      const execType = buf.readUInt32BE(offset); offset += 4
+      if (execType === 0) offset += 32 // CONTRACT_EXECUTABLE_WASM -> 32-byte hash (STELLAR_ASSET is void)
+      const present = buf.readUInt32BE(offset); offset += 4
+      const storage = {}
+      if (present) {
+        const len = buf.readUInt32BE(offset); offset += 4
+        for (let i = 0; i < len; i++) {
+          const k = _parseScVal(buf, offset); offset = k.offset
+          const v = _parseScVal(buf, offset); offset = v.offset
+          // #[contracttype] storage-key enums encode as Vec[Symbol(name), ...args]; key on the variant name
+          const name = Array.isArray(k.value) ? k.value[0] : k.value
+          storage[name] = v.value
+        }
+      }
+      return { value: { storage }, offset }
+    }
     default: throw new Error(`Unsupported ScVal type: ${type}`)
   }
 }
@@ -173,7 +192,35 @@ function _parseScVal(buf, offset) {
 // Size per tagged ScVal; derived from RFC-4506 (4.1, 4.3, 4.4) and Stellar-contract.x:
 // https://github.com/stellar/stellar-xdr/blob/main/Stellar-contract.x
 const TAGGED_SIZE = {
-  bool: 8, u32: 8, i32: 8, u64: 12, i64: 12, u128: 20, i128: 20, address: 40,
+  bool: 8, u32: 8, i32: 8, u64: 12, i64: 12, u128: 20, i128: 20, address: 40, account: 44,
+}
+
+// XDR pads opaque/string data to a 4-byte boundary (RFC-4506 4.11).
+function _padLen(n) { return n + ((4 - (n % 4)) % 4) }
+
+function _taggedSize(type, value) {
+  const fixed = TAGGED_SIZE[type]
+  if (fixed != null) return fixed
+  if (type === 'map') {
+    // tag + presence flag + entry count, then a symbol key and value per entry
+    let size = 12
+    for (const [key, entry] of Object.entries(value)) {
+      size += 8 + _padLen(Buffer.byteLength(key, 'ascii')) // SCV_SYMBOL
+      size += _taggedSize(entry.type, entry.value)
+    }
+    return size
+  }
+  throw new Error(`Unsupported tagged ScVal type: '${type}'`)
+}
+
+function _writeSymbol(buf, o, name) {
+  const bytes = Buffer.from(name, 'ascii')
+  buf.writeUInt32BE(SC_VAL.SYMBOL, o); o += 4
+  buf.writeUInt32BE(bytes.length, o); o += 4
+  bytes.copy(buf, o); o += bytes.length
+  const pad = _padLen(bytes.length) - bytes.length
+  buf.fill(0, o, o + pad)
+  return o + pad
 }
 
 // Encodes an XDR int (i32/u32, i64/u64, i128/u128) into buf
@@ -219,6 +266,27 @@ function _writeTaggedArg(buf, o, type, v) {
       buf.writeUInt32BE(SC_ADDR.CONTRACT, o); o += 4
       decodeStrKey(v).copy(buf, o); return o + 32
     }
+    case 'account': {
+      if (typeof v !== 'string' || !v.startsWith('G')) throw new Error(`account expects G-address string, got ${v}`)
+      buf.writeUInt32BE(SC_VAL.ADDRESS, o); o += 4
+      buf.writeUInt32BE(SC_ADDR.ACCOUNT, o); o += 4
+      buf.writeUInt32BE(0, o); o += 4 // PublicKey.KEY_TYPE_ED25519
+      decodeStrKey(v).copy(buf, o); return o + 32
+    }
+    // A #[contracttype] struct arrives as SCV_MAP keyed by field-name symbols.
+    case 'map': {
+      if (!v || typeof v !== 'object') throw new Error(`map expects an object, got ${typeof v}`)
+      // The host requires map keys in ascending order.
+      const entries = Object.entries(v).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      buf.writeUInt32BE(SC_VAL.MAP, o); o += 4
+      buf.writeUInt32BE(1, o); o += 4        // optional *SCMap: present
+      buf.writeUInt32BE(entries.length, o); o += 4
+      for (const [key, entry] of entries) {
+        o = _writeSymbol(buf, o, key)
+        o = _writeTaggedArg(buf, o, entry.type, entry.value)
+      }
+      return o
+    }
     default: throw new Error(`Unsupported ScVal type: '${type}'`)
   }
 }
@@ -229,6 +297,9 @@ function _writeTaggedArg(buf, o, type, v) {
  * @param {string} fnName      - Contract function name
  * @param {Array}  args        - Function args. Defaults string to ADDRESS and number to U32
  * For other arg types, pass an object like: { type: 'u128', value: 100n } or { type: 'bool', value: true }
+ * For a #[contracttype] struct arg, pass { type: 'map', value: { field: { type, value }, ... } }
+ *   e.g. HubAssetKey { hub_id: u32, asset: Address } ->
+ *        { type: 'map', value: { hub_id: { type: 'u32', value: 1 }, asset: { type: 'address', value: 'C...' } } }
  */
 async function callSoroban(contractId, fnName, args = []) {
   const contractBytes = decodeStrKey(contractId)
@@ -238,16 +309,14 @@ async function callSoroban(contractId, fnName, args = []) {
   // to U32. Tagged { type, value } objects pass through unchanged.
   const normalizedArgs = args.map(arg => {
     if (arg && typeof arg === 'object' && 'type' in arg) return [arg.type, arg.value]
-    if (typeof arg === 'string')                         return ['address', arg]
+    if (typeof arg === 'string')                         return [arg.startsWith('G') ? 'account' : 'address', arg]
     if (typeof arg === 'number')                         return ['u32', arg]
     throw new Error(`Unsupported arg type: ${typeof arg}`)
   })
 
   let argsSize = 0
-  for (const [type] of normalizedArgs) {
-    const size = TAGGED_SIZE[type]
-    if (size == null) throw new Error(`Unsupported tagged ScVal type: '${type}'`)
-    argsSize += size
+  for (const [type, value] of normalizedArgs) {
+    argsSize += _taggedSize(type, value)
   }
 
   // TransactionV1Envelope: https://github.com/stellar/stellar-xdr/blob/main/Stellar-transaction.x#L1010
@@ -289,6 +358,37 @@ async function callSoroban(contractId, fnName, args = []) {
   return _parseScVal(Buffer.from(resultXdr, 'base64'), 0).value
 }
 
+/** Read a contract's instance storage via the Soroban RPC's `getLedgerEntries`
+ * @param {string} contractId  - Stellar contract address
+ * Serves as a "method to access your contract data which may not be available via events or simulateTransaction" (callSoroban): https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries
+*/
+async function getContractInstanceStorage(contractId) {
+  const contractBytes = decodeStrKey(contractId)
+
+  // LedgerKey::ContractData { contract, key: LedgerKeyContractInstance, durability: PERSISTENT }
+  const key = Buffer.alloc(48)
+  let o = 0
+  key.writeUInt32BE(6, o); o += 4                                     // LedgerEntryType.CONTRACT_DATA
+  key.writeUInt32BE(SC_ADDR.CONTRACT, o); o += 4                      // SCAddress -> CONTRACT
+  contractBytes.copy(key, o); o += 32                                 // contractId
+  key.writeUInt32BE(SC_VAL.LEDGER_KEY_CONTRACT_INSTANCE, o); o += 4   // key ScVal (void body)
+  key.writeUInt32BE(1, o); o += 4                                     // ContractDataDurability.PERSISTENT
+
+  const response = await post(SOROBAN_RPC_URL, {
+    jsonrpc: '2.0', id: 1,
+    method: 'getLedgerEntries',
+    params: { keys: [key.toString('base64')] }
+  })
+  if (response.error) throw new Error(`Soroban RPC error: ${JSON.stringify(response.error)}`)
+  const entryXdr = response?.result?.entries?.[0]?.xdr
+  if (!entryXdr) throw new Error(`No instance storage ledger entry for ${contractId}`)
+
+  // LedgerEntryData(CONTRACT_DATA): type(4) + ContractDataEntry{ ext(4), contract SCAddress(36),
+  // key SCVal(4, void), durability(4), val SCVal } -> val (the SCContractInstance) starts at 52
+  const buf = Buffer.from(entryXdr, 'base64')
+  return _parseScVal(buf, 52).value.storage
+}
+
 module.exports = {
   getAssetSupply,
   addUSDCBalance,
@@ -296,6 +396,7 @@ module.exports = {
   getTokenBalance,
   decodeStrKey,
   callSoroban,
+  getContractInstanceStorage,
   parseScVal: _parseScVal,
   SOROBAN_RPC_URL,
 }

@@ -61,6 +61,13 @@ const config = {
       { address: '0xb08b965e966b5a042cfe64d5b5978ed1cb48b8a1', fromBlock: 36341848 },
     ],
   },
+  robinhood: {
+    nftAddress: '0x58daec3116aae6D93017bAAea7749052E8a04fA7',
+    lockers: [
+      { address: '0x128A800cBc615cc110Bff16E475865c67631603A', fromBlock: 20591817 },
+    ],
+    uniV4ExtraConfig: { stateViewer: '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b' },
+  },
 }
 
 module.exports = {

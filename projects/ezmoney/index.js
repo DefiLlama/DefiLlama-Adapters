@@ -52,6 +52,16 @@ const config = {
       },
     },
   },
+  robinhood: {
+    clCore: '0xEc6A12eb5593F450fc238Dd269fCff3DE8166098',
+    wrapper: '0x6F81790Ebac25497be379Dc66143fb298663Ae11',
+    dexes: {
+      '0xbcAb6Cc4b2F1990F8e6e9f11C881a229D69CBb27': {
+        type: 'uniV3',
+        nftAddress: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3',
+      },
+    },
+  },
 }
 
 function buildTvl(chainConfig) {
@@ -89,5 +99,5 @@ Object.keys(config).forEach((chain) => {
   }
 })
 
-module.exports.methodology = 'TVL is the sum of token amounts in active EZManager CLCore concentrated-liquidity positions whose CLCore position owner is the EZWrapper (EZMoney) contract, across Base, Arbitrum, BSC, and Hyperliquid.'
+module.exports.methodology = 'TVL is the sum of token amounts in active EZManager CLCore concentrated-liquidity positions whose CLCore position owner is the EZWrapper (EZMoney) contract, across Base, Arbitrum, BSC, Hyperliquid, and Robinhood.'
 module.exports.doublecounted = true

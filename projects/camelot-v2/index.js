@@ -22,5 +22,3 @@ const export2 = uniV3Export({
 })
 
 module.exports = mergeExports([export1, export2])
-
-module.exports.winr.tvl = () => ({})

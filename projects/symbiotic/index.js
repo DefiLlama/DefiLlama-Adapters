@@ -1,9 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
-const BLACKLIST = new Set([
-  '0x602c7941c6d3dc1c773591859948ed819cf6d151',
-].map(a => a.toLowerCase()))
+const VAULT_V2_VERSION = 3
 
 async function tvl(api) {
   const owners = []
@@ -34,10 +32,14 @@ async function vaultsTvl(api, tokens, owners) {
     eventAbi: 'event AddEntity(address indexed entity)',
     fromBlock: 21580035,
   })
-  const VAULTS = logs.map((log) => log.entity).filter(e => !BLACKLIST.has(e.toLowerCase()))
-  const _tokens = await api.multiCall({ abi: 'address:collateral', calls: VAULTS })
-  owners.push(...VAULTS)
-  tokens.push(..._tokens)
+  const VAULTS = logs.map((log) => log.entity)
+  const versions = await api.multiCall({ abi: 'uint64:version', calls: VAULTS })
+  const v2Vaults = VAULTS.filter((_, i) => Number(versions[i]) >= VAULT_V2_VERSION)
+  const legacyVaults = VAULTS.filter((_, i) => Number(versions[i]) < VAULT_V2_VERSION)
+  const collaterals = await api.multiCall({ abi: 'address:collateral', calls: legacyVaults })
+  if (v2Vaults.length) await api.erc4626Sum2({ calls: v2Vaults })
+  owners.push(...legacyVaults)
+  tokens.push(...collaterals)
 }
 
 module.exports = {

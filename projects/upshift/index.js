@@ -1,32 +1,6 @@
-const abi = [
-  {
-    "inputs": [],
-    "name": "getTotalAssets",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "asset",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
+const { PublicKey } = require('@solana/web3.js');
 const sui = require('../helper/chain/sui');
+const { getMultipleAccounts } = require('../helper/solana');
 const { callSoroban } = require('../helper/chain/stellar');
 const { getConfig } = require('../helper/cache');
 
@@ -43,8 +17,23 @@ const chainIdToName = {
   14: 'flare',
   31612: "mezo",
   57073: "ink",
-  25363: "fluent"
+  25363: "fluent",
+  4114: "citrea"
 };
+
+// Solana vaults are not in chainIdToName: they are Anchor accounts, not EVM
+// contracts, and are read via the program below rather than erc4626Sum.
+const SOLANA_CHAIN_ID = -1;
+const SOLANA_VAULT_PROGRAM = 'up12bytoZBmwofqsySf2uqKQ7zpfeKiAWwfvqzJjtRt';
+
+// VaultState layout: 8-byte Anchor discriminator, 5 pubkeys, u32 withdrawal_fee,
+// then local_aum and deployed_aum. total assets = local + deployed, mirroring
+// ERC4626 totalAssets (idle balance plus capital deployed to strategies).
+const VAULT_STATE_DISCRIMINATOR = Buffer.from([228, 196, 82, 165, 98, 210, 235, 152]);
+const DEPOSIT_MINT_OFFSET = 8 + 32 * 3;
+const LOCAL_AUM_OFFSET = 8 + 32 * 5 + 4;
+const DEPLOYED_AUM_OFFSET = LOCAL_AUM_OFFSET + 8;
+const MIN_VAULT_STATE_LEN = DEPLOYED_AUM_OFFSET + 8;
 
 const suiVaultsToInclude = [
   "0x94c2826b24e44f710c5f80e3ed7ce898258d7008e3a643c894d90d276924d4b9",
@@ -102,10 +91,35 @@ async function getVaultsConfig() {
 
 // Custom function to handle v2 vaults with getTotalAssets
 async function sumV2Vaults(api, vaults) {
-  const assets = await api.multiCall({ abi: abi[1], calls: vaults })
-  const totalAssets = await api.multiCall({ abi: abi[0], calls: vaults })
-  
+  const assets = await api.multiCall({ abi: "address:asset", calls: vaults })
+  const totalAssets = await api.multiCall({ abi: "uint256:getTotalAssets", calls: vaults })
+
   api.addTokens(assets, totalAssets)
+}
+
+// Solana vaults expose their balances through the VaultState account rather than
+// an ERC4626 interface, so they are decoded directly instead of via multiCall.
+const solanaVaultsTvl = async (api) => {
+  const vaults = await getConfig('upshift/vaults', vaultsApiEndpoint);
+  const addresses = vaults
+    .filter(v => v.status === 'active' && v.chain === SOLANA_CHAIN_ID)
+    .map(v => v.address);
+  if (!addresses.length) return;
+
+  const accounts = await getMultipleAccounts(addresses);
+  for (const account of accounts) {
+    if (!account?.data) continue;
+    const data = account.data;
+    if (!VAULT_STATE_DISCRIMINATOR.equals(data.subarray(0, 8))) continue;
+    if (account.owner?.toString() !== SOLANA_VAULT_PROGRAM) continue;
+    // A truncated account would make readBigUInt64LE throw and take the whole
+    // chain's TVL to zero, so skip it rather than trusting the discriminator alone.
+    if (data.length < MIN_VAULT_STATE_LEN) continue;
+
+    const mint = new PublicKey(data.subarray(DEPOSIT_MINT_OFFSET, DEPOSIT_MINT_OFFSET + 32)).toString();
+    const total = data.readBigUInt64LE(LOCAL_AUM_OFFSET) + data.readBigUInt64LE(DEPLOYED_AUM_OFFSET);
+    if (total > 0n) api.add(mint, total.toString());
+  }
 }
 
 const suiVaultsTvl = async (api) => {
@@ -172,4 +186,8 @@ module.exports.sui = {
 
 module.exports.stellar = {
   tvl: stellarVaultsTvl,
+}
+
+module.exports.solana = {
+  tvl: solanaVaultsTvl,
 }

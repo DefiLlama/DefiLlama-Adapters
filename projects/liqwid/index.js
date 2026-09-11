@@ -99,6 +99,7 @@ async function tvl(api) {
 
 function add(api, market, bal) {
   const token = getToken(market)
+  if (!token) return; // LP markets (e.g. SNEK2-ADA) have no asset id - skip
   if (["usd-coin", "tether",].includes(token)) bal /= 1e8
   if (["dai",].includes(token)) bal /= 1e6
   api.add(token, bal, {

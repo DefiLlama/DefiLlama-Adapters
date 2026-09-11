@@ -53,14 +53,14 @@ function getAllData() {
     return getConfig('bitstamp', undefined, {
       fetcher: async () => {
         let page = 1
-        let hasMorePages = true
-        let lastItem
         const walletChainMapping = {}
-        do {
+        // Bitstamp caps per_page at 100; larger values return HTTP 400
+        const PER_PAGE = 100
+        while (true) {
           sdk.log('fetching page', page)
-          const data = await get('https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=1000&page=' + page)
-          const allWallets = Object.values(data.wallets).flat()
-          const currentLastItem = allWallets[allWallets.length - 1]
+          const data = await get(`https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=${PER_PAGE}&page=${page}`)
+          const allWallets = Object.values(data.wallets ?? {}).flat()
+          if (!allWallets.length) break // empty page => no more wallets
 
           allWallets.forEach(({ address, network }) => {
             if (!walletChainMapping[network])
@@ -69,9 +69,7 @@ function getAllData() {
           })
 
           page++
-          hasMorePages = !lastItem || currentLastItem.address !== lastItem.address
-          lastItem = currentLastItem
-        } while (hasMorePages)
+        }
 
         Object.entries(walletChainMapping).forEach(([chain, wallets]) => {
           walletChainMapping[chain] = { owners: Object.keys(wallets) }

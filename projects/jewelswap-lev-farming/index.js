@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getNFTs, sumTokens } = require("../helper/chain/elrond");
-const { ResultsParser, AbiRegistry, SmartContract, Address, } = require("@multiversx/sdk-core/out");
-const { ProxyNetworkProvider } = require("@multiversx/sdk-network-providers/out");
+const { getNFTs, sumTokens, queryContractWithAbi } = require("../helper/chain/elrond");
 const JEWEL_ONEDEX_FARM_SC_ABI = require("./jewel-onedex-farm.abi.json");
 const sui = require("../helper/chain/sui");
 
@@ -12,32 +10,6 @@ const LENDING_POOL_FARMS = "erd1qqqqqqqqqqqqqpgq96n4gxvmw8nxgxud8nv8qmms5namspc5
 const FARMS = "erd1qqqqqqqqqqqqqpgqlnxy2hmvs8qxr6ezq2wmggn7ev62cjp6vmusvdral4";
 const FARMS2 = "erd1qqqqqqqqqqqqqpgqx6833qjac6uqztgsa8jhlztexucke0hrdfys6wd7qt";
 const XEXCHANGE_FARMS = "erd1qqqqqqqqqqqqqpgq9slqavjm7pglxgzuskwlvnq53gnk02vndfysq95mpq";
-
-const jewelOnedexFarmAbiRegistry = AbiRegistry.create(JEWEL_ONEDEX_FARM_SC_ABI);
-const jewelOnedexFarmSmartContract = new SmartContract({
-  address: new Address(JEWEL_ONEDEX_FARM_SC_ADDRESS),
-  abi: jewelOnedexFarmAbiRegistry
-});
-
-
-const networkConfigs = {
-  mainnet: {
-    id: "mainnet",
-    chainId: "1",
-    apiUrl: "https://api.multiversx.com",
-    gatewayUrl: "https://gateway.multiversx.com",
-    explorerUrl: "https://explorer.multiversx.com",
-    apiTimeout: 10000
-  }
-};
-
-
-const ELROND_NETWORK = "mainnet";
-const networkConfig = networkConfigs[ELROND_NETWORK];
-
-const proxyProvider = new ProxyNetworkProvider(networkConfig.gatewayUrl, {
-  timeout: networkConfig.apiTimeout
-});
 
 
 // ─── Sui Constants ───
@@ -225,30 +197,20 @@ async function elrondTvl(api) {
 }
 
 async function oneDexFarm(api) {
-  const interaction =
-    jewelOnedexFarmSmartContract.methodsExplicit.viewFarms();
-  const query = interaction.check().buildQuery();
-  const queryResponse =
-    await proxyProvider.queryContract(query);
-  const endpointDefinition = interaction.getEndpoint();
-  const { firstValue, returnCode, returnMessage } =
-    new ResultsParser().parseQueryResponse(
-      queryResponse,
-      endpointDefinition
-    );
+  const farms = await queryContractWithAbi({
+    target: JEWEL_ONEDEX_FARM_SC_ADDRESS,
+    funcName: 'viewFarms',
+    outputType: 'List<FarmContext>',
+    abiTypes: JEWEL_ONEDEX_FARM_SC_ABI.types,
+  })
 
-  if (!firstValue || !returnCode.isSuccess()) {
-    throw Error(returnMessage);
-  }
-
-  const values = firstValue.valueOf();
-  const decoded = values.map((value) => ({
-    token0: value.first_token_id.toString(),
-    token1: value.second_token_id.toString(),
-    lpAmount: value.lp_token_amount.toFixed(0),
-    lpSupply: value.lp_token_supply.toFixed(0),
-    token0Supply: value.first_token_reserve.toFixed(0),
-    token1Supply: value.second_token_reserve.toFixed(0)
+  const decoded = farms.map((value) => ({
+    token0: value.first_token_id,
+    token1: value.second_token_id,
+    lpAmount: value.lp_token_amount,
+    lpSupply: value.lp_token_supply,
+    token0Supply: value.first_token_reserve,
+    token1Supply: value.second_token_reserve
   }));
   decoded.forEach(({ token0, token1, lpAmount, lpSupply, token0Supply, token1Supply}) => {
     const ratio = lpAmount / lpSupply

@@ -27,11 +27,18 @@ const MORPHO_POOL_ADDRESSES = {
     'Seamless WETH Vault': '0x27D8c7273fd3fcC6956a0B370cE5Fd4A7fc65c18',
     'Gauntlet WETH Core': '0x6b13c060F13Af1fdB319F52315BbbF3fb1D88844',
     'Gauntlet cbBTC Core': '0x6770216aC60F634483Ec073cBABC4011c94307Cb',
-    'Steakhouse EURC': '0xBeEF086b8807Dc5E5A1740C5E3a7C4c366eA6ab5',
+    'Steakhouse EURC V1': '0xBeEF086b8807Dc5E5A1740C5E3a7C4c366eA6ab5',
     'Steakhouse Prime EURC': '0xbeef009F28cCf367444a9F79096862920e025DC1',
     'Gauntlet EURC Core': '0x1c155be6bC51F2c37d472d4C2Eba7a637806e122',
     'Gauntlet EURC Balanced': '0x94Af495DE1F56Aa5576dEB17986bDCeE5Dd9778D',
     'Moonwell Frontier cbBTC': '0x543257eF2161176D7C8cD90BA65C2d4CaEF5a796',
+    'Clearstar cbAssets Vault': '0x91C056B6d4311a743614FBc03ac32d4E6A2d3a3c',
+    'Moonwell Flagship EURC': '0xf24608E0CCb972b0b0f4A6446a0BBf58c701a026',
+    'RockawayX Midas USDC Prime': '0xAE4181CFB5aaA08bbE77d269c6B595672b9F9Edc',
+    'Ethena x Steakhouse USDC': '0xBeEfF0be997Cca5B1c13A7433c2004637975739e',
+    'Gauntlet USDC Frontier V2': '0x1deEfABEe758AAbdC29a542B24ca3b75aFD56765',
+    'Clearstar Core ETH V2': '0xBCA4E2E24A7cFa776E4282CC8Eb06f04738b71da',
+    'Steakhouse High Yield USDC V2': '0xbeeff7aE5E00Aae3Db302e4B0d8C883810a58100'
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
@@ -46,7 +53,11 @@ const MOONWELL_POOL_ADDRESSES = {
 const HARVEST_POOLS = {
     'USDC': '0x90613e167D42CA420942082157B42AF6fc6a8087', 
     'USDC - Autopilot': '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4',
-    'USDC - 40 Acres': '0xC777031D50F632083Be7080e51E390709062263E'
+    'USDC - 40 Acres': '0xC777031D50F632083Be7080e51E390709062263E',
+    'WETH - Autopilot': '0x7872893e528Fe2c0829e405960db5B742112aa97',
+    'AAPLc - IPOR Carry Trade': '0x35eF1F2F187b326A93a3D74441F38fDcfF85Ce48',
+    'METAc - IPOR Carry Trade': '0xfE63614d41C70DeccdF6b5770A8500e287A654A4',
+    'GOOGLc - IPOR Carry Trade': '0x23cd4F9A8251193b3AC798E4E52B542d63634438',
 };
 const WASABI_POOLS = {
     USDC: '0x1C4a802FD6B591BB71dAA01D8335e43719048B24',
@@ -69,7 +80,8 @@ const BASE_EULER_POOLS = {
 const SUPERFORM_POOLS = {
     'Flagship Base USDC SuperVault': '0x11820afe50ea96851ee2bdbae329d97771e41ec6',
     'Flagship Base WETH SuperVault': '0x0e70c10fa06931f7b878653a15aecc86145c1af7', 
-    'Flagship Base CBBTC SuperVault': '0xfc8a6526ffcd8248b8d0f8dac8037dbe438924ce'
+    'Flagship Base CBBTC SuperVault': '0xfc8a6526ffcd8248b8d0f8dac8037dbe438924ce',
+    'NVDAC': '0xc441a2cc3a528b6312740448a70cc4d40f4d7bfc',
 };
 
 const BASE_YEARN_POOLS = {
@@ -80,6 +92,10 @@ const IPOR_POOLS = {
     WETH: '0x17d0f109ee895bad0b68aa104aa72bd0b003ad8e',
     'cbETH Looper': '0x5900c3b72458f12967dc1bef35b92d271f5cdbc1',
     'TAU cbETH Dynamic Looping': '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
+    'Nvidia Carry Trade': '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
+    'Apple Carry Trade': '0x31744e44d6af88225c1dbefbe5df8308faea641b',
+    'Meta Carry Trade': '0xcd19f18884bf388b866d05cdd1ae351133821f01',
+    'Google Carry Trade': '0x01dbdb9748ecf71b1ffbb62f5cb41318531ba362',
 };
 
 // const BASE_YO_PROTOCOL_POOLS = {

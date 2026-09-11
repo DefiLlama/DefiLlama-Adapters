@@ -2,7 +2,11 @@ const { getLogs2 } = require('../helper/cache/getLogs');
 const ADDRESSES = require('../helper/coreAssets.json')
 const V2_FACTORY = "0x1D283b668F947E03E8ac8ce8DA5505020434ea0E";
 const V3_FACTORY = "0xf1d64dee9f8e109362309a4bfbb523c8e54fa1aa";
-const SURF_STAKING = "0xB0fDFc081310A5914c2d2c97e7582F4De12FA9d6";
+// SURF staking is spread over two UUPS proxies. Proxy 2 went live 2026-04-15 and holds a majority of the staked supply, so both must be summed.
+const SURF_STAKING = [
+  { target: "0xB0fDFc081310A5914c2d2c97e7582F4De12FA9d6", fromBlock: 39976776 },
+  { target: "0xeBa3B16E175fD36c8b01953D9e3962AB3c575718", fromBlock: 44728133 },
+];
 const SURF_TOKEN = "0xcdca2eaae4a8a6b83d7a3589946c2301040dafbf";
 const USDC = ADDRESSES.base.USDC;
 const WETH = ADDRESSES.optimism.WETH_1;
@@ -119,9 +123,14 @@ async function tvlBase(api) {
 }
 
 async function staking(api) {
-  // SURF staking contract
-  const totalStaked = await api.call({ abi: ABI.totalStaked, target: SURF_STAKING });
-  api.add(SURF_TOKEN, totalStaked);
+  // SURF staking contracts — deploy blocks gate the historical backfill so that calls are only made against a proxy once it exists.
+  const block = api.block ?? await api.getBlock();
+  const targets = SURF_STAKING.filter((s) => block >= s.fromBlock).map((s) => s.target);
+  const staked = await api.multiCall({
+    abi: ABI.totalStaked,
+    calls: targets.map((target) => ({ target })),
+  });
+  staked.forEach((amount) => api.add(SURF_TOKEN, amount));
 
   // CreatorBid SURF subscriptions (SURF locked in the token contract)
   const subscribed = await api.call({
@@ -133,7 +142,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: "TVL counts Morpho vault deposits across V2/V3 Surf Liquid vaults (Base) and V4 user vaults (Base, Ethereum, Arbitrum, Polygon), plus idle underlying held at each surf vault. Staking includes SURF staked and SURF subscriptions.",
+  methodology: "TVL counts Morpho vault deposits across V2/V3/V4 user vaults (Base, Ethereum, Arbitrum, Polygon), plus idle underlying held at each surf vault. Staking sums totalStaked() across both SURF staking proxies plus SURF subscriptions locked in the token contract.",
   doublecounted: true,
   hallmarks: [
     ["2025-11-30", "V3 factory launched"],

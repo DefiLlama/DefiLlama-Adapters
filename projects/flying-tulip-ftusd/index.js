@@ -26,16 +26,21 @@ async function tvl(api) {
   const flat = strategyLists.flatMap((strats, i) => strats.map(strategy => ({ strategy, wrapper: wrappers[i] })))
 
   const [positions, underlyings] = await Promise.all([
-    api.multiCall({ abi: 'address:positionToken', calls: flat.map(s => ({ target: s.strategy })) }),
-    api.multiCall({ abi: 'address:token',         calls: flat.map(s => ({ target: s.strategy })) }),
+    api.multiCall({ abi: 'address:positionToken', calls: flat.map(s => ({ target: s.strategy })), permitFailure: true }),
+    api.multiCall({ abi: 'address:token',         calls: flat.map(s => ({ target: s.strategy })), permitFailure: true }),
   ])
 
   // positionToken != token -> external (aToken, spToken)
   // positionToken == token -> ft strategy (e.g. ftDNS-USDC)
-  const tokensAndOwners = flat.map((s, i) => positions[i].toLowerCase() !== underlyings[i].toLowerCase()
-    ? [positions[i], s.strategy]
-    : [s.strategy, s.wrapper]
-  )
+  // deprecated strategies revert both calls - skip them
+  const tokensAndOwners = flat
+    .map((s, i) => {
+      if (!positions[i] || !underlyings[i]) return null
+      return positions[i].toLowerCase() !== underlyings[i].toLowerCase()
+        ? [positions[i], s.strategy]
+        : [s.strategy, s.wrapper]
+    })
+    .filter(Boolean)
 
   return sumTokens2({ api, tokensAndOwners })
 }
