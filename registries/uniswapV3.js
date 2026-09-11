@@ -1,6 +1,10 @@
 const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
+const { sumChainTvls } = require('@defillama/sdk').util
+
+const hybraRobinhoodV3 = { factory: '0xCeFc5Da47d766Fb6b48Da92D75d66b3264593d0f', fromBlock: 58245132 }
+const hybraRobinhoodLegacyV3 = { factory: '0x670cF0c5A3db84Ce518af3d0c8A4B478CDA4a36c', fromBlock: 56695388 }
 
 const uniV3Configs = {
   'noxa-fi-v3': {
@@ -693,6 +697,14 @@ const uniV3Configs = {
       factory: '0x2dC0Ec0F0db8bAF250eCccF268D7dFbF59346E5E',
       fromBlock: 6523521,
       permitFailure: true,
+    },
+    robinhood: {
+      ...hybraRobinhoodV3,
+      // Include residual liquidity in the first RH deployment, not only den15.
+      tvl: sumChainTvls([hybraRobinhoodV3, hybraRobinhoodLegacyV3].map(config => async (api) => {
+        if (await api.getBlock() < config.fromBlock) return {}
+        return uniV3Export({ robinhood: config }).robinhood.tvl(api)
+      })),
     },
   },
   'hydrex': {

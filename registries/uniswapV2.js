@@ -914,6 +914,7 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     hyperliquid: '0x9c7397c9C5ecC400992843408D3A283fE9108009',
+    robinhood: '0x76c1D39C33b773ABe8fBDD6253f4D09B735b2e7b',
   },
   'HyperBlast': {
     blast: '0xD97fFc2041a8aB8f6bc4aeE7eE8ECA485381D088',
