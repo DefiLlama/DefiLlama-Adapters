@@ -1,6 +1,6 @@
 const { Connection, PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
-const { getConnection, getMultipleAccounts, decodeAccount, sumTokens2 } = require('../helper/solana')
+const { getConnection, decodeAccount, sumTokens2 } = require('../helper/solana')
 const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 const { POSITION_V2_DISCRIMINATOR } = require('../helper/utils/solana/layouts/meteora-dlmm-layout')
 
@@ -14,9 +14,9 @@ const METEORA_POSITION_SIZE = 8120
 const METEORA_OWNER_OFFSET = 40
 const BINS_PER_ARRAY = 70
 const METEORA_POST_SCAN_COOLDOWN_MS = 7500
-const METEORA_ACCOUNT_BATCH_SIZE = 50
-const METEORA_BETWEEN_ACCOUNT_BATCH_MS = 500
-const METEORA_SOCKET_RETRY_DELAY_MS = 500
+const ACCOUNT_BATCH_SIZE = 50
+const ACCOUNT_BETWEEN_BATCH_MS = 500
+const ACCOUNT_READ_RETRY_BACKOFF_MS = [500, 1000, 2000]
 
 const ORCA_POSITION_DISCRIMINATOR = Buffer.from([170, 188, 143, 228, 122, 64, 247, 208])
 const ORCA_POSITION_SIZE = 216
@@ -28,6 +28,7 @@ const DAS_PAGE_LIMIT = 1000
 const DAS_MAX_PAGE = 20
 const DAS_BETWEEN_REQUEST_MS = 1500
 const DAS_RATE_LIMIT_BACKOFF_MS = [5000, 10000, 20000, 40000]
+const DAS_TRANSIENT_HTTP_STATUSES = new Set([429, 500, 502, 503])
 
 const POSITION_SEED = Buffer.from('position')
 const POSITION_BUNDLE_SEED = Buffer.from('position_bundle')
@@ -45,9 +46,9 @@ function readU128LE(buffer, offset) {
   return buffer.readBigUInt64LE(offset) + (buffer.readBigUInt64LE(offset + 8) << 64n)
 }
 
-async function getMultipleAccountsPaced(connection, addresses) {
+async function getMultipleAccountsPaced(connection, addresses, commitment) {
   const out = []
-  const batches = chunks(addresses, METEORA_ACCOUNT_BATCH_SIZE)
+  const batches = chunks(addresses, ACCOUNT_BATCH_SIZE)
 
   for (let i = 0; i < batches.length; i++) {
     const keys = batches[i].map(
@@ -55,22 +56,28 @@ async function getMultipleAccountsPaced(connection, addresses) {
     )
 
     let infos
+    let retryIndex = 0
 
-    try {
-      infos = await connection.getMultipleAccountsInfo(keys, 'finalized')
-    } catch (error) {
-      const code = error?.code ?? error?.cause?.code
+    while (true) {
+      try {
+        infos = await connection.getMultipleAccountsInfo(keys, commitment)
+        break
+      } catch (error) {
+        const code = error?.code ?? error?.cause?.code
+        const retryable = code === 'UND_ERR_SOCKET' || isRateLimitError(error)
 
-      if (code !== 'UND_ERR_SOCKET') throw error
+        if (!retryable || retryIndex >= ACCOUNT_READ_RETRY_BACKOFF_MS.length) {
+          throw error
+        }
 
-      await sleep(METEORA_SOCKET_RETRY_DELAY_MS)
-      infos = await connection.getMultipleAccountsInfo(keys, 'finalized')
+        await sleep(ACCOUNT_READ_RETRY_BACKOFF_MS[retryIndex++])
+      }
     }
 
     out.push(...infos)
 
     if (i + 1 < batches.length) {
-      await sleep(METEORA_BETWEEN_ACCOUNT_BATCH_MS)
+      await sleep(ACCOUNT_BETWEEN_BATCH_MS)
     }
   }
 
@@ -132,10 +139,17 @@ async function requestDasBatch(connection, queries) {
       throw new Error('HawkFi DAS transport request failed')
     }
 
-    if (response.status === 429) {
+    if (DAS_TRANSIENT_HTTP_STATUSES.has(response.status)) {
       if (retryIndex >= DAS_RATE_LIMIT_BACKOFF_MS.length) {
-        throw new Error('HawkFi DAS rate limit retry budget exhausted')
+        if (response.status === 429) {
+          throw new Error('HawkFi DAS rate limit retry budget exhausted')
+        }
+
+        throw new Error(
+          `HawkFi DAS transient HTTP ${response.status} retry budget exhausted`
+        )
       }
+
       await sleep(DAS_RATE_LIMIT_BACKOFF_MS[retryIndex++])
       continue
     }
@@ -283,7 +297,7 @@ async function getAmountOneMints(connection, owners) {
   return mintOwners
 }
 
-async function addOrcaPositions(api, mintOwners) {
+async function addOrcaPositions(api, connection, mintOwners) {
   const mints = [...mintOwners.keys()].sort()
   const mintKeys = mints.map(mint => new PublicKey(mint))
 
@@ -303,10 +317,8 @@ async function addOrcaPositions(api, mintOwners) {
       )[0]
   )
 
-  const [positionInfos, bundleInfos] = await Promise.all([
-    getMultipleAccounts(positionKeys, { api }),
-    getMultipleAccounts(bundleKeys, { api }),
-  ])
+  const positionInfos = await getMultipleAccountsPaced(connection, positionKeys)
+  const bundleInfos = await getMultipleAccountsPaced(connection, bundleKeys)
 
   const positions = []
   const poolKeys = new Set()
@@ -362,7 +374,7 @@ async function addOrcaPositions(api, mintOwners) {
   }
 
   const poolList = [...poolKeys]
-  const poolInfos = await getMultipleAccounts(poolList.slice(), { api })
+  const poolInfos = await getMultipleAccountsPaced(connection, poolList.slice())
   const pools = new Map()
 
   poolList.forEach((pool, i) => {
@@ -439,7 +451,7 @@ async function addMeteoraPositions(api, connection, ownerSet) {
   await sleep(METEORA_POST_SCAN_COOLDOWN_MS)
 
   const readConnection = new Connection(connection.rpcEndpoint)
-  const positionInfos = await getMultipleAccountsPaced(readConnection, positionKeys)
+  const positionInfos = await getMultipleAccountsPaced(readConnection, positionKeys, 'finalized')
 
   const positions = []
   const pairKeys = new Set()
@@ -500,8 +512,8 @@ async function addMeteoraPositions(api, connection, ownerSet) {
   const pairList = [...pairKeys]
   const binArrayList = [...binArrayKeys]
 
-  const pairInfos = await getMultipleAccountsPaced(readConnection, pairList)
-  const binArrayInfos = await getMultipleAccountsPaced(readConnection, binArrayList)
+  const pairInfos = await getMultipleAccountsPaced(readConnection, pairList, 'finalized')
+  const binArrayInfos = await getMultipleAccountsPaced(readConnection, binArrayList, 'finalized')
 
   const pairs = new Map()
 
@@ -611,6 +623,7 @@ async function tvl(api) {
 
   await addOrcaPositions(
     api,
+    connection,
     mintOwners
   )
 
