@@ -2408,6 +2408,8 @@ const uniV2Configs = {
     },
   },
   'GlyphExchange': {
+    deadFrom: '2026-09-11',
+    hallmarks: [['2026-09-11', 'Glyph Core DEX no longer maintained']],
     core: { factory: '0x3e723c7b6188e8ef638db9685af45c7cb66f77b9', staking: ["0x6bf16B2645b13db386ecE6038e1dEF76d95696fc", "0xb3A8F0f0da9ffC65318aA39E55079796093029AD"] },
   },
   'KibbleSwap': {
