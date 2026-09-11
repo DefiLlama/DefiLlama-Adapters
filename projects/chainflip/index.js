@@ -1,5 +1,5 @@
 const { staking } = require('../helper/staking')
-const { graphQuery } = require('../helper/http');
+const { post } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const STATE_CHAIN_GATEWAY_CONTRACT = '0x826180541412D574cf1336d22c0C0a287822678A';
@@ -41,7 +41,7 @@ async function tvl(api) {
     allPools: { nodes }, 
     allBoostPools: { nodes: bNodes }, 
     allDepositBalances: { groupedAggregates: uNodes } 
-  } = await graphQuery(endpoint, poolsDataQuery);
+  } = (await post(endpoint, { query: poolsDataQuery })).data; // plain POST: endpoint replies with content-type application/graphql-response+json, which graphql-request 4.x rejects
 
   nodes.forEach(i => {
     api.add(i.baseAsset, i.baseLiquidityAmount)
