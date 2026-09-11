@@ -393,7 +393,7 @@ async function getCuratorTvlAccountableVault(api, vaults) {
   // asset()/totalAssets() directly.
   if (!vaults || vaults.length === 0) return
   const underlyingVaults = await api.multiCall({ abi: ABI.accountable.vault, calls: vaults, permitFailure: true })
-  const resolvedVaults = underlyingVaults.filter(Boolean)
+  const resolvedVaults = [...new Set(underlyingVaults.filter(Boolean).map(v => v.toLowerCase()))]
   if (resolvedVaults.length === 0) return
   const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: resolvedVaults, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: resolvedVaults, permitFailure: true })
