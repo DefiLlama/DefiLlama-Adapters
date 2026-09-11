@@ -63,9 +63,6 @@ const configs = {
         "0x27Ec22e4DcB70F7FfE1F6bb89e3284529492c05E", // Euler Earn: K3 Capital USD1
       ],
     },
-    bob: {
-      eulerVaultOwners: ["0xDb81B93068B886172988A1A4Dd5A1523958a23f0"],
-    },
     unichain: {
       morphoVaultOwners: ["0xe34A3fb26B3121F4E68bE89Ea553BaC2149F975d"],
     },
