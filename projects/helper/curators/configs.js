@@ -193,6 +193,12 @@ const MorphoConfigs = {
         fromBlock: 1912478,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0x4f0a370bb367843CFd914c4d9972523aD2f8FCc9',
+        fromBlock: 765994,
+      },
+    ],
   },
   arbitrum: {
     vaultFactories: [
@@ -228,6 +234,12 @@ const MorphoConfigs = {
         address: '0x8e52179BeB18E882040b01632440d8Ca0f01da82',
         fromBlock: 1188885,
       }
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x3c75C433e7902193497617EaFCc8385A3D031836',
+        fromBlock: 1188872,
+      },
     ]
   },
   sei: {
@@ -236,7 +248,7 @@ const MorphoConfigs = {
         address: '0x8Dea49ec5bd5AeAc8bcf96B3E187F59354118291',
         fromBlock: 168896078,
       }
-    ]
+    ],
   },
   celo: {
     vaultFactories: [
@@ -244,6 +256,12 @@ const MorphoConfigs = {
         address: '0x6870aa9f66c1e5efe8dbe8730e86e9e91f688275',
         fromBlock: 40259931,
       }
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0xB237fdB403992f4AAe0963F5304799242035E22d',
+        fromBlock: 40249329,
+      },
     ]
   },
   klaytn: {
@@ -307,6 +325,14 @@ const MorphoConfigs = {
         fromBlock: 23180183,
       }
     ]
+  },
+  flare: {
+    vaultFactoriesV2: [
+      {
+        address: '0x6FC83ECc0e8142635D77200e5052be8A0a9D2f42',
+        fromBlock: 52378788,
+      },
+    ],
   },
 }
 
