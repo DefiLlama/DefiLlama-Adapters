@@ -50,9 +50,6 @@ const DEFAULTS = {
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
-  ENI_RPC_MULTICALL: "0xbf9d276932DF9c0AA1644b2569482f7a754433be",  // multicall3
-  BITKUB_RPC_MULTICALL_V3: "0x1475C57CF87Eb84625FF17cC7674C3277eAb2c9F",  // multicall3
-  SHIDO_RPC_MULTICALL_V3: "0xe3da1EC9e9BfEa1fE8C5905133c36A86351e4561",  // multicall3
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
 }
 
