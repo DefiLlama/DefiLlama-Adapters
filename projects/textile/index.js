@@ -1,4 +1,4 @@
-const { graphQuery } = require("../helper/http");
+const { cachedGraphQuery } = require("../helper/cache");
 
 // Textile is a non-custodial on-chain FX DEX. Market makers ("Stitch" bots) quote
 // both sides of each corridor from their own wallets, and swaps settle atomically
@@ -18,18 +18,23 @@ const CHAINS = {
 async function tvl(api) {
   const chainId = CHAINS[api.chain];
 
-  const { settlementMakerStats } = await graphQuery(
+  // cached: if the API is down we fall back to the last good maker/corridor lists instead of failing
+  const { settlementMakerStats } = await cachedGraphQuery(
+    "textile/makers",
     ENDPOINT,
     "{ settlementMakerStats { makers { wallet } } }"
   );
   const owners = settlementMakerStats.makers.map((m) => m.wallet);
 
-  const { settlementV3Pools } = await graphQuery(
+  // settlementV3Pools was removed from the schema; corridors carry the same asset pair per chain
+  const { settlementCorridors } = await cachedGraphQuery(
+    "textile/corridors",
     ENDPOINT,
-    `{ settlementV3Pools(chainId: ${chainId}) { collateralAsset debtAsset } }`
+    "{ settlementCorridors { chainId collateralAsset debtAsset } }"
   );
+  const pools = settlementCorridors.filter((p) => +p.chainId === chainId);
   const tokens = [
-    ...new Set(settlementV3Pools.flatMap((p) => [p.collateralAsset, p.debtAsset])),
+    ...new Set(pools.flatMap((p) => [p.collateralAsset, p.debtAsset])),
   ];
 
   return api.sumTokens({ owners, tokens });

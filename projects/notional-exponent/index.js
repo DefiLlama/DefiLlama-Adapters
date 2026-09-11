@@ -17,7 +17,7 @@ async function tvl(api) {
   const { endpoint } = CONFIG[api.chain]
   const result = await cachedGraphQuery(`notional-exponent/${api.chain}`, endpoint, payload)
   const calls = result.vaults.map(i => i.id)
-  return api.erc4626Sum2({ calls })
+  return api.erc4626Sum2({ calls, permitFailure: true }) // some vaults are deprecated and revert on asset()
 }
 
 Object.keys(CONFIG).forEach((chain) => {

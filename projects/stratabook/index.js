@@ -30,7 +30,7 @@ async function tvl(api) {
   ]));
   for (const { value } of results) tokenAccounts.push(...value.map(({ pubkey }) => pubkey));
 
-  return sumTokens2({ api, tokenAccounts });
+  return sumTokens2({ api, tokenAccounts, allowError: true }); // some market vault slots point at closed accounts
 }
 
 module.exports = {
