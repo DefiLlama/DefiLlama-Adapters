@@ -9,12 +9,14 @@ const { PublicKey } = require('@solana/web3.js')
 // config field) returns the complete set. No protocol API is involved.
 const DBC_PROGRAM = new PublicKey('dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN')
 
-// Both configs are quoted in wSOL (the config's quote_mint). A future config
+// Every config is quoted in wSOL (the config's quote_mint). A future config
 // with a different quote token is a one-line addition here.
 const WSOL = ADDRESSES.solana.SOL
 const ARCHADE_CONFIGS = [
   { config: 'HeaH1eyowUas1U9f9646CJ866jNGNzeCsCzeGJ8ryMbe', quoteMint: WSOL }, // production
   { config: 'ELnnqpYUMoKtkULm4LZ4uyashtxpgaccqucZdCY7Ym6H', quoteMint: WSOL }, // test
+  { config: '7tMsZkJTCR616N9vUMBRWN5y4fKr9JXSopnk3vMEL2nN', quoteMint: WSOL }, // anti-sniper fee schedule
+  { config: 'FWX2KPTGZR9mujdSpbAEKhxHULXJYXRizgAXBYwVMKbU', quoteMint: WSOL }, // smaller curve
 ]
 
 // DBC VirtualPool account layout (424 bytes: 8-byte anchor discriminator + C-repr struct).
