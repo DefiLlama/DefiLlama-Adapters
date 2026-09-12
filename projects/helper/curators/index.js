@@ -387,14 +387,19 @@ async function getCuratorTvlErc4626(api, vaults) {
 }
 
 async function getCuratorTvlAccountableVault(api, vaults) {
+  // these are proxy contracts (not themselves ERC-4626) whose implementation exposes a
+  // `vault()` view returning the address of the real ERC-4626 vault holding the funds
+  // (e.g. K3's private-credit "loan" vaults). Resolve that vault, then read its
+  // asset()/totalAssets() directly.
   if (!vaults || vaults.length === 0) return
-
-  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
-  const supplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
-  const balances = await api.multiCall({ abi: ABI.ERC4626.convertToAssets, calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })), permitFailure: true })
-  for (let i = 0; i < vaults.length; i++) {
-    if (!assets[i] || !balances[i]) continue
-    api.add(assets[i], balances[i])
+  const underlyingVaults = await api.multiCall({ abi: ABI.accountable.vault, calls: vaults, permitFailure: true })
+  const resolvedVaults = [...new Set(underlyingVaults.filter(Boolean).map(v => v.toLowerCase()))]
+  if (resolvedVaults.length === 0) return
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: resolvedVaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: resolvedVaults, permitFailure: true })
+  for (let i = 0; i < resolvedVaults.length; i++) {
+    if (!assets[i] || !totalAssets[i]) continue
+    api.add(assets[i], totalAssets[i])
   }
 }
 
@@ -626,7 +631,8 @@ async function getCuratorTvl(api, vaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
   }
 
-  // accountable AsyncRedeemVaults - totalAssets() returns idle so use convertToAssets(totalSupply()) instead
+  // proxy contracts whose implementation exposes a vault() view pointing at the real
+  // ERC-4626 vault (e.g. K3's private-credit "loan" vaults) - resolve then read totalAssets()
   if (vaults.accountableVaults) {
     await getCuratorTvlAccountableVault(api, vaults.accountableVaults)
   }
