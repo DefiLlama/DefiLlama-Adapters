@@ -1,5 +1,6 @@
 const { getTokenSupply } = require("../helper/chain/sui")
 const { getTokenSupplies } = require("../helper/solana")
+const { callSoroban } = require("../helper/chain/stellar")
 const { getTvlOfSupplyAssets } = require("../matrixdock/getTvlOfSupplyAssets")
 
 const config = {
@@ -22,5 +23,13 @@ module.exports.solana = {
   tvl: async (api) => {
     const token = '5aLhp9VnUEKcsdtkfsf2DUgpJfomx7GmYVny24dHUZoB'
     await getTokenSupplies([token], api)
+  }
+}
+
+module.exports.stellar = {
+  tvl: async (api) => {
+    const token = 'CC2RBGYNCFBCVENIDL5BFBWPH4OUZM2UA3OD2K2N54GLMWCC4KWPVAGO'
+    const supply = await callSoroban(token, 'total_supply')
+    api.add(token, supply)
   }
 }
