@@ -8,9 +8,6 @@ const sdk = require('@defillama/sdk');
 const VAULT =
   "0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700";
 
-const MOAR =
-  "0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07";
-
 const ECHELON =
   "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba";
 
@@ -32,7 +29,6 @@ const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const PAGE_SIZE = 50;
 const OWNER_BATCH_SIZE = 30;
 const COIN_BALANCE_CONCURRENCY = 10;
-const MOAR_LENS_CONCURRENCY = 8;
 const ECHELON_CONCURRENCY = 4;
 const HYPERION_LP_CONCURRENCY = 8;
 
@@ -179,7 +175,7 @@ async function addDlpAsUsdc(api, sharesRaw) {
   if (usdc > 0n) api.add(USDC, usdc.toString());
 }
 
-/** Moar / views return metadata inner; keep 0xa-style APT shorthand as-is (lower case). */
+/** Views return metadata inner; keep 0xa-style APT shorthand as-is (lower case). */
 function normalizeUnderlyingTokenId(inner) {
   if (inner == null) return null;
   const s = String(inner).trim().toLowerCase();
@@ -392,20 +388,6 @@ async function resolveHyperionPositionAmounts(pos) {
   });
 }
 
-async function fetchMoarPoolsCached() {
-  const pools = await function_view({
-    functionStr: `${MOAR}::pool::get_all_pools`,
-    chain: "aptos",
-  });
-  if (!Array.isArray(pools)) return [];
-  return pools.map((p, poolIndex) => ({
-    poolIndex,
-    underlyingInner: normalizeUnderlyingTokenId(p?.underlying_asset?.inner),
-    is_paused: p?.is_paused === true,
-    name: p?.name,
-  }));
-}
-
 /**
  * @returns {{ safeAddresses: string[] }}
  */
@@ -520,9 +502,6 @@ async function tvl(api) {
   const { safeAddresses } = await fetchExistingSafes();
   if (!safeAddresses.length) return;
 
-  const moarPools = await fetchMoarPoolsCached();
-  const activeMoarPools = moarPools.filter((p) => !p.is_paused && p.underlyingInner);
-
   const { adds: echelonAdds, totalsByAsset: echelonTotalsByAsset } =
     await sumEchelonSafePositions(api, safeAddresses);
 
@@ -564,36 +543,6 @@ async function tvl(api) {
       const balStr = toIntegerString(bal);
       if (!balStr || balStr === "0") return;
       api.add(APT, balStr);
-    });
-
-  let moarAdds = 0;
-  const moarTotalsByAsset = new Map();
-
-  const jobs = [];
-  for (const safe of safeAddresses) {
-    for (const pool of activeMoarPools) {
-      jobs.push({ safe, pool });
-    }
-  }
-
-  await PromisePool.withConcurrency(MOAR_LENS_CONCURRENCY)
-    .for(jobs)
-    .process(async ({ safe, pool }) => {
-      const res = await function_view({
-        functionStr: `${MOAR}::lens::get_lp_shares_and_deposited_amount`,
-        args: [String(pool.poolIndex), safe],
-        chain: "aptos",
-      });
-      const arr = Array.isArray(res) ? res : [];
-      const depositedStr = toIntegerString(arr[1]);
-      if (!depositedStr || depositedStr === "0") return;
-
-      moarAdds += 1;
-      const tok = pool.underlyingInner;
-      const prev = moarTotalsByAsset.get(tok) || 0n;
-      moarTotalsByAsset.set(tok, prev + BigInt(depositedStr));
-
-      api.add(tok, depositedStr);
     });
 
   let hyperionAdds = 0;
@@ -654,7 +603,6 @@ async function tvl(api) {
   sdk.log(
     `Yield AI TVL: safes=${safeAddresses.length} | FA=${faTotalsByAsset.size} assets | ` +
       `Echelon=${echelonAdds} cells/${echelonTotalsByAsset.size} assets | ` +
-      `Moar=${moarAdds} cells/${moarTotalsByAsset.size} assets | ` +
       `Hyperion=${hyperionAdds} cells/${hyperionTotalsByAsset.size} assets`
   );
 }
@@ -663,5 +611,5 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   aptos: { tvl },
-  methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, Moar Market deposits attributed to safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Moar, and Hyperion are also tracked as separate protocols (doublecounted: true).",
+  methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Hyperion and Decibel are also tracked as separate protocols (doublecounted: true).",
 };
