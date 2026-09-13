@@ -27,6 +27,7 @@ module.exports = {
         '0xF98b660AdF2ed7d9d9D9dAACC2fb0CAce4F21835', // SIS
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
         '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+        '0x9287f86434412518b99e5Ab908e4AdDD9BaC6651', // QUAI
         // '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,  - counted at source - bitcoin
         // '0xaa036928c9c0Df07d525B55ea8EE690Bb5a628C1', // EVAA - excluded not user deposits
       ],
@@ -181,7 +182,7 @@ module.exports = {
         'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
       ],
       holders: [
-        'TVgY3ayqTGUoe7th84ZNL5peVfRNdLFDjf' // portal
+        'TNu3QZx8U2YAZTUsB3csii1L8QVgUAY3no' // portal
       ]
     },
     {
