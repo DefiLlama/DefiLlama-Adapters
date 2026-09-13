@@ -19,6 +19,15 @@ const ECHELON_VAULT_RESOURCE = `${ECHELON}::lending::Vault`;
 const HYPERION_DEX =
   "0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c";
 
+/** Decibel protocol vault (DLP). Its share token is posted by Yield AI safes as Echelon collateral. */
+const DECIBEL =
+  "0x50ead22afd6ffd9769e3b3d6e0e64a2a350d68e8b102c4e72e33d0b8cfdfdb06";
+const DLP_VAULT =
+  "0x06ad70a9a4f30349b489791e2f2bcf58363dad30e54a9d2d4095d6213d7a9bf9";
+const DLP_SHARE =
+  "0x119860710560b43277b7663ff587081d57f167e2c156de7d60c483028bf9b146";
+const USDC = ADDRESSES.aptos.USDC_3;
+
 const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const PAGE_SIZE = 50;
 const OWNER_BATCH_SIZE = 30;
@@ -124,6 +133,44 @@ async function getEchelonVaultResource(safe) {
   return await retryAsync(() =>
     getResource(safe, ECHELON_VAULT_RESOURCE, "aptos")
   );
+}
+
+function unwrapScalar(res) {
+  return Array.isArray(res) ? res[0] : res;
+}
+
+let dlpNavPromise;
+
+/**
+ * DLP shares have no price feed, so they are counted as the USDC they redeem for, at the vault's
+ * own on-chain NAV. Both views return 6-decimal base units, the same as USDC, so
+ * usdc = shares * net_asset_value / num_shares needs no decimal adjustment.
+ */
+function getDlpNav() {
+  if (!dlpNavPromise) {
+    dlpNavPromise = (async () => {
+      const [nav, shares] = await Promise.all(
+        ["get_vault_net_asset_value", "get_vault_num_shares"].map((fn) =>
+          retryAsync(() =>
+            function_view({
+              functionStr: `${DECIBEL}::vault::${fn}`,
+              args: [DLP_VAULT],
+              chain: "aptos",
+            })
+          )
+        )
+      );
+      return { nav: BigInt(unwrapScalar(nav)), shares: BigInt(unwrapScalar(shares)) };
+    })();
+  }
+  return dlpNavPromise;
+}
+
+async function addDlpAsUsdc(api, sharesRaw) {
+  const { nav, shares } = await getDlpNav();
+  if (shares === 0n) return;
+  const usdc = (BigInt(sharesRaw) * nav) / shares;
+  if (usdc > 0n) api.add(USDC, usdc.toString());
 }
 
 /** Moar / views return metadata inner; keep 0xa-style APT shorthand as-is (lower case). */
@@ -374,7 +421,9 @@ async function fetchExistingSafes() {
     const rows = unwrapVector(pageRaw).map(normalizeSafeRow);
     for (const row of rows) {
       if (!truthyExists(row.exists)) continue;
-      const s = normalizeAptosAddress(row.safe_address);
+      // The view returns some safes without leading zeros; the indexer matches owner_address as an
+      // exact 64-hex string, so an unpadded safe would silently lose its fungible-asset balances.
+      const s = padAptosAddress(row.safe_address);
       if (s) safeOut.push(s);
     }
   }
@@ -389,6 +438,7 @@ async function sumEchelonSafePositions(api, safeAddresses) {
   const safesWithVault = [];
   await PromisePool.withConcurrency(ECHELON_CONCURRENCY)
     .for(safeAddresses)
+    .handleError((e) => { throw e; }) // a failed read must fail the run, not drop the safe's TVL
     .process(async (safe) => {
       const res = await function_view({
         functionStr: `${ECHELON}::lending::vault_exists`,
@@ -422,6 +472,7 @@ async function sumEchelonSafePositions(api, safeAddresses) {
 
   await PromisePool.withConcurrency(ECHELON_CONCURRENCY)
     .for(safesWithVault)
+    .handleError((e) => { throw e; }) // a failed read must fail the run, not drop the safe's TVL
     .process(async (safe) => {
         const vault = await getEchelonVaultResource(safe);
         const collaterals =
@@ -449,7 +500,8 @@ async function sumEchelonSafePositions(api, safeAddresses) {
         adds += 1;
         const prev = totalsByAsset.get(asset) || 0n;
         totalsByAsset.set(asset, prev + BigInt(amount));
-        api.add(asset, amount);
+        if (asset === DLP_SHARE) await addDlpAsUsdc(api, amount);
+        else api.add(asset, amount);
       }
     });
 
@@ -487,7 +539,8 @@ async function tvl(api) {
       const prev = faTotalsByAsset.get(row.asset_type) || 0n;
       faTotalsByAsset.set(row.asset_type, prev + BigInt(amtStr));
 
-      api.add(row.asset_type, amtStr);
+      if (padAptosAddress(row.asset_type) === DLP_SHARE) await addDlpAsUsdc(api, amtStr);
+      else api.add(row.asset_type, amtStr);
     }
   }
 
@@ -602,5 +655,5 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   aptos: { tvl },
-  methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, Moar Market deposits attributed to safes, and open Hyperion CLMM LP positions. Echelon, Moar, and Hyperion are also tracked as separate protocols (doublecounted: true).",
+  methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, Moar Market deposits attributed to safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Moar, and Hyperion are also tracked as separate protocols (doublecounted: true).",
 };
