@@ -1,5 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { function_view, getResource } = require("../helper/chain/aptos");
+const { aQuery, function_view, getResource } = require("../helper/chain/aptos");
 const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
@@ -151,12 +151,16 @@ let dlpNavPromise;
 function getDlpNav() {
   if (!dlpNavPromise) {
     dlpNavPromise = (async () => {
+      // Read both views at one ledger version, so NAV and share count describe the same vault
+      // state even if a contribution or redemption lands between the two calls.
+      const { ledger_version: ledgerVersion } = await retryAsync(() => aQuery("/v1", "aptos"));
       const [nav, shares] = await Promise.all(
         ["get_vault_net_asset_value", "get_vault_num_shares"].map((fn) =>
           retryAsync(() =>
             function_view({
               functionStr: `${DECIBEL}::vault::${fn}`,
               args: [DLP_VAULT],
+              ledgerVersion,
               chain: "aptos",
             })
           )
