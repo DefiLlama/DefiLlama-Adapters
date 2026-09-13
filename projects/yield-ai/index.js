@@ -33,7 +33,7 @@ const PAGE_SIZE = 50;
 const OWNER_BATCH_SIZE = 30;
 const COIN_BALANCE_CONCURRENCY = 10;
 const MOAR_LENS_CONCURRENCY = 8;
-const ECHELON_CONCURRENCY = 10;
+const ECHELON_CONCURRENCY = 4;
 const HYPERION_LP_CONCURRENCY = 8;
 
 /** Known Hyperion pools used by Yield AI safes (token_a/token_b = pool canonical order). */
@@ -114,7 +114,12 @@ function normalizeObjectAddress(obj) {
   return normalizeAptosAddress(obj?.inner);
 }
 
-async function retryAsync(fn, attempts = 6) {
+/**
+ * Exponential backoff with jitter. The public fullnode answers bursts with 429, and a failed
+ * Echelon read now fails the run instead of dropping the safe, so a short linear backoff is not
+ * enough to ride out a rate-limit window.
+ */
+async function retryAsync(fn, attempts = 8) {
   let lastError;
   for (let i = 0; i < attempts; i += 1) {
     try {
@@ -122,7 +127,8 @@ async function retryAsync(fn, attempts = 6) {
     } catch (e) {
       lastError = e;
       if (i + 1 < attempts) {
-        await new Promise((resolve) => setTimeout(resolve, 600 * (i + 1)));
+        const delay = Math.min(8000, 500 * 2 ** i) * (0.5 + Math.random() / 2);
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
@@ -440,11 +446,13 @@ async function sumEchelonSafePositions(api, safeAddresses) {
     .for(safeAddresses)
     .handleError((e) => { throw e; }) // a failed read must fail the run, not drop the safe's TVL
     .process(async (safe) => {
-      const res = await function_view({
-        functionStr: `${ECHELON}::lending::vault_exists`,
-        args: [safe],
-        chain: "aptos",
-      });
+      const res = await retryAsync(() =>
+        function_view({
+          functionStr: `${ECHELON}::lending::vault_exists`,
+          args: [safe],
+          chain: "aptos",
+        })
+      );
       const exists = Array.isArray(res) ? res[0] : res;
       if (exists === true || exists === "true") safesWithVault.push(safe);
     });
