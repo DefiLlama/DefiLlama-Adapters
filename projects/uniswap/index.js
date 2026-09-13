@@ -73,7 +73,7 @@ const uniV3Config = {
   lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
   xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664, blacklistedTokens: ['0x5d5f074837f5d4618b3916ba74de1bf9662a3fed'] },
   lens: { factory: "0xe0704DB90bcAA1eAFc00E958FF815Ab7aa11Ef47", fromBlock: 1 },
-  etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
+  // etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
   // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
   rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
   plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
@@ -118,6 +118,7 @@ const okuGraphMap = {
   nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
+  etlk: 'https://omni.v2.icarus.tools/etherlink',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
 }
 
