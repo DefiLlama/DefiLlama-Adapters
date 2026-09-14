@@ -4,6 +4,21 @@ const { getCuratorExport } = require('../projects/helper/curators')
 // top-level metadata). Each entry holds the raw config object passed to getCuratorExport,
 // plus any extra top-level keys under _meta.
 const configs = {
+  "kamui": {
+    config: {
+      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced and Boosted vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. Also counted under Lagoon.',
+      start: '2026-08-27', // vaults redeployed through the Lagoon OptinProxyFactory
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xcDA323c2DF692d989B24BA51D0aCCa924cf9a344', // Lagoon: Kamui Stable Vault (USDst)
+            '0xA5AE405242f42C47996a0C6857ff10a77F9bdeE6', // Lagoon: Kamui Balanced Vault (USDbl)
+            '0x9E0DB8F43bb91e2148B0Db920E21370525CF3Aab', // Lagoon: Kamui Boosted Vault (USDbt)
+          ],
+        },
+      }
+    },
+  },
   "9summits": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by 9Summits.',
