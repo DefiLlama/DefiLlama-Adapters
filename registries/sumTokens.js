@@ -15754,6 +15754,16 @@ const configs = {
       }
     },
   },
+  "hashcats": {
+    "methodology": "Rent accrued to the cats currently alive and not claimed yet, held as ether by the HASHCATS collection at 0xca75df55cc9c476db27a7375d1fc8e794cf80721. A cat is minted only when a miner submits a hash below the collection's target, and the price is split on the spot between the cats already alive and the protocol's hook. The hook's cut leaves in the same transaction that creates it, so what stays behind is owed to NFT holders: the contract has no owner withdrawal, sweep or rescue, and the only two paths that send ether are the hook's cut at mint time and the claim paying a cat's owner. The hook's own buyback queue and Uniswap V4 position are protocol-owned liquidity and are deliberately not counted.",
+    "start": "2026-09-11",
+    "robinhood": {
+      "owner": "0xca75df55cc9c476db27a7375d1fc8e794cf80721",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    }
+  },
   "hedgehog-protocol": {
     "methodology": "TVL is the native S and USDC held in the HedgehogCore contract — including hub pool liquidity and bonding curve spoke reserves.",
     "sonic": {

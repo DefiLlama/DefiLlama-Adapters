@@ -4,6 +4,21 @@ const { getCuratorExport } = require('../projects/helper/curators')
 // top-level metadata). Each entry holds the raw config object passed to getCuratorExport,
 // plus any extra top-level keys under _meta.
 const configs = {
+  "kamui": {
+    config: {
+      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced and Boosted vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. Also counted under Lagoon.',
+      start: '2026-08-27', // vaults redeployed through the Lagoon OptinProxyFactory
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xcDA323c2DF692d989B24BA51D0aCCa924cf9a344', // Lagoon: Kamui Stable Vault (USDst)
+            '0xA5AE405242f42C47996a0C6857ff10a77F9bdeE6', // Lagoon: Kamui Balanced Vault (USDbl)
+            '0x9E0DB8F43bb91e2148B0Db920E21370525CF3Aab', // Lagoon: Kamui Boosted Vault (USDbt)
+          ],
+        },
+      }
+    },
+  },
   "9summits": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by 9Summits.',
@@ -1120,11 +1135,14 @@ const configs = {
   },
   "solon": {
     config: {
-      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon.',
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon on Robinhood Chain.',
       blockchains: {
         robinhood: {
+          morphoVaultOwners: [
+            '0xD0340F008bee8F6101cD609E0447cd3d44f8cC84', // Solon curator/owner - auto-tracks current & future vaults
+          ],
           morpho: [
-            '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault
+            '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault (explicit fallback)
           ],
         },
       }
@@ -1647,6 +1665,28 @@ const configs = {
       }
     },
   },
+  "dirac-classic-curation": {
+    config:{
+      methodology: "Counts assets deposited in the Morpho Vault V2 vaults curated by Dirac, discovered on-chain via the DefiLlama curators registry by their deployer/owner address (morphoVaultOwners). One of Dirac Finance's two curation modes; the other is delta-neutral DiracVault strategies (dirac-delta-neutral-curation)",
+      blockchains:{
+        base: {
+          // Dirac vault deployers (current + legacy) = the initial owner emitted by
+          // the Morpho VaultV2 factory's CreateVaultV2 event.
+          morphoVaultOwners: [
+            '0x317848EBa554a92d34a763C4175C38170753ea8A',
+            '0x7d45718c79186Da8889111b5D8d7eDe6d128fb14',
+          ],
+        },
+        robinhood: {
+          // Dirac vault deployer on Robinhood (earn / Morpho-only chain, no
+          // delta-neutral stack).
+          morphoVaultOwners: [
+            '0x56d119aa73062e69c688870e1d22f589f4fa69c1',
+          ],
+        },
+      }
+    }
+  }
 }
 
 const allProtocols = {}

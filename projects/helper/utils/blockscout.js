@@ -67,6 +67,7 @@ const blockscoutStaticUrls = {
   sis: 'https://symbiosis.calderaexplorer.xyz',
   omega: 'https://0x4e4542bc.explorer.aurora-cloud.dev',
   robinhood: 'https://robinhoodchain.blockscout.com',
+  prom: 'https://promscan.io',
   "0xl3": 'https://exp.0xl3.com',
   "6do": 'https://explorer.6dochain.com',
   abcore: 'https://explorer.core.ab.org',
