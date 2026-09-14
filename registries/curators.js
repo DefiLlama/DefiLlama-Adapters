@@ -509,6 +509,24 @@ const configs = {
       },
     },
   },
+  "damm-capital": {
+    config: {
+      methodology: 'Counts assets in DAMM Capital flagship funds. Internal DAMMethAlgo and DAMMbtcAlgo execution vehicles are excluded because their assets are already represented in the flagship funds.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x3c63f3ce75dc83735745cf4e86b63414d95ee355', // DAMMeth
+            '0x7ededf832b5c9d8afa8f7365936100581a6db756', // DAMMbtc
+          ],
+        },
+        arbitrum: {
+          erc4626: [
+            '0xe5d6eb448ac5a762c1ebe8cd1692b9cd08025176', // DAMMstable
+          ],
+        },
+      },
+    },
+  },
   "edge-capital": {
     config: {
       methodology: 'Counts all assets deposited in vaults curated by Edge-Capital.',
@@ -1102,11 +1120,14 @@ const configs = {
   },
   "solon": {
     config: {
-      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon.',
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon on Robinhood Chain.',
       blockchains: {
         robinhood: {
+          morphoVaultOwners: [
+            '0xD0340F008bee8F6101cD609E0447cd3d44f8cC84', // Solon curator/owner - auto-tracks current & future vaults
+          ],
           morpho: [
-            '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault
+            '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault (explicit fallback)
           ],
         },
       }

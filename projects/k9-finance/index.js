@@ -13,9 +13,9 @@ const FARMING_FABRIC = "0x8ed1A7c4736b5835560b0f9E961B8E3581774D42";
 const VESTING = "0xf7384ba80A51979eC8cc0F17a843089ffD706f0a";
 
 async function tvl(api) {
-  const bonesBalance = await api.call({ abi: "uint256:getTotalPooledBONE", target: BONE_CONTRACT, });
-  // api.addToken(BONE_TOKEN, bonesBalance);
-  api.addCGToken('bone-shibaswap', bonesBalance / 1e18)
+  // knBONE proxy implementation was swapped to `KnBoneRecovery` (liquid staking wound down),
+  // getTotalPooledBONE() no longer exists - count the BONE still held by the proxy until recovered
+  return api.sumTokens({ owner: BONE_CONTRACT, tokens: [BONE_TOKEN] })
 }
 
 async function pool2(api) {

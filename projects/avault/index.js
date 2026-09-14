@@ -12,6 +12,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2026-01-25', // avault.network domain expired, vault config endpoint gone
   misrepresentedTokens: true,
   methodology: "Avault - The Best Yield Aggregator on ASTR Network",
   astar: {

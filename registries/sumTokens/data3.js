@@ -597,9 +597,9 @@ module.exports = {
     },
   },
   "openoracle": {
-    "methodology": "TVL is the native ETH and USDC held by the openOracle contract on Base.",
+    "methodology": "TVL is the native ETH and USDC held by the openOracle contracts on Base.",
     "base": {
-      "tvl": { "owner": "0xa731450131bE0120420e211a35704A19382489fb", "tokens": [ADDRESSES.null,ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0xa731450131bE0120420e211a35704A19382489fb", "0x0cf849531f77E4bfE2d869db5b3F9Bca83d68626"], "tokens": [ADDRESSES.null,ADDRESSES.base.USDC] },
     },
   },
   "linehub-perps": {
@@ -920,6 +920,19 @@ module.exports = {
     },
     "base": {
       "tvl": { "owners": ["0x833Be2DC319b80365eB53C19932ad2f347c39cD9"], "tokens": [ADDRESSES.null] }
+    }
+  },
+  "lotoworld": {
+    "methodology": "TVL is the USDT balance held in the Lotoworld lottery contract, representing the current prize pool awaiting the next draw.",
+    "start": "2026-09-08",
+    "arbitrum": {
+      "tvl": { "owners": ["0xdefcC8E8dB82D1D722045f704f8af29F94207439"], "tokens": [ADDRESSES.arbitrum.USDT] }
+    }
+  },
+  "ref-market": {
+    "methodology": "USDC held by the ref_market ReferralEscrow contracts on Base: rewards, protocol fees and dispute stakes escrowed for open offers and claims in flight, plus settled balances not yet withdrawn.",
+    "base": {
+      "tvl": { "owners": ["0xa9f96c74230810205023c3E3AFEe33d3151e5Ee8", "0xA4bFddBc6Bb8F589a92A4d4595c6902e95eb9a38", "0xe9339BecfB1F6F4d0A031e7132fCf745CEb6611A"], "tokens": [ADDRESSES.base.USDC] }
     }
   },
   "hot-take": {
