@@ -1,6 +1,5 @@
 // DefiLlama adapter for Caged (https://cagedballs.fun) — Solana token locker that keeps
 // pump.fun / stonk.fun holder rewards flowing to locked tokens.
-// Destination: DefiLlama/DefiLlama-Adapters/projects/caged/index.js
 const { PublicKey } = require('@solana/web3.js')
 const { getConnection, sumTokens2 } = require('../helper/solana')
 
@@ -22,7 +21,10 @@ async function tvl(api) {
     const mint = new PublicKey(data.subarray(OFF_MINT, OFF_MINT + 32))
     const tokenProgram = new PublicKey(data.subarray(OFF_TOKEN_PROGRAM, OFF_TOKEN_PROGRAM + 32))
     const vaultAuthority = new PublicKey(data.subarray(OFF_VAULT_AUTHORITY, OFF_VAULT_AUTHORITY + 32))
-    // the vault is the associated token account of the lock's holder address (PDA or custody key)
+    // Custodial locks use an on-curve key held by Caged's signing service as the vault authority.
+    // The program cannot enforce the unlock on those, so only PDA-controlled (trustless) vaults count.
+    if (PublicKey.isOnCurve(vaultAuthority.toBytes())) continue
+    // the vault is the associated token account of the lock's PDA vault authority
     const [vault] = PublicKey.findProgramAddressSync(
       [vaultAuthority.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()],
       ASSOCIATED_TOKEN_PROGRAM,
@@ -35,6 +37,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'TVL is the sum of every token still held in a Caged lock vault. Locks are read from the program\'s Lock accounts; each vault is the associated token account of the lock\'s holder address (a PDA for trustless locks, a custody key for reward-eligible locks). Withdrawn locks are excluded.',
+    'TVL is the sum of every token still held in a Caged lock vault. Locks are read from the program\'s Lock accounts; each vault is the associated token account of the lock\'s holder address (a PDA for trustless locks). Withdrawn locks are excluded.',
   solana: { tvl },
 }
