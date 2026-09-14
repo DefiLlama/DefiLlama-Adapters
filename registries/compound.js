@@ -88,7 +88,12 @@ const configs = {
   },
   'elara': {
     methodology,
-    zircuit: { comptroller: '0x695aCEf58D1a10Cf13CBb4bbB2dfB7eDDd89B296' },
+    zircuit: {
+      comptroller: '0x695aCEf58D1a10Cf13CBb4bbB2dfB7eDDd89B296',
+      isInsolvent: true,
+      // comptroller reverts on getAllMarkets since mid-2026; market list read at a 2026-06-01 zircuit block
+      markets: ['0x790e0035e51a69d91f16d36ad6E712A6659dBD54', '0xF856D49909De7ffF9A525143BA37a4a999b4bd68', '0xEb369e81E6001dc4accA4B99AA20adC7899b4e6F', '0xd56dE7276370dC9c64C4E4334dad7293913d4755', '0x8b82479605460C89434D4e0107a7dF0DdcdE211F'],
+    },
   },
   'basic': {
     iotex: { cether: '0x83C51de03f03C5E23f02F674dbD2032e164112Fc', comptroller: '0x47D7B83947Aa12fEb95f5f55527Dc9B32E4ec009', cetheEquivalent: ADDRESSES.iotex.WIOTX },
@@ -525,7 +530,12 @@ const configs = {
   'mage': {
     methodology,
     merlin: [
-      { comptroller: '0xCE3bcCd2b0A457782f79000Be1b534C04B3F5aDD', cether: '0xe3b51f15dc086fba15426b8d42b4cd6feb46968e' },
+      {
+        comptroller: '0xCE3bcCd2b0A457782f79000Be1b534C04B3F5aDD', cether: '0xe3b51f15dc086fba15426b8d42b4cd6feb46968e',
+        isInsolvent: true,
+        // comptroller reverts on getAllMarkets since mid-2026; market list read at merlin block 28744793
+        markets: ['0xE3b51F15dc086fbA15426B8D42b4CD6FeB46968e', '0x8b180546d38F437273D1B71c4b9cA6Fc44E16425', '0x4409BF9EC77c8c6607Fe00E373df3B99d529A976', '0xF60e9c878FAb7555D30e0AE52Fe5e2870CaF2f23', '0xc3190A4e6A989b84F8a20c84C9ddD7eF5b1D4540', '0xba36B01387eF05C2E77f133366A891721012e338'],
+      },
       { comptroller: '0xe7464Caa3fD31A1A8B458a634e72F94A00695d17' },
     ],
   },
