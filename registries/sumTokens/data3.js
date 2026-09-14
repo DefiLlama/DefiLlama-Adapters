@@ -921,5 +921,12 @@ module.exports = {
     "base": {
       "tvl": { "owners": ["0x833Be2DC319b80365eB53C19932ad2f347c39cD9"], "tokens": [ADDRESSES.null] }
     }
+  },
+  "hot-take": {
+    "methodology": "TVL is the USDC held by the Hot Take betting contract on Base: user protocol balances plus stakes locked in active bets.",
+    "start": "2026-06-29",
+    "base": {
+      "tvl": { "owners": ["0x64Be8f389E202a77b446C7E86B564F4122Cb5a66"], "tokens": [ADDRESSES.base.USDC]}
+    }
   }
 }
