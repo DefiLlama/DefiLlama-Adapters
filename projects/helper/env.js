@@ -50,6 +50,9 @@ const DEFAULTS = {
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
+  PROM_RPC: 'https://promscan.io/api/eth-rpc,https://prom-rpc.eu-north-2.gateway.fm',
+  PROM_RPC_MULTICALL: '0xfF785aF3De8C2cb5727A8665984E741c16679131',
+  NIBIRU_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
 }
 
@@ -74,6 +77,7 @@ const ENV_KEYS = [
   'SMARDEX_SUBGRAPH_API_KEY',
   'ALLIUM_API_KEY',
   'DUNE_API_KEYS',
+  'NEAR_RPC',
   'TON_API_KEY',
   'FLOW_NON_EVM_RPC',
   'PROXY_AUTH',
