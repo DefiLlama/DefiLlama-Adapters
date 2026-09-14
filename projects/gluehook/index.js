@@ -7,10 +7,11 @@ const { ethers } = require('ethers')
 // per-pool buyback pot (pump on buys, sell absorption), burn cascade, self-compounding LP.
 // Not upgradeable, no owner/admin keys, 0% protocol fee.
 // Deployed via CREATE from a nonce-0 deployer — SAME address on every chain of a given version.
-// V2 is a fresh redeployment (Glue-integrated burns, static-fee-only). V1 pools remain live.
-// Live metrics: https://dune.com/lalilulel0x0869/gluehook-live
+// V3 is the canonical generation (no beforeSwap; the pump is the hook's own afterSwap swap).
+// V1 and V2 pools remain live. Live metrics: https://dune.com/lalilulel0x0869/gluehook-live
 const HOOK_V1 = '0xb216070c3509047ea597E2E626A29cea427a60C8'
 const HOOK_V2 = '0x0F41715dc432692b66A5aDF8dCfef6Ac407b20c8'
+const HOOK_V3 = '0xbB021554C5294328b04fa313669715bD201BA040'
 
 // Uniswap V4 PoolManager + per-version hook deploy blocks
 const config = {
@@ -19,6 +20,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 25703029 },
       { address: HOOK_V2, fromBlock: 25814686 },
+      { address: HOOK_V3, fromBlock: 25970820 },
     ],
   },
   base: {
@@ -26,6 +28,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 49657824 },
       { address: HOOK_V2, fromBlock: 50330047 },
+      { address: HOOK_V3, fromBlock: 51268603 },
     ],
   },
   unichain: {
@@ -33,6 +36,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 55356883 },
       { address: HOOK_V2, fromBlock: 56701906 },
+      { address: HOOK_V3, fromBlock: 58586531 },
     ],
   },
   arbitrum: {
@@ -40,6 +44,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 492046075 },
       { address: HOOK_V2, fromBlock: 497395639 },
+      { address: HOOK_V3, fromBlock: 504870398 },
     ],
   },
   optimism: {
@@ -47,6 +52,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 155253116 },
       { address: HOOK_V2, fromBlock: 155925598 },
+      { address: HOOK_V3, fromBlock: 156867928 },
     ],
   },
   bsc: {
@@ -54,6 +60,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 114546905 },
       { address: HOOK_V2, fromBlock: 117531972 },
+      { address: HOOK_V3, fromBlock: 121722433 },
     ],
   },
   polygon: {
@@ -61,6 +68,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 91600016 },
       { address: HOOK_V2, fromBlock: 92496642 },
+      { address: HOOK_V3, fromBlock: 93755100 },
     ],
   },
   wc: {
@@ -68,6 +76,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 33384712 },
       { address: HOOK_V2, fromBlock: 34057331 },
+      { address: HOOK_V3, fromBlock: 34999751 },
     ],
   },
   zora: { poolManager: '0x0575338e4C17006aE181B47900A84404247CA30f', hooks: [{ address: HOOK_V1, fromBlock: 49705618 }] },
@@ -76,6 +85,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 26485168 },
       { address: HOOK_V2, fromBlock: 27157781 },
+      { address: HOOK_V3, fromBlock: 28100347 },
     ],
   },
   megaeth: {
@@ -83,6 +93,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 23308084 },
       { address: HOOK_V2, fromBlock: 24653311 },
+      { address: HOOK_V3, fromBlock: 26544307 },
     ],
   },
   robinhood: {
@@ -90,6 +101,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 30206983 },
       { address: HOOK_V2, fromBlock: 43628009 },
+      { address: HOOK_V3, fromBlock: 62244207 },
     ],
   },
   tempo: { poolManager: '0x33620f62C5b9B2086dD6b62F4A297A9f30347029', hooks: [{ address: HOOK_V1, fromBlock: 33657201 }] },
@@ -98,6 +110,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 92242906 },
       { address: HOOK_V2, fromBlock: 93461396 },
+      { address: HOOK_V3, fromBlock: 95212132 },
     ],
   },
   blast: { poolManager: '0x1631559198A9e474033433b2958daBC135ab6446', hooks: [{ address: HOOK_V1, fromBlock: 38647660 }] },
@@ -108,13 +121,16 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 67336132 },
       { address: HOOK_V2, fromBlock: 68681331 },
+      { address: HOOK_V3, fromBlock: 70567241 },
     ],
   },
 }
 
 // emitted once when a pool's pot is initialized: carries the pool's token pair
 const eventAbi = 'event PotInitialized(bytes32 indexed poolId, address main, address secondary, address recipient)'
+// V1/V2 and V3 share the event but lay the Program struct out differently (V3 adds `armed`/`native`)
 const programAbi = 'function programOf(bytes32 poolId) view returns (tuple(uint128 liquidity, int24 tickLower, int24 tickUpper, bool exists, bool publicHarvest, uint64 buybackShareWad, address owner, uint64 burnShareWad, address secondaryRecipient, uint64 compoundShareWad, address mainRecipient, uint64 potCompoundShareWad, address operator, uint64 potBurnShareWad, uint256 minMain, uint256 minSecondary, uint256 carryMain, uint256 carrySecondary) program)'
+const programAbiV3 = 'function programOf(bytes32 poolId) view returns (tuple(uint128 liquidity, int24 tickLower, int24 tickUpper, bool exists, bool publicHarvest, bool armed, bool native, address owner, uint64 buybackShareWad, address secondaryRecipient, uint64 burnShareWad, address mainRecipient, uint64 compoundShareWad, address operator, uint64 potCompoundShareWad, uint64 potBurnShareWad, uint256 minMain, uint256 minSecondary, uint256 carryMain, uint256 carrySecondary) program)'
 const extsloadAbi = 'function extsload(bytes32 slot) view returns (bytes32)'
 
 const Q96 = 2 ** 96
@@ -159,7 +175,7 @@ async function addHookTvl(api, poolManager, hook) {
   const poolIds = logs.map((log) => log.poolId)
   if (poolIds.length) {
     const [programs, slot0s] = await Promise.all([
-      api.multiCall({ abi: programAbi, target: hook.address, calls: poolIds }),
+      api.multiCall({ abi: hook.address === HOOK_V3 ? programAbiV3 : programAbi, target: hook.address, calls: poolIds }),
       api.multiCall({ abi: extsloadAbi, target: poolManager, calls: poolIds.map(slot0Slot) }),
     ])
     logs.forEach((log, i) => {
@@ -192,7 +208,7 @@ Object.keys(config).forEach((chain) => {
 })
 
 module.exports.methodology =
-  'TVL = the liquidity of every hook-owned LP program position inside the Uniswap V4 PoolManager (valued from the program liquidity at the pool\'s live price) + every token held by the GlueHook contracts themselves (per-pool buyback pots, parked donations, pending fee splits, permanently-held unburnable tokens). Pools are enumerated from PotInitialized events on both the original (V1) hook and the V2 redeployment. Live metrics: https://dune.com/lalilulel0x0869/gluehook-live'
+  'TVL = the liquidity of every hook-owned LP program position inside the Uniswap V4 PoolManager (valued from the program liquidity at the pool\'s live price) + every token held by the GlueHook contracts themselves (per-pool buyback pots, parked donations, pending fee splits, permanently-held unburnable tokens). Pools are enumerated from PotInitialized events on every live generation of the hook (V1, V2 and the canonical V3). Live metrics: https://dune.com/lalilulel0x0869/gluehook-live'
 // the same tokens are also counted by the uniswap-v4 adapter (PoolManager balances),
 // same as other hook protocols e.g. bunni-v2
 module.exports.doublecounted = true
