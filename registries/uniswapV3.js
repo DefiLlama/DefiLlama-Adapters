@@ -1831,6 +1831,25 @@ const uniV3Configs = {
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
     },
   },
+  'nami-v4': {
+    start: '2026-09-13',
+    methodology: 'Value of the tokens locked in nami V4 CLMM concentrated liquidity pools.',
+    ethereum: {
+      factory: '0xD1Bf4A24DC17Da21410a7b047471E191eA538d43',
+      fromBlock: 25965060,
+      isAlgebra: true,
+    },
+    base: {
+      factory: '0xf4502A98A15e82D66d28D2381E2F3A407ea45b83',
+      fromBlock: 51235349,
+      isAlgebra: true,
+    },
+    robinhood: {
+      factory: '0xDeDB80903df19f9dB9b393eb66E07511CB9ABdA2',
+      fromBlock: 61554171,
+      isAlgebra: true,
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
