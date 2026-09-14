@@ -52,6 +52,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology:
     'TVL is DIEM (Venice.ai inference-credit token, not a DIEM Relay governance token) ' +
     'deposited by users and forward-staked on Venice via the sDIEM v1/v2 contracts, plus any ' +
