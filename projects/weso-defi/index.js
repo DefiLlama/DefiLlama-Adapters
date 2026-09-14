@@ -1,11 +1,12 @@
-const { queryContract, queryContractWithRetries } = require('../helper/chain/cosmos')
+const { queryContract, queryContractWithRetries, getBalance2 } = require('../helper/chain/cosmos')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const FACTORY = 'terra1veqa6znu8lfdmz9kp9v047chfmn84q5k3pacme75gl8ywmplk92q6xnq2k'
 const WESO = 'terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms'
+// CWUSTC wrap vault — bank uusd is circulating 1:1 backing (not mint-cap total_supply / curve_info.reserve).
+const CWUSTC = 'terra1uncwzdhxdktqpx4rj6mkuhl0ekv0raua0058rr7zgnapm9najyyqgtpf6h'
 
-// Wrap/unwrap pair types hold native LUNC/USTC backing for CWLUNC/CWUSTC.
-// Counting them would double-count the same assets already sitting in AMM pools.
+// Wrap/unwrap pair types' pool queries would mint-cap double-count; AMM pools already hold circulating CWLUNC.
 const EXCLUDED_PAIR_TYPES = new Set(['token_bonding', 'converter'])
 
 function pairTypeKey(pairType) {
@@ -67,15 +68,18 @@ async function tvl(api) {
     })
 
   // $WESO is a cw20_bonding curve vs native LUNC, not a factory AMM pair.
-  // TVL is the LUNC reserve locked in the curve. CWLUNC/CWUSTC wraps stay excluded.
   const curve = await queryContractWithRetries({ contract: WESO, chain: 'terra', data: { curve_info: {} } })
   if (curve?.reserve && curve.reserve !== '0') {
     api.add(curve.reserve_denom || 'uluna', curve.reserve)
   }
+
+  // CWUSTC wrap bank uusd = circulating USTC backing. No AMM pool holds CWUSTC, so this is not
+  // double-counted. CWLUNC wrap bank is NOT added — circulating CWLUNC already sits in AMM pools.
+  await getBalance2({ owner: CWUSTC, chain: 'terra', tokens: ['uusd'], api })
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is AMM pool reserves on the WESO DeFi factory plus the native LUNC locked in the $WESO bonding curve (terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms). Wrap/unwrap (token_bonding and converter) contracts for CWLUNC and CWUSTC are excluded to avoid double-counting.',
+  methodology: 'TVL is AMM pool reserves on the WESO DeFi factory plus the native LUNC locked in the $WESO bonding curve (terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms), plus native USTC (uusd) in the CWUSTC wrap vault bank (terra1uncwzdhxdktqpx4rj6mkuhl0ekv0raua0058rr7zgnapm9najyyqgtpf6h) as circulating 1:1 backing. Wrap/unwrap (token_bonding and converter) pool queries are excluded. CWLUNC wrap bank is excluded because circulating CWLUNC is already counted inside AMM pools. Mint-cap token_info.total_supply / curve_info.reserve on wraps are never used.',
   terra: { tvl },
 }
