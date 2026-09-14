@@ -2,6 +2,9 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 // DIEM Relay — Base
+// DIEM is Venice.ai's inference-credit token. DIEM Relay is a third-party
+// liquid-staking layer on top of it (sDIEM / csDIEM receipts), so staked DIEM
+// is user deposits in a third-party asset and counts toward TVL, not `staking`.
 const DIEM = '0xF4d97F2da56e8c3098f3a8D538DB630A2606a024';
 const DIEM_VAULT = '0xdc9625b026f6Dd17F9d96e608592A9C592e27eEF';
 
@@ -23,9 +26,19 @@ const STAKED_INFOS_ABI =
   'function stakedInfos(address) view returns (uint256 amount, uint256 cooldownEnd, uint256 pendingUnstake)';
 
 async function tvl(api) {
+  // DIEM forward-staked on Venice via each sDIEM contract.
+  // csDIEM v2 wraps sDIEM v2, so its underlying DIEM is already counted in
+  // stakedInfos(SDIEM_V2) — counting csDIEM v2 separately would double-count.
+  const staked = await api.multiCall({
+    target: DIEM,
+    calls: [SDIEM_V1, SDIEM_V2],
+    abi: STAKED_INFOS_ABI,
+  });
+  staked.forEach(([amount]) => api.add(DIEM, amount));
+
   return sumTokens2({
     api,
-    tokens: [ADDRESSES.base.USDC],
+    tokens: [ADDRESSES.base.USDC, DIEM],
     owners: [
       DIEM_VAULT,
       SDIEM_V1,
@@ -38,25 +51,11 @@ async function tvl(api) {
   });
 }
 
-async function staking(api) {
-  // DIEM forward-staked on Venice via each sDIEM contract.
-  // csDIEM v2 wraps sDIEM v2, so its underlying DIEM is already counted in
-  // stakedInfos(SDIEM_V2) — counting csDIEM v2 separately would double-count.
-  const staked = await api.multiCall({
-    target: DIEM,
-    calls: [SDIEM_V1, SDIEM_V2],
-    abi: STAKED_INFOS_ABI,
-  });
-  staked.forEach(([amount]) => api.add(DIEM, amount));
-  // Any raw DIEM held liquid by csDIEM v1 between harvest cycles (v2 holds sDIEM, not DIEM).
-  return sumTokens2({ api, tokens: [DIEM], owners: [CSDIEM_V1] });
-}
-
 module.exports = {
   methodology:
-    'TVL is USDC held by the DIEM Relay vault, the sDIEM v1/v2 rewards-stream contracts, ' +
-    'the csDIEM v1/v2 wrappers, and the RevenueSplitter contracts. Staking is DIEM ' +
-    'forward-staked on Venice via sDIEM v1 and v2, plus any liquid DIEM held by csDIEM v1 ' +
-    'between harvest cycles.',
-  base: { tvl, staking },
+    'TVL is DIEM (Venice.ai inference-credit token, not a DIEM Relay governance token) ' +
+    'deposited by users and forward-staked on Venice via the sDIEM v1/v2 contracts, plus any ' +
+    'liquid DIEM and undistributed USDC compute revenue held by the DIEM Relay vault, the ' +
+    'sDIEM/csDIEM contracts and the RevenueSplitter contracts.',
+  base: { tvl },
 };
