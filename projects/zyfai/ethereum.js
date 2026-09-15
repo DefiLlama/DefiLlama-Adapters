@@ -55,6 +55,8 @@ const COMPOUND_POOLS = {
     'KPK USDC Prime Core': '0x1a1985F50352b58090eb36425AfdFacbaC7806F4',
     'Yearn USDC': '0x68Aea7b82Df6CcdF76235D46445Ed83f85F845A3',
     'KPK ETH Yield V2': '0x5dbf760b4fd0cDdDe0366b33aEb338b2A6d77725',
+    'KPK USDC Prime': '0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6',
+    'Api3 dCOMP USDC': '0x36cfe1568461E499391ef0A555300F1ae2da2439',
   };
 
   // Fluid (Ethereum mainnet)

@@ -55,9 +55,6 @@ const HARVEST_POOLS = {
     'USDC - Autopilot': '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4',
     'USDC - 40 Acres': '0xC777031D50F632083Be7080e51E390709062263E',
     'WETH - Autopilot': '0x7872893e528Fe2c0829e405960db5B742112aa97',
-    'AAPLc - IPOR Carry Trade': '0x35eF1F2F187b326A93a3D74441F38fDcfF85Ce48',
-    'METAc - IPOR Carry Trade': '0xfE63614d41C70DeccdF6b5770A8500e287A654A4',
-    'GOOGLc - IPOR Carry Trade': '0x23cd4F9A8251193b3AC798E4E52B542d63634438',
 };
 const WASABI_POOLS = {
     USDC: '0x1C4a802FD6B591BB71dAA01D8335e43719048B24',
@@ -81,8 +78,19 @@ const SUPERFORM_POOLS = {
     'Flagship Base USDC SuperVault': '0x11820afe50ea96851ee2bdbae329d97771e41ec6',
     'Flagship Base WETH SuperVault': '0x0e70c10fa06931f7b878653a15aecc86145c1af7', 
     'Flagship Base CBBTC SuperVault': '0xfc8a6526ffcd8248b8d0f8dac8037dbe438924ce',
-    'NVDAC': '0xc441a2cc3a528b6312740448a70cc4d40f4d7bfc',
 };
+
+// Receipt tokens have no/wrong Llama prices — unwrap via convertToAssets → NVDAC/AAPLC/METAC/GOOGLC
+const STOCK_VAULTS = [
+    '0x35eF1F2F187b326A93a3D74441F38fDcfF85Ce48', // Harvest AAPLc
+    '0xfE63614d41C70DeccdF6b5770A8500e287A654A4', // Harvest METAc
+    '0x23cd4F9A8251193b3AC798E4E52B542d63634438', // Harvest GOOGLc
+    '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83', // IPOR Nvidia
+    '0x31744e44d6af88225c1dbefbe5df8308faea641b', // IPOR Apple
+    '0xcd19f18884bf388b866d05cdd1ae351133821f01', // IPOR Meta
+    '0x01dbdb9748ecf71b1ffbb62f5cb41318531ba362', // IPOR Google
+    '0xc441a2cc3a528b6312740448a70cc4d40f4d7bfc', // Superform NVDAC
+];
 
 const BASE_YEARN_POOLS = {
     'True Yield Dollar': '0xb13CF163d916917d9cD6E836905cA5f12a1dEF4B',
@@ -126,5 +134,6 @@ const allPoolTokens = [
 ]
 
 module.exports = {
-  allPoolTokens
+  allPoolTokens,
+  stockVaults: STOCK_VAULTS,
 };
