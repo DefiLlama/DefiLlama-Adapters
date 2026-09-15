@@ -2,6 +2,13 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const { function_view } = require("../helper/chain/aptos");
 const ADDRESSES = require("../helper/coreAssets.json");
 
+const V2_BSC_START_BLOCK = 113632649;
+const V2_BSC_VAULTS = [
+  "0xC45f0c6a22dd5bA2fa75b803bBabc67CC212838c",
+  "0xBC96E51AE3A3D0A32091396339a0c2B68DF97e2A",
+  "0xf3400439439c911952E9949B6A522Ed78504A253",
+];
+
 async function get_tvl_aptos() {
   const tvl = await function_view({
     functionStr:
@@ -99,6 +106,26 @@ const stablecoins = {
 };
 const chainExports = {};
 
+async function addV2BscTvl(api) {
+  if (Number(api.block) < V2_BSC_START_BLOCK) return;
+
+  const assets = await api.multiCall({ abi: "address:asset", calls: V2_BSC_VAULTS });
+  const [grossManagedAssets, pendingDepositAssets, reservedRedeemAssets] = await Promise.all([
+    api.multiCall({ abi: "uint256:grossManagedAssets", calls: V2_BSC_VAULTS }),
+    api.multiCall({ abi: "uint256:pendingDepositAssets", calls: V2_BSC_VAULTS }),
+    api.multiCall({ abi: "uint256:reservedRedeemAssets", calls: V2_BSC_VAULTS }),
+  ]);
+
+  V2_BSC_VAULTS.forEach((_, index) => {
+    // grossManagedAssets already includes active funds held by the Vault,
+    // curator, off-chain strategy, and transit layer. Only the two excluded
+    // custody buckets are added separately.
+    api.add(assets[index], grossManagedAssets[index]);
+    api.add(assets[index], pendingDepositAssets[index]);
+    api.add(assets[index], reservedRedeemAssets[index]);
+  });
+}
+
 Object.keys(config).forEach((chain) => {
   const chainConfig = config[chain];
   const tokens = stablecoins[chain];
@@ -120,6 +147,8 @@ Object.keys(config).forEach((chain) => {
         calls: chainConfig.strategies,
       });
       totals.forEach((total) => api.add(tokens[0], total));
+
+      if (chain === "bsc") await addV2BscTvl(api);
     },
   };
 });
@@ -137,5 +166,5 @@ module.exports = {
   ...chainExports,
   timetravel: true,
   methodology:
-    "TVL counts stablecoins in fundVault, dexBridgeVault, and all strategies contracts.",
+    "TVL includes assets managed by MoneyFi V1 and V2 vaults, including pending deposits and settled withdrawals awaiting claim.",
 };
