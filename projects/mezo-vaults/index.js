@@ -10,6 +10,8 @@ const ERC4626_VAULTS = [
   '0x06291b67e3d7660240ab44Afc9a708d82b976a8B', // morphoBTC-mUSDC
 ];
 
+// VAULTS use Mezo's own strategy()/token() interface; ERC4626_VAULTS are standard ERC4626
+// vaults (asset()/totalAssets()), so each group needs its own call.
 async function tvl(api) {
   const strategies = await api.multiCall({ calls: VAULTS, abi: 'address:strategy' });
   const tokens = await api.multiCall({ calls: strategies, abi: 'address:token' });
