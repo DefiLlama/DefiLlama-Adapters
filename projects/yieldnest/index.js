@@ -34,8 +34,13 @@ module.exports = {
       const ynCoBTCk = '0x132376b153d3cFf94615fe25712DB12CaAADf547'
       const ynBfBTCk = '0x1B015705214bdcAAf43E8EDeCa13023143224Ab7'
 
-  
-      return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynCoBTCk, ynBfBTCk], isOG4626: true})
+      await api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynBfBTCk], isOG4626: true})
+
+      // ynCoBTCk's underlying asset (CoBTC) has no price feed, so erc4626Sum would silently
+      // drop its balance. CoBTC is pegged 1:1 to BTC and shares WBTC's 8 decimals, so its
+      // totalAssets is counted directly as WBTC instead.
+      const coBTCVaultBalance = await api.call({ abi: 'uint256:totalAssets', target: ynCoBTCk })
+      api.add(ADDRESSES.bsc.WBTC, coBTCVaultBalance)
     }
   },
 }
