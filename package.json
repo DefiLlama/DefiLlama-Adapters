@@ -18,6 +18,7 @@
     "check-registries-duplicates": "node utils/scripts/checkRegistriesDups.js",
     "check-core-assets-refs": "node utils/scripts/checkCoreAssetsRefs.js",
     "string-timestamp": "node utils/scripts/stringTimestamp.js",
+    "migrate-dead": "node scripts/migrateDeadProjects.js",
     "sort-chains": "node projects/helper/getChainList.js"
   },
   "author": "",
