@@ -232,6 +232,7 @@ const configs = {
             '0x55C1B6e461a6334B567bAF0FEb5D728715446f05',
             '0xBf29043164660C60A2a72Cd15FFe2304e87B6838',
             '0x500aE64100D7DbDb640531085C2F5d40cDC8930D',
+            '0x3d5EcCb62974178236A768A7ef14D3ce468Fbe91',
           ],
         },
       },
