@@ -181,10 +181,34 @@ const rippleApiWithLimiter = (fn, tokensToRemove = 1) => async (...args) => {
 
 const getRippleBalance = rippleApiWithLimiter(_getRippleBalance)
 
+// public XRPL JSON-RPC nodes that answer bursts without throttling (xrpl.ws / xrpl.link 429 after a few calls).
+// each call starts from a random node and rotates on failure ("tooBusy", "slowDown", 429) so load is spread
+const rippleEndpoints = ['https://s1.ripple.com:51234', 'https://s2.ripple.com:51234', 'https://xrplcluster.com']
+
+async function ripplePost(body, { retries = rippleEndpoints.length * 2 } = {}) {
+  let lastError
+  const start = Math.floor(Math.random() * rippleEndpoints.length)
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const url = rippleEndpoints[(start + attempt) % rippleEndpoints.length]
+    try {
+      const res = await post(url, body)
+      const error = res?.result?.error
+      if (!res?.result || (error && !['actNotFound', 'actMalformed'].includes(error))) {
+        throw new Error(`xrpl ${url} returned ${error ?? 'no result'}: ${res?.result?.error_message ?? ''}`)
+      }
+      return res
+    } catch (e) {
+      lastError = e
+      await sleep(1000 * (attempt + 1))
+    }
+  }
+  throw lastError
+}
+
 async function _getRippleBalance(account) {
-  const body = { "method": "account_info", "params": [{ account }] }
+  const body = { "method": "account_info", "params": [{ account, ledger_index: 'validated' }] }
   await sleep(500);
-  const res = await post('https://s1.ripple.com:51234', body)
+  const res = await ripplePost(body)
   if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return 0
   return res.result.account_data.Balance / 1e6
 }
@@ -201,8 +225,8 @@ async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
     }]
   }
   await sleep(500);
-  const res = await post('https://s1.ripple.com:51234', body)
-  if (res.result.error === 'actNotFound') return {}
+  const res = await ripplePost(body)
+  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return {}
 
 
   // Add token balances
