@@ -31,9 +31,15 @@ const CONFIG = {
   }]
 }
 
+// Every pool ever created, not just the currently active ones: the subgraph reports today's
+// state, so filtering on isStopped here would hide pools from historical queries that were
+// still running at the queried block. The balance reads below are block scoped and return 0
+// for a pool that did not exist yet, and pools that are stopped today are fully drained.
 const POOL_QUERY = `{
-  lendingPools(first: 1000, where: { isStopped: false }) {
+  lendingPools(first: 1000) {
     id
+    pendingPool { id }
+    tranches { id }
   }
 }`;
 
@@ -41,14 +47,23 @@ async function getPools(api, deployment) {
   const { graphURL, key } = deployment
   const cacheKey = 'kasu/' + api.chain + (key ? '-' + key : '')
   const result = await cachedGraphQuery(cacheKey, graphURL, POOL_QUERY)
-  return (result.lendingPools || []).map(pool => pool.id)
+  const lendingPools = result.lendingPools || []
+  // pendingPool/tranches are absent if a subgraph outage makes cachedGraphQuery fall back to
+  // a cache written before they were queried, so treat them as optional.
+  return {
+    pools: lendingPools.map(pool => pool.id),
+    pendingPools: lendingPools.map(pool => pool.pendingPool?.id).filter(i => i),
+    tranches: lendingPools.flatMap(pool => (pool.tranches || []).map(tranche => tranche.id)),
+  }
 }
 
-// Underlying still sitting in the pools
+// Underlying still held on-chain: idle liquidity and first loss capital in the lending pools,
+// lender deposits queued in the pending pools until the next clearing accepts or refunds them,
+// and loss repayments held by the tranches until lenders claim them.
 async function tvl(api) {
   for (const deployment of CONFIG[api.chain]) {
-    const pools = await getPools(api, deployment)
-    await api.sumTokens({ tokens: [deployment.asset], owners: pools })
+    const { pools, pendingPools, tranches } = await getPools(api, deployment)
+    await api.sumTokens({ tokens: [deployment.asset], owners: [...pools, ...pendingPools, ...tranches] })
   }
 }
 
@@ -57,7 +72,7 @@ async function tvl(api) {
 async function borrowed(api) {
   for (const deployment of CONFIG[api.chain]) {
     const { externalContract, asset } = deployment
-    const pools = await getPools(api, deployment)
+    const { pools } = await getPools(api, deployment)
 
     const [supplies, held] = await Promise.all([
       api.multiCall({ abi: 'uint256:totalSupply', calls: pools, permitFailure: true }),
@@ -76,5 +91,8 @@ async function borrowed(api) {
   }
 }
 
-module.exports.methodology = 'TVL is the stablecoin balance still held by Kasu lending pools. Amounts lent out to borrowers, measured as pool token supply minus pool holdings, plus loans Kasu funds off-chain and reports on-chain, are counted as borrowed.'
+module.exports.methodology = 'TVL is the stablecoin still held on-chain by Kasu: liquidity in the lending pools, deposits queued in the pending pools awaiting clearing, and loss repayments held by the tranches until claimed. Amounts lent out to borrowers, measured as pool token supply minus pool holdings, plus loans Kasu funds off-chain and reports on-chain, are counted as borrowed.'
+module.exports.hallmarks = [
+  ['2026-09-10', 'Lending book now counted as Active Loans, not TVL'],
+]
 Object.keys(CONFIG).forEach(chain => module.exports[chain] = { tvl, borrowed })
