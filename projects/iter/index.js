@@ -26,7 +26,8 @@ const config = {
 // The SDK ships no providers for these testnets, so the adapter registers them itself
 // (same approach as projects/strato). Env values set by the runner take precedence.
 const rpcs = {
-  arc_testnet: { rpc: 'https://rpc.testnet.arc.network', chainId: 5042002 },
+  // Blockdaemon first: the official endpoint allows only a handful of eth_getLogs per minute.
+  arc_testnet: { rpc: 'https://rpc.blockdaemon.testnet.arc.network,https://rpc.testnet.arc.network', chainId: 5042002 },
   rise_testnet: { rpc: 'https://testnet.riselabs.xyz', chainId: 11155931 },
 }
 for (const [chain, { rpc, chainId }] of Object.entries(rpcs)) {
