@@ -62,10 +62,6 @@ module.exports = {
     'Treasury vesting and reward escrow contracts are protocol owned and excluded. ' +
     'Liquidity in Motoswap DEX pairs will be counted as tvl once the DEX opens on 2026-09-28.',
   start: 1789409819, // 2026-09-14, block 25977433
-  hallmarks: [
-    ['2026-09-14', 'Vampire Attack liquidity mining starts'],
-    ['2026-09-28', 'DEX opens'],
-  ],
   ethereum: {
     tvl,
     staking,
