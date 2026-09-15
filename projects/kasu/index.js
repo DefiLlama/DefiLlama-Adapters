@@ -31,8 +31,12 @@ const CONFIG = {
   }]
 }
 
+// Every pool ever created, not just the currently active ones: the subgraph reports today's
+// state, so filtering on isStopped here would hide pools from historical queries that were
+// still running at the queried block. The balance reads below are block scoped and return 0
+// for a pool that did not exist yet, and pools that are stopped today are fully drained.
 const POOL_QUERY = `{
-  lendingPools(first: 1000, where: { isStopped: false }) {
+  lendingPools(first: 1000) {
     id
     pendingPool { id }
     tranches { id }
