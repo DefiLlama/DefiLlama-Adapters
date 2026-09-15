@@ -809,6 +809,9 @@ const uniV2Configs = {
     ],
     era: '0x065c8703132F2A38Be3d2dbF7Be6BE455930560c',
   },
+  'ggswap': {
+    ggchain: '0x82b163784b0d0371417B0eDbDF71A5B15c47B444',
+  },
   'ghost-ex': {
     blast: '0xbf246e99a848d9bf592c216118973204162d9650',
   },
@@ -914,6 +917,7 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     hyperliquid: '0x9c7397c9C5ecC400992843408D3A283fE9108009',
+    robinhood: '0x76c1D39C33b773ABe8fBDD6253f4D09B735b2e7b',
   },
   'HyperBlast': {
     blast: '0xD97fFc2041a8aB8f6bc4aeE7eE8ECA485381D088',
@@ -2405,6 +2409,8 @@ const uniV2Configs = {
     },
   },
   'GlyphExchange': {
+    deadFrom: '2026-09-11',
+    hallmarks: [['2026-09-11', 'Glyph Core DEX no longer maintained']],
     core: { factory: '0x3e723c7b6188e8ef638db9685af45c7cb66f77b9', staking: ["0x6bf16B2645b13db386ecE6038e1dEF76d95696fc", "0xb3A8F0f0da9ffC65318aA39E55079796093029AD"] },
   },
   'KibbleSwap': {
@@ -3171,6 +3177,10 @@ const uniV2Configs = {
       staking: ['0x868ae20E6c1EA3b6Fdab5042Ea721eB51b237183', '0xD6af4536baB5EA74bCF872CA181619Cc3157683E'],
     },
   },
+  'dropswap': {
+    arbitrum: '0xDCed5445409398dc609C2f87849B44bc9479664A',
+    robinhood: '0xDCed5445409398dc609C2f87849B44bc9479664A'
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

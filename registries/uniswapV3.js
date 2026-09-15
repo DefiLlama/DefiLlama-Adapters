@@ -68,6 +68,8 @@ const uniV3Configs = {
   },
   'prism-dex': {
     start: 7845865,
+    deadFrom: '2026-09-09',
+    hallmarks: [['2026-09-09', 'Prism DEX shut down']],
     megaeth: { factory: '0x1adb8f973373505bb206e0e5d87af8fb1f5514ef', fromBlock: 7845865 },
   },
   'superswap-v3': {
@@ -602,6 +604,8 @@ const uniV3Configs = {
     },
   },
   'glyph-v4': {
+    deadFrom: '2026-09-11',
+    hallmarks: [['2026-09-11', 'Glyph Core DEX no longer maintained']],
     core: {
       factory: '0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597',
       fromBlock: 15770796,
@@ -692,6 +696,10 @@ const uniV3Configs = {
       fromBlock: 6523521,
       permitFailure: true,
     },
+    robinhood: {
+      factory: '0xCeFc5Da47d766Fb6b48Da92D75d66b3264593d0f', 
+      fromBlock: 58245132
+    },
   },
   'hydrex': {
     base: {
@@ -717,6 +725,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0x1Cd8363DfAdA19911f745BA984fce02b42c943bF',
       fromBlock: 20255136,
+      permitFailure: true, // pools with hyperliquid pseudo-token addresses (0x333..., 0xccc...) revert balanceOf
     },
   },
   'icecreamswap-v3': {
@@ -1505,14 +1514,6 @@ const uniV3Configs = {
       fromBlock: 197972,
     },
   },
-  'thena-integral': {
-    bsc: {
-      factory: '0x30055F87716d3DFD0E5198C27024481099fB4A98',
-      fromBlock: 44121855,
-      isAlgebra: true,
-      blacklistedTokens: ['0x39e3ca118ddfea3edc426b306b87f43da3251b4a'],
-    },
-  },
   'thena-v3': {
     bsc: {
       factory: '0x306F06C147f064A010530292A1EB6737c3e378e4',
@@ -1770,7 +1771,7 @@ const uniV3Configs = {
     rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
   },
   'hyperlynx-v3': {
-    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735, permitFailure: true }
   },
   'machima': {
     base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
@@ -1815,6 +1816,20 @@ const uniV3Configs = {
   'helios-v3': {
     start: '2026-05-31',
     rise: { factory: '0xbF30bD8567628Dc4E120b7536d051EaFaA3fD0fa', fromBlock: 12557099 },
+  },
+  'phera-dex': {
+    start: '2026-08-25',
+    methodology: 'Value of the tokens locked in PheraDEX concentrated liquidity pools.',
+    // Generation-2 PheraCLFactory. The retired generation-1 factory (0xA7e3cBf3A9F12da335531e1dd986B616b6d6ed7c) never created a pool.
+    robinhood: { factory: '0x185f43b9E3e956798b7b9CF0a4FE00463aEe064B', fromBlock: 45979598 },
+  },
+  'raphael-cl': {
+    robinhood: {
+      factory: '0x5481864ddd46a2D798Df0925C23B7846e776E5E3',
+      fromBlock: 56766250,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
   },
 }
 

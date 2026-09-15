@@ -1,9 +1,10 @@
 const { PromisePool } = require('@supercharge/promise-pool');
 const { get } = require('../helper/http');
 
-const DANOGO_GATEWAY_ENDPOINT = 'https://danogo-gateway.tekoapis.com/api/v1'
-const KUPO_ENDPOINT = 'https://kupo.tekoapis.com/matches'
+const DANOGO_GATEWAY_ENDPOINT = 'https://danogo-gateway.api.danogo.io/api/v1'
+const KUPO_ENDPOINT = 'https://kupo.danogo.io/matches'
 const DECODED_PREFIX_LENGTH = 2;
+const PAYMENT_CREDENTIAL_LENGTH = 56;
 const REQUEST_TIMEOUT = 30000;
 // same dust threshold as helper/chain/cardano.js: drops the bond receipt NFTs held in the contracts
 const MIN_ASSET_QUANTITY = 10;
@@ -79,23 +80,38 @@ const bech32AddressToPaymentCredential = (address) => {
   const decoded = convert(words, 5, 8, false);
   if (!Array.isArray(decoded)) throw new Error(decoded);
 
-  return Buffer.from(decoded).toString('hex').substring(DECODED_PREFIX_LENGTH);
+  // a base address carries a staking credential after the payment one, keep only the payment credential
+  return Buffer.from(decoded).toString('hex').substr(DECODED_PREFIX_LENGTH, PAYMENT_CREDENTIAL_LENGTH);
 };
 
 const fetchSmartContractAddresses = async () => {
-  const { data: { addresses } } = await get(`${DANOGO_GATEWAY_ENDPOINT}/smartcontract-addresses`, { timeout: REQUEST_TIMEOUT });
-  return addresses.map(bech32AddressToPaymentCredential);
+  const { data: { addresses } } = await getWithRetry(`${DANOGO_GATEWAY_ENDPOINT}/smartcontract-addresses`);
+  // the enterprise and base forms of one script share a payment credential, dedupe so utxos are counted once
+  return [...new Set(addresses.map(bech32AddressToPaymentCredential))];
+}
+
+// kupo drops tls handshakes now and then, a dropped read would zero out the whole adapter
+const getWithRetry = async (url, attempts = 4) => {
+  for (let i = 1; ; i++) {
+    try {
+      return await get(url, { timeout: REQUEST_TIMEOUT });
+    } catch (e) {
+      if (i >= attempts) throw e;
+      await new Promise((resolve) => setTimeout(resolve, 400 * i));
+    }
+  }
 }
 
 const fetchSmartContractUTXOs = async (paymentCredential) => {
-  return get(`${KUPO_ENDPOINT}/${paymentCredential}/*?unspent`, { timeout: REQUEST_TIMEOUT });
+  return getWithRetry(`${KUPO_ENDPOINT}/${paymentCredential}/*?unspent`);
 }
 
 async function tvl(api) {
   const paymentCredentials = await fetchSmartContractAddresses();
 
+  // kupo drops parallel connections, so the utxo reads have to stay sequential
   const { results, errors } = await PromisePool
-    .withConcurrency(5)
+    .withConcurrency(1)
     .for(paymentCredentials)
     .process(fetchSmartContractUTXOs);
 

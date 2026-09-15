@@ -6,7 +6,7 @@ const omnipoolAccountId = "7L53bUTBbfuj14UpdCNPwmgzzHSsrsTWBHX5pys32mVWM3C1"
 
 const cgMapping = {
   DAI: 'dai',
-  INTR: 'interlay',
+  // INTR: 'interlay',
   GLMR: 'moonbeam',
   vDOT: 'voucher-dot',
   ZTG: 'zeitgeist',
@@ -19,7 +19,7 @@ const cgMapping = {
   USDT: 'tether',
   ASTR: 'astar',
   WBTC: 'wrapped-bitcoin',
-  iBTC: 'interbtc',
+  // iBTC: 'interbtc',
   HDX: 'hydradx',
   tBTC: 'tbtc',
   AAVE: 'aave',

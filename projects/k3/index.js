@@ -7,7 +7,12 @@ const configs = {
   blockchains: {
     ethereum: {
       symbiotic: ["0xdC47953c816531a8CA9E1D461AB53687d48EEA26"],
-      eulerVaultOwners: ["0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B"],
+      eulerVaultOwners: [
+        "0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B",
+        "0x5aB5FE7d04CfDefb9dAF61F6F569a58A53d05eE1", // K3 Capital RLUSD / PYUSD deployer (euler-labels: k3-capital)
+        "0x8baeB9e1742Ef2e194F6fBEd0b29cC0adC4D3a68", // K3 Capital RLUSD / PYUSD deployer (euler-labels: k3-capital)
+        "0xe78C246Ea973389f55BaEadF71E04750d50417D1", // K3 Capital RLUSD / PYUSD deployer (euler-labels: k3-capital)
+      ],
       morphoVaultOwners: ["0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B"],
       mellow: [
         "0xc65433845ecD16688eda196497FA9130d6C47Bd8",
@@ -54,9 +59,6 @@ const configs = {
         "0x27Ec22e4DcB70F7FfE1F6bb89e3284529492c05E", // Euler Earn: K3 Capital USD1
       ],
     },
-    bob: {
-      eulerVaultOwners: ["0xDb81B93068B886172988A1A4Dd5A1523958a23f0"],
-    },
     unichain: {
       morphoVaultOwners: ["0xe34A3fb26B3121F4E68bE89Ea553BaC2149F975d"],
     },
@@ -78,6 +80,9 @@ const configs = {
     },
     arbitrum: {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
+    },
+    hyperliquid: {
+      erc4626: ["0x589a57196c16d0CfAB3Ed229Fcfa959f65cA00bf"],
     },
     avax: {
       eulerVaultOwners: [],
