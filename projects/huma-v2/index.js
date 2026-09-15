@@ -37,6 +37,7 @@ const LIQUID_TOKENS = [
 ]
 
 const SAFE = '0xbf87D9244CD8E4d9F49d3b6016F784493b199b36'
+const MORPHO_VAULT = '0xb576765fb15505433af24fee2c0325895c559fb2' // senPYUSDmain, the Morpho PYUSD sleeve
 const CMTAT_FACTORY = '0x1AEbACA03Da21eEadC474febCFA5140044A33f49' // Obligate eNote factory
 const STELLAR_POOL_STORAGE = 'CAADAYJOZF5HXPVZXBXA3PLCU7OSRW34OKVXG2676KAGZVZBI6EYQ73L'
 const STELLAR_WALLET = 'GDY2SKUDNRGOOWMAQLDTBO4LNL6CMWHZRD3ZB55VOOM6MTXQ5Y5TRL6Q'
@@ -166,11 +167,11 @@ async function ethereumTvl(api) {
     })
   }
 
-  // Liquid sleeve: Pendle PT/YT/LP plus plain stables. Pendle positions roll on maturity,
-  // so take the live market list rather than pinning addresses.
+  // Liquid sleeve: Pendle PT/YT/SY/LP, the Morpho vault and plain stables. Pendle positions
+  // roll on maturity, so take the live market list rather than pinning addresses.
   const { markets } = await getConfig('pendle/markets-ethereum', 'https://api-v2.pendle.finance/core/v1/1/markets/active')
-  const pendleTokens = markets.flatMap(({ pt, yt, address }) => [pt, yt, address].filter(i => i).map(i => i.split('-').pop()))
-  return api.sumTokens({ owner: SAFE, tokens: [...new Set([...pendleTokens, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.sUSDS, ADDRESSES.ethereum.DAI])] })
+  const pendleTokens = markets.flatMap(({ pt, yt, sy, address }) => [pt, yt, sy, address].filter(i => i).map(i => i.split('-').pop()))
+  return api.sumTokens({ owner: SAFE, tokens: [...new Set([...pendleTokens, MORPHO_VAULT, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.sUSDS, ADDRESSES.ethereum.DAI, ADDRESSES.ethereum.sUSDe, ADDRESSES.ethereum.USDe])] })
 }
 
 async function stellarTvl(api) {
