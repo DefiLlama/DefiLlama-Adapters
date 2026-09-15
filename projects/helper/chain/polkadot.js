@@ -15,15 +15,37 @@ const hosts = ['assethub-polkadot', 'polkadot']
 const REQUEST_GAP_MS = 600
 const MAX_RETRIES = 5
 
-async function subscanPost(host, key) {
-  for (let attempt = 0; ; attempt++) {
-    try {
-      return await post(endpoint(host), { key }, { headers: { 'x-api-key': getEnv('SUBSCAN_API_KEY') } })
-    } catch (e) {
-      if (attempt >= MAX_RETRIES) throw e
-      await sleep(1000 * (attempt + 1))
-    }
+// Module-level limiter: the quota is per API key, so concurrent callers of this helper
+// (several CEX adapters in one process) must share one queue rather than pacing themselves.
+let lock = Promise.resolve()
+let lastRequestAt = 0
+
+async function withLimiter(fn) {
+  const prev = lock
+  let release
+  lock = new Promise(resolve => { release = resolve })
+  await prev
+  try {
+    const wait = lastRequestAt + REQUEST_GAP_MS - Date.now()
+    if (wait > 0) await sleep(wait)
+    return await fn()
+  } finally {
+    lastRequestAt = Date.now()
+    release()
   }
+}
+
+async function subscanPost(host, key) {
+  return withLimiter(async () => {
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await post(endpoint(host), { key }, { headers: { 'x-api-key': getEnv('SUBSCAN_API_KEY') } })
+      } catch (e) {
+        if (attempt >= MAX_RETRIES) throw e
+        await sleep(1000 * (attempt + 1))
+      }
+    }
+  })
 }
 
 async function getBalance(key) {
@@ -31,7 +53,6 @@ async function getBalance(key) {
   for (const host of hosts) {
     const data = await subscanPost(host, key)
     total += +(data?.data?.account?.balance ?? 0)
-    await sleep(REQUEST_GAP_MS)
   }
   return total
 }
