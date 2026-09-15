@@ -31,7 +31,6 @@ async function borrowed(api) {
   const deployed = await api.multiCall({
     abi: 'uint256:totalOptimisticValue',
     calls: vsms,
-    permitFailure: true,
   })
   deployed.forEach((bal, i) => { if (bal) api.add(vaults[i].asset, bal) })
 }
