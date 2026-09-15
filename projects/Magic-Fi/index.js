@@ -17,7 +17,7 @@ const magicPPConfig = {
 		'0x4691937a7508860F876c9c0a2a617E7d9E945D4B', // magic
 		ADDRESSES.bsc.USDT, // USDT
 		ADDRESSES.bsc.BUSD, // BUSD
-		'0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', // CAKE
+		ADDRESSES.bsc.CAKE, // CAKE
 	],
 	avax: [
 		ADDRESSES.avax.WAVAX, // WAVAX
@@ -59,7 +59,7 @@ const magicPPConfig = {
 		ADDRESSES.era.WETH, // WETH
 		ADDRESSES.era.ZK, // ZK
 		ADDRESSES.era.USDC, // USDC.e
-		'0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4', // native USDC
+		ADDRESSES.era.USDC_CIRCLE, // native USDC
 	],
 	polygon_zkevm: [
 		ADDRESSES.polygon_zkevm.WETH, // WETH

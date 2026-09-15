@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // Turret contract inventory on Robinhood Chain. Hardcoded because no factory or registry
 // exposes these contracts on-chain
 
 module.exports = {
-  usdg: '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168',
+  usdg: ADDRESSES.robinhood.USDG,
   legacyVault: '0x24043E8EFaB262f5198B87b5AA5A46Bc72AADDD8',
   nftMarket: '0x79F986A54965EB4AB2eB317d9c5e33074793Dd28',
   // { engine, collateral } per pooled credit market, comment is the collateral symbol

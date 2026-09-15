@@ -364,7 +364,7 @@ const configs = {
     ethereum: { comptroller: '0x895879b2c1fbb6ccfcd101f2d3f3c76363664f92' },
   },
   'aurigami': {
-    aurora: { comptroller: '0x817af6cfAF35BdC1A634d6cC94eE9e4c68369Aeb', cether: '0xca9511B610bA5fc7E311FDeF9cE16050eE4449E9', cetheEquivalent: '0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb' },
+    aurora: { comptroller: '0x817af6cfAF35BdC1A634d6cC94eE9e4c68369Aeb', cether: '0xca9511B610bA5fc7E311FDeF9cE16050eE4449E9', cetheEquivalent: ADDRESSES.aurora.WETH_2 },
   },
   'novation': {
     blast: { comptroller: '0x3090Cd174218BB451C7865bDC621d47E1Bd6831C', abis: { getAllMarkets: 'address[]:allMarkets', totalBorrows: 'uint256:totalBorrow' } },
@@ -609,7 +609,7 @@ const configs = {
   },
   'bastion': {
     aurora: [
-      { comptroller: '0x6De54724e128274520606f038591A00C5E94a1F6', cether: '0x4E8fE8fd314cFC09BDb0942c5adCC37431abDCD0', cetheEquivalent: '0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb' },
+      { comptroller: '0x6De54724e128274520606f038591A00C5E94a1F6', cether: '0x4E8fE8fd314cFC09BDb0942c5adCC37431abDCD0', cetheEquivalent: ADDRESSES.aurora.WETH_2 },
       { comptroller: '0xA195b3d7AA34E47Fb2D2e5A682DF2d9EFA2daF06' },
       { comptroller: '0xe1cf09BDa2e089c63330F0Ffe3F6D6b790835973' },
       { comptroller: '0xE550A886716241AFB7ee276e647207D7667e1E79' },

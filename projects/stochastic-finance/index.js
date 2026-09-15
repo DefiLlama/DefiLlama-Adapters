@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const SFSwapV0Factory = "0xcE23F95A0aC4B28B4eb2D7697aBD3c87EE03fc90";
 const StochasticOptions = "0x473b5c9f831Af8cB5B379eB3Ab8f9806E9A0470C";
-const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const USDC = ADDRESSES.base.USDC;
 
 async function tvl(api) {
   const pairs = await api.fetchList({

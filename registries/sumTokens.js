@@ -374,7 +374,7 @@ const configs = {
     "zkfair": {
       "owner": "0xEE43369197F78CFDF0D8fc48D296964C50AC7B57",
       "tokens": [
-        "0xD33Db7EC50A98164cC865dfaa64666906d79319C"
+        ADDRESSES.zkfair.USDC
       ]
     },
   },
@@ -458,7 +458,7 @@ const configs = {
     "manta": {
       "owner": "0x8Bb6CaE3f1CADA07Dd14bA951e02886ea6bBA183",
       "tokens": [
-        "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
+        ADDRESSES.manta.MANTA,
         ADDRESSES.berachain.STONE
       ]
     },
@@ -611,8 +611,8 @@ const configs = {
         ADDRESSES.bsc.WBNB,
         ADDRESSES.bsc.BUSD,
         "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd",
-        "0x965f527d9159dce6288a2219db51fc6eef120dd1",
-        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82"
+        ADDRESSES.bsc.BSW,
+        ADDRESSES.bsc.CAKE
       ]
     },
   },
@@ -760,7 +760,7 @@ const configs = {
       "owner": "0xaA830eA4Ca3C7b13be85a8D3ab8441db5cA0Cc5F",
       "tokens": [
         ADDRESSES.manta.USDC,
-        "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
+        ADDRESSES.manta.MANTA,
         ADDRESSES.berachain.STONE
       ]
     },
@@ -12247,7 +12247,7 @@ const configs = {
         "0xD896aA25da8e3832d68d1C05fEE9C851d42F1dC1",
         "0xDaAcD0429516832ca1737d1FAa5a739d8F55c097",
         "0xCb49dd81da680ed11d10809B51d5D5D8e36F9B6D",
-        "0xcCcCcCcCdbEC186DC426F8B5628AF94737dF0E60",
+        ADDRESSES.cronos.CAW,
         "0x22EAe794BF266f7D46ddbF25ab3c7ba01E6Bc081",
         "0xd095BdD744A7a2967651ce7d4F531C0fD1EB35eF",
         "0x2B986EEB82356b518d0Deb1fCD5D102184BF4F7D",
@@ -12535,7 +12535,7 @@ const configs = {
       "tvl": {
         "tokensAndOwners": [
           [
-            "0x831753dd7087cac61ab5644b308642cc1c33dc13",
+            ADDRESSES.polygon.QUICK_2,
             "0x3E2c1b4dfA868A6ffD8CdC20D7BFa9Abb4462284"
           ],
           [
@@ -12993,7 +12993,7 @@ const configs = {
       ],
       "tokens": [
         ADDRESSES.cronos.WBTC,
-        "0xe44Fd7fCb2b1581822D0c862B68222998a0c299a",
+        ADDRESSES.cronos.weth,
         "0xb9Ce0dd29C91E02d4620F57a66700Fc5e41d6D15",
         "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
         "0xc9DE0F3e08162312528FF72559db82590b481800",
@@ -13532,7 +13532,7 @@ const configs = {
           "0x5162f992EDF7101637446ecCcD5943A9dcC63A8A"
         ],
         [
-          "0x82f0b8b456c1a451378467398982d4834b6829c1",
+          ADDRESSES.fantom.MIM,
           "0x5162f992EDF7101637446ecCcD5943A9dcC63A8A"
         ]
       ]
@@ -14284,7 +14284,7 @@ const configs = {
         "tokens": [
           "0xEf977d2f931C1978Db5F6747666fa1eACB0d0339",
           "0xb8F4c06dD0C2f9eb5e67B4FAA2d56Ff3543d6765",
-          "0x224e64ec1BDce3870a6a6c777eDd450454068FEC",
+          ADDRESSES.harmony.UST,
           "0xd7E332b4C9f97eA6D05Db8C38F133307ad8847F3",
           "0x985458e523db3d53125813ed68c274899e9dfab4",
           "0xe176ebe47d621b984a73036b9da5d834411ef734",
@@ -14492,7 +14492,7 @@ const configs = {
     "cronos": {
       "tokensAndOwners": [
         [
-          "0xF2001B145b43032AAF5Ee2884e456CCd805F677D",
+          ADDRESSES.cronos.dai,
           "0xe8d13664a42B338F009812Fa5A75199A865dA5cD"
         ],
         [
@@ -14625,7 +14625,7 @@ const configs = {
           "0xf764EECe331caB7D7c451a3972e139B4645d6fe8"
         ],
         [
-          "0x12e605bc104e93B45e1aD99F9e555f659051c2BB",
+          ADDRESSES.flare.sFLR,
           "0x23011e38Addd5dA64ab8Ad940eE6219095E39382"
         ],
         [
@@ -15116,7 +15116,7 @@ const configs = {
           "0x40822C8E1389dE62980691bF0AFBd5B8D1D56cB7"
         ],
         "tokens": [
-          "0xf2001b145b43032aaf5ee2884e456ccd805f677d",
+          ADDRESSES.cronos.dai,
           "0x76f0adfff61fd9a542a36a98b96909ec7d3a8c53",
           "0xe2c5275d86D2fB860F19a2CbBED9967d39AA73e8",
           ADDRESSES.cronos.WCRO_1,
@@ -15398,11 +15398,11 @@ const configs = {
           "0x2C903a6858374925f5020B8EA2D88E545515eD4D"
         ],
         [
-          "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
+          ADDRESSES.manta.MANTA,
           "0xEBC3E41176C1d63E8B99271cD75dD3FBa907CbAf"
         ],
         [
-          "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
+          ADDRESSES.manta.MANTA,
           "0x64a602a31030D531Ca0dF336A811ab0247b87165"
         ],
         [
@@ -15488,7 +15488,7 @@ const configs = {
         "tokens": [
           ADDRESSES.null,
           "0xddcb3ffd12750b45d32e084887fdf1aabab34239",
-          "0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
+          ADDRESSES.fantom.BOO,
           "0x5cc61a78f164885776aa610fb0fe1257df78e59b",
           ADDRESSES.fantom.WFTM,
           "0xb688e18f34e6e424c44b247318f22367ed7df3e2",
@@ -16239,7 +16239,7 @@ const configs = {
         "0x1111111111166b7fe7bd91427724b487980afc69",
         "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
         "0x7300b37dfdfab110d83290a29dfb31b1740219fe",
-        "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+        ADDRESSES.base.AERO,
         "0x311935cd80b76769bf2ecc9d8ab7635b2139cf82",
         ADDRESSES.swellchain.ENA
       ],
@@ -17000,7 +17000,7 @@ const configs = {
       "tokens": [
         ADDRESSES.manta.USDT,
         ADDRESSES.berachain.STONE,
-        "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
+        ADDRESSES.manta.MANTA,
         "0x7746ef546d562b443ae4b4145541a3b1a3d75717",
         ADDRESSES.manta.USDC
       ]
@@ -17309,7 +17309,7 @@ const configs = {
           ADDRESSES.bsc.BTCB,
           ADDRESSES.bsc.ETH,
           ADDRESSES.bsc.WBNB,
-          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+          ADDRESSES.bsc.CAKE,
           ADDRESSES.bsc.BUSD,
           ADDRESSES.bsc.USDT
         ]
@@ -18517,7 +18517,7 @@ const configs = {
     "methodology": "Counts DAI, USDC, & USDT tokens on the 3MM Base Pool for tvl",
     "cronos": {
       "tokens": [
-        "0xF2001B145b43032AAF5Ee2884e456CCd805F677D",
+        ADDRESSES.cronos.dai,
         ADDRESSES.cronos.USDC,
         ADDRESSES.cronos.USDT
       ],
@@ -18636,7 +18636,7 @@ const configs = {
           "0xfc9e2c63370d8deb3521922a7b2b60f4cff7e75a"
         ],
         [
-          "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73",
+          ADDRESSES.celo.cEUR,
           "0x23c95678862a229fac088bd9705622d78130bc3e"
         ],
         [
@@ -18708,7 +18708,7 @@ const configs = {
           "0x413ffcc28e6cdde7e93625ef4742810fe9738578"
         ],
         [
-          "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73",
+          ADDRESSES.celo.cEUR,
           "0x382ed834c6b7dbd10e4798b08889eaed1455e820"
         ],
         [
@@ -19029,7 +19029,7 @@ const configs = {
     "bsc": {
       "tokensAndOwners2": [
         [
-          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+          ADDRESSES.bsc.CAKE,
           ADDRESSES.bsc.ETH,
           "0xba2ae424d960c26247dd6c32edc70b295c744c43",
           ADDRESSES.bsc.BUSD
@@ -19153,7 +19153,7 @@ const configs = {
           "0x9f3832732923252A21044F21eE6bd87F09514ae4"
         ],
         [
-          "0x91b81bfbe3A747230F0529Aa28d8b2Bc898E6D56",
+          ADDRESSES.monad.LVMON,
           "0x9f3832732923252A21044F21eE6bd87F09514ae4"
         ]
       ]
@@ -19314,7 +19314,7 @@ const configs = {
         "0x11eef04c884e24d9b7b4760e7476d06ddf797f36",
         "0xa4be4cDC552891a6702E1aE9645EF445179a4463",
         "0x356A5160F2B34BC8d88FB084745465eBBbed0174",
-        "0x9813037ee2218799597d83D4a5B6F3b6778218d9",
+        ADDRESSES.ethereum.BONE,
         "0xf3b9569F82B18aEf890De263B84189bd33EBe452",
         "0x9d71CE49ab8A0E6D2a1e7BFB89374C9392FD6804",
         "0x5b649C07E7Ba0a1C529DEAabEd0b47699919B4a2",
@@ -19421,7 +19421,7 @@ const configs = {
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.optimism.DAI,
-        "0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b",
+        ADDRESSES.arbitrum.aidoge,
         "0x3082cc23568ea640225c2467653db90e9250aaa0",
         "0x088cd8f5ef3652623c22d48b1605dcfe860cd704",
         ADDRESSES.arbitrum.LPT,
@@ -19556,7 +19556,7 @@ const configs = {
         ADDRESSES.polygon.WBTC,
         ADDRESSES.polygon.USDC,
         ADDRESSES.polygon.DAI,
-        "0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e",
+        ADDRESSES.ethpow.vvXEN,
         "0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6",
         "0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f",
         ADDRESSES.polygon.WMATIC,
@@ -19714,7 +19714,7 @@ const configs = {
         ADDRESSES.bsc.BETH,
         "0x95c78222b3d6e262426483d42cfa53685a67ab9d",
         "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
-        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+        ADDRESSES.bsc.CAKE,
         ADDRESSES.bsc.USDT,
         ADDRESSES.bsc.BUSD,
         "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
@@ -19723,14 +19723,14 @@ const configs = {
         "0x2859e4544c4bb03966803b044a93563bd2d0dd4d",
         "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
         "0x4691937a7508860f876c9c0a2a617e7d9e945d4b",
-        "0xc748673057861a797275CD8A068AbB95A902e8de",
+        ADDRESSES.bsc.babydoge,
         "0xAC51066d7bEC65Dc4589368da368b212745d63E8",
         "0xfb5B838b6cfEEdC2873aB27866079AC55363D37E",
         "0x352Cb5E19b12FC216548a2677bD0fce83BaE434B",
         "0xAD29AbB318791D579433D831ed122aFeAf29dcfe",
         "0x02ff5065692783374947393723dba9599e59f591",
         ADDRESSES.bsc.TUSD,
-        "0x965f527d9159dce6288a2219db51fc6eef120dd1",
+        ADDRESSES.bsc.BSW,
         "0xa2120b9e674d3fc3875f415a7df52e382f141225",
         "0x44ec807ce2f4a6f2737a92e985f318d035883e47",
         ADDRESSES.ethereum.FDUSD,
@@ -22193,7 +22193,7 @@ const configs = {
         "tokens": [
           ADDRESSES.cronos.WCRO_1,
           ADDRESSES.cronos.USDC,
-          "0x97749c9b61f878a880dfe312d2594ae07aed7656",
+          ADDRESSES.cronos.MMF,
           "0xb8df27c687c6af9afe845a2afad2d01e199f4878",
           "0x43713f13a350d104319126c13cd7402822a44f6b"
         ]
@@ -22660,7 +22660,7 @@ const configs = {
           "0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf"
         ],
         [
-          "0x16eccfdbb4ee1a85a33f3a9b21175cd7ae753db4",
+          ADDRESSES.polygon.ROUTE,
           "0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf"
         ],
         [
@@ -23532,12 +23532,12 @@ const configs = {
       ],
       "tokens": [
         ADDRESSES.flare.WFLR,
-        "0x96b41289d90444b8add57e6f265db5ae8651df29",
+        ADDRESSES.flare.eUSDT,
         "0x22757fb83836e3f9f0f353126cacd3b1dc82a387",
         "0xc6b19b06a92b337cbca5f7334d29d45ec4d5e532",
         ADDRESSES.rari.USDC_e,
         "0x19831cfb53a0dbead9866c43557c1d48dff76567",
-        "0x12e605bc104e93b45e1ad99f9e555f659051c2bb",
+        ADDRESSES.flare.sFLR,
         "0x0b38e83b86d491735feaa0a791f65c2b99535396",
         ADDRESSES.morph.USDT0,
         "0x26a1fab310bd080542dc864647d05985360b16a5",
@@ -23752,7 +23752,7 @@ const configs = {
     },
     "harmony": {
       "tokens": [
-        "0x224e64ec1bdce3870a6a6c777edd450454068fec",
+        ADDRESSES.harmony.UST,
         "0xEf977d2f931C1978Db5F6747666fa1eACB0d0339",
         "0x985458e523db3d53125813ed68c274899e9dfab4",
         "0xe176ebe47d621b984a73036b9da5d834411ef734",
@@ -23781,10 +23781,10 @@ const configs = {
     "cronos": {
       "tokens": [
         ADDRESSES.cronos.USDT,
-        "0xF2001B145b43032AAF5Ee2884e456CCd805F677D",
+        ADDRESSES.cronos.dai,
         ADDRESSES.cronos.USDC,
         ADDRESSES.cronos.WBTC,
-        "0xe44fd7fcb2b1581822d0c862b68222998a0c299a",
+        ADDRESSES.cronos.weth,
         "0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8",
         ADDRESSES.cronos.WCRO_1
       ],
@@ -24304,7 +24304,7 @@ const configs = {
           "0x6C87b5B856F6d3ec8BcB80CD0613356691206FAd"
         ],
         [
-          "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+          ADDRESSES.bsc.CAKE,
           "0xC7020Ea170c484E8Ef27A0DCB9441F5373DF88aa"
         ],
         [
@@ -24451,7 +24451,7 @@ const configs = {
               ADDRESSES.aurora.NEAR,
               ADDRESSES.aurora.USDC_e,
               ADDRESSES.aurora.USDT_e,
-              "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB",
+              ADDRESSES.aurora.WETH_2,
               "0x5ce9F0B6AFb36135b5ddBF11705cEB65E634A9dC",
               "0xf4eb217ba2454613b15dbdea6e5f22276410e89e"
             ],
@@ -24625,9 +24625,9 @@ const configs = {
       "tokens": [
         ADDRESSES.polygon.USDC,
         "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1",
-        "0x16ECCfDbb4eE1A85A33f3A9B21175Cd7Ae753dB4",
+        ADDRESSES.polygon.ROUTE,
         "0x4c28f48448720e9000907bc2611f73022fdce1fa",
-        "0xC168E40227E4ebD8C1caE80F7a55a4F0e6D66C97",
+        ADDRESSES.polygon.DFYN,
         ADDRESSES.polygon.BNB,
         "0x2C89bbc92BD86F8075d1DEcc58C7F4E0107f286b",
         "0xC9c1c1c20B3658F8787CC2FD702267791f224Ce1",
@@ -24649,7 +24649,7 @@ const configs = {
       "owner": "0x6e14f48576265272B6CAA3A7cC500a26050Be64E",
       "tokens": [
         ADDRESSES.ethereum.USDC,
-        "0x16ECCfDbb4eE1A85A33f3A9B21175Cd7Ae753dB4",
+        ADDRESSES.polygon.ROUTE,
         ADDRESSES.ethereum.MATIC,
         "0x9695e0114e12C0d3A3636fAb5A18e6b737529023",
         ADDRESSES.ethereum.BNB,
@@ -24663,7 +24663,7 @@ const configs = {
       "owner": "0x6e14f48576265272B6CAA3A7cC500a26050Be64E",
       "tokens": [
         ADDRESSES.aurora.USDC_e,
-        "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB",
+        ADDRESSES.aurora.WETH_2,
         "0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8",
         "0x2bf9b864cdc97b08b6d79ad4663e71b8ab65c45c",
         "0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844"
@@ -24683,7 +24683,7 @@ const configs = {
         "0xad79AC3c5a5c15C6B9194F5568e451b3fc3C2B40",
         "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
         "0x765277eebeca2e31912c9946eae1021199b39c61",
-        "0xe44Fd7fCb2b1581822D0c862B68222998a0c299a",
+        ADDRESSES.cronos.weth,
         "0xb44a9b6905af7c801311e8f4e76932ee959c663c"
       ]
     },
@@ -27134,19 +27134,19 @@ const configs = {
           "0x382926Ba4D92E5d7652A85Aa7085Ffb15b6b6C89"
         ],
         [
-          "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+          ADDRESSES.bsc.CAKE,
           "0x8cc4c8529c0D8bb9B9FA197530d656cCBcB88DeB"
         ],
         [
-          "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+          ADDRESSES.bsc.CAKE,
           "0xa19e53Af2381F34AEcA80cDcEBF6c4a3F37037a2"
         ],
         [
-          "0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5",
+          ADDRESSES.bsc.bake,
           "0x9D529c70fD8e072786b721190f6E6B30e433690a"
         ],
         [
-          "0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5",
+          ADDRESSES.bsc.bake,
           "0x6F3Ad49e287c2dC12aA5f0bD9e8173C57d1AdECa"
         ]
       ]
@@ -28151,7 +28151,7 @@ const configs = {
         ADDRESSES.arbitrum.ARB,
         "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
         "0xd85e038593d7a098614721eae955ec2022b9b91b",
-        "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418",
+        ADDRESSES.arbitrum.RAM,
         ADDRESSES.arbitrum.WSTETH,
         ADDRESSES.arbitrum.GMX,
         ADDRESSES.arbitrum.WSTETH,
@@ -29318,7 +29318,7 @@ const configs = {
         ADDRESSES.optimism.WETH_1,
         ADDRESSES.megaeth.USDm,
         ADDRESSES.corn.USDT0,
-        "0xB0F70C0bD6FD87dbEb7C10dC692a2a6106817072",
+        ADDRESSES.ethereum.BTC_b,
         "0x15B271D9012b5820FC42b1c495B4C1e206547De5"
       ]
     },
@@ -41116,7 +41116,7 @@ const configs = {
     "cronos": {
       "tokensAndOwners": [
         [
-          "0xe44Fd7fCb2b1581822D0c862B68222998a0c299a",
+          ADDRESSES.cronos.weth,
           "0x8266B0c8eF1d70cC4b04F8E8F7508256c0E1200f"
         ],
         [
@@ -41716,11 +41716,11 @@ const configs = {
           "0xe731AE82887Ae35942C124dC6bC168995C9F2aB4",
           "0x46e2b5423f6ff46a8a35861ec9daff26af77ab9a",
           "0x055c517654d72A45B0d64Dc8733f8A38E27Fd49C",
-          "0xcCcCcCcCdbEC186DC426F8B5628AF94737dF0E60",
+          ADDRESSES.cronos.CAW,
           "0xcfe223d06b86568c24ffd17e8ac748dbac096b3b",
           "0xBCfE5afF53fb269969725c12e5b9C3ab18B3B66c",
           "0x898cD4E6F0a364956e28CB0B51f67a4A0f02589c",
-          "0x6b431B8a964BFcf28191b07c91189fF4403957D0",
+          ADDRESSES.cronos.CORGIAI,
           "0x7492450cc8897a4e444Ad972eB1619251EF15C23",
           "0x4d7c922D6C12CfbF5BC85F56c9ccB1F61f49bf61",
           "0x3b41B27E74Dd366CE27cB389dc7877D4e1516d4d",

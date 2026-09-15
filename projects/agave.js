@@ -1,10 +1,11 @@
+const ADDRESSES = require('helper/coreAssets.json')
 const { staking } = require("./helper/staking.js");
 const { aaveExports } = require('./helper/aave.js');
 const sdk = require('@defillama/sdk');
 const methodologies = require("./helper/methodologies.js");
 
 // Staking TVLs
-const agaveTokenAddress = '0x3a97704a1b25F08aa230ae53B352e2e72ef52843'
+const agaveTokenAddress = ADDRESSES.xdai.AGVE
 const agaveStakingContract = '0x610525b415c1BFAeAB1a3fc3d85D87b92f048221'
 
 const addressesProviderRegistryXDAI = "0x4BaacD04B13523D5e81f398510238E7444E11744"

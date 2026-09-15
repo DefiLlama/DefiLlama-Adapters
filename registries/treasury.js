@@ -529,7 +529,7 @@ const configs = {
         nullAddress,
         ADDRESSES.optimism.USDC, //USDC
         ADDRESSES.optimism.OP,
-        '0x3c8B650257cFb5f272f799F5e2b4e65093a11a05',
+        ADDRESSES.optimism.VELO,
       ],
       owners: ['0xc224bf25dcc99236f00843c7d8c4194abe8aa94a'],
       blacklistedTokens: ['0x3e29d3a9316dab217754d13b28646b76607c5f04'],
@@ -704,7 +704,7 @@ const configs = {
         '0xb9e4765bce2609bc1949592059b17ea72fee6c6a', // BENJI
         '0xfeb26f0943c3885b2cb85a9f933975356c81c33d', // WTGXX
         '0xa6525ae43edcd03dc08e775774dcabd3bb925872', // BUIDL
-        '0x35751007a407ca6feffe80b3cb397736d2cf4dbe', // weETH
+        ADDRESSES.arbitrum.weETH, // weETH
       ],
       owners: [
         '0xf3fc178157fb3c87548baa86f9d24ba38e649b58',
@@ -819,7 +819,7 @@ const configs = {
   },
   'treasury/augury': {
     polygon: {
-      tokens: [nullAddress, '0x8df3aad3a84da6b69a4da8aec3ea40d9091b2ac4', '0x831753dd7087cac61ab5644b308642cc1c33dc13', ADDRESSES.polygon.USDC, '0x8a953cfe442c5e8855cc6c61b1293fa648bae472', ADDRESSES.polygon.USDT],
+      tokens: [nullAddress, '0x8df3aad3a84da6b69a4da8aec3ea40d9091b2ac4', ADDRESSES.polygon.QUICK_2, ADDRESSES.polygon.USDC, ADDRESSES.polygon.PolyDoge, ADDRESSES.polygon.USDT],
       owners: ['0xE2E26BAc2ff37A7aE219EcEF74C5A1Bf95d5f854'],
       ownTokens: ['0x76e63a3E7Ba1e2E61D3DA86a87479f983dE89a7E'],
     },
@@ -936,7 +936,7 @@ const configs = {
         ADDRESSES.cronos.USDC, // USDC
         '0x26043Aaa4D982BeEd7750e2D424547F5D76951d4', // CUSD
         ADDRESSES.cronos.WCRO_1, // WCRO
-        '0xe44Fd7fCb2b1581822D0c862B68222998a0c299a', // WETH
+        ADDRESSES.cronos.weth, // WETH
         ADDRESSES.cronos.WBTC, // WBTC
       ],
       owners: ['0xBacF28BF21B374459C738289559EF89978D08102'],
@@ -995,7 +995,7 @@ const configs = {
       tokens: [
         nullAddress,
         '0x04068da6c83afcfa0e13ba15a6696662335d5b75', // USDC
-        '0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE', // BOO
+        ADDRESSES.fantom.BOO, // BOO
         ADDRESSES.fantom.WFTM, // WFTM
         '0x91a40c733c97a6e1bf876eaf9ed8c08102eb491f', // lzDAI
         ADDRESSES.fantom.USDC_L0, // lzUSDC
@@ -1185,7 +1185,7 @@ const configs = {
         '0x56659245931cb6920e39c189d2a0e7dd0da2d57b', // IBEX
         '0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0', // UNI
         '0x55ff62567f09906a85183b866df84bf599a4bf70', // KROM
-        '0x3d9907f9a368ad0a51be60f7da3b97cf940982d8', // GRAIL
+        ADDRESSES.arbitrum.GRAIL, // GRAIL
         '0x3CAaE25Ee616f2C8E13C74dA0813402eae3F496b', // xGRAIL
         '0x3e6648c5a70a150a88bce65f4ad4d506fe15d2af', // spell
         '0x10010078a54396f62c96df8532dc2b4847d47ed3', // hnd
@@ -1229,7 +1229,7 @@ const configs = {
         '0x9d7107c8E30617CAdc11f9692A19C82ae8bbA938', // roo
         '0xF14D3692B0055Db9Ca4c04065165d59B87E763f1', // mbc
         '0xe91a8D2c584Ca93C7405F15c22CdFE53C29896E3', // dext
-        '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', // cake
+        ADDRESSES.bsc.CAKE, // cake
       ],
       owners: ['0x5Ac58191F3BBDF6D037C6C6201aDC9F99c93C53A'],
       ownTokens: ['0x6aAc56305825f712Fd44599E59f2EdE51d42C3e7'],
@@ -1270,7 +1270,7 @@ const configs = {
   'treasury/camelot': {
     arbitrum: {
       owners: ['0x03ff2d78afb69e0859ec6beb4cf107d3741e97ab'],
-      ownTokens: ['0x3d9907f9a368ad0a51be60f7da3b97cf940982d8'],
+      ownTokens: [ADDRESSES.arbitrum.GRAIL],
       tokens: ['0x13ad51ed4f1b7e9dc168d8a00cb3f4ddd85efa60'],
     },
   },
@@ -1592,7 +1592,7 @@ const configs = {
       owners: ['0x776e9df67667cb568f0e7951f74347fd985d615b'],
       tokens: [
         ADDRESSES.manta.USDC,
-        '0x95cef13441be50d20ca4558cc0a27b601ac544e5',
+        ADDRESSES.manta.MANTA,
         '0x4c2a0f964a37a3ce305fe41c575beeb48c8c3fa2',
         '0x3af03e8c993900f0ea6b84217071e1d4cc783982',
         '0xe68874e57224d1e4e6d4c6b4cf5af7ca51867611',
@@ -1615,7 +1615,7 @@ const configs = {
         '0xba0dda8762c24da9487f5fa026a9b64b695a07ea',
         '0xa3d1a8deb97b111454b294e2324efad13a9d8396',
         '0xb79dd08ea68a908a97220c76d19a6aa9cbde4376',
-        '0x940181a94a35a4569e4529a3cdfb74e38fd98631',
+        ADDRESSES.base.AERO,
         '0x7f62ac1e974d65fab4a81821ca6af659a5f46298',
         '0x78b3c724a2f663d11373c4a1978689271895256f',
         ADDRESSES.base.wstETH,
@@ -1845,7 +1845,7 @@ const configs = {
         '0x739ca6D71365a08f584c8FC4e1029045Fa8ABC4B',
         '0xd86C8d4279CCaFbec840c782BcC50D201f277419',
         '0x165DBb08de0476271714952C3C1F068693bd60D7',
-        '0x74ccbe53f77b08632ce0cb91d3a545bf6b8e0979',
+        ADDRESSES.arbitrum.fBOMB,
         '0x9d9682577CA889c882412056669bd936894663fd',
         '0xABd380327Fe66724FFDa91A87c772FB8D00bE488',
         ADDRESSES.kava.axlUSDC,
@@ -2225,7 +2225,7 @@ const configs = {
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDC_CIRCLE,
         ADDRESSES.arbitrum.DAI,
-        "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418",
+        ADDRESSES.arbitrum.RAM,
       ],
       owners: ["0xf8e93a7d954f7d31d5fa54bc0eb0e384412a158d", "0x80fd0accC8Da81b0852d2Dca17b5DDab68f22253", "0xc07eed650ab255190ca9766162cfb47cfdf72f3a"],
       ownTokens: ["0x18c11FD286C5EC11c3b683Caa813B77f5163A122"],
@@ -2322,7 +2322,7 @@ const configs = {
       tokens: [
         nullAddress,
         '0xc7B1807822160a8C5b6c9EaF5C584aAD0972deeC',
-        '0x71850b7E9Ee3f13Ab46d67167341E4bDc905Eef9',
+        ADDRESSES.xdai.HNY,
         ADDRESSES.xdai.GNO,
         ADDRESSES.xdai.WXDAI,
       ],
@@ -2475,7 +2475,7 @@ const configs = {
     xdai: {
       tokens: [
         nullAddress,
-        "0x71850b7E9Ee3f13Ab46d67167341E4bDc905Eef9",
+        ADDRESSES.xdai.HNY,
         ADDRESSES.xdai.USDC,
         "0x21a42669643f45Bc0e086b8Fc2ed70c23D67509d",
         "0x83FF60E2f93F8eDD0637Ef669C69D5Fb4f64cA8E",
@@ -2892,10 +2892,10 @@ const configs = {
         ADDRESSES.base.USDC,
         ADDRESSES.base.USDbC,
         "0x4621b7A9c75199271F773Ebd9A499dbd165c3191", // DOLA
-        "0x940181a94A35A4569E4529A3CDfB74e38FD98631", // AERO
+        ADDRESSES.base.AERO, // AERO
       ],
       solidlyVeNfts: [
-        { baseToken: "0x940181a94A35A4569E4529A3CDfB74e38FD98631", veNft: "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4" },// veVelo
+        { baseToken: ADDRESSES.base.AERO, veNft: "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4" },// veVelo
       ],
       owners: ['0x586CF50c2874f3e3997660c0FD0996B090FB9764'],
       ownTokens: [],
@@ -2932,12 +2932,12 @@ const configs = {
         ADDRESSES.arbitrum.DAI,
         ADDRESSES.arbitrum.ARB,
         ADDRESSES.arbitrum.WETH,
-        "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418", // RAM
+        ADDRESSES.arbitrum.RAM, // RAM
       ],
       solidlyVeNfts: [
-        { isAltAbi: true, baseToken: "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418", veNft: "0xAAA343032aA79eE9a6897Dab03bef967c3289a06" },// veRAM
+        { isAltAbi: true, baseToken: ADDRESSES.arbitrum.RAM, veNft: "0xAAA343032aA79eE9a6897Dab03bef967c3289a06" },// veRAM
         { isAltAbi: true, baseToken: "0x5DB7b150c5F38c5F5db11dCBDB885028fcC51D68", veNft: "0x450330Df68E1ed6e0683373D684064bDa9115fEe" },// veSTR
-        { isAltAbi: true, baseToken: "0x463913D3a3D3D291667D53B8325c598Eb88D3B0e", veNft: "0x29d3622c78615A1E7459e4bE434d816b7de293e4" },// veSLIZ
+        { isAltAbi: true, baseToken: ADDRESSES.arbitrum.SLIZ, veNft: "0x29d3622c78615A1E7459e4bE434d816b7de293e4" },// veSLIZ
         { hasTokensOfOwnerAbi: true, baseToken: "0x15b2fb8f08E4Ac1Ce019EADAe02eE92AeDF06851", veNft: "0x9A01857f33aa382b1d5bb96C3180347862432B0d" },// veCHRONOS
       ],
       owners: ['0x23dEDab98D7828AFBD2B7Ab8C71089f2C517774a', '0x233Ca46D4882609C53fcbD2FCFaAe92D2eA89538'],
@@ -3064,7 +3064,7 @@ const configs = {
       tokens: [
         nullAddress,
         ADDRESSES.arbitrum.USDC, // USDC
-        "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8", // GRAIL
+        ADDRESSES.arbitrum.GRAIL, // GRAIL
         "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a", // MIM
         "0x3CAaE25Ee616f2C8E13C74dA0813402eae3F496b", // xGRAIL
         "0x616279fF3dBf57A55e3d1F2E309e5D704E4e58Ae", // jGLP-USDC CMLT-LP
@@ -3229,11 +3229,11 @@ const configs = {
         ADDRESSES.base.WETH,
         '0x576Bca23DcB6d94fF8E537D88b0d3E1bEaD444a2', // BCT (base address)
         '0x20b048fa035d5763685d695e66adf62c5d9f5055', // CHAR
-        '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
+        ADDRESSES.base.AERO,
         '0x16E1846aaFD6ecf91De676e7B6fc23f09a83F258', // WOOD
       ],
       solidlyVeNfts: [
-        { baseToken: '0x940181a94A35A4569E4529A3CDfB74e38FD98631', veNft: '0xebf418fe2512e7e6bd9b87a8f0f294acdc67e6b4' },
+        { baseToken: ADDRESSES.base.AERO, veNft: '0xebf418fe2512e7e6bd9b87a8f0f294acdc67e6b4' },
       ],
       owners: ['0xa79cd47655156b299762dfe92a67980805ce5a31'],
       ownTokens: ['0xdcefd8c8fcc492630b943abcab3429f12ea9fea2'],
@@ -3443,7 +3443,7 @@ const configs = {
         nullAddress,
         ADDRESSES.optimism.OP, //OP
         '0x73cb180bf0521828d8849bc8CF2B920918e23032', //USD+
-        '0x3c8B650257cFb5f272f799F5e2b4e65093a11a05',//velo
+        ADDRESSES.optimism.VELO,//velo
       ],
       owners: ['0xd2D4e9024D8C90aB52032a9F1e0d92D4cE20191B', '0x2f593f151aF4bb9A71bcA6cAce1d3c56C2844117'],
     },
@@ -4202,7 +4202,7 @@ const configs = {
     optimism: {
       tokens: [
         nullAddress,
-        '0x3c8B650257cFb5f272f799F5e2b4e65093a11a05',//velo
+        ADDRESSES.optimism.VELO,//velo
         '0x46f21fDa29F1339e0aB543763FF683D399e393eC'
 
       ],
@@ -4711,7 +4711,7 @@ const configs = {
         '0x39cC67690D0F2d4aCD68d3d9B612a80D780b84c0',
         '0xbF7c81FFF98BbE61B40Ed186e4AfD6DDd01337fe',
         ADDRESSES.bsc.USDC,
-        '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
+        ADDRESSES.bsc.CAKE,
         '0xAdBAF88B39D37Dc68775eD1541F1bf83A5A45feB',
         '0xBfACD29427fF376FF3BC22dfFB29866277cA5Fb4',
         '0x9A2f5556e9A637e8fBcE886d8e3cf8b316a1D8a2',
@@ -4848,7 +4848,7 @@ const configs = {
         '0x97513e975a7fa9072c72c92d8000b0db90b163c5', //BEETS
         '0x39fde572a18448f8139b7788099f0a0740f51205', //OATH
         '0x00a35fd824c717879bf370e70ac6868b95870dfb', //IB
-        '0x3c8b650257cfb5f272f799f5e2b4e65093a11a05', //VELO
+        ADDRESSES.optimism.VELO, //VELO
       ],
       owners: ['0x2e33a660742e813ad948fb9f7d682fe461e5fbf3'],
     },
@@ -4986,7 +4986,7 @@ const configs = {
     xdai: {
       tokens: [
         nullAddress,
-        '0x71850b7E9Ee3f13Ab46d67167341E4bDc905Eef9', //hny
+        ADDRESSES.xdai.HNY, //hny
       ],
       owners: ['0xe126b3E5d052f1F575828f61fEBA4f4f2603652a'],
     },
@@ -5327,7 +5327,7 @@ const configs = {
     bsc: {
       tokens: [
         nullAddress,
-        "0xe80772Eaf6e2E18B651F160Bc9158b2A5caFCA65",
+        ADDRESSES.arbitrum.USDplus,
         "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827",
         ADDRESSES.bsc.BUSD,
         "0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11"
@@ -5338,7 +5338,7 @@ const configs = {
     arbitrum: {
       tokens: [
         nullAddress,
-        "0xe80772Eaf6e2E18B651F160Bc9158b2A5caFCA65",
+        ADDRESSES.arbitrum.USDplus,
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.arbitrum.GMX,
@@ -5386,7 +5386,7 @@ const configs = {
         "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
       ],
       owners: ["0x1A11f5DF739bEca4974aCE4d8E5CE5ef5D854889"],
-      ownTokens: ["0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE"],
+      ownTokens: [ADDRESSES.fantom.BOO],
     },
   },
   'treasury/spool-protocol': {
@@ -6185,7 +6185,7 @@ const configs = {
         ADDRESSES.optimism.WSTETH, // wstETH
       ],
       ownTokens: [
-        "0x3c8B650257cFb5f272f799F5e2b4e65093a11a05", // VELO
+        ADDRESSES.optimism.VELO, // VELO
         "0xe8537b6FF1039CB9eD0B71713f697DDbaDBb717d", // vAMM-VELO/USDC
       ],
       owners: ["0xb074ec6c37659525EEf2Fb44478077901F878012", "0xe7D7ce84D45e43F06cD5CaA1d9c42374b8776fb0"],
@@ -6210,7 +6210,7 @@ const configs = {
         "0xB248a295732e0225acd3337607cc01068e3b9c10", // venusXRP
         "0x95c78222B3D6e262426483D42CfA53685A67Ab9D", // venusBUSD
         "0xA07c5b74C9B40447a954e1466938b865b6BBea36", // venusBNB
-        "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82", //cake
+        ADDRESSES.bsc.CAKE, //cake
         "0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11", //thena
         "0x4338665CBB7B2485A8855A139b75D5e34AB0DB94", //ltc
         "0xfb5B838b6cfEEdC2873aB27866079AC55363D37E", //floki
@@ -6233,7 +6233,7 @@ const configs = {
         "0xd17479997F34dd9156Deef8F95A52D81D265be9c", //usdd
         "0x302cD8973bE5CA2334B4ff7e7b01BA41455559b3", //ethw
         "0x1bdd3Cf7F79cfB8EdbB955f20ad99211551BA275", //bnbx
-        "0x965F527D9159dCe6288a2219DB51fc6Eef120dD1", //bsw
+        ADDRESSES.bsc.BSW, //bsw
         "0xc2E9d07F66A89c44062459A47a0D2Dc038E4fb16", //stkbnb
         "0xaeF0d72a118ce24feE3cD1d43d383897D05B4e99", //win
         "0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5", //lisusd

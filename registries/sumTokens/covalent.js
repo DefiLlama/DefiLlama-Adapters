@@ -259,7 +259,7 @@ module.exports = {
     "flare": {
       "tokensAndOwners": [
         [
-          "0x12e605bc104e93B45e1aD99F9e555f659051c2BB",
+          ADDRESSES.flare.sFLR,
           "0x19831cfB53A0dbeAD9866C43557C1D48DfF76567"
         ],
         [

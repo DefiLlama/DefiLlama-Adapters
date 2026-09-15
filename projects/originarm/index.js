@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const OETH = "0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3"
-const OS = "0xb1e25689D55734FD3ffFc939c4C3Eb52DFf8A794"
+const OS = ADDRESSES.sonic.OS
 
 // Multi-base ARM (upgraded AbstractARM) reads. Legacy ARMs revert on getBaseAssets().
 const baseAssetConfigsAbi = "function baseAssetConfigs(address asset) view returns (uint128 buyPrice, uint128 sellPrice, uint128 buyLiquidityRemaining, uint128 sellLiquidityRemaining, uint128 crossPrice, uint120 pendingRedeemAssets, bool peggedToLiquidityAsset, address adapter)"

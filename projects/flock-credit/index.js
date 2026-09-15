@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs')
 
-const USDG = '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168'
+const USDG = ADDRESSES.robinhood.USDG
 const UP = '0x57C0E45cB534413D1C20A4240955d6bB250BB4F1'
 const LUTE = '0xD1e861CC5Eee7eA88649206b74504D78CCD7AEeA'
 

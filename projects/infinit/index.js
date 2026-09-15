@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const VAULT_MANAGER_ADDRESS = "0xaFE480f375EBd13dF703ef50b429357d29D162Ee";
@@ -14,8 +15,8 @@ async function tvl(api) {
       calls: Array.from({ length: BATCH }, (_, i) => index + i),
       permitFailure: true,
     });
-    vaultInfos.push(...vaults.filter(v => v && v.vaultAddress !== '0x0000000000000000000000000000000000000000'));
-    if (vaults.some(v => !v || v.vaultAddress === '0x0000000000000000000000000000000000000000')) break;
+    vaultInfos.push(...vaults.filter(v => v && v.vaultAddress !== ADDRESSES.null));
+    if (vaults.some(v => !v || v.vaultAddress === ADDRESSES.null)) break;
     index += BATCH;
   }
 
