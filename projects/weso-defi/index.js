@@ -78,9 +78,13 @@ async function tvl(api) {
     api.add(curve.reserve_denom || 'uluna', curve.reserve)
   }
 
-  // $reBASE is a cw20_bonding curve vs USTC. curve_info.reserve overstates vs on-contract bank
-  // (funds are also split to ops/growth/dev accounts), so count the bonding-curve contract bank only.
-  await getBalance2({ owner: REBASE, chain: 'terra', tokens: ['uusd', 'uluna'], api })
+  // $reBASE is a cw20_bonding curve vs USTC. Use curve_info.reserve (same pattern as $WESO):
+  // on-contract bank is only ~1M USTC; the rest is routed to reserve/ops/growth/dev pools and the
+  // validator multisig (to_validator_pct). Those balances roughly match curve_info.reserve (~3.8M UUSD).
+  const rebase = await queryContractWithRetries({ contract: REBASE, chain: 'terra', data: { curve_info: {} } })
+  if (rebase?.reserve && rebase.reserve !== '0') {
+    api.add(rebase.reserve_denom || 'uusd', rebase.reserve)
+  }
 
   // Wrap banks = circulating 1:1 backing. Skip CWLUNC token amounts in AMM pools above so bank
   // LUNC is not double-counted with pool CWLUNC. CWUSTC has no AMM inventory, so bank uusd is additive.
@@ -90,6 +94,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is AMM pool reserves on the WESO DeFi factory plus the native LUNC locked in the $WESO bonding curve (terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms), plus native USTC/LUNC held in the $reBASE bonding-curve contract bank (terra1uewxz67jhhhs2tj97pfm2egtk7zqxuhenm4y4m; curve_info.reserve is not used because it overstates vs the on-contract bank), plus native USTC (uusd) in the CWUSTC wrap vault bank (terra1uncwzdhxdktqpx4rj6mkuhl0ekv0raua0058rr7zgnapm9najyyqgtpf6h) and native LUNC (uluna) in the CWLUNC wrap vault bank (terra10fusc7487y4ju2v5uavkauf3jdpxx9h8sc7wsqdqg4rne8t4qyrq8385q6) as circulating 1:1 backing. Wrap/unwrap (token_bonding and converter) pool queries are excluded. CWLUNC token balances inside AMM pools (e.g. JURIS/CWLUNC terra14jed…322v7) are skipped because that CWLUNC is already backed by wrap-bank LUNC; the other pool asset (JURIS) is still counted. Mint-cap token_info.total_supply / curve_info.reserve on wraps are never used. reBASE ops/growth/dev treasury accounts are not included.',
+  methodology: 'TVL is AMM pool reserves on the WESO DeFi factory plus the native LUNC locked in the $WESO bonding curve (terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms), plus native USTC locked for the $reBASE bonding curve via curve_info.reserve (terra1uewxz67jhhhs2tj97pfm2egtk7zqxuhenm4y4m; reserve spans the curve contract bank plus routed reserve/ops/growth/dev and validator-multisig USTC), plus native USTC (uusd) in the CWUSTC wrap vault bank (terra1uncwzdhxdktqpx4rj6mkuhl0ekv0raua0058rr7zgnapm9najyyqgtpf6h) and native LUNC (uluna) in the CWLUNC wrap vault bank (terra10fusc7487y4ju2v5uavkauf3jdpxx9h8sc7wsqdqg4rne8t4qyrq8385q6) as circulating 1:1 backing. Wrap/unwrap (token_bonding and converter) pool queries are excluded. CWLUNC token balances inside AMM pools (e.g. JURIS/CWLUNC terra14jed…322v7) are skipped because that CWLUNC is already backed by wrap-bank LUNC; the other pool asset (JURIS) is still counted. Mint-cap token_info.total_supply / curve_info.reserve on wraps are never used.',
   terra: { tvl },
 }
