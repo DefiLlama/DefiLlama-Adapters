@@ -1,4 +1,5 @@
 const sui = require('../helper/chain/sui')
+const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 
 // Kelpie: per-user concentrated-liquidity vaults on Sui. Each vault is a shared
 // object holding one CLMM position plus idle balances, on SuiDex V3 or Cetus.
@@ -8,29 +9,17 @@ const VAULT_PACKAGES = [
   '0x8751d82e4a6c0eb08d09db745f0b73d6d7c7876a40ffbead791ed8b64c5e2bc8', // Kelpie-Cetus
 ]
 
-const Q64 = 2 ** 64
-
 const signed32 = (bits) => {
   const b = Number(bits)
   return b >= 2 ** 31 ? b - 2 ** 32 : b
 }
 
+const sqrtPriceToTick = (sqrtPriceX64) => Math.floor(Math.log((sqrtPriceX64 / 2 ** 64) ** 2) / Math.log(1.0001))
+
 // "pkg::vault::Vault<A, B>" -> [A, B]
 function typeArgs(type) {
   const inner = type.slice(type.indexOf('<') + 1, type.lastIndexOf('>'))
   return inner.split(',').map((s) => s.trim())
-}
-
-// Token amounts of a CLMM position, from liquidity and the pool's sqrt price.
-function positionAmounts(liquidity, sqrtPriceX64, tickLower, tickUpper) {
-  const L = Number(liquidity)
-  if (!L) return [0, 0]
-  const sp = Number(sqrtPriceX64) / Q64
-  const sa = Math.pow(1.0001, tickLower / 2)
-  const sb = Math.pow(1.0001, tickUpper / 2)
-  if (sp <= sa) return [(L * (sb - sa)) / (sa * sb), 0]
-  if (sp < sb) return [(L * (sb - sp)) / (sp * sb), L * (sp - sa)]
-  return [0, L * (sb - sa)]
 }
 
 async function tvl(api) {
@@ -42,10 +31,10 @@ async function tvl(api) {
 
     const poolIds = [...new Set(vaults.map((v) => v.fields.pool_id))]
     const pools = await sui.getObjects(poolIds, { skipLayout: true })
-    const sqrtPrice = {}
+    const poolTick = {}
     poolIds.forEach((id, i) => {
       const f = pools[i]?.fields
-      if (f) sqrtPrice[id] = f.sqrt_price ?? f.current_sqrt_price
+      if (f) poolTick[id] = sqrtPriceToTick(f.sqrt_price ?? f.current_sqrt_price)
     })
 
     for (const v of vaults) {
@@ -57,16 +46,17 @@ async function tvl(api) {
       api.add(coinB, f.balance_y ?? f.balance_b ?? 0)
 
       const p = f.position?.fields
-      const price = sqrtPrice[f.pool_id]
-      if (!p || !price) continue
-      const [a, b] = positionAmounts(
-        p.liquidity,
-        price,
-        signed32(p.tick_lower_index.fields.bits),
-        signed32(p.tick_upper_index.fields.bits),
-      )
-      api.add(coinA, Math.floor(a))
-      api.add(coinB, Math.floor(b))
+      const tick = poolTick[f.pool_id]
+      if (!p || tick === undefined) continue
+      addUniV3LikePosition({
+        api,
+        token0: coinA,
+        token1: coinB,
+        liquidity: Number(p.liquidity),
+        tickLower: signed32(p.tick_lower_index.fields.bits),
+        tickUpper: signed32(p.tick_upper_index.fields.bits),
+        tick,
+      })
     }
   }
 }
