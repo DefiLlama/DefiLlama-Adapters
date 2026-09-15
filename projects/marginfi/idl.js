@@ -63,12 +63,14 @@ module.exports = {
           {"name": "liabilityWeightMaint", "type": {"defined": "WrappedI80F48"}},
           {"name": "depositLimit", "type": "u64"},
           {"name": "interestRateConfig", "type": {"defined": "InterestRateConfig"}},
-          {"name": "operationalState", "type": {"defined": "BankOperationalState"}},
+          // unit enum on-chain (1-byte discriminant); decoded as u8 so unknown new variants don't break decoding
+          {"name": "operationalState", "type": "u8"},
           {"name": "oracleSetup", "type": "u8"},
           {"name": "oracleKeys", "type": {"array": ["publicKey", 5]}},
           {"name": "ignore1", "type": {"array": ["u8", 6]}},
           {"name": "borrowLimit", "type": "u64"},
-          {"name": "riskTier", "type": {"defined": "RiskTier"}},
+          // unit enum on-chain (1-byte discriminant); decoded as u8 so unknown new variants don't break decoding
+          {"name": "riskTier", "type": "u8"},
           // New fields mapped from on-chain layout: asset_tag and config_flags
           // These reuse bytes that were previously part of padding.
           {"name": "assetTag", "type": "u8"},
@@ -94,8 +96,7 @@ module.exports = {
         ]
       }
     },
-    {"name": "BankOperationalState", "type": {"kind": "enum", "variants": [{"name": "Paused"}, {"name": "Operational"}, {"name": "ReduceOnly"}]}},
-    {"name": "RiskTier", "type": {"kind": "enum", "variants": [{"name": "Collateral"}, {"name": "Isolated"}]}}
+    // BankOperationalState and RiskTier removed: decoded as u8 in BankConfig (see above)
   ],
   "events": [],
   "errors": []

@@ -12,7 +12,8 @@
     "@injectivelabs/sdk-ts": "^1.14.5",
     "@kamino-finance/kliquidity-sdk": "^6.2.2",
     "@polkadot/api": "^16.1.1",
-    "@polkadot/util-crypto": "^14.0.3",
+    "@polkadot/util": "14.0.1",
+    "@polkadot/util-crypto": "14.0.1",
     "@supercharge/promise-pool": "^3.2.0",
     "fuels": "^0.103.0",
     "request": "^2.88.2"

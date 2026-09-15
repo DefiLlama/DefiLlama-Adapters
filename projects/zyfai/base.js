@@ -100,6 +100,10 @@ const IPOR_POOLS = {
     WETH: '0x17d0f109ee895bad0b68aa104aa72bd0b003ad8e',
     'cbETH Looper': '0x5900c3b72458f12967dc1bef35b92d271f5cdbc1',
     'TAU cbETH Dynamic Looping': '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
+    'Nvidia Carry Trade': '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
+    'Apple Carry Trade': '0x31744e44d6af88225c1dbefbe5df8308faea641b',
+    'Meta Carry Trade': '0xcd19f18884bf388b866d05cdd1ae351133821f01',
+    'Google Carry Trade': '0x01dbdb9748ecf71b1ffbb62f5cb41318531ba362',
 };
 
 // const BASE_YO_PROTOCOL_POOLS = {

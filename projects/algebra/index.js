@@ -21,7 +21,7 @@ function chainTvl(chain) {
       })
     const toa = []
     logs.forEach(({ token0, token1, pool}) => toa.push([token0, pool], [token1, pool]))
-    return sumTokens2({ api, tokensAndOwners: toa })
+    return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: ['0x0000000000000000000000000000000000000001'] })
   }
 }
 

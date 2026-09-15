@@ -19,8 +19,8 @@ module.exports = {
     borrowed,
   },
   era: {
-    tvl,
-    borrowed,
+    tvl: () => ({  }),
+    borrowed: () => ({  }),
   },
   moonbeam: {
     tvl: () => ({  }),

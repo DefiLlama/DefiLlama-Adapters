@@ -13,6 +13,21 @@ const config = {
     ],
     blacklistedMarketIds: [],
   },
+  ethereum: {
+    midnight: '0x471686c42792F93528B000beF54bC10E3aa2045f',
+    fromBlock: 25798183,
+    blacklistedTokens: [
+      // These vaults lend their underlying into Morpho Blue and post their shares as collateral to Midnight
+      '0x26c46acb48b46cc99ccb3cf6c365bdafa2556e80', // Tenor USD3/USDC Collateral Vault
+      '0x09409fa71bcfd3f433571dbeec0c0a9c19b0d30e', // Tenor wsrUSD/USDC Collateral Vault
+      '0xe3891d8ca7e00bc42157d9bb5797c88d9159aac6', // Tenor reUSD/USDC Collateral Vault
+      '0x226ecbf4755a5f81ed721e18c3fda11f004ea9e0', // Tenor siUSD/USDC Collateral Vault
+      '0x7579a75658a7a0b7d277296dfaeecf4018746091', // Tenor WETH/USDC Collateral Vault
+      '0xef6955d886fce26d87753da45192ea50f59dc91c', // Tenor strUSD/USDC Collateral Vault
+      '0xe1bdb88ee5dbace653ecd2123e8396bb5ba8adc5', // Tenor wstETH/WETH Collateral Vault
+    ],
+    blacklistedMarketIds: [],
+  },
 }
 
 const marketCreatedEvent = 'event MarketCreated((uint256 chainId,address midnight,address loanToken,(address token,uint256 lltv,uint256 liquidationCursor,address oracle)[] collateralParams,uint256 maturity,uint256 rcfThreshold,address enterGate,address liquidatorGate) market,bytes32 indexed id_)'
@@ -42,5 +57,8 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: 'Every Midnight market is enumerated on-chain from MarketCreated events. TVL is the collateral held in the Midnight contract. Borrowed is outstanding debt read per-market from totalUnits.',
-  base: { tvl, borrowed },
 }
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl, borrowed }
+})

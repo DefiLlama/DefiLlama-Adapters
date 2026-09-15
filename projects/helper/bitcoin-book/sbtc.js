@@ -4,11 +4,10 @@
 // wallet is a key-path-only taproot output, i.e. output key = BIP341 tweak of the aggregate 
 // key with an empty merkle root, which is what taprootAddress() below computes.
 
-const axios = require('axios')
 const crypto = require('crypto')
+const { call } = require('../chain/stacks-api')
 
 const SBTC_REGISTRY = 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-registry'
-const STACKS_API = 'https://api.hiro.so/v2/contracts/call-read'
 
 // Reserve addresses used by earlier signer keys. They hold dust today, but a rotation is a
 // bitcoin transaction like any other, so keep reading them in case a sweep is still in flight.
@@ -130,19 +129,9 @@ function taprootAddress(internalKey) {
 }
 
 async function getAggregatePubkey() {
-  const [deployer, contract] = SBTC_REGISTRY.split('.')
-  const { data } = await axios.post(`${STACKS_API}/${deployer}/${contract}/get-current-aggregate-pubkey`, {
-    sender: deployer,
-    arguments: [],
-    }, {
-    timeout: 30000,
-  })
-  if (data.okay !== true) throw new Error(`sbtc: registry read failed: ${data.cause}`)
-  // Clarity buffer: 0x02, a four byte big endian length, then the bytes themselves.
-  const hex = data.result.replace(/^0x/, '')
-  if (!hex.startsWith('02')) throw new Error(`sbtc: expected a buffer clarity value, got ${hex.slice(0, 2)}`)
-  const length = parseInt(hex.slice(2, 10), 16)
-  const pubkey = Buffer.from(hex.slice(10, 10 + length * 2), 'hex')
+  // call() returns clarity buffers as 0x-prefixed hex
+  const result = await call({ target: SBTC_REGISTRY, abi: 'get-current-aggregate-pubkey' })
+  const pubkey = Buffer.from(result.replace(/^0x/, ''), 'hex')
   if (pubkey.length !== 33) throw new Error(`sbtc: expected a 33 byte pubkey, got ${pubkey.length}`)
   return pubkey.subarray(1) // drop the compressed prefix, taproot uses the x coordinate only
 }

@@ -67,11 +67,15 @@ async function blockscoutGetTokens(address, api, { onlyUseExistingCache = false,
   return getUniqueAddresses(tokens, chain)
 
   async function refreshCache() {
-    // Some blockscout instances (e.g. robinhood) sit behind a WAF that 403s non-browser user agents
+    // Some blockscout instances (e.g. robinhood) sit behind a Cloudflare rule that challenges requests
+    // whose Chrome user agent is not accompanied by the matching sec-ch-ua client hints a real Chrome sends
     const items = await get(`${baseUrl}/api/v2/addresses/${address}/token-balances`, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
         'Accept': 'application/json',
+        'sec-ch-ua': '"Chromium";v="126", "Not?A_Brand";v="24", "Google Chrome";v="126"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
       }
     })
     if (!Array.isArray(items)) return
