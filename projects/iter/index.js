@@ -23,6 +23,20 @@ const config = {
   },
 }
 
+// The SDK ships no providers for these testnets, so the adapter registers them itself
+// (same approach as projects/strato). Env values set by the runner take precedence.
+const rpcs = {
+  arc_testnet: { rpc: 'https://rpc.testnet.arc.network', chainId: 5042002 },
+  rise_testnet: { rpc: 'https://testnet.riselabs.xyz', chainId: 11155931 },
+}
+for (const [chain, { rpc, chainId }] of Object.entries(rpcs)) {
+  const key = chain.toUpperCase()
+  process.env[`${key}_RPC`] ??= rpc
+  process.env[`${key}_RPC_CHAIN_ID`] ??= String(chainId)
+  // Multicall3 is at its canonical address on both chains.
+  process.env[`${key}_RPC_MULTICALL_V3`] ??= '0xcA11bde05977b3631167028862bE2a173976CA11'
+}
+
 const abi = {
   orderbookFactory: 'address:orderbookFactory',
   allPairsLength: 'uint256:allPairsLength',
