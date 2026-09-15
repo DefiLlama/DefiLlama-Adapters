@@ -1,4 +1,4 @@
-const { allPoolTokens: baseTokens } = require('./base');
+const { allPoolTokens: baseTokens, stockVaults: baseStockVaults } = require('./base');
 const { getConfig } = require('../helper/cache');
 const { allPoolTokens: ethereumPoolTokens } = require('./ethereum');
 
@@ -191,6 +191,33 @@ const TOKENS = {
   sonic: sonicTokens,
 };
 
+async function stockVaultsTvl(api, owners, vaults) {
+    const assets = await api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: true });
+    const vaultAsset = {};
+    vaults.forEach((v, i) => { if (assets[i]) vaultAsset[v.toLowerCase()] = assets[i]; });
+    const okVaults = Object.keys(vaultAsset);
+    if (!okVaults.length) return;
+
+    const calls = owners.flatMap(o => okVaults.map(v => ({ target: v, params: [o] })));
+    const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+
+    const convertCalls = [];
+    const convertAssets = [];
+    bals.forEach((bal, i) => {
+        if (!+bal) return;
+        convertCalls.push({ target: calls[i].target, params: [bal] });
+        convertAssets.push(vaultAsset[calls[i].target.toLowerCase()]);
+    });
+    if (!convertCalls.length) return;
+
+    const amounts = await api.multiCall({
+        abi: 'function convertToAssets(uint256) view returns (uint256)',
+        calls: convertCalls,
+        permitFailure: true,
+    });
+    amounts.forEach((amt, i) => { if (amt) api.add(convertAssets[i], amt); });
+}
+
 async function tvl(api) {
     const owners = await getConfig('zyfai/'+api.chain, `https://api.zyf.ai/api/v1/data/active-wallets?chainId=${api.chainId}`);
     const cleanOwners = owners.filter(o => o !== '');
@@ -200,6 +227,10 @@ async function tvl(api) {
             beetsTvl(api, cleanOwners),
             penpieTvl(api, cleanOwners),
         ]);
+    }
+
+    if (api.chain === 'base') {
+        await stockVaultsTvl(api, cleanOwners, baseStockVaults);
     }
 
     return api.sumTokens({ownerTokens: cleanOwners.map(o => [TOKENS[api.chain], o])});
