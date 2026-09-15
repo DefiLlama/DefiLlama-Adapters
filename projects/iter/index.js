@@ -1,16 +1,26 @@
 // Iter (formerly Standard) - fully onchain CLOB exchange with band liquidity pools,
 // stop orders and a token launchpad. Contracts: https://github.com/iter-cx/iter-monorepo
 //
-// Every chain needs the MatchingEngine; the other contracts exist only on the newer
-// deployment generation and are read when configured:
+// Every chain needs the MatchingEngine; the other contracts are read when configured:
 //   stopOrderEngine  - StopOrderEngine, escrows stop orders in one StopLimitOrderbook per pair
 //   bandPoolFactory  - BandPoolFactory, band liquidity pools that hold LP inventory
 //   presaleLaunch    - PresaleLaunch, holds settlement tokens committed to live presales
 const { nullAddress } = require('../helper/tokenMapping')
 
+// Addresses come from packages/deployments/deployments.json in iter-monorepo.
 const config = {
-  // Exchange-only generation: the engine has no stop order engine, pool factory or launchpad.
-  somnia: { matchingEngine: '0x3Cb2CBb0CeB96c9456b11DbC7ab73c4848F9a14c' },
+  arc_testnet: {
+    matchingEngine: '0xD44e3b8bdDC46E112C4eB99EdcF08FF88cf4b0Da',
+    stopOrderEngine: '0x0e7091a9cb0520DA70F947aF67afc3Cb12807341',
+    bandPoolFactory: '0x1844A8bCDcaa53B54a873220E4Ef7a4a53eF73E5',
+    presaleLaunch: '0x8aE955FB9C0F157da0a936EFcEc6803CD0710DbD',
+  },
+  rise_testnet: {
+    matchingEngine: '0x631eb12F60698C869a192217C0055CCb660ff9c1',
+    stopOrderEngine: '0xBCBFD284c037bdCf87c494b6Cd92029527b60e65',
+    bandPoolFactory: '0xA3b41c0F07533B3807E07A688556A6DD68799c8c',
+    presaleLaunch: '0xB337Cd9dA656d21364db0ee28529a24aFF2B5F74',
+  },
 }
 
 const abi = {
