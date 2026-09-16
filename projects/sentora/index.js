@@ -9,6 +9,7 @@ const customConfig = {
       '0x74ad2f789ed583dbd141bbdafc673fe1f033718b', // Upshift vault USD
       '0x3cc0d33b1aeac3d23ea89214b3ac5b4607032167', // Upshift vault BTC
       '0xd0271e199f886ff943859579465498b18ecf1e9d', // Upshift vault ETH
+      '0xd000E6BcAd5457E8F4de67eDdeFe50BCC4B3d743', // Upshift Sentora RWA (PYUSD)
     ]
   }
 }
