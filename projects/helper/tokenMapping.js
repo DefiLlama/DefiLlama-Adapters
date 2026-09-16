@@ -42,23 +42,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  // Arc USDC is one token with two interfaces (native 18-dec gas + ERC-20 6-dec at 0x3600…).
-  // Native balances are folded into the ERC-20 address in portedTokens before this mapping runs.
-  arc: {
-    '0x3600000000000000000000000000000000000000': { coingeckoId: 'usd-coin', decimals: 6 },
-    '0xbEf5f6d51CB62b58e6A8f77868681825C6fe21c1': { coingeckoId: 'euro-coin', decimals: 6 },
-    '0x128cC466B61f542da60c70e3aA11c10e19B84EDB': { coingeckoId: 'weth', decimals: 18 },
-    '0x171A4217b86A807A64eB94757Db6849fb4bDbAA0': { coingeckoId: 'bitcoin', decimals: 8 },
-    '0xF197FFC28c23E0309B5559e7a166f2c6164C80aA': { coingeckoId: 'mxnb', decimals: 6 },
-    '0x75700e137c05B2beb2b3A436cCB551652E3D8B11': { coingeckoId: 'brla-digital-brla', decimals: 18 },
-    '0xd2a530170D71a9Cfe1651Fb468E2B98F7Ed7456b': { coingeckoId: 'forte-aud', decimals: 6 },
-    '0xd70C2FA4232e054B373eFAEa98E4138511c2a309': { coingeckoId: 'stablecorp-qcad', decimals: 6 },
-    '0xE205b4e7Ac03E3f7b2060C3EDf2171AA7126C0d5': { coingeckoId: 'zar-universal', decimals: 18 },
-    '0x303dBB88BA14626c7a927E983b73267C575315f7': { coingeckoId: 'krw1', decimals: 18 },
-    '0xbBe6aAB0Ed76e90AeA0d1cd978EC231c8AdCDF8b': { coingeckoId: 'agant-gbp', decimals: 6 },
-    '0x4933A85b5b5466Fbaf179F72D3DE273c287EC2c2': { coingeckoId: 'allunity-eur', decimals: 6 },
-    '0xc6df1B92a6ae61a27059C41e541A91CE8DCb1605': { coingeckoId: 'allunity-chf', decimals: 6 },
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
