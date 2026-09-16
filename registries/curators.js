@@ -862,6 +862,20 @@ const configs = {
       }
     },
   },
+  "odyssey-digital-am": {
+    config: {
+      methodology: 'Count settled assets in Odyssey Digital AM funds on Lagoon',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xa00f63e85b3d242568a9edecb48f5e2cf879b07b', // USDC
+            '0x2f945864126c6ba1dcadcb97ad114c9ef94f1379', // BTC
+            '0x08d7eef35f3e317001fe12c19a32f93307b008b4', // ETH
+          ],
+        },
+      },
+    },
+  },
   "ouroboros": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Ouroboros Capital.',
