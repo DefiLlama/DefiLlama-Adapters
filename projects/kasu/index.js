@@ -92,7 +92,4 @@ async function borrowed(api) {
 }
 
 module.exports.methodology = 'TVL is the stablecoin still held on-chain by Kasu: liquidity in the lending pools, deposits queued in the pending pools awaiting clearing, and loss repayments held by the tranches until claimed. Amounts lent out to borrowers, measured as pool token supply minus pool holdings, plus loans Kasu funds off-chain and reports on-chain, are counted as borrowed.'
-module.exports.hallmarks = [
-  ['2026-09-10', 'Lending book now counted as Active Loans, not TVL'],
-]
 Object.keys(CONFIG).forEach(chain => module.exports[chain] = { tvl, borrowed })
