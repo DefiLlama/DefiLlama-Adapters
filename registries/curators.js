@@ -602,6 +602,20 @@ const configs = {
       methodology: 'Counts all assets that are deposited in all vaults curated by Feather.',
     },
   },
+  "felix-vaults": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho V1 and V2 vaults created through the verified Felix deployment owners on HyperEVM.',
+      blockchains: {
+        hyperliquid: {
+          morphoVaultOwners: [
+            '0x2157f54f7a745c772e686AA691Fa590B49171eC9',
+            '0xcc8f1bDE0d42017c0e52321e69325F9B26F7c2D6',
+            '0xDd00059904ddF45e30b4131345957f76F26b8f6c',
+          ],
+        },
+      },
+    },
+  },
   "fence": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Fence.',
