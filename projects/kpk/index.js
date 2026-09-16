@@ -93,8 +93,7 @@ const configs = {
 
 async function getGearboxV31Collateral(api, marketConfigurator, fromBlock, pageSize = 1e3) {
   if (!marketConfigurator) return
-  // a live run has no block set and reads latest; a historical run before the
-  // configurator existed is skipped
+  // skipped at blocks before the configurator existed.
   if (fromBlock && api.block && api.block < fromBlock) return
 
   // fetch credit managers associated with this configurator
@@ -186,10 +185,13 @@ const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc'
 // The store is mandates ONLY: no curated vaults, no Gearbox/Aleph, no OIV fund Safes.
 // Vaults, Gearbox and Aleph keep running from their own on-chain sources at
 // historical blocks. The OIV Safes have no historical source and are skipped on past
-// dates: they only exist since 2026-03 and production has tracked them since
-// 2026-06-16, so a refill of the history before that loses nothing.
+// dates: they only exist since 2026-03 and production has tracked them via DeBank
+// since 2026-06-16, so a refill of the history before that loses nothing. From that
+// date on the stored days are already complete and a historical run would REPLACE
+// them with a total missing the OIV Safes, so the historical path refuses those dates.
 const IR_CACHE_PROJECT = 'kpk-treasury-ir'
 const IR_CACHE_FILE = 'daily'
+const HISTORICAL_CUTOFF = '2026-06-16' // first day production tracked the OIV Safes
 
 let irStorePromise
 function loadIrStore() {
@@ -199,9 +201,13 @@ function loadIrStore() {
 
 const utcDate = (timestamp) => new Date(timestamp * 1e3).toISOString().slice(0, 10)
 
-// a run for any day but today is a historical run (a refill) - today's is the live one
+// A run for any day but today is a historical run (a refill); today's is the live one.
 function isHistoricalRun(api) {
-  return utcDate(api.timestamp) !== utcDate(Math.floor(Date.now() / 1e3))
+  const date = utcDate(api.timestamp)
+  if (date === utcDate(Math.floor(Date.now() / 1e3))) return false
+  if (date >= HISTORICAL_CUTOFF)
+    throw new Error(`kpk: ${date} is on or after ${HISTORICAL_CUTOFF}, when production started tracking the OIV Safes live. There is no historical source for them, so refilling this date would overwrite a complete day with a partial one - refill dates before the cutoff only`)
+  return true
 }
 
 async function getZodiacTvlFromCache(api) {
