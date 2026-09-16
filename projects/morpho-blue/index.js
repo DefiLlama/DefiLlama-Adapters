@@ -84,8 +84,15 @@ const tvl = async (api) => {
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
   const collateralWQLMap = new Map(collCalls.map((addr, i) => [addr, withdrawQueueLengths[i]]));
+  // Morpho vault shares posted as collateral are a claim on assets this adapter already
+  // counts through the vault loop above, so counting the shares as well double counts the same
+  // deposits. withdrawQueueLength() only exists on MetaMorpho V1 and reverts on Vault V2, which
+  // leaves wql == null and keeps the market, so match the factory-derived vault list too.
+  const morphoVaultSet = new Set(morphoVaults.map(i => i.toLowerCase()))
   const filterMarkets = marketInfos.filter(m => {
-    const wql = collateralWQLMap.get(m.collateralToken.toLowerCase());
+    const collateralToken = m.collateralToken.toLowerCase();
+    if (morphoVaultSet.has(collateralToken)) return false;
+    const wql = collateralWQLMap.get(collateralToken);
     return wql == null || wql > 30 || wql < 0;
   });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
