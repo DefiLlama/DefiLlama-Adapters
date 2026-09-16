@@ -729,8 +729,20 @@ module.exports = {
   },
   "satrush": {
     "timetravel": false,
-    "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault.",
-    "solana": { "tokenAccounts": ["2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9"] }
+    "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault, plus RUSH received from mining held in the Rush Vault and RUSH staked in the SatRush staking program.",
+    "solana": {
+      "tvl": {
+        "tokenAccounts": [
+          "2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9", // Sats Vault cbBTC
+          "G9iBFqhbu3rPCtTEnHzZmn8UDqy3t5d7VLqbnU8faYdT" // Rush Vault RUSH
+        ] 
+      },
+      "staking": {
+        "tokenAccounts": [
+          "7c3iepAJkw8MRF6Rm5LyxB1Vbkxgq4EAAkGy7LNQtFfV", // Staking treasury staked RUSH
+        ]
+      }
+    }
   },
   "tessera-v": {
     "methodology": "TVL is the value of SPL and Token-2022 balances held in Tessera V vaults controlled by its Solana authority account.",
