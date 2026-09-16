@@ -696,6 +696,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   let ethBalanceInputs = []
 
   tokensAndOwners = tokensAndOwners.filter(i => {
+    if (i[1] === nullAddress) return false  // ignore nullAddress owners, as they are usually used to burn tokens
     const token = normalizeAddress(i[0], chain)
     if (token !== nullAddress && !gasTokens.includes(token))
       return true
