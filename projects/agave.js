@@ -1,4 +1,4 @@
-const ADDRESSES = require('helper/coreAssets.json')
+const ADDRESSES = require('./helper/coreAssets.json')
 const { staking } = require("./helper/staking.js");
 const { aaveExports } = require('./helper/aave.js');
 const sdk = require('@defillama/sdk');
