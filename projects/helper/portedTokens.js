@@ -62,6 +62,29 @@ for (const chain of Object.keys(fixBalancesTokens)) {
     fixBalancesMapping[chain] = b => fixBalances(b, fixBalancesTokens[chain], { chain })
 }
 
+const ARC_USDC = '0x3600000000000000000000000000000000000000'
+const ARC_NATIVE_USDC = [
+  '0x0000000000000000000000000000000000000000',
+  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+]
+
+function foldArcDualInterfaceUsdc(balances) {
+  for (const native of ARC_NATIVE_USDC) {
+    for (const key of [native, native.toLowerCase(), `arc:${native}`, `arc:${native.toLowerCase()}`]) {
+      if (balances[key] == null) continue
+      const erc20Raw = BigNumber(balances[key]).div(1e12).toFixed(0)
+      delete balances[key]
+      sdk.util.sumSingleBalance(balances, `arc:${ARC_USDC}`, erc20Raw)
+    }
+  }
+}
+
+const _arcFix = fixBalancesMapping.arc
+fixBalancesMapping.arc = (balances) => {
+  foldArcDualInterfaceUsdc(balances)
+  return _arcFix(balances)
+}
+
 const chainTransforms = {
   injective: transformInjectiveAddress,
 };
