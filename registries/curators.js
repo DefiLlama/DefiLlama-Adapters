@@ -394,6 +394,7 @@ const configs = {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
+            '0x40DdCcAC38E4F6f2cB802c09F0a08f39d3dCb48F', // Morpho V2 Noon Ecosystem Vault: owner at creation
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
