@@ -738,4 +738,16 @@ module.exports = {
       "owner": "8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF"
     }
   },
+  "arcpad": {
+    // every launch opens a Uniswap V3 token/USDC pool (1% tier) and the LP NFT is locked forever in ArcFeeLocker
+    // https://arcpad.meme/docs#contracts
+    "methodology": "USDC held in the locked Uniswap V3 launch positions owned by the ArcPad fee locker",
+    "doublecounted": true, // already counted as uniswap v3 tvl
+    "start": "2026-09-03", // first launch position locked, block 19015290
+    "arc": {
+      "owners": ["0x69A615DD32B89fE40D87b2e3123baE4162f2d450"],
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.arc.USDC],
+    }
+  },
 }
