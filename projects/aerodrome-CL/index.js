@@ -19,8 +19,8 @@ const config = {
   arc: {
     factories: [
       '0xb89Df768aF2CFE637ceB352c587Fe8edAf491d03', // CL
-      '0xaEd253F1aD84d99f2165256D701b2b481DD4CC16', // stable
-      '0x9bc8b3F60D349d687Fb44A018967025E3741F9a5', // volatile
+      // '0xaEd253F1aD84d99f2165256D701b2b481DD4CC16', // stable
+      // '0x9bc8b3F60D349d687Fb44A018967025E3741F9a5', // volatile
     ],
   },
 }
@@ -28,7 +28,7 @@ const config = {
 const exportsList = []
 Object.entries(config).forEach(([chain, { factories, blacklistedTokens }]) => {
   factories.forEach(factory => {
-    exportsList.push({ [chain]: { tvl: getUniTVL({ factory, blacklistedTokens, fetchBalances: true, abis, permitFailure: true }) } })
+    exportsList.push({ [chain]: { tvl: getUniTVL({ factory, blacklistedTokens, fetchBalances: true, abis, permitFailure: true, useDefaultCoreAssets: false, }) } })
   })
 })
 
