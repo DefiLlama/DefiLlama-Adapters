@@ -1860,6 +1860,10 @@ const uniV3Configs = {
       topics: ['0x3871766f55926cc6499881a4481d190672266d76354ee598765dea432553fac7'],
     },
   },
+  'synthra-v3': {
+    arc: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 12953009 },
+    robinhood: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 9539103 },
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
