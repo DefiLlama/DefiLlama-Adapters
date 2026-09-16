@@ -4,13 +4,17 @@ const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getMorphoVaults } = require("../helper/curators");
+const { getUniqueAddresses, normalizeAddress } = require("../helper/tokenMapping");
+const { ethers } = require("ethers");
 const { config } = require("./config");
 
 const eventAbis = {
-  createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)'
+  createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)',
+  supplyCollateral: 'event SupplyCollateral(bytes32 indexed id, address indexed caller, address indexed onBehalf, uint256 assets)',
 }
 
 const nullAddress = ADDRESSES.null
+const supplyCollateralTopic = ethers.id('SupplyCollateral(bytes32,address,address,uint256)')
 
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
@@ -63,6 +67,70 @@ const ethenaBlacklist = {
   },
 }
 
+// `tvl` sums the whole Morpho balance of every token that shows up in a live market, so
+// dropping a market from `blacklistedMarketIds` only removes its collateral from TVL when no
+// live market uses the same collateral token. Where the token is shared, the blacklisted
+// market's collateral is still counted and has to be subtracted explicitly.
+// eg: on ethereum the msY/USDC 86% market is blacklisted but the msY/USDC 91.5% one is not,
+// so all ~34.3M msY held by Morpho was counted instead of the ~4.4M of the live market.
+const subtractBlacklistedCollateral = async (api, countedTokens) => {
+  const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
+  if (!blacklistedMarketIds.length) return
+
+  const ids = blacklistedMarketIds.map(i => i.toLowerCase())
+  const marketInfos = await api.multiCall({ target: morphoBlue, calls: ids, abi: abi.morphoBlueFunctions.idToMarketParams, permitFailure: true })
+
+  // only the markets whose collateral token is still part of the summed token set leak into tvl
+  const leakingMarkets = []
+  marketInfos.forEach((market, i) => {
+    if (!market) return
+    const collateralToken = normalizeAddress(market.collateralToken, api.chain)
+    if (collateralToken === nullAddress) return
+    if (!countedTokens.has(collateralToken)) return
+    leakingMarkets.push({ id: ids[i], collateralToken })
+  })
+  if (!leakingMarkets.length) return
+
+  // Morpho tracks collateral per position only, there is no market level total, so the set of
+  // collateral suppliers has to come from the logs. One cached log query per market keeps the
+  // cache valid when the blacklist changes.
+  const supplierLogs = await Promise.all(leakingMarkets.map(({ id }) => getLogs({
+    api, target: morphoBlue, eventAbi: eventAbis.supplyCollateral, fromBlock, onlyArgs: true,
+    extraKey: `supply-collateral-${id}`, onlyUseExistingCache,
+    topics: [supplyCollateralTopic, id],
+  })))
+
+  const calls = []
+  const tokens = []
+  leakingMarkets.forEach(({ id, collateralToken }, i) => {
+    const suppliers = getUniqueAddresses(supplierLogs[i].map(log => log.onBehalf), api.chain)
+    suppliers.forEach(supplier => {
+      calls.push({ target: morphoBlue, params: [id, supplier] })
+      tokens.push(collateralToken)
+    })
+  })
+
+  const positions = await api.multiCall({ calls, abi: abi.morphoBlueFunctions.position, permitFailure: true })
+  const collateralByToken = {}
+  positions.forEach((position, i) => {
+    if (!position) return
+    collateralByToken[tokens[i]] = (collateralByToken[tokens[i]] ?? 0n) + BigInt(position.collateral)
+  })
+
+  // on markets left with bad debt Morpho can still book collateral it no longer holds (eg the
+  // resolv markets on ethereum account for 6M wstUSR while the contract holds none of it), so
+  // cap each subtraction at what is actually there to keep the balance from going negative
+  const leakedTokens = Object.keys(collateralByToken)
+  const heldBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: leakedTokens.map(token => ({ target: token, params: morphoBlue })), permitFailure: true })
+  leakedTokens.forEach((token, i) => {
+    if (heldBalances[i] == null) return
+    const amount = collateralByToken[token] < BigInt(heldBalances[i]) ? collateralByToken[token] : BigInt(heldBalances[i])
+    if (amount === 0n) return
+    sdk.log(`morpho-blue: subtracting ${amount} of ${token} held for blacklisted markets on ${api.chain}`)
+    api.add(token, (-amount).toString())
+  })
+}
+
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
 
@@ -105,6 +173,11 @@ const tvl = async (api) => {
 
   if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
     blackList.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
+
+  const blackListSet = new Set(blackList.map(i => normalizeAddress(i, api.chain)))
+  const countedTokens = new Set(getUniqueAddresses(tokens, api.chain).filter(i => !blackListSet.has(i)))
+  await subtractBlacklistedCollateral(api, countedTokens)
+
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 }
 
