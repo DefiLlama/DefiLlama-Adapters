@@ -73,7 +73,9 @@ const tvl = async (api) => {
   })
   const vaultAssets = await api.multiCall({ abi: 'address:asset', calls: morphoVaults, permitFailure: true })
 
-  const vaultTaO = vaultAssets.map((asset, i) => ([asset, morphoVaults[i]]).filter(i => i[0]))
+  const vaultTaO = vaultAssets
+    .map((asset, i) => asset ? [asset, morphoVaults[i]] : null)
+    .filter(Boolean)
   await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens: blackList, permitFailure: true })
 
 

@@ -54,6 +54,14 @@ const DEFAULTS = {
   PROM_RPC_MULTICALL: '0xfF785aF3De8C2cb5727A8665984E741c16679131',
   NIBIRU_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
+  ARC_RPC: 'https://rpc.mainnet.arc.io',
+  ARC_RPC_CHAIN_ID: '5042',
+  ARC_ARCHIVAL_RPC: 'https://explorer.arc.io/api/eth-rpc', // public rpc.mainnet.arc.io rejects large eth_getLogs ranges
+  // Arc is not in the SDK Multicall3 deployment map. Without this, eth.getBalances skips
+  // getEthBalance() and fans out getBalance against ARC_RPC (429s). Archival is getLogs-only.
+  ARC_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  ARC_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  ARC_MULTICALL_CHUNK_SIZE: '50',
 }
 
 const ENV_KEYS = [
