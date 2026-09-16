@@ -11,7 +11,7 @@ const { ethers } = require('ethers')
 // V1 and V2 pools remain live. Live metrics: https://dune.com/lalilulel0x0869/gluehook-live
 const HOOK_V1 = '0xb216070c3509047ea597E2E626A29cea427a60C8'
 const HOOK_V2 = '0x0F41715dc432692b66A5aDF8dCfef6Ac407b20c8'
-const HOOK_V3 = '0xbB021554C5294328b04fa313669715bD201BA040'
+const HOOK_V3 = '0x03D482cB3Ff339C2d29736818D0F72c66dD6A040'
 
 // Uniswap V4 PoolManager + per-version hook deploy blocks
 const config = {
@@ -20,7 +20,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 25703029 },
       { address: HOOK_V2, fromBlock: 25814686 },
-      { address: HOOK_V3, fromBlock: 25970820 },
+      { address: HOOK_V3, fromBlock: 25988160 },
     ],
   },
   base: {
@@ -28,7 +28,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 49657824 },
       { address: HOOK_V2, fromBlock: 50330047 },
-      { address: HOOK_V3, fromBlock: 51268603 },
+      { address: HOOK_V3, fromBlock: 51373889 },
     ],
   },
   unichain: {
@@ -36,7 +36,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 55356883 },
       { address: HOOK_V2, fromBlock: 56701906 },
-      { address: HOOK_V3, fromBlock: 58586531 },
+      { address: HOOK_V3, fromBlock: 58763678 },
     ],
   },
   arbitrum: {
@@ -44,7 +44,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 492046075 },
       { address: HOOK_V2, fromBlock: 497395639 },
-      { address: HOOK_V3, fromBlock: 504870398 },
+      { address: HOOK_V3, fromBlock: 505672120 },
     ],
   },
   optimism: {
@@ -52,7 +52,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 155253116 },
       { address: HOOK_V2, fromBlock: 155925598 },
-      { address: HOOK_V3, fromBlock: 156867928 },
+      { address: HOOK_V3, fromBlock: 156956814 },
     ],
   },
   bsc: {
@@ -60,7 +60,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 114546905 },
       { address: HOOK_V2, fromBlock: 117531972 },
-      { address: HOOK_V3, fromBlock: 121722433 },
+      { address: HOOK_V3, fromBlock: 122176002 },
     ],
   },
   polygon: {
@@ -68,7 +68,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 91600016 },
       { address: HOOK_V2, fromBlock: 92496642 },
-      { address: HOOK_V3, fromBlock: 93755100 },
+      { address: HOOK_V3, fromBlock: 93896344 },
     ],
   },
   wc: {
@@ -76,7 +76,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 33384712 },
       { address: HOOK_V2, fromBlock: 34057331 },
-      { address: HOOK_V3, fromBlock: 34999751 },
+      { address: HOOK_V3, fromBlock: 35088528 },
     ],
   },
   zora: { poolManager: '0x0575338e4C17006aE181B47900A84404247CA30f', hooks: [{ address: HOOK_V1, fromBlock: 49705618 }] },
@@ -85,7 +85,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 26485168 },
       { address: HOOK_V2, fromBlock: 27157781 },
-      { address: HOOK_V3, fromBlock: 28100347 },
+      { address: HOOK_V3, fromBlock: 28189143 },
     ],
   },
   megaeth: {
@@ -93,7 +93,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 23308084 },
       { address: HOOK_V2, fromBlock: 24653311 },
-      { address: HOOK_V3, fromBlock: 26544307 },
+      { address: HOOK_V3, fromBlock: 26743304 },
     ],
   },
   robinhood: {
@@ -101,7 +101,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 30206983 },
       { address: HOOK_V2, fromBlock: 43628009 },
-      { address: HOOK_V3, fromBlock: 62244207 },
+      { address: HOOK_V3, fromBlock: 64035627 },
     ],
   },
   tempo: { poolManager: '0x33620f62C5b9B2086dD6b62F4A297A9f30347029', hooks: [{ address: HOOK_V1, fromBlock: 33657201 }] },
@@ -110,7 +110,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 92242906 },
       { address: HOOK_V2, fromBlock: 93461396 },
-      { address: HOOK_V3, fromBlock: 95212132 },
+      { address: HOOK_V3, fromBlock: 95381408 },
     ],
   },
   blast: { poolManager: '0x1631559198A9e474033433b2958daBC135ab6446', hooks: [{ address: HOOK_V1, fromBlock: 38647660 }] },
@@ -121,7 +121,7 @@ const config = {
     hooks: [
       { address: HOOK_V1, fromBlock: 67336132 },
       { address: HOOK_V2, fromBlock: 68681331 },
-      { address: HOOK_V3, fromBlock: 70567241 },
+      { address: HOOK_V3, fromBlock: 70744526 },
     ],
   },
 }
