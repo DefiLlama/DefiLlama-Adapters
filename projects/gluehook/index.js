@@ -7,8 +7,9 @@ const { ethers } = require('ethers')
 // per-pool buyback pot (pump on buys, sell absorption), burn cascade, self-compounding LP.
 // Not upgradeable, no owner/admin keys, 0% protocol fee.
 // Deployed via CREATE from a nonce-0 deployer — SAME address on every chain of a given version.
-// V3 is the canonical generation (no beforeSwap; the pump is the hook's own afterSwap swap).
-// V1 and V2 pools remain live. Live metrics: https://dune.com/lalilulel0x0869/gluehook-live
+// V3 (0x03D4…A040) is the canonical hook and REPLACES V1/V2 as the live contract: new pools land
+// there only. V1/V2 pools stay deployed and their pots still hold funds, so their addresses stay
+// in the enumeration for TVL completeness. Live metrics: https://dune.com/lalilulel0x0869/gluehook-live
 const HOOK_V1 = '0xb216070c3509047ea597E2E626A29cea427a60C8'
 const HOOK_V2 = '0x0F41715dc432692b66A5aDF8dCfef6Ac407b20c8'
 const HOOK_V3 = '0x03D482cB3Ff339C2d29736818D0F72c66dD6A040'
@@ -208,7 +209,7 @@ Object.keys(config).forEach((chain) => {
 })
 
 module.exports.methodology =
-  'TVL = the liquidity of every hook-owned LP program position inside the Uniswap V4 PoolManager (valued from the program liquidity at the pool\'s live price) + every token held by the GlueHook contracts themselves (per-pool buyback pots, parked donations, pending fee splits, permanently-held unburnable tokens). Pools are enumerated from PotInitialized events on every live generation of the hook (V1, V2 and the canonical V3). Live metrics: https://dune.com/lalilulel0x0869/gluehook-live'
+  'TVL = the liquidity of every hook-owned LP program position inside the Uniswap V4 PoolManager (valued from the program liquidity at the pool\'s live price) + every token held by the GlueHook contracts themselves (per-pool buyback pots, parked donations, pending fee splits, permanently-held unburnable tokens). Pools are enumerated from PotInitialized events on the canonical V3 hook and on the superseded V1/V2 hooks whose pools still hold funds. Live metrics: https://dune.com/lalilulel0x0869/gluehook-live'
 // the same tokens are also counted by the uniswap-v4 adapter (PoolManager balances),
 // same as other hook protocols e.g. bunni-v2
 module.exports.doublecounted = true
