@@ -1,4 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { null: nullAddress } = require('../helper/coreAssets.json')
 
 const config = {
   ethereum: '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
@@ -19,7 +20,8 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const data = await api.fetchList({ lengthAbi: 'uint256:numPairs', itemAbi: "function markets(uint16) view returns (address pool0, address pool1, address token0, address token1, uint16 marginLimit, uint16 feesRate, uint16 priceDiffientRatio, address priceUpdater, uint256 pool0Insurance, uint256 pool1Insurance)", target: openLevAddr })
-      const tokensAndOwners = data.map(i => {
+      // Empty markets must not make sumTokens2 count the zero address's native balance.
+      const tokensAndOwners = data.filter(i => i.pool0 !== nullAddress && i.pool1 !== nullAddress).map(i => {
         const toa = [
           [i.token0, openLevAddr],
           [i.token0, i.pool0],
