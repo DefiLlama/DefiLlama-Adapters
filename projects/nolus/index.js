@@ -34,13 +34,21 @@ function getMint(currencies, ticker, protocolName) {
   return currency.dex_symbol
 }
 
-// Only the available pool balance is counted; borrowed funds are already
-// represented by the lease positions on Solana
-async function addLppTvl(api, protocol) {
+// `balance` is the available pool liquidity; `total_principal_due` is the principal lent out to leases.
+// Only the available balance goes into tvl, since the borrowed funds are already
+// represented by the lease positions on Solana; the principal due is reported under borrowed.
+async function addLppBalance(api, protocol, field) {
   const ticker = await query(protocol.lpp, { lpn: [] })
   const currencies = await getCurrencies(protocol.oracle)
-  const { balance } = await query(protocol.lpp, { lpp_balance: [] })
-  api.add(`solana:${getMint(currencies, ticker, protocol.name)}`, balance?.amount ?? 0, { skipChain: true })
+  const lppBalance = await query(protocol.lpp, { lpp_balance: [] })
+  api.add(`solana:${getMint(currencies, ticker, protocol.name)}`, lppBalance?.[field]?.amount ?? 0, { skipChain: true })
+}
+
+const lppExport = (field) => async (api) => {
+  for (const protocol of await getProtocols()) {
+    await sleep(300)
+    await addLppBalance(api, protocol, field)
+  }
 }
 
 async function addLeaseTvl(api, protocol) {
@@ -57,19 +65,15 @@ async function addLeaseTvl(api, protocol) {
 }
 
 module.exports = {
-  methodology: 'The combined total of lending pool assets and the current market value of active margin positions',
+  methodology: 'TVL is the idle liquidity in the lending pools plus the collateral held in open lease positions. Borrowed is the outstanding principal owed to the pools.',
   hallmarks: [
     ['2026-04-02', 'Neutron market sunset'],
     ['2026-08-27', 'Solana market launch'],
     ['2026-09-07', 'Osmosis market sunset'],
   ],
   nolus: {
-    tvl: async (api) => {
-      for (const protocol of await getProtocols()) {
-        await sleep(300)
-        await addLppTvl(api, protocol)
-      }
-    }
+    tvl: lppExport('balance'),
+    borrowed: lppExport('total_principal_due'),
   },
   solana: {
     tvl: async (api) => {
