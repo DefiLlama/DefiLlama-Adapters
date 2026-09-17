@@ -58,7 +58,6 @@ const mainnetAllocatorToTokens = {
   ],
   [pauAlmProxies.ethereum.spusdc]: [
     ADDRESSES.ethereum.USDC,
-    '0xBc65ad17c5C0a2A4D159fa5a503f4992c7B545FE', // sUSDC
   ]
 }
 
@@ -100,7 +99,7 @@ const robinhoodAllocatorToTokens = {
 
 const xlayerAllocatorToTokens = {
   [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
-  [pauAlmProxies.ethereum.spusdc]: [ADDRESSES.xlayer.USDC]
+  [pauAlmProxies.xlayer.spusdc]: [ADDRESSES.xlayer.USDC]
 }
 
 const CONFIG = {
