@@ -482,10 +482,18 @@ function dexExport({
 }
 
 
+// GraphQL returns coin types with the address part zero-padded to 64 hex chars
+// (e.g. 0x000...002::sui::SUI), while configs commonly use the short form (0x2::sui::SUI).
+function normalizeCoinType(coinType) {
+  const [addr, ...rest] = String(coinType).split('::')
+  const hex = addr.replace(/^0x/i, '').toLowerCase().padStart(64, '0')
+  return ['0x' + hex, ...rest].join('::')
+}
+
 async function sumTokens({ owners = [], blacklistedTokens = [], api, tokens = [], }) {
   owners = getUniqueAddresses(owners, true)
-  const blacklistSet = new Set(blacklistedTokens)
-  const tokenSet = new Set(tokens)
+  const blacklistSet = new Set(blacklistedTokens.map(normalizeCoinType))
+  const tokenSet = new Set(tokens.map(normalizeCoinType))
 
   for (const owner of owners) {
     let after = null
@@ -501,7 +509,7 @@ async function sumTokens({ owners = [], blacklistedTokens = [], api, tokens = []
       const { nodes, pageInfo } = data.address.balances
       after = pageInfo.hasNextPage ? pageInfo.endCursor : null
       nodes.forEach(n => {
-        const coinType = n.coinType.repr
+        const coinType = normalizeCoinType(n.coinType.repr)
         if (blacklistSet.has(coinType)) return
         if (tokenSet.size > 0 && !tokenSet.has(coinType)) return
         api.add(coinType, n.totalBalance)
