@@ -962,5 +962,17 @@ module.exports = {
       uniV3WhitelistedTokens: [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH],
       uniV3ExtraConfig: { nftAddress: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3' },
     }
+  },
+  "ark-launch": {
+    "doublecounted": true, // gen2 positions sit in official Uniswap V3 pools, already counted as dex tvl
+    "methodology": 'Each launch on ARK seeds a Uniswap V3 USDC pool whose LP position is locked in the FeeLocker contract with no withdrawal function. TVL is the USDC in the positions held by the gen1 and gen2 FeeLockers. The launched tokens themselves are not counted.',
+    "start": '2026-09-16',
+    "arc": {
+      uniV3nftsAndOwners: [
+        ['0xF14cCC0f35ACA278B57722C2BAF48aCc0221c432', '0x4f260E5E9B475c36eE296E23b1818692408D9F4b'], // gen1 position manager, gen1 FeeLocker
+        ['0x39654A85A4C05127f5Fd6ED22CAeC077A0fB1377', '0x4982E02eF7a31a7a0cdD3a9935f3c856EffA5190'], // gen2 position manager, gen2 FeeLocker
+      ],
+      uniV3WhitelistedTokens: [ADDRESSES.arc.USDC],
+    }
   }
 }
