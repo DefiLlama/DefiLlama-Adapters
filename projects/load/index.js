@@ -2,18 +2,18 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
-// Arc mainnet (5042) — Load V3 + V4
+// Arc mainnet (5042) — Load V3 + V4 (fresh stack, 2026-09-17)
 const USDC = ADDRESSES.arc.USDC
-const CURVE_FACTORY = '0x0A9A5B3819a7fB47a9b20b83d10f37E1BA044799'
-const BONDING_V4_FACTORY = '0xE9b706f133A5A865FDC8Fa282342a55bA108b1Ff'
-const INSTANT_V4_FACTORY = '0x40F0DD19C605f39D9261745d8311c9eB4390AF8c'
-const LP_FEE_VAULT = '0x774F264e5Cd83f894C8186bDccCD6aBB5e619F2B'
-const INSTANT_V3_VAULT = '0x791A2043F40D72cE3044650F2Cd78EC05735C372'
-const V4_LP_FEE_VAULT = '0xb6dc8dF80C13B7DD59954DdD666260bB0A197EA3'
+const CURVE_FACTORY = '0x45c75D45a12bE11Ac8ebF56E380814A46FC110AD'
+const BONDING_V4_FACTORY = '0xC6118F0F9DdA536C68EaB512B9A6C99A839010AD'
+const INSTANT_V4_FACTORY = '0x150A17656f05Cf0b5F1d43252Ce0bcD1fc9610AD'
+const LP_FEE_VAULT = '0xF175A6ca4AAD6B057661bC554Af326F9452F10AD'
+const INSTANT_V3_VAULT = '0x2cC4722B8B5bc5F67096e76ced13377b95A610AD'
+const V4_LP_FEE_VAULT = '0xa8F298A7bbE08986b8254b7121273816cFC510AD'
 const NFT_MANAGER = '0x39654A85A4C05127f5Fd6ED22CAeC077A0fB1377'
 const V4_POSITION_MANAGER = '0x6049c9a0e26405C0985f9E3685C87d0aE917f82B'
 const V4_STATE_VIEW = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b'
-const FROM_BLOCK = 21_184_244 // Instant V3 factory; V4 factories are later in the same window
+const FROM_BLOCK = 21_328_318 // first tx of the fresh factory deploy
 
 const TokenCreated =
   'event TokenCreated(address indexed token, address indexed curve, address indexed creator, string name, string symbol, bytes32 metadataHash, string metadataUri, address pool, uint8 graduationCap, uint16 postGradCreatorShareBps)'
@@ -90,6 +90,6 @@ module.exports = {
   doublecounted: true, // locked LP may also appear under Uniswap when that pool TVL is tracked
   arc: {
     tvl,
-    start: '2026-09-16',
+    start: '2026-09-17',
   },
 }
