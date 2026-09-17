@@ -37,13 +37,15 @@ const config = {
 
 module.exports.methodology = 'Sum of pool currencies held in the SushiSwap V4 Vault, discovered from CLPoolManager Initialize events.'
 
-Object.entries(config).forEach(([chain, fromBlock]) => {
+Object.entries(config).forEach(([chain, { vault, clPoolManager, fromBlock }]) => {
   module.exports[chain] = {
     tvl: async (api) => {
       const logs = await getLogs2({
         api,
         target: clPoolManager,
         fromBlock,
+        // The SDK event-log cache adds 10 blocks, which can exceed Base's head.
+        ...(chain === 'base' ? { useIndexer: false } : {}),
         eventAbi: 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, address hooks, uint24 fee, bytes32 parameters, uint160 sqrtPriceX96, int24 tick)',
       })
 
