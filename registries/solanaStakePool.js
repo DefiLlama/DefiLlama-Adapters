@@ -108,6 +108,10 @@ const configs = {
     methodology: "Total SOL staked in the Phase Stake pool, read on chain from the stake pool account's totalLamports",
     solana: 'phasejkG1akKgqkLvfWzWY17evnH6mSWznnUspmpyeG',
   },
+  'japan-staked-sol': {
+    methodology: "Total SOL staked in the Japan Staked SOL (JapanSOL) stake pool, read on chain from the stake pool account's totalLamports",
+    solana: 'jHm8bwgfbaZgUv4mAGh29KthFGLTvoNF63oT5wpu4jk',
+  },
   // getStakedSol adapters
   'thevault': {
     solana: { type: 'staked', address: 'GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW' },
