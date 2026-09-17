@@ -84,17 +84,21 @@ const configs = {
   },
   "sharpbyte-capital": {
     config: {
-      methodology: 'Counts assets deposited in the SharpByte USDT Prime Morpho V2 vault.',
+      methodology: 'Count assets in Morpho V1 and V2 vaults created by SharpByte\'s verified initial deployment owner, plus the SharpByte curated Upshift RWA and Nerona Dollar vaults.',
       start: '2026-07-03',
       blockchains: {
         ethereum: {
-          morpho: [
-            '0x65a6334c0e2b5f7640c2A6b9ce615e162b1E909B',
+          morphoVaultOwners: [
+            '0x07A1eC352EF67BB5b8b75A7fF9540b27f9a53d71',
           ],
+          upshiftV2: ['0x5776B576474ad2513E550190C5855613859F3A26'], // RWA Ecosystem
+        },
+        fluent: {
+          upshiftV2: ['0xeaB765200189909c806FD6e20eBb4E57D6703C82'], // Nerona Dollar Yield Strategy
         },
       }
     },
-  },
+  }, 
   "Greenhouse-Finance": {
     config: {
       methodology: 'Count all assets deposited in Greenhouse curated vaults.',
