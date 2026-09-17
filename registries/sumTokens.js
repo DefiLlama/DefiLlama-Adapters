@@ -25727,6 +25727,15 @@ const configs = {
         ADDRESSES.arc.USDC
       ]
     },
+    "robinhood": {
+      "owners": [
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+        "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
     "ton": {
       "owners": [
         "UQCuse06M6Nkw1u3UD2JeQf9sjIKYDYDtO0EIxcf_h6cOaJn",
