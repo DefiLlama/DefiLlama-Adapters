@@ -1863,7 +1863,16 @@ const uniV3Configs = {
   'synthra-v3': {
     arc: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 12953009 },
     robinhood: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 9539103 },
-  }
+  },
+  'trenchdex-v3': {
+    start: '2026-06-01',
+    pulse: {
+      factory: '0xCAeF0a906F3323595A8faA14DF7eDee6F59220af',
+      fromBlock: 26817525,
+      // zero-liquidity pool whose token0 is another V3 pool contract, not an ERC20
+      blacklistedOwners: ['0xa9d452042d4740dfce99ec54dda138d32cde742f'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
