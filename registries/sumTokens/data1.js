@@ -31,7 +31,7 @@ module.exports = {
   },
   "bulk-trade": {
     "timetravel": false,
-    "methodology": "Counts USDC deposited into the Bulk Trade Season 1 pre-deposits.",
+    "methodology": "Counts USDC held in BULK's Solana mainnet custody vault, which backs collateral deposited for trading and margin.",
     "solana": { "tokenAccounts": ["HwdwwKH1tMXo7ggTKcA5cdQrpcgqSoVib2eQh3BiyEQL"] }
   },
   "stakenova": {
@@ -736,6 +736,18 @@ module.exports = {
     "methodology": "TVL is the value of SPL and Token-2022 balances held in Tessera V vaults controlled by its Solana authority account.",
     "solana": {
       "owner": "8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF"
+    }
+  },
+  "arcpad": {
+    // every launch opens a Uniswap V3 token/USDC pool (1% tier) and the LP NFT is locked forever in ArcFeeLocker
+    // https://arcpad.meme/docs#contracts
+    "methodology": "USDC held in the locked Uniswap V3 launch positions owned by the ArcPad fee locker",
+    "doublecounted": true, // already counted as uniswap v3 tvl
+    "start": "2026-09-03", // first launch position locked, block 19015290
+    "arc": {
+      "owners": ["0x69A615DD32B89fE40D87b2e3123baE4162f2d450"],
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.arc.USDC],
     }
   },
 }

@@ -192,7 +192,7 @@ function _parseScVal(buf, offset) {
 // Size per tagged ScVal; derived from RFC-4506 (4.1, 4.3, 4.4) and Stellar-contract.x:
 // https://github.com/stellar/stellar-xdr/blob/main/Stellar-contract.x
 const TAGGED_SIZE = {
-  bool: 8, u32: 8, i32: 8, u64: 12, i64: 12, u128: 20, i128: 20, address: 40,
+  bool: 8, u32: 8, i32: 8, u64: 12, i64: 12, u128: 20, i128: 20, address: 40, account: 44,
 }
 
 // XDR pads opaque/string data to a 4-byte boundary (RFC-4506 4.11).
@@ -266,6 +266,13 @@ function _writeTaggedArg(buf, o, type, v) {
       buf.writeUInt32BE(SC_ADDR.CONTRACT, o); o += 4
       decodeStrKey(v).copy(buf, o); return o + 32
     }
+    case 'account': {
+      if (typeof v !== 'string' || !v.startsWith('G')) throw new Error(`account expects G-address string, got ${v}`)
+      buf.writeUInt32BE(SC_VAL.ADDRESS, o); o += 4
+      buf.writeUInt32BE(SC_ADDR.ACCOUNT, o); o += 4
+      buf.writeUInt32BE(0, o); o += 4 // PublicKey.KEY_TYPE_ED25519
+      decodeStrKey(v).copy(buf, o); return o + 32
+    }
     // A #[contracttype] struct arrives as SCV_MAP keyed by field-name symbols.
     case 'map': {
       if (!v || typeof v !== 'object') throw new Error(`map expects an object, got ${typeof v}`)
@@ -302,7 +309,7 @@ async function callSoroban(contractId, fnName, args = []) {
   // to U32. Tagged { type, value } objects pass through unchanged.
   const normalizedArgs = args.map(arg => {
     if (arg && typeof arg === 'object' && 'type' in arg) return [arg.type, arg.value]
-    if (typeof arg === 'string')                         return ['address', arg]
+    if (typeof arg === 'string')                         return [arg.startsWith('G') ? 'account' : 'address', arg]
     if (typeof arg === 'number')                         return ['u32', arg]
     throw new Error(`Unsupported arg type: ${typeof arg}`)
   })

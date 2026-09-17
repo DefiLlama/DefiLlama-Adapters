@@ -26,6 +26,7 @@ module.exports = {
       "0xBCB302A64ADB7f2C8697e17C1e948f5b058F0e49",
       "0xc906895C8833481571118F0C59877bFF6bE38aC1",
       "0x4ac71ec43df19581d95eab5596c6fadc89170989",
+      "0x368bEFA55cb770ff9AAa419b919d1c8b5aF2c8cB",
     ],
   },
   bsc: {

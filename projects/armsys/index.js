@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * ARMSys — Dynamic-Fee Hook for Uniswap v4
  *
@@ -27,7 +28,7 @@ const HOOK = '0x7fB4846d3987476577319f112731BB04f45880C8'; // Base, round-30
 const RH_POOL_MANAGER = '0x8366a39CC670B4001A1121B8F6A443A643e40951';
 const RH_POSITION_MANAGER = '0x58daec3116aae6D93017bAAea7749052E8a04fA7';
 const RH_HOOK = '0x20f8B7ec9cC3Bb5c739deDB15a8b4275F84B00c8';
-const USDG = '0x5fc5360d0400a0fd4f2af552add042d716f1d168';
+const USDG = ADDRESSES.robinhood.USDG;
 
 // One entry per live pool. `slot0` is the PoolManager storage location of the
 // pool's slot0, precomputed as keccak256(abi.encode(poolId, uint256(6))).

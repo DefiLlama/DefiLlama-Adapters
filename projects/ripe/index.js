@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getConfig } = require('../helper/cache');
 const { staking } = require('../helper/staking')
@@ -17,15 +18,15 @@ const config = {
     // Underscore vault shares held as Ripe collateral: ERC-4626 wrappers with no price feed,
     // unwrapped to their underlying instead of being silently dropped by sumTokens2.
     erc4626Wrappers: [
-      { wrapper: '0x99e65176f7fa8743e3fbaef277d1da448e361367', underlying: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' }, // undyUSDC -> USDC
-      { wrapper: '0x02981db1a99a14912b204437e7a2e02679b57668', underlying: '0x4200000000000000000000000000000000000006' }, // undyETH -> WETH
-      { wrapper: '0x3fb0fc9d3ddd543ad1b748ed2286a022f4638493', underlying: '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf' }, // undyBTC -> cbBTC
+      { wrapper: '0x99e65176f7fa8743e3fbaef277d1da448e361367', underlying: ADDRESSES.base.USDC }, // undyUSDC -> USDC
+      { wrapper: '0x02981db1a99a14912b204437e7a2e02679b57668', underlying: ADDRESSES.optimism.WETH_1 }, // undyETH -> WETH
+      { wrapper: '0x3fb0fc9d3ddd543ad1b748ed2286a022f4638493', underlying: ADDRESSES.ethereum.cbBTC }, // undyBTC -> cbBTC
       { wrapper: '0x1cb8dab80f19fc5aca06c2552aecd79015008ea8', underlying: '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42' }, // undyEURC -> EURC
-      { wrapper: '0x96f1a7ce331f40afe866f3b707c223e377661087', underlying: '0x940181a94a35a4569e4529a3cdfb74e38fd98631' }, // undyAERO -> AERO
+      { wrapper: '0x96f1a7ce331f40afe866f3b707c223e377661087', underlying: ADDRESSES.base.AERO }, // undyAERO -> AERO
     ],
     curveLpExternalLegs: [{
       pool: '0xd6c283655b42fa0eb2685f7ab819784f071459dc', // GREEN/USDC
-      underlying: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', // USDC
+      underlying: ADDRESSES.base.USDC, // USDC
       coinIndex: 0,
     }],
     ripeToken: '0x2A0a59d6B975828e781EcaC125dBA40d7ee5dDC0',
@@ -45,7 +46,7 @@ const config = {
     ],
     curveLpExternalLegs: [{
       pool: '0x2fd13b49f970e8c6d89283056c1c6281214b7eb6', // GREEN/USDG
-      underlying: '0x5fc5360d0400a0fd4f2af552add042d716f1d168', // USDG
+      underlying: ADDRESSES.robinhood.USDG, // USDG
       coinIndex: 0,
     }],
     ripeToken: '0x4d3f37a965b21ab4122e92dd41d2693e742c883b',
@@ -58,7 +59,7 @@ const config = {
   },
 }
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 const isAddress = address => /^0x[0-9a-fA-F]{40}$/.test(address)
 const normalize = address => address.toLowerCase()
 const uniqueAddresses = addresses => [...new Map(addresses.map(address => [normalize(address), address])).values()]

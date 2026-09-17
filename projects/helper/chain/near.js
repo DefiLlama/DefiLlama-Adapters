@@ -2,6 +2,7 @@ const ADDRESSES = require('../coreAssets.json')
 const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
+const { getEnv } = require('../env')
 
 function transformAddress(addr) {
   const bridgedAssetIdentifier = ".factory.bridge.near";
@@ -13,9 +14,14 @@ function transformAddress(addr) {
 }
 
 const endpoints = [
+  getEnv('NEAR_RPC'), // user-provided endpoint is tried first
+  // rpc.mainnet.near.org is deprecated (429) and near.lava.build was discontinued (410)
+  "https://free.rpc.fastnear.com",
+  "https://near.drpc.org",
   "https://rpc.mainnet.near.org",
   "https://near.lava.build"
-]
+
+].filter(Boolean)
 
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },

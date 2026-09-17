@@ -7,6 +7,7 @@ const { getCache, setCache, } = require('../helper/cache')
 const factory = 'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.stackswap-swap-v5k'
 
 module.exports = {
+  isHeavyProtocol: true,
   stacks: { tvl }
 }
 

@@ -1,7 +1,9 @@
 // Block time varies per chain (10k blocks is ~42min on arbitrum but ~33h on ethereum),
 // so we look back a fixed ~30min instead
 const BLOCK_TIME = { ethereum: 12, arbitrum: 0.25, optimism: 2 }; // seconds/block
-const LOOKBACK_SECONDS = 1800;
+// The DefiSaver indexer occasionally falls hours behind the chain head and returns 404
+// for any block it hasn't indexed yet, so we step back progressively before giving up
+const LOOKBACKS_SECONDS = [1800, 3600, 6 * 3600, 24 * 3600];
 
 async function tvl(api) {
   const block = await api.getBlock();
@@ -14,12 +16,20 @@ async function tvl(api) {
   //
   // By getting subscription data from the first package you can calculate balances for each position using `get${protocol_name_here}AccountBalances` method from the second package
 
-  const queryBlock = block - Math.floor(LOOKBACK_SECONDS / (BLOCK_TIME[api.chain] ?? 12));
-  const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=${queryBlock}`);
-  const data = await response.json();
+  let data
+  for (const lookback of LOOKBACKS_SECONDS) {
+    const queryBlock = block - Math.floor(lookback / (BLOCK_TIME[api.chain] ?? 12));
+    const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=${queryBlock}`);
+    data = await response.json();
 
-  if (response.status !== 200)
-    throw new Error(data.message || 'Error not handled');
+    if (response.status === 200) break
+    if (response.status !== 404)
+      throw new Error(data.message || 'Error not handled');
+    data = undefined
+  }
+
+  if (!data)
+    throw new Error(`No indexed data found for the last ${LOOKBACKS_SECONDS.at(-1) / 3600}h`);
 
   Object.entries(data.balances).forEach(([token, balance]) => {
     api.add(token, +balance)

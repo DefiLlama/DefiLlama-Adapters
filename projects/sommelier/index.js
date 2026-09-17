@@ -54,14 +54,21 @@ const v0816 = {
 const v2 = {
   async sumTvl({ cellars, api, ownersToDedupe }) {
 
-    const assets = await api.multiCall({
+    let assets = await api.multiCall({
       abi: "address:asset",
       calls: cellars,
+      permitFailure: true,
     });
-    const bals = await api.multiCall({
+    let bals = await api.multiCall({
       abi: "uint256:totalAssets",
       calls: cellars,
+      permitFailure: true,
     });
+    // drop shut-down/paused cellars that revert
+    const live = cellars.map((_, i) => i).filter((i) => assets[i] && bals[i] !== null)
+    cellars = live.map((i) => cellars[i])
+    assets = live.map((i) => assets[i])
+    bals = live.map((i) => bals[i])
 
     // Dedupe any potential TVL of cellars taking positions in other cellars by looking at balanceOf for each cellar
 

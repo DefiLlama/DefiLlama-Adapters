@@ -1,5 +1,4 @@
 const imports = [
-  ["wbtc", "./wbtc.js"],
   ["bitmex", "./bitmex.js"],
   ["kucoin", "./kucoin.js"],
   ["okex", "./okex.js"],

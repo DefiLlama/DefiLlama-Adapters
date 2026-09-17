@@ -1,6 +1,10 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
+// cSigma lends stablecoins to real-world credit. Lender deposits are matched to borrowers
+// almost immediately, so what the contracts hold is small and the bulk of the book is
+// outstanding principal reconstructed from on-chain payment records. Held balances are tvl;
+// outstanding principal is borrowed.
 const config = {
   ethereum: {
     institutional: { address: '0xF80bA51189763B7AC484A23f7d7695345B1149C9', startBlock: 18467881 },
@@ -63,7 +67,8 @@ const eventAbis = {
   PoolCreated: 'event PoolCreated(address _pool, address indexed _poolManager, address _fundManager, address indexed _poolToken, address indexed _oracleManager, uint256 _poolAPY, uint256 _poolSize)',
 }
 
-async function getPDNTvl(api) {
+// Private debt network (Arbitrum): outstanding principal is investments minus repayments
+async function pdnBorrowed(api) {
   const { address: factory, startBlock } = pdnContract;
   const logs = await getLogs({ api, target: factory, topics: [], eventAbi: eventAbis.PaymentAdded, fromBlock: startBlock, onlyArgs: true })
   const validLogs = logs.filter(log => !invalidPDNPaymentIds.includes(log[0].hash));
@@ -72,15 +77,20 @@ async function getPDNTvl(api) {
   api.addUSDValue(Number(totalInvestments - totalPayments) / 100);
 }
 
-async function institutionalTvl(api) {
-  const chain = api.chain;
-  const { address: factory } = config[chain].institutional;
+async function getInstitutionalPayments(api) {
+  const { address: factory } = config[api.chain].institutional;
   const lastPaymentId = await api.call({ target: factory, abi: abis.getLastPaymentId });
   const payments = await api.multiCall({ target: factory, abi: abis.getPayment, calls: Array.from({ length: Number(lastPaymentId) + 1 }, (_, i) => `${i}`) });
+  return { factory, payments }
+}
+
+// Lender balances still sitting in the institutional factory
+async function institutionalTvl(api) {
+  const chain = api.chain;
+  const { factory, payments } = await getInstitutionalPayments(api)
   const usdtAddress = chain === 'hedera' ? ADDRESSES.hedera.USDT_HTS : ADDRESSES[chain].USDT;
   const usdcAddress = ADDRESSES[chain].USDC;
 
-  // Fetch lender token balances
   const lenderIDs = [...new Set(payments.filter(p => +p[2] === 2).map(p => p[0]))];
   const balanceCalls = lenderIDs.flatMap(id => [
     { target: factory, params: [id, usdtAddress] },
@@ -88,8 +98,12 @@ async function institutionalTvl(api) {
   ]);
   const balances = await api.multiCall({ abi: abis.getTokenBalance, calls: balanceCalls });
   balances.forEach((bal, i) => api.add(i % 2 === 0 ? usdtAddress : usdcAddress, bal));
+}
 
-  // Compute remaining investment balances per pool token
+// Institutional pools: outstanding principal is investments minus principal repaid, per pool token
+async function institutionalBorrowed(api) {
+  const { factory, payments } = await getInstitutionalPayments(api)
+
   const investments = payments.filter(p => +p[2] === 0 && !!p[1]);
   const investmentLenderIds = new Set(investments.map(i => i[0]));
   const principalPaid = payments.filter(p => (+p[2] === 5 || +p[2] === 6) && !!p[1] && investmentLenderIds.has(p[0]));
@@ -107,22 +121,34 @@ async function institutionalTvl(api) {
     const token = poolTokens[p[1]];
     netByToken[token] = (netByToken[token] || 0n) - BigInt(p[6]);
   }
-  Object.entries(netByToken).forEach(([token, amount]) => api.add(token, amount));
+  Object.entries(netByToken).forEach(([token, amount]) => {
+    if (amount > 0n) api.add(token, amount)
+  });
 }
 
-async function edgeTvl(api) {
+async function getEdgePools(api) {
   const { address: factory, startBlock } = config[api.chain].edge;
   const logs = await getLogs({ api, target: factory, topics: ['0xbc6f53152e9aa8c4c80947b978ba84ae6d4f83b9762aa13cddad1d22cf26d173'], eventAbi: eventAbis.PoolCreated, onlyArgs: true, fromBlock: startBlock })
   const pools = logs.map(log => log[0]);
   const fundManagers = logs.map(log => log[2]);
   const tokens = await api.multiCall({ abi: 'address:poolToken', calls: pools });
+  return { pools, fundManagers, tokens }
+}
 
-  const balances = await api.multiCall({ abi: 'function balanceOf(address) view returns (uint256)', calls: fundManagers.map((fm, i) => ({ target: tokens[i], params: [fm] })) });
-  balances.forEach((balance, i) => api.add(tokens[i], balance));
-
+// Edge pools: pool token still held by the pool contracts
+async function edgeTvl(api) {
+  const { pools, tokens } = await getEdgePools(api)
   await api.sumTokens({ owners: pools, tokens: [...new Set(tokens)] });
 }
 
+// Edge pools: pool token drawn into the fund manager's wallet. One manager can run several
+// pools in the same token, so sumTokens dedupes the (token, manager) pairs before reading.
+async function edgeBorrowed(api) {
+  const { fundManagers, tokens } = await getEdgePools(api)
+  await api.sumTokens({ tokensAndOwners: fundManagers.map((fm, i) => [tokens[i], fm]) });
+}
+
+// csUSD / csLYD: underlying still held by the vaults
 async function sumVaultTvl(api, vaultConfig) {
   const cfg = vaultConfig?.[api.chain];
   if (!cfg) return;
@@ -140,20 +166,27 @@ async function sumVaultTvl(api, vaultConfig) {
   }
   if (!calls.length) return;
 
-  const balances = await api.multiCall({ abi: 'function balanceOf(address) view returns (uint256)', calls });
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
   balances.forEach((balance, i) => api.add(tokens[i], balance));
 }
 
-async function getTvl(api) {
+async function tvl(api) {
   await institutionalTvl(api);
   await edgeTvl(api);
   await sumVaultTvl(api, vaults.csUSD);
   await sumVaultTvl(api, vaults.csLYD);
-  if (api.chain === 'arbitrum') await getPDNTvl(api);
 }
 
-module.exports = { methodology: `The TVL of Csigma Finance is calculated by querying smart contracts on Ethereum, Arbitrum, and Base. It includes the total investments in institutional pools, balances in Edge pools, and private debt network investments (on Arbitrum) while subtracting repayments. Token balances (USDT/USDC) are fetched on-chain, and the final TVL is derived by summing these values. The TVL also includes the value of our yield-bearing tokens, csUSD and csLYD.` }
+async function borrowed(api) {
+  await institutionalBorrowed(api);
+  await edgeBorrowed(api);
+  if (api.chain === 'arbitrum') await pdnBorrowed(api);
+}
+
+module.exports = {
+  methodology: 'TVL is the stablecoin balance cSigma contracts still hold: lender balances in the institutional factory, tokens in Edge pool contracts, and the csUSD and csLYD vault reserves. Outstanding loan principal is reported separately as borrowed: institutional pool investments minus principal repaid, private debt network investments minus repayments (Arbitrum), and Edge pool funds drawn by fund managers.',
+}
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: getTvl }
+  module.exports[chain] = { tvl, borrowed }
 })

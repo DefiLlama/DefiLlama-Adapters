@@ -36,14 +36,17 @@ async function addPools(api) {
   const stakingC = '0x6de77A304609472A4811a0BFD47d8682Aebc29df'
   const poolTokens = await api.fetchList({  lengthAbi: pieStakingAll.poolCount, itemAbi: pieStakingAll.getPoolToken, target: stakingC})
   poolTokens.forEach(v => tokensAndOwners.push([v, stakingC]))
-  return sumTokens2({ api, tokensAndOwners, resolveLP: true, })
+  return sumTokens2({ api, tokensAndOwners, resolveLP: true, permitFailure: true, })
 }
 
 async function calculatePies(api) {
-  const pies = Object.values(pies_config)
-  const supplies = await api.multiCall({ abi: pieABI.totalSupply, calls: pies })
-  const res = await api.multiCall({ abi: pieABI.calcTokensForAmount, calls: pies.map((v, i) => ({ target: v, params: supplies[i] })) })
-  res.map(({ tokens, amounts }) => api.addTokens(tokens, amounts))
+  let pies = Object.values(pies_config)
+  // some pies are paused and revert - skip them
+  const supplies = await api.multiCall({ abi: pieABI.totalSupply, calls: pies, permitFailure: true })
+  pies = pies.filter((_, i) => supplies[i] !== null)
+  const validSupplies = supplies.filter((v) => v !== null)
+  const res = await api.multiCall({ abi: pieABI.calcTokensForAmount, calls: pies.map((v, i) => ({ target: v, params: validSupplies[i] })), permitFailure: true })
+  res.forEach((r) => { if (r) api.addTokens(r.tokens, r.amounts) })
 }
 const { staking } = require('../helper/staking')
 

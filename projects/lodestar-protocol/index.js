@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // DefiLlama TVL adapter for Lodestar (Flare).
 //
 // NOT the same protocol as `projects/lodestar` / `projects/lodestar-v1`, which are Lodestar Finance,
@@ -24,9 +25,9 @@ const POOL = '0x87b09bE7A253C2af187c9af17cDEDcEAf4A9780E' // LodestarPool
 const BOOK = '0x9b479f47ef25E0Ed2134F38d3c4e1022A8695ed8' // LodestarLoanBook
 
 // ---- verified Flare mainnet token addresses (fork-proven in the audit) ----
-const USDT0 = '0xe7cd86e13AC4309349F30B3435a9d337750fC82D' // 6dp  - pool asset / borrow currency
+const USDT0 = ADDRESSES.flare.USDT0 // 6dp  - pool asset / borrow currency
 const FXRP = '0xAd552A648C74D49E10027AB8a618A3ad4901c5bE' //  6dp  - XRP (FAssets)
-const SFLR = '0x12e605bc104e93B45e1aD99F9e555f659051c2BB' // 18dp  - Sceptre staked FLR (LST)
+const SFLR = ADDRESSES.flare.sFLR // 18dp  - Sceptre staked FLR (LST)
 const STXRP = '0x4c18ff3c89632c3dd62e796c0afa5c07c4c1b2b3' //  6dp  - Firelight staked XRP (LST)
 
 const tokens = [USDT0, FXRP, SFLR, STXRP]
