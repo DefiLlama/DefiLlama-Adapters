@@ -414,6 +414,9 @@ const configs = {
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
           ],
+          eulerVaultOwners: [
+            '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
+          ],
           erc4626: [
             '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
             '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23', // IPOR Fusion yoGOLD
