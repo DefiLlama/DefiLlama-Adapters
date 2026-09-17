@@ -3180,7 +3180,11 @@ const uniV2Configs = {
   'dropswap': {
     arbitrum: '0xDCed5445409398dc609C2f87849B44bc9479664A',
     robinhood: '0xDCed5445409398dc609C2f87849B44bc9479664A'
-  }
+  },
+  'trenchdex-v2': {
+    start: '2026-06-01',
+    pulse: '0xA024e4574406BEf89e624c75758c700B5bED27C7',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
