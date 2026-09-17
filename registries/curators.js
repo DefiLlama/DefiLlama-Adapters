@@ -828,18 +828,6 @@ const configs = {
       }
     },
   },
-  "meridian-perps": {
-    config: {
-      methodology: 'Count all assets deposited in the Meridian perps LP vault.',
-      blockchains: {
-        robinhood: {
-          accountableVaults: [
-            '0x24b84023c8e4Da635be228C380C09bfE5271BF9d', // Meridian LP vault
-          ],
-        },
-      },
-    },
-  },
   "monarq": {
     config: {
       methodology: 'Count FXRP managed by the Monarq XRP Yield Vault through its on-chain getTotalAssets value.',
