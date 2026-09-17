@@ -333,6 +333,9 @@ const configs = {
     '0xfce2064b4221c54651b21c868064a23695e78f09', // 722Capital-ETH
     '0xb09f761cb13baca8ec087ac476647361b6314f98', // 722Capital-USDC
   ],
+  hyperliquid: [
+    '0x7dD73A986F6188da1bAaf68541FD6EBd455ABd1D', // 722 Capital Hype
+  ]
 },
   'hlp0': {
     methodology: "TVL is calculated by summing the total assets of the HLP0 vault on Arbitrum. The HLP0 token is a LayerZero OFT, but the underlying assets are held in the Arbitrum vault.",
