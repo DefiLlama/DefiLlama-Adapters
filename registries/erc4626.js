@@ -398,6 +398,7 @@ const configs = {
   },
   'ammalgam-vaults': {
     methodology: 'Counts the reported total assets of the Ammalgam USDC and WETH ERC-4626 vaults.',
+    doublecounted: true,
     ethereum: [
       '0x8417430a31851ae0a36a854394227c5d86be8fc9', // USDC
       '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH
