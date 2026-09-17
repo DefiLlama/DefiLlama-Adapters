@@ -83,5 +83,11 @@ module.exports = {
         await addLeaseTvl(api, protocol)
       }
     }
-  }
+  },
+  neutron: { 
+    tvl: () => ({})
+  },
+  osmosis: {
+    tvl: () => ({})
+  },
 }
