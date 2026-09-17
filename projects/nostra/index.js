@@ -176,7 +176,4 @@ module.exports = {
     tvl,
     borrowed: () => ({}), // hacked
   },
-  hallmarks: [
-    ['2023-10-18', "Nostra Money Market launch"]
-  ]
 };
