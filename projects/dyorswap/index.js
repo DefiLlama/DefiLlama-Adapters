@@ -15,6 +15,7 @@ const config = {
   unichain: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
   plasma: '0xA9F2c3E18E22F19E6c2ceF49A88c79bcE5b482Ac',
   stable: '0x61a425ab7e1f6b3fa1eb6af6162cf471fa0e7c62',
+  arc: '0x942Bd5BFdc5317C5507e326f8EB4BB6058AB5C10',
 }
 
 const coreAssets = {

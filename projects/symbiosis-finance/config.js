@@ -551,6 +551,15 @@ module.exports = {
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
-    }
+    },
+    {
+      name: 'arc',
+      tokens: [
+        '0x3600000000000000000000000000000000000000', // USDC
+      ],
+      holders: [
+        '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal
+      ]
+    },
   ]
 }

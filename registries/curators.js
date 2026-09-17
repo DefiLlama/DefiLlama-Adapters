@@ -394,6 +394,7 @@ const configs = {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
+            '0x40DdCcAC38E4F6f2cB802c09F0a08f39d3dCb48F', // Morpho V2 Noon Ecosystem Vault: owner at creation
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
@@ -599,6 +600,20 @@ const configs = {
     },
     _meta: {
       methodology: 'Counts all assets that are deposited in all vaults curated by Feather.',
+    },
+  },
+  "felix-vaults": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho V1 and V2 vaults created through the verified Felix deployment owners on HyperEVM.',
+      blockchains: {
+        hyperliquid: {
+          morphoVaultOwners: [
+            '0x2157f54f7a745c772e686AA691Fa590B49171eC9',
+            '0xcc8f1bDE0d42017c0e52321e69325F9B26F7c2D6',
+            '0xDd00059904ddF45e30b4131345957f76F26b8f6c',
+          ],
+        },
+      },
     },
   },
   "fence": {
@@ -859,6 +874,20 @@ const configs = {
           ],
         },
       }
+    },
+  },
+  "odyssey-digital-am": {
+    config: {
+      methodology: 'Count settled assets in Odyssey Digital AM funds on Lagoon',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xa00f63e85b3d242568a9edecb48f5e2cf879b07b', // USDC
+            '0x2f945864126c6ba1dcadcb97ad114c9ef94f1379', // BTC
+            '0x08d7eef35f3e317001fe12c19a32f93307b008b4', // ETH
+          ],
+        },
+      },
     },
   },
   "ouroboros": {

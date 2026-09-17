@@ -10,4 +10,7 @@ module.exports = aaveV4Export({
   avax: [
     "0xd07369fAE4A5BB13c9Ce446B052c7867B1AbDf6e", // Core Hub
   ],
+  arc: [
+    "0x17288dfc86205301064577b98B02b81017e6F79C", // Core Hub
+  ],
 });

@@ -9,6 +9,7 @@ const customConfig = {
       '0x74ad2f789ed583dbd141bbdafc673fe1f033718b', // Upshift vault USD
       '0x3cc0d33b1aeac3d23ea89214b3ac5b4607032167', // Upshift vault BTC
       '0xd0271e199f886ff943859579465498b18ecf1e9d', // Upshift vault ETH
+      '0xd000E6BcAd5457E8F4de67eDdeFe50BCC4B3d743', // Upshift Sentora RWA (PYUSD)
     ]
   }
 }
@@ -26,6 +27,9 @@ const curatorExport = getCuratorExport({
       eulerVaultOwners: [
         '0x5aB5FE7d04CFDeFb9daf61f6f569a58A53D05eE1',
         '0xe78C246ea973389F55BAEADF71e04750D50417d1',
+      ],
+      morpho: [
+        "0xFC8C624B6080a0a780583799f2A862DE936F6E22", // Sentorax Spark RLUSD vault
       ],
       morphoVaultOwners: [
         '0x13DE0cEE0B83562CBfD46682e10FfA4E3c5090e1',

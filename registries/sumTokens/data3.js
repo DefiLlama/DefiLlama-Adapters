@@ -12,6 +12,9 @@ module.exports = {
     "bsc": {
       "tvl": { "owners": ["0x3EedB0d9C95263778a62081F2A62FC77a392116d"], "tokens": [ADDRESSES.bsc.USDT] },
     },
+    "arc": {
+      "tvl": { "owners": ["0xc64e528c6439a204da1b519e78aa43f9e4b32f00"], "tokens": [ADDRESSES.arc.USDC] },
+    },
     "edgex": {
       "tvl": { "owners": ["0xc8B4cF96bBC915f11C4f8B6F7654eF46C7af3783"], "tokens": [ADDRESSES.edgex.USDC] },
     },

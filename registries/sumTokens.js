@@ -27557,11 +27557,7 @@ const configs = {
   "teleswap": {
     "methodology": "TVL is the sum of all BTC locked by users, collateral locked by Lockers, and TST delegated to Lockers.",
     "bitcoin": {
-      "owners": [
-        "3BFxRmnhJJ5VfDF9U4GKT7cKnU4MedcqVm",
-        "bc1qhf3gp40fz8n62907fax79t9ee67h0kaxlcy7j9",
-        "bc1q5wnpn4k99wc587maaaa6eqnx27g4r6mduxg2s5"
-      ]
+      "__btcBook": "teleswap"
     },
     "ethereum": {
       "staking": {
@@ -41959,6 +41955,7 @@ const configs = {
   },
   "circle-gateway": {
     ethereum: { owner: '0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE', token: ADDRESSES.ethereum.USDC },
+    arc: { owner: '0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE', token: ADDRESSES.null },
   },
   "robinhood-bridge": {
     ethereum: { owner: '0xDf8755334ce7A73cCF6b581C02eA649AE3E864b3', token: ADDRESSES.null },

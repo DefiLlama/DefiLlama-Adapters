@@ -1850,6 +1850,20 @@ const uniV3Configs = {
       isAlgebra: true,
     },
   },
+  'lunya-dex': {
+    start: '2026-09-16',
+    methodology: 'Counts the tokens held by every pool created by the Lunya factory. Balances are read from the pools directly rather than derived from liquidity, so the stable pools, whose reserves are not on the constant-product curve, are valued correctly.',
+    arc: {
+      factory: '0x711492DF23F320745de6fD7f0ab9564FDBfeA016',
+      fromBlock: 21067506,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint8 indexed poolType, int24 tickSpacing, uint24 fee, address pool)',
+      topics: ['0x3871766f55926cc6499881a4481d190672266d76354ee598765dea432553fac7'],
+    },
+  },
+  'synthra-v3': {
+    arc: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 12953009 },
+    robinhood: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 9539103 },
+  },
   'trenchdex-v3': {
     start: '2026-06-01',
     pulse: {
