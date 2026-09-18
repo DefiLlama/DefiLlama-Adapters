@@ -1283,6 +1283,21 @@
     },
     "methodology": "We get the total MATIC deposited in clay contracts and convert it to USD."
   },
+  "claimrush": {
+    "hallmarks": [
+      [
+        "2026-09-18",
+        "1T CLAIM minted and dumped into the CLAIM/WETH pool, draining its liquidity"
+      ]
+    ],
+    "methodology": "Pool2 = Aerodrome v2 vAMM WETH/CLAIM LP tokens custodied by LpStakingVault7D (7-day rolling staking position for active stakers) plus GenesisLPVault24M (24-month time-locked genesis seed liquidity). LP tokens are unwrapped into their underlying WETH and CLAIM reserves. Staking bucket = CLAIM principal locked in VeClaimNFT (voting-escrow NFT, max 1-year linear-decay locks) to receive a pro-rata share of ETH royalties from every Mine takeover.",
+    "base": {
+      "tvl": "_f",
+      "pool2": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-09-18"
+  },
   "cleopatradao": {
     "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
