@@ -29,11 +29,27 @@ const FACTORIES = {
         '0x474B612F970491801743BF0e4B9153620FC36096',
         '0xA4d6a4aD35fc632aEE1dC48A2aEc2aaa37B51F9f', // yield factory
     ],
+    // Base was previously uncovered by this adapter entirely. It carries a live
+    // OPEN_TERM vault (Yieldpoint yUTY, accyUTY, 0x4C18E2bb...) holding ~1,000,043
+    // yUTY (~$1.13M), created by the 0xB4082B81... factory below. Verified 2026-09-18
+    // by enumerating these factories on base: 4 strategies, of which yUTY carries
+    // essentially all the value and the other three hold dust (2 USDC, 57 USDC, 0).
+    base: [
+        '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
+        '0xB4082B8126AF8B5345CfB159AC5d4b4F05F54bC5',
+        '0xC0f778b51bF9751BBccBF4e78A107026aDaDbe43', // yield factory
+    ],
 }
 
 const EXTRA_VAULTS = {
     monad: [
         '0x23b148d8f389C5821739381f1FF87bB7e1162566',
+        // aHyperBTC Looping Vault. Same blind spot as the vault above: its strategy
+        // 0x3d60d5786Fbe59B8cD5370c6280bE65B572EcA3b was deployed directly by an EOA
+        // (0x9349da10...), not by one of the factories enumerated above, so
+        // strategyProxies/strategyVaults never return it. Verified 2026-09-18 by
+        // enumerating all 5 monad factories: 165 strategies, none of them this one.
+        '0x721928108fA84aE8A13545BFEe3e6958626Cee60',
     ],
 }
 
@@ -56,6 +72,32 @@ const EXCLUDED_STRATEGIES = {
         '0x945dc31b38c811a0188b5b30cf1ea7721666cf7c',
         '0x33ca98cfca7f25735d8719e67f616fcc44d7771e',
     ],
+}
+
+// UTY ("Unity", 0xBA515304... on base) is a dollar-pegged synthetic dollar: CoinGecko
+// `unity-2` quotes $0.9997, with an all-time range of $0.9908-$1.01 since Dec 2025.
+// DefiLlama cannot price it, though - coins.llama.fi returns an empty object for the
+// base/katana/avalanche contract AND for `coingecko:unity-2` - because the token has
+// essentially no market: a single Aerodrome/USDC pool with 37 trades and $9.4k of
+// volume in five months. yUTY (0xBa515EEd...), the ERC4626 wrapper the Yieldpoint
+// vault actually holds, has never traded at all.
+//
+// Left alone, that vault's ~1,000,043 yUTY values to exactly $0 and base reports $60
+// against a real ~$1.13M position. So book it against USDC instead. Note the wrapper
+// is NOT 1:1 with the peg - convertToAssets(1e18) is ~1.1256 UTY per yUTY - so a naive
+// 1:1 mapping would understate the vault by ~11%. Unwrap through the ERC4626 first,
+// then treat the resulting UTY as a dollar.
+//
+// TEMPORARY: this hardcodes a peg we do not control. Remove it once UTY is priced
+// upstream; if UTY ever depegs, this overstates TVL until then.
+const USD_PEGGED_WRAPPERS = {
+    base: {
+        // yUTY -> UTY -> USD
+        '0xba515eed0119acb7cfe8fab3acd6b362f3ed5319': {
+            usdToken: ADDRESSES.base.USDC,
+            scale: 1e12, // UTY has 18 decimals, USDC has 6
+        },
+    },
 }
 
 const abis = {
@@ -131,9 +173,44 @@ function tvl(isBorrowed) {
             api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
         ])
 
+        const pegged = USD_PEGGED_WRAPPERS[api.chain] || {}
+        const amounts = vaults.map((_, i) => {
+            if (!underlyings[i] || !totalAssets[i]) return null
+            return isBorrowed ? totalAssets[i] - liquidity[i] : liquidity[i]
+        })
+
+        // Unwrap the pegged ERC4626 wrappers in one batched call so the peg is applied
+        // to the underlying amount, not to the (non-1:1) wrapper amount.
+        // The amounts above are plain JS numbers, which cannot be encoded as uint256 once
+        // they exceed 2^53 (1e24 stringifies as "1.000043e+24" and the call reverts), so
+        // recompute the wrapper amounts exactly as BigInt before passing them on-chain.
+        const exactAmount = (i) => {
+            const total = BigInt(totalAssets[i])
+            const liquid = BigInt(liquidity[i] || 0)
+            return (isBorrowed ? total - liquid : liquid).toString()
+        }
+        const wrapped = vaults
+            .map((_, i) => ({ i, cfg: underlyings[i] && pegged[underlyings[i].toLowerCase()] }))
+            .filter(({ i, cfg }) => cfg && amounts[i])
+        const unwrapped = wrapped.length
+            ? await api.multiCall({
+                abi: abis.convertToAssets,
+                calls: wrapped.map(({ i }) => ({ target: underlyings[i], params: [exactAmount(i)] })),
+                permitFailure: true,
+            })
+            : []
+
+        const unwrappedByIndex = {}
+        wrapped.forEach(({ i }, k) => { if (unwrapped[k]) unwrappedByIndex[i] = unwrapped[k] })
+
         vaults.forEach((_, i) => {
-            if (!underlyings[i] || !totalAssets[i]) return
-            isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], liquidity[i])
+            if (amounts[i] === null) return
+            const cfg = underlyings[i] && pegged[underlyings[i].toLowerCase()]
+            if (cfg && unwrappedByIndex[i] !== undefined) {
+                api.add(cfg.usdToken, Number(unwrappedByIndex[i]) / cfg.scale)
+                return
+            }
+            api.add(underlyings[i], amounts[i])
         })
     }
 }
@@ -153,6 +230,10 @@ module.exports = {
         borrowed: tvl(true)
     },
     citrea: {
+        tvl: tvl(false),
+        borrowed: tvl(true)
+    },
+    base: {
         tvl: tvl(false),
         borrowed: tvl(true)
     },
