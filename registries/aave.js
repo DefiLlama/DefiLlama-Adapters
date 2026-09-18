@@ -206,6 +206,7 @@ const aaveConfigs = {
     },
   },
   'spark-fi': {
+    methodology,
     ethereum: {
       addressesProviderRegistry: '0x03cFa0C4622FF84E50E75062683F44c9587e6Cc1',
       dataHelpers: ['0xFc21d6d146E6086B8359705C8b28512a983db0cb'],
@@ -213,7 +214,7 @@ const aaveConfigs = {
       staking: ['0xc6132FAF04627c8d05d6E759FAbB331Ef2D8F8fD', '0xc20059e0317DE91738d13af027DfC4a50781b066'],
     },
     xdai: {
-      addressesProviderRegistry: '0xA98DaCB3fC964A6A0d2ce3B77294241585EAbA6d',
+      addressesProviderRegistry: '0x49d24798d3b84965F0d1fc8684EF6565115e70c1',
       dataHelpers: ['0x2a002054A06546bB5a264D57A81347e23Af91D18'],
       v3: true,
     },
