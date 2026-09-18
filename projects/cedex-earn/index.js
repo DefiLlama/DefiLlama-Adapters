@@ -11,11 +11,20 @@ const abi = {
   getCreditInfo: 'function getCreditInfo(address token, address user) view returns (tuple(address token, uint16 creditApr, uint128 totalDeposited, uint128 totalBorrowed, bool paused, tuple(uint128 principalBalance, uint256 pendingCreditInterest, bool isBorrower, tuple(uint32 creditId, uint256 pendingInterest, tuple(uint128 principalBalance, uint128 interestDebt, uint128 accruedInterest) creditLine)[] creditsInfo) userInfo, uint16 avgApr) creditInfo)',
 }
 
+/**
+ * Reads the USDC credit market's totalBorrowed from the MultiPool contract.
+ * @param {object} api - DefiLlama SDK ChainApi instance.
+ * @returns {Promise<bigint>} Total USDC currently drawn out to borrowers.
+ */
 async function getTotalBorrowed(api) {
   const { totalBorrowed } = await api.call({ target: MULTI_POOL, abi: abi.getCreditInfo, params: [ADDRESSES.ethereum.USDC, ADDRESSES.null] })
   return totalBorrowed
 }
 
+/**
+ * Sums the USDC held by the deposit and credit vaults plus the amount drawn out to borrowers.
+ * @param {object} api - DefiLlama SDK ChainApi instance.
+ */
 async function tvl(api) {
   await sumTokensExport({
     owners: [DEPOSIT_VAULT, CREDIT_VAULT],
@@ -24,6 +33,10 @@ async function tvl(api) {
   api.add(ADDRESSES.ethereum.USDC, await getTotalBorrowed(api))
 }
 
+/**
+ * Reports the USDC currently drawn out to borrowers as a separate metric.
+ * @param {object} api - DefiLlama SDK ChainApi instance.
+ */
 async function borrowed(api) {
   api.add(ADDRESSES.ethereum.USDC, await getTotalBorrowed(api))
 }
