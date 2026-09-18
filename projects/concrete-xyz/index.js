@@ -5,6 +5,7 @@ const URL = 'https://apy.api.concrete.xyz/v1/vault:tvl/all'
 const abis = {
   asset: "address:asset",
   totalAssets: "uint256:totalAssets",
+  cachedTotalAssets: "uint256:cachedTotalAssets",
   // getStrategies: "function getStrategies() view returns ((address strategy, (uint256 index, uint256 amount) allocation)[])"
 }
 
@@ -23,8 +24,12 @@ const tvl = async (api) => {
 
   const addresses = vaults.map(v => v.address)
   const assets = await api.multiCall({ calls: addresses, abi: abis.asset })
-  // there is a weird bug when totalAssets return 0, we get an error, maybe because total shares is 0?
   const totalAssets = await api.multiCall({ calls: addresses, abi: abis.totalAssets, permitFailure: true })
+  // V2 totalAssets() reverts while the vault's accounting is stale or the vault is paused; cachedTotalAssets()
+  // is the last valuation the vault accepted. V1 vaults have no cache, so those stay excluded.
+  const stale = addresses.map((address, i) => (totalAssets[i] === null ? address : null)).filter(Boolean)
+  const cached = await api.multiCall({ calls: stale, abi: abis.cachedTotalAssets, permitFailure: true })
+  stale.forEach((address, j) => { totalAssets[addresses.indexOf(address)] = cached[j] })
 
   let apiTvl = 0
   for (let i = 0; i < vaults.length; i++) {
