@@ -15,20 +15,39 @@ const POOL_DISCRIMINATOR_B58 = 'hQrXeCntzbV' // base58 of the 8 discriminator by
 // PoolState enum: 0 = Created, 1 = Open, 2 = Graduated, 3 = Expired.
 const POOL_STATE_GRADUATED = 2
 
-// `Pool` starts with three fixed pubkeys + pool_id, then three variable-length
-// strings (name/symbol/uri), so `payment_vault` and `state` are at data-dependent
-// offsets — the account is allocated at a fixed size (the strings are space-reserved at
-// their maximum lengths) but serialized at their real lengths, so a fixed offset would
-// read garbage. Walk past the strings, then read the fixed tail. Layout (after the 8-byte
-// discriminator): config(32) creator(32) creator_payment_account(32) pool_id(8)
-// name(str) symbol(str) uri(str) token_mint(32) payment_mint(32) token_vault(32)
-// payment_vault(32) launch_ts(8) end_ts(8) duration_secs(8) expiry_mode(1)
-// migratable(1) anti_snipe(1) state(1) ...
+// The `Pool` account has had two layouts, and both are live on-chain.
+//
+// v2 (the original, now only expired test pools): three pubkeys + pool_id, then the
+// variable-length strings name/symbol/uri, then the vaults — so `payment_vault` and
+// `state` sat at data-dependent offsets and had to be found by walking the strings.
+//
+// v3 (every pool created since the reorder): all fixed-size fields were hoisted above the
+// strings, which now sit LAST, so `payment_vault` is at a constant 200 and `state` at 267.
+//
+// Both are allocated at the same fixed size (875 bytes, strings space-reserved at their
+// maximum lengths), so size can't tell them apart. The name length prefix can: in v3 it is
+// at 493 and always non-zero, while in a v2 account byte 493 falls inside the reserved
+// trailing padding and reads 0.
+const V3_NAME_LEN_OFFSET = 493
+const V3_PAYMENT_VAULT_OFFSET = 200
+const V3_STATE_OFFSET = 267
+
 function parsePool(data) {
-  let o = 8 + 32 + 32 + 32 + 8 // skip discriminator + config + creator + creator_payment_account + pool_id
+  if (data.length < V3_NAME_LEN_OFFSET + 4) return null
+  if (data.readUInt32LE(V3_NAME_LEN_OFFSET) !== 0) {
+    return {
+      paymentVault: new PublicKey(data.subarray(V3_PAYMENT_VAULT_OFFSET, V3_PAYMENT_VAULT_OFFSET + 32)).toBase58(),
+      state: data[V3_STATE_OFFSET],
+    }
+  }
+  // v2: walk past the three strings from byte 112
+  // (8 disc + config 32 + creator 32 + creator_payment_account 32 + pool_id 8).
+  let o = 112
   for (let i = 0; i < 3; i++) { // name, symbol, uri
     if (o + 4 > data.length) return null
-    o += 4 + data.readUInt32LE(o)
+    const len = data.readUInt32LE(o)
+    if (len > data.length) return null
+    o += 4 + len
   }
   const paymentVaultOffset = o + 96 // skip token_mint + payment_mint + token_vault
   const stateOffset = o + 96 + 32 + 24 + 3 // skip payment_vault + launch/end/duration + expiry/migratable/anti_snipe
@@ -45,12 +64,15 @@ async function tvl(api) {
     filters: [{ memcmp: { offset: 0, bytes: POOL_DISCRIMINATOR_B58 } }],
   })
   const vaults = []
-  for (const { account } of accounts) {
+  for (const { pubkey, account } of accounts) {
     // Re-check the discriminator: the program also owns `UserPosition` accounts, and an
     // RPC that ignored the memcmp filter would otherwise feed them to parsePool.
     if (account.data.subarray(0, 8).toString('hex') !== POOL_DISCRIMINATOR_HEX) continue
+    // Fail loudly: a `Pool` account the parser can't read means the struct changed again,
+    // and silently skipping it under-reports TVL with no signal (exactly how the v3 reorder
+    // went unnoticed).
     const pool = parsePool(account.data)
-    if (!pool) continue
+    if (!pool) throw new Error(`Unrecognised MomoSwap Pool layout: ${pubkey.toBase58()}`)
     if (pool.state === POOL_STATE_GRADUATED) continue // graduated
     vaults.push(pool.paymentVault)
   }
