@@ -974,5 +974,15 @@ module.exports = {
       ],
       uniV3WhitelistedTokens: [ADDRESSES.arc.USDC],
     }
-  }
+  },
+  "arclotls": {
+    "methodology": "Unpaid rent rewards held as USDC in the RentVault. Includes rewards not immediately claimable. These are NFT-holder rewards rather than refundable deposits. Excludes buyback funds, spent USDC, treasury and genesis reserves, liquidity pools, LOTL and NFT valuations.",
+    "start": "2026-09-17",
+    "arc": {
+      "owner": "0x18B156cc2aB7cF8173Ee837AcFe41D8A9943Aa2e",
+      "tokens": [
+        ADDRESSES.arc.USDC
+      ]
+    }
+  },
 }
