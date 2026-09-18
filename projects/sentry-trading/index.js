@@ -1,6 +1,7 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { baseReserve } = require('./positionMath')
 
 // TVL is the liquidity held in those launch pools. Two generations exist
 // and both are live, so both are counted:
@@ -127,19 +128,14 @@ async function v4Tvl(api, config) {
     const s = slot0[i]
     if (!s || !s.sqrtPriceX96 || s.sqrtPriceX96 === '0') return
 
-    const liquidity = Number(BigInt(vaultLiq[i]?.liquidity || 0) + BigInt(factoryLiq[i]?.liquidity || 0))
+    const liquidity = BigInt(vaultLiq[i]?.liquidity || 0) + BigInt(factoryLiq[i]?.liquidity || 0)
     if (!liquidity) return
 
     const tokenIsCurrency0 = l.token.toLowerCase() < l.baseToken.toLowerCase()
     // slot0.tick is rounded down. Use sqrtPriceX96 directly, especially
     // near a range boundary where rounding can erase the small base reserve.
-    const lower = 1.0001 ** (l.tickLower / 2)
-    const upper = 1.0001 ** (l.tickUpper / 2)
-    const price = Math.max(lower, Math.min(upper, Number(s.sqrtPriceX96) / 2 ** 96))
-    const baseAmount = tokenIsCurrency0
-      ? liquidity * (price - lower)
-      : liquidity * (upper - price) / (price * upper)
-    api.add(l.baseToken, baseAmount)
+    const baseAmount = baseReserve(liquidity, BigInt(s.sqrtPriceX96), l.tickLower, l.tickUpper, tokenIsCurrency0)
+    api.add(l.baseToken, baseAmount.toString())
   })
 }
 
