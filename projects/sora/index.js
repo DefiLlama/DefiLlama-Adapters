@@ -1,4 +1,4 @@
-const { ApiPromise, WsProvider } = require("@polkadot/api")
+const { getStorageEntries, ScaleReader } = require('../helper/chain/substrate')
 
 const cgMapping = {
   '0x0200000000000000000000000000000000000000000000000000000000000000': 'sora',
@@ -10,31 +10,29 @@ const cgMapping = {
 
 const DECIMALS = 18
 
+// PoolXYK.Reserves: double map Blake2_128Concat AssetId32, Blake2_128Concat AssetId32 => (Balance, Balance)
 async function tvl(api) {
-  const provider = new WsProvider("wss://ws.mof.sora.org")
-  const soraApi = await ApiPromise.create({ provider })
-  await soraApi.isReady
+  const entries = await getStorageEntries('sora', { pallet: 'PoolXYK', item: 'Reserves' })
 
-  const entries = await soraApi.query.poolXYK.reserves.entries()
-
-  for (const [key, value] of entries) {
-    const [baseAssetId, targetAssetId] = key.args
-    const baseId = baseAssetId.toHex()
-    const targetId = targetAssetId.toHex()
+  for (const { rest, value } of entries) {
+    const key = new ScaleReader(rest)
+    key.bytes(16)
+    const baseId = '0x' + key.bytes(32).toString('hex')
+    key.bytes(16)
+    const targetId = '0x' + key.bytes(32).toString('hex')
+    const reserves = new ScaleReader(value)
+    const baseReserve = reserves.u128()
+    const targetReserve = reserves.u128()
 
     if (cgMapping[baseId]) {
-      const amount = Number(value[0].toBigInt()) * 2 / (10 ** DECIMALS)
+      const amount = Number(baseReserve) * 2 / (10 ** DECIMALS)
       if (amount > 0) api.add(cgMapping[baseId], amount, { skipChain: true })
-    } else    if (cgMapping[targetId]) {
-      const amount = Number(value[1].toBigInt()) * 2 / (10 ** DECIMALS)
+    } else if (cgMapping[targetId]) {
+      const amount = Number(targetReserve) * 2 / (10 ** DECIMALS)
       if (amount > 0) api.add(cgMapping[targetId], amount, { skipChain: true })
-    } else {
-      console.log(`Unknown asset pair: ${baseId} - ${targetId}`)
     }
-
   }
 
-  await soraApi.disconnect()
   return api.getBalances()
 }
 
