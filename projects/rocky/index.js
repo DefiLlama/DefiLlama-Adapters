@@ -1,7 +1,10 @@
 const {sumTokens2 } = require("../helper/unwrapLPs.js")
-const {
-    config,
-  } = require("./config.js");
+const config = {
+    sei: {
+        address: "0x7b90821232074285a9ee9bee868bcc36231f8e32",
+        fromBlock: 175855916,
+    },
+};
 
 module.exports = {
     methodology: `TVL is retrieved on-chain by getting the total assets managed by the Rocketizer contracts`,

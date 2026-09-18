@@ -1,4 +1,8 @@
-const {abi} = require("./abi");
+const abi = {
+    "getReserveBalance": "uint256:getReserveBalance",
+    "getTokenReserveBalance": "function getTokenReserveBalance(address token) view returns(uint256)",
+    "supportedToken": "address[]:getSupportedTokens"
+};
 
 const tokenBlenderContract = "0x7a7f847fb60b0000e24cce07298dc73df8b8e56a"
 

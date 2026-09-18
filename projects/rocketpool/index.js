@@ -5,7 +5,7 @@ const RPL = '0xd33526068d116ce69f19a9ee46f0bd304f21a51f'
 
 // Rocket Pool Saturn contract addresses (resolved from RocketStorage 0x1d8f8f00cfa6758d7bE78336684788Fb0ee0Fa46)
 const contracts = {
-  rocketTokenRETH:       '0xae78736Cd615f374D3085123A210448E74Fc6393',
+  rocketTokenRETH:       ADDRESSES.ethereum.RETH,
   rocketDepositPool:     '0xCE15294273CFb9D9b628F4D61636623decDF4fdC',
   rocketMinipoolManager: '0xe54B8C641fd96dE5D6747f47C19964c6b824D62C',
   rocketNodeManager:     '0xcf2d76A7499d3acB5A22ce83c027651e8d76e250',

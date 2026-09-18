@@ -31,7 +31,6 @@ const stableTokenAddresses = [
 
   // metis
   ADDRESSES.metis.m_USDC,
-  ADDRESSES.metis.BUSD,
 
   // avax
   ADDRESSES.avax.DAI,
@@ -45,9 +44,9 @@ const stableTokenAddresses = [
   '0x91f8490eC27cbB1b2FaEdd29c2eC23011d7355FB',
 
   // fantom
-  ADDRESSES.fantom.DAI,
+  "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
   '0x6Fc9383486c163fA48becdEC79d6058f984f62cA',
-  ADDRESSES.fantom.USDC,
+  "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
   ADDRESSES.fantom.WFTM,
 
   // ethereum

@@ -2,6 +2,7 @@ const whitelistedExportKeys = require('../projects/helper/whitelistedExportKeys.
 const { staking: stakingFn } = require('../projects/helper/staking')
 const { pool2: pool2Fn } = require('../projects/helper/pool2')
 const { staking: stakingUnknownFn } = require('../projects/helper/unknownTokens')
+const { sumTokensExport: sumTokensUnwrapExport } = require('../projects/helper/unwrapLPs')
 
 const topLevelKeys = new Set(whitelistedExportKeys)
 const chainExportKeys = new Set(['tvl', 'staking', 'pool2', 'borrowed', 'vesting', ])
@@ -13,9 +14,17 @@ const convertors = {
   vesting: (params) => stakingFn(...params),
 }
 
-// Object params: staking: { owner, tokens, lps, ... } → unknownTokens staking
+// Object params: staking: { owner, tokens, lps, ... } → unknownTokens staking.
+// The `{ __sumTokens: {...opts} }` marker (any bucket key) → unwrapLPs.sumTokensExport(opts),
+// for buckets that are static sumTokens calls needing tokensAndOwners / resolveLP (known-LP unwrap).
 const objectConvertors = {
   staking: (obj) => stakingUnknownFn(obj),
+}
+function buildMarkedBucket(value) {
+  if (value && typeof value === 'object' && !Array.isArray(value) && value.__sumTokens) {
+    return sumTokensUnwrapExport({ ...value.__sumTokens })
+  }
+  return undefined
 }
 
 function buildProtocolExports(configs, exportFn) {
@@ -44,7 +53,10 @@ function buildProtocolExports(configs, exportFn) {
         for (const key of chainExportKeys) {
           if (key in chainConfig) {
             const value = chainConfig[key]
-            if (Array.isArray(value) && convertors[key]) {
+            const marked = buildMarkedBucket(value)
+            if (marked) {
+              result[chain][key] = marked
+            } else if (Array.isArray(value) && convertors[key]) {
               result[chain][key] = convertors[key](value)
             } else if (typeof value === 'object' && value !== null && !Array.isArray(value) && objectConvertors[key]) {
               result[chain][key] = objectConvertors[key](value)

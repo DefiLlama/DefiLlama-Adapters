@@ -1,7 +1,14 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const abi = require('./abi');
+const abi = {
+  "getCurrentTokens": "address[]:getCurrentTokens",
+  "underlying": "address:underlying",
+  "getPricePerFullShare": "uint256:getPricePerFullShare",
+  "token": "address:token",
+  "get_virtual_price": "uint256:get_virtual_price",
+  "pricePerShare": "uint256:pricePerShare"
+};
 
 async function getBscTvl(api) {
   const poolAddress = "0x40E46dE174dfB776BB89E04dF1C47d8a66855EB3"

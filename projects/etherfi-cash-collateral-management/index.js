@@ -1,5 +1,6 @@
-const { sliceIntoChunks, sleep } = require('../helper/utils');
+const { sliceIntoChunks, sleep, mergeExports } = require('../helper/utils');
 const { PromisePool } = require('@supercharge/promise-pool');
+const { aaveV4Export } = require("../helper/aave");
 
 const CONFIG = {
   scroll: {
@@ -60,6 +61,8 @@ const tvl = async (api) => {
       processed += chunk.length * SAFES_PER_CALL
       // api.log(`Processed ${Math.min(processed, numSafes)}/${numSafes} safes (${failures} sub-call failures, ~${failures * SAFES_PER_CALL} safes skipped)`)
     })
+
+  return api.getBalances()
 }
 
 async function borrowed(api) {
@@ -69,13 +72,26 @@ async function borrowed(api) {
   for (let i = 0; i < borrowTokens.length; i++) {
     api.add(borrowTokens[i], borrowAmounts[i])
   }
+
+  return api.getBalances()
 }
 
-module.exports = {
+const v1Exports = {
   isHeavyProtocol: true,
   scroll: { tvl, borrowed },
   optimism: { tvl, borrowed },
-  hallmarks: [
-    ['2026-04-08', 'Operation is migrated to OP Mainnet']
-  ]
+
 }
+
+
+const v2Exports = aaveV4Export({
+  optimism: [
+    "0x66753c4e3fC84f1eD0e3C267C927284E9d90C572", // Core Hub
+  ],
+});
+
+module.exports = mergeExports(v1Exports, v2Exports)
+module.exports.hallmarks = [
+  ['2026-04-08', 'Operation is migrated to OP Mainnet']
+]
+delete module.exports.methodology

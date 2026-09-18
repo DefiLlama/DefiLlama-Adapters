@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { eulerTokens } = require('../helper/tokenMapping')
 const { getLogs } = require('../helper/cache/getLogs')
 const BigNumber = require("bignumber.js");
 
@@ -73,6 +72,13 @@ const contracts = {
     credits: []
   }
 }
+
+// Pareto credit vaults (app.pareto.credit) are IdleCDO contracts and some are deployed through
+// the same tranche factory, but they are tracked by projects/pareto — skip them here so the
+// same getContractValue isn't counted under both protocols.
+const paretoCreditVaults = new Set([
+  '0x14b8e918848349d1e71e806a52c13d4e0d3246e0', // Adaptive Frontier
+])
 
 const trancheConfig = {
   ethereum: {
@@ -149,7 +155,7 @@ async function tvl(api) {
   })
 
   const trancheTokensMapping = {}
-  const blacklistedTokens = [...eulerTokens]
+  const blacklistedTokens = []
 
   const { factory, fromBlock } = trancheConfig[api.chain] ?? {}
   if (factory) {
@@ -161,7 +167,7 @@ async function tvl(api) {
       onlyArgs: true,
       fromBlock,
     })
-    cdos.push(...logs.map(i => i.proxy))
+    cdos.push(...logs.map(i => i.proxy).filter(proxy => !paretoCreditVaults.has(proxy.toLowerCase())))
   }
 
   const [wrap4626Supplies, wrap4626Tokens] = await Promise.all(['uint256:totalSupply', 'address:token'].map( abi => api.multiCall({ abi, calls: wrap4626 }) ))

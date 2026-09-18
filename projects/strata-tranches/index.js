@@ -10,13 +10,15 @@ const srUSDatVault = "0xFaa9a0e1Db9E22AE3A20B2B58a68DC24D053d066";
 const jrUSDatVault = "0x011e55d2b28306458e37Ca7E997C879BB25A455D";
 const jrtPrimeVault = "0xF4C91F24E20EE8ed5eda905E501A1136334C2F27";
 const srtPrimeVault = "0x35bFF778d3fc53a561486BF28e761428499232Eb";
+const jrNOPALVault = "0x1b2b8cFEF0b7B1Fad216b55fefeEb0c3349Da141";
+const srNOPALVault = "0x8a646Edc4633ADBA5Ec87DedaF3Af958e268FE96";
 
 module.exports = {
     methodology: "Protocol TVL refers to the dollar value of all assets deposited into the protocol smart contracts.",
     ethereum: {
         async tvl (api) {
             return await api.erc4626Sum2({
-                calls: [ srUSDeVault, jrUSDeVault, srNUSDVault, jrNUSDVault, srmHYPERVault, jrmHYPERVault, srmM1USDVault, jrmM1USDVault, srUSDatVault, jrUSDatVault, jrtPrimeVault, srtPrimeVault ],
+                calls: [ srUSDeVault, jrUSDeVault, srNUSDVault, jrNUSDVault, srmHYPERVault, jrmHYPERVault, srmM1USDVault, jrmM1USDVault, srUSDatVault, jrUSDatVault, jrtPrimeVault, srtPrimeVault, jrNOPALVault, srNOPALVault ],
             });
         }
     },

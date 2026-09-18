@@ -2,7 +2,44 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { getCache, setCache, getConfig } = require("../helper/cache");
 const ethers = require("ethers");
-const config = require("./config.json");
+const config = {
+  "ethereum": [
+    {
+      "metavaultRegistry": "0x16b28223b607b4d90e2ec628fdc1a0ad9ee1f6b8",
+      "fromBlock": 24239595
+    }
+  ],
+  "arbitrum": [
+    {
+      "metavaultRegistry": "0xa355dd06f35bcfe98e45f743397b729b93c560be",
+      "fromBlock": 411893741
+    }
+  ],
+  "base": [
+    {
+      "metavaultRegistry": "0xa2c9da26c1982cacaf01c5c691e0cf0aeb031ac1",
+      "fromBlock": 39252883
+    }
+  ],
+  "avax": [
+    {
+      "metavaultRegistry": "0xacf33983cab5f9e914e6a93a2f4d531b5c516602",
+      "fromBlock": 74345784
+    }
+  ],
+  "katana": [
+    {
+      "metavaultRegistry": "0x191ea03cccc27546ba9f5161b4948b6afce5263f",
+      "fromBlock": 23301734
+    }
+  ],
+  "flare": [
+    {
+      "metavaultRegistry": "0x2154a519d08bfd3f6e0303fd3ac0511c58424bbe",
+      "fromBlock": 56197360
+    }
+  ]
+};
 
 // Chain name (as used in config.json) to Spectra API network slug
 const CHAIN_TO_API_NETWORK = {

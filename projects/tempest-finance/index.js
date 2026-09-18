@@ -17,10 +17,9 @@ async function tvl(api) {
   const vaults = response.data.vaults;
 
   const tokens = vaults.map(vault => vault.mainAsset);
-  const balances = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults.map(vault => vault.address) });
+  const balances = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults.map(vault => vault.address), permitFailure: true });
 
-  api.addTokens(tokens, balances)
-  return sumTokens2({ api })
+  api.addTokens(tokens, balances.map(i => i ?? 0))
 }
 
 Object.keys(chains).forEach(chain => {

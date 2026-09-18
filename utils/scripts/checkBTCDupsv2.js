@@ -3,14 +3,16 @@ const addressBook = require('../../projects/helper/bitcoin-book/index');
 const { getEnv } = require('../../projects/helper/env');
 const Bucket = "tvl-adapter-cache";
 
-console.log('project count: ', Object.keys(addressBook).length);
+const projectKeys = Object.keys(addressBook).filter(project => project !== 'getBTCExport');
+
+console.log('project count: ', projectKeys.length);
 const addressProjectMap = {}
 
 const projectData = {}
 
 async function run() {
 
-  await Promise.all(Object.keys(addressBook).map(async project => {
+  await Promise.all(projectKeys.map(async project => {
 
     try {
 
@@ -27,7 +29,8 @@ async function run() {
 
       for (let address of addresses) {
         if (addressProjectMap[address]) {
-          addressProjectMap[address].push(project);
+          if (!addressProjectMap[address].includes(project))
+            addressProjectMap[address].push(project);
         } else {
           addressProjectMap[address] = [project];
         }

@@ -6,7 +6,10 @@ module.exports = {
   cardano: {
     tvl: async () => {
       const data = await get('https://analytics.indigoprotocol.io/api/cdps')
+      const psm = await (sumTokensExport({ owner: 'addr1w8lsky9l7g8yk695j9yjukaxeqzg5uz8vwc2gh8zn9w6p0sy523pp'}))()
+
       return {
+        ...psm,
         cardano: data.reduce((a, i) => {
           if (i.collateral_asset !== '') return a;
           return a + (i.collateralAmount/1e6)

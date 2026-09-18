@@ -233,6 +233,18 @@ const config = {
       "0x173810f8ca9c4c631aeb1d6c36d007f054fee980",
       "0x92ea7496eba5f001d620005f88f3e8e686e3d4ea",
       "0x45f329ff834a84fccea2319f91e1993540b22a2a",
+      "0xa073345811e360e9b66f24bc11f3a4bfa924f236",
+      "0xccdcfc4598f539408fc0393b42905c1e0d24a91e",
+      "0xcee27e2fa3675248ecbf53f67fd59e71fa82c8cd",
+      "0x4a4aaa0155237881fbd5c34bfae16e985a7b068d",
+      "0x41836676f779c4188499c301df67aa9a0510fd6f",
+      "0xebf6c883a1d60ab38c8ed4780aadbfe4c805ed4f",
+      "0x72ec2e073324960a4ec15758bab80f9ffd53f903",
+      "0xbb3c6d28def21b6297016622a57a0b05015e3ad2",
+      "0xe11eb181b936b47e37b8e5bd2e65c79bd71ce86f",
+      "0xcff6efc78928d873f9c30251decefaf2ad92fbed",
+      "0x9c22a4039f269e72de6b029b273be059cdbb831c",
+      "0xcf3061b9e65f1f84d0839bb54d79a471eed7b11a",
     ], //ETH DONE
   },
   tron: {
@@ -258,6 +270,8 @@ const config = {
       "TLNrPon76MdjfvreKXd2nmqod7AdyG9To1",
       "TBwBJwj81yXc4DNKS19GJcpUUzfSWRbBzS",
       "TD9GNrgmrg46yistfTMJpRQZcDmDRx1Bmq",
+      "TBNHZP2iAVyDhpTSZ8ee2Xjci1JExZTPE5",
+      "THdXEcBCZ7nagnmfRrfSHoiLRTbSRueoVW",
     ], //TRON DONE
   },
   arbitrum: {
@@ -375,6 +389,7 @@ const config = {
       "C1Fr2dLHvNMWKFuiM5nK5StfgWjbM6QcZcC5nkcYghkJ",
       "8PFD2CYF275p8YdRmhk4C1wcNoKeRVrouYdMbZV6HwHH",
       "3n7E2gZmCaDGpmvmHVHhHg13x7y1zG37tnEXvizxnKY1",
+      "5njZuDSS2WTFkvWWsgv8Q4TfQBuCASKJAztc5yF2qLWZ",
     ],
   }, //SOL DONE
   ripple: {
@@ -393,6 +408,8 @@ const config = {
       "rfah8jhiJwPhcWEn2eQZehWqKKqAWGjxp1",
       "rBPzKpfEh6Pv9qjh6gt9E66BL8UVbcZxHP",
       "rwSY8Fwq6PKKDUtjScSi7ZVap3BJHi6oRs",
+      "rUVtjZ5Kg4TJ4osZCJooq3hunjuACtNx4W",
+      "rQfxZ8c12uByDtLVnT1a56aXkcBFdDMwhq",
     ],
   }, //XRP DONE
   litecoin: {
@@ -665,6 +682,34 @@ const config = {
       "UQAqc2WkItRXN4xB6n5tBzNxhT8pP-e3MtTlReU3UdIJVI-s",
       // "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
       "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
+    ],
+  },
+  xlayer: {
+    owners: [
+      "0x0f5a137dce05fb40d1ff1880db49e088a8bf8224",
+      "0xdc9700dc816d8fa38d7ee201e4d3a8f35fdf6a8f",
+      "0x9437041f1bb58f9a07d8535ad43a9f351ae9b0fe",
+      "0x8dab75909be77a6eca6b1fc6d0ea258c6bda8cd2",
+      "0x5075ff68a0efb54db13423ad924bd680327d305e",
+      "0x925a0f048b056bff7cf7cf40965d2f0c3f6602c8",
+      "0xfd7d78351ee12082b093c716e158063547927a80",
+      "0x9c00c5b3c61269d0436bb177df0ecf4202447dc1",
+      "0xc7177991e471f838c60f243185bf1ac236f35a7e",
+      "0xdc4cf4bc32347b9a4f5cb21e4c2f0c6a73b1495f",
+      "0x3e6522ede5649296976fc0182e03db65340f6703",
+      "0x01b52b38acf355b9e97099d00dd6311d19774b5f",
+      "0xe2e34f3a23738180debec3f24017c2ec6161baa0",
+      "0x814d1c2af10e80ecca6854b7fd0f1f22822630c4",
+      "0x7887dd92fe8566ade028ea921dfb3a0f48c6e2b3",
+      "0x2a588707d39683f182ff0bb55284afb64a8f4af5",
+      "0xf525e00b2c1e7dbef40617609ee589b83f6f63f8",
+      "0x583836b5b520c6bd952c098e668df95d09e966f7",
+      "0xa1d2c4533d867ce4623681f68df84d9cad73cb6b",
+      "0xaac48b32ac37c6b0e3619dce1524f69b67d6ff76",
+      "0x8d2827b6204c5d6906ec31ef12482c411e7de065",
+      "0x52a109504af4a587f773faf949e65987c6ae544a",
+      "0xe64b0f1a50ba340426861f29327e9eaa7fb404ad",
+      "0xcfb691fe064f1caef47eef90a3ddae45225f358c",
     ],
   },
 };

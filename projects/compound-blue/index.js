@@ -1,14 +1,10 @@
-const sdk = require('@defillama/sdk');
-
-// get these vaults only for Compound Blue
 const vaults = [
-  '0x781FB7F6d845E3bE129289833b04d43Aa8558c42',
-  '0xF5C81d25ee174d83f1FD202cA94AE6070d073cCF',
-  '0xfD06859A671C21497a2EB8C5E3fEA48De924D6c8',
-  '0x3F33F9f7e2D7cfBCBDf8ea8b870a6E3d449664c2',
+  '0x781FB7F6d845E3bE129289833b04d43Aa8558c42', // USDC
+  '0xF5C81d25ee174d83f1FD202cA94AE6070d073cCF', // WETH
+  '0xfD06859A671C21497a2EB8C5E3fEA48De924D6c8', // USDT
+  '0x3F33F9f7e2D7cfBCBDf8ea8b870a6E3d449664c2', // POL/MATIC
 ]
 
-// get these markets only for Compound Blue
 const markets = [
   '0xa5b7ae7654d5041c28cb621ee93397394c7aee6c6e16c7e0fd030128d87ee1a3',
   '0x1cfe584af3db05c7f39d60e458a87a8b2f6b5d8c6125631984ec489f1d13553b',
@@ -27,70 +23,61 @@ const markets = [
 ]
 
 const morphoBlue = '0x1bF0c2541F820E775182832f06c0B7Fc27A25f67'
-const morphoBlueAbis = {
+const abis = {
   market: 'function market(bytes32) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)',
   idToMarketParams: 'function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)',
+  position: 'function position(bytes32, address) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)',
 }
 
-async function getBorrowed(api) {
-  const balances = {}
+async function getBorrowedByToken(api) {
+  const marketParams = await api.multiCall({ abi: abis.idToMarketParams, calls: markets.map(m => ({ target: morphoBlue, params: [m] })) })
+  const marketData = await api.multiCall({ abi: abis.market, calls: markets.map(m => ({ target: morphoBlue, params: [m] })) })
 
-  const idToMarketParams = await api.multiCall({ abi: morphoBlueAbis.idToMarketParams, calls: markets.map(marketId=> {
-    return {
-      target: morphoBlue,
-      params: [marketId],
-    }
-  }) })
-  const marketData = await api.multiCall({ abi: morphoBlueAbis.market, calls: markets.map(marketId=> {
-    return {
-      target: morphoBlue,
-      params: [marketId],
-    }
-  }) })
+  const positionCalls = []
+  for (const marketId of markets)
+    for (const vault of vaults)
+      positionCalls.push({ target: morphoBlue, params: [marketId, vault] })
+  const positions = await api.multiCall({ abi: abis.position, calls: positionCalls })
 
-  const loanTokens = idToMarketParams.map(params => params.loanToken)
-  for (let i = 0; i < loanTokens.length; i++) {
-    const token = String(loanTokens[i]).toLowerCase()
-    if (!balances[token]) {
-      balances[token] = BigInt(0)
-    }
-    balances[token] += BigInt(marketData[i].totalBorrowAssets)
+  const borrowedByToken = {}
+  let p = 0
+  for (let mi = 0; mi < markets.length; mi++) {
+    let compoundShares = 0n
+    for (let vi = 0; vi < vaults.length; vi++)
+      compoundShares += BigInt(positions[p++]?.supplyShares || 0)
+    if (compoundShares === 0n) continue
+    const totalShares = BigInt(marketData[mi].totalSupplyShares)
+    if (totalShares === 0n) continue
+    const compoundBorrowed = (compoundShares * BigInt(marketData[mi].totalBorrowAssets)) / totalShares
+    const token = marketParams[mi].loanToken.toLowerCase()
+    borrowedByToken[token] = (borrowedByToken[token] || 0n) + compoundBorrowed
   }
-
-  return balances
+  return borrowedByToken
 }
 
 async function tvl(api) {
   const assets = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })   
-  
-  const balances = {}
-  for (let i = 0; i < assets.length; i++) {
-    const token = String(assets[i]).toLowerCase()
-    if (!balances[token]) {
-      balances[token] = BigInt(0)
-    }
-    balances[token] += BigInt(totalAssets[i])
-  }
+  const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
+  const borrowedByToken = await getBorrowedByToken(api)
 
-  const totalBorrowed = await getBorrowed(api)
-
-  for (const [token, balance] of Object.entries(balances)) {
-    const tvl = balance - totalBorrowed[token]
-    api.add(token, tvl)
+  const supplied = {}
+  for (let i = 0; i < vaults.length; i++) {
+    const token = assets[i].toLowerCase()
+    supplied[token] = (supplied[token] || 0n) + BigInt(totalAssets[i])
   }
+  for (const [token, total] of Object.entries(supplied))
+    api.add(token, total - (borrowedByToken[token] || 0n))
 }
 
 async function borrowed(api) {
-  const totalBorrowed = await getBorrowed(api)
-  api.add(Object.keys(totalBorrowed), Object.values(totalBorrowed))
+  const borrowedByToken = await getBorrowedByToken(api)
+  for (const [token, amount] of Object.entries(borrowedByToken)) api.add(token, amount)
 }
 
 module.exports = {
-  // because all assets are deposited into Morpho Blue
   doublecounted: true,
   methodology: 'Count total assets are deposited in Morpho Blue vaults.',
-  start: 1741219200, // 2025-03-06
+  start: '2025-03-06',
   polygon: {
     tvl,
     borrowed,

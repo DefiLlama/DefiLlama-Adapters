@@ -3,11 +3,96 @@ const abi = {
     "totalSupply": "function totalSupply(uint256 _assetID) view returns (uint256)"
 }
 const { default: BigNumber } = require('bignumber.js');
-const { ethereumContracts } = require('./ethereum');
-const { fantomContracts } = require('./fantom');
-const { polygonContracts } = require('./polygon');
-const { arbitrumContracts } = require('./arbitrum');
-const { optimismContracts } = require('./optimism');
+
+// The provided address should be the FujiERC1155 contract that returns
+// totalSupply() for token `ids` indicated.
+const ethereumContracts = {
+  weth: [
+    {
+      name: "MainnetF1155Core_VaultsETH",
+      address: "0x1Cf24e4eC41DA581bEe223E1affEBB62a5A95484",
+      ids: [0, 2, 4],
+    },
+    {
+      name: "MainnetF1155Fuse_VaultsETH",
+      address: "0xa2d62f8b02225fbFA1cf8bF206C8106bDF4c692b",
+      ids: [0, 2],
+    },
+  ],
+};
+
+const fantomContracts = {
+  fantom: [
+    {
+      name: "FantomF1155Core_VaultsFTM",
+      address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
+      ids: [0, 2],
+    },
+  ],
+  wbtc: [
+    {
+      name: "FantomF1155Core_VaultsWBTC",
+      address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
+      ids: [4],
+    },
+  ],
+  weth: [
+    {
+      name: "FantomF1155Core_VaultsWETH",
+      address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
+      ids: [6,8],
+    },
+  ],
+};
+
+const polygonContracts = {
+  matic: [{
+    name: "PolygonF1155Core_VaultsMATIC",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [0, 2],
+  }],
+  wbtc: [{
+    name: "PolygonF1155Core_VaultsWBTC",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [4, 6],
+  }],
+  weth: [{
+    name: "PolygonF1155Core_VaultsWETH",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [8, 10],
+  }],
+  usdc: [{
+    name: "PolygonF1155Core_VaultsUSDC",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [16, 18],
+  }],
+};
+
+const arbitrumContracts = {
+  weth: [{
+    name: "ArbitrumF1155Core_VaultsWETH",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [0, 2],
+  }],
+  usdc: [{
+    name: "ArbitrumF1155Core_VaultsUSDC",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [4],
+  }],
+};
+
+const optimismContracts = {
+  weth: [{
+    name: "optimismF1155Core_VaultsWETH",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [0],
+  }],
+  usdc: [{
+    name: "optimismF1155Core_VaultsUSDC",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [2],
+  }],
+};
 
 const marketsupply = async (contract, api) => {
     return await api.multiCall(

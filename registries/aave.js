@@ -105,10 +105,43 @@ const aaveConfigs = {
     bsc: '0x7c8E7536c5044E1B3693eB564C6dE3a3CE58bbDa',
     base: '0x5C93B799D31d3d6a7C977f75FDB88d069565A55b',
   },
+  'avalon-finance-usdalend': {
+    methodology,
+    iotex: { dataHelpers: ['0xDB52DD393e3a5e95d3B7C7e1C42cC06bb807A369'], v3: true },
+    taiko: { dataHelpers: ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], v3: true },
+    zircuit: { dataHelpers: ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], v3: true },
+    corn: { dataHelpers: ['0xa15c0c3D6Ad3FeE623BEd68391923c9Ff79a50c3'], v3: true },
+    sei: { dataHelpers: ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], v3: true },
+    sonic: { dataHelpers: ['0x1C6E9510055B71429022B997E6602FbaEEb0481F'], v3: true },
+  },
+  'vicuna-lending': {
+    sonic: {
+      dataHelpers: [
+        '0xc67850eCd0EC9dB4c0fD65C1Ad43a53025e6d54D', // Main market
+        // '0xe78536507675de30D375C6d2B5dA1a99819Ea9fa', // Paused market
+        // '0x94e8122dF227B34998Ba7523ad88c943191cF4F1', // Paused market
+        '0x08Dd992108ef0a82E8aDC633bcB3A20092e17E0B', // Stream market (xUSD)
+        '0x14DF199Dc8406D1C2F87499743F3e88d17976628', // StableJack market (YT-scUSD)
+        '0x7c0F1fdB80Ff25d9E5AdfA86b5Dad8c4EF93Ef90', // Brunch market (sbUSD)
+      ],
+      v3: true,
+      isInsolvent: true,
+    },
+  },
   'aave-arc': {
     ethereum: {
       addressesProviderRegistry: '0x6FdfafB66d39cD72CFE7984D3Bbcc76632faAb00',
       dataHelpers: ['0x71B53fC437cCD988b1b89B1D4605c3c3d0C810ea'],
+    },
+  },
+  'ssap': {
+    clv: {
+      addressesProviderRegistry: '0x070CaAeac85CCaA7E8DCd88421904C2259Abed34',
+      dataHelpers: ['0x49617386d6aAaA6aE23c0E7799B5c4F79f33f1B1'],
+    },
+    oasis: {
+      addressesProviderRegistry: '0xBB4dfd53BA393DCD1AD1e30809C9527e9a00d522',
+      dataHelpers: ['0x2b8DD6DE52F20EfA309BC56454b7A929B7a1E66D'],
     },
   },
   'luckypeaches': {
@@ -184,6 +217,39 @@ const aaveConfigs = {
       dataHelpers: ['0x2a002054A06546bB5a264D57A81347e23Af91D18'],
       v3: true,
     },
+  },
+  'zerolend': {
+    hallmarks: [
+      ["2026-02-17", "winddown announced"],
+    ],
+    // borrowed marked insolvent on every chain (protocol winddown) => borrowed excluded from TVL
+    era: { dataHelpers: ['0xB73550bC1393207960A385fC8b34790e5133175E'], isInsolvent: true },
+    manta: { dataHelpers: ['0x67f93d36792c49a4493652B91ad4bD59f428AD15'], isInsolvent: true },
+    blast: { dataHelpers: ['0xc6DF4ddDBFaCb866e78Dcc01b813A41C15A08C10'], isInsolvent: true },
+    hemi: { dataHelpers: ['0x9698FdF843cbe4531610aC231B0047d9FFc13bC6'], isInsolvent: true },
+    base: { dataHelpers: ['0xA754b2f1535287957933db6e2AEE2b2FE6f38588'], isInsolvent: true },
+    linea: {
+      dataHelpers: [
+        '0x67f93d36792c49a4493652B91ad4bD59f428AD15', // main linea market
+        '0x9aFB91a3cfB9aBc8Cbc8429aB57b6593FE36E173', // croak linea market
+        '0xEe9ec60657B714E3FAC5255a5443AC5EC7Ba5bB0', // foxy linea market
+      ],
+      isInsolvent: true,
+      staking: ['0x08D5FEA625B1dBf9Bae0b97437303a0374ee02F8', '0x78354f8DcCB269a615A7e0a24f9B0718FDC3C7A7'], // zeroLocker, zero
+      pool2: [['0x8bb8b092f3f872a887f377f73719c665dd20ab06'], ['0x0040f36784dda0821e74ba67f86e084d70d67a3a']], // zlpLocker, zeroEthNileLP
+    },
+    xlayer: { dataHelpers: ['0x97e59722318F1324008484ACA9C343863792cBf6'], isInsolvent: true },
+    zircuit: { dataHelpers: ['0xA754b2f1535287957933db6e2AEE2b2FE6f38588'], isInsolvent: true },
+    ethereum: {
+      dataHelpers: [
+        '0x47223D4eA966a93b2cC96FFB4D42c22651FADFcf', // ethereum lrt market
+        '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611', // bitcoin lrt market
+        '0x298ECDcb0369Aef75cBbdA3e46a224Cfe622E287', // stablecoin rwa market
+      ],
+      isInsolvent: true,
+    },
+    corn: { dataHelpers: ['0x2f7e54ff5d45f77bFfa11f2aee67bD7621Eb8a93'], isInsolvent: true },
+    abstract: { dataHelpers: ['0x8EEAE4dD40EBee7Bb6471c47d4d867539CF53ccF'], isInsolvent: true },
   },
   // --- newly migrated aaveExports protocols ---
   'palomino-finance': {
@@ -331,6 +397,7 @@ const aaveConfigs = {
       addressesProviderRegistry: '0xEcbDd440C7a929d7524784Af634dF9EB0747b9e7',
       dataHelpers: ['0x99e8269dDD5c7Af0F1B3973A591b47E8E001BCac'],
       v3: true,
+      isInsolvent: true,
     },
   },
   'sio2': {
@@ -371,6 +438,7 @@ const aaveConfigs = {
     xdai: {
       addressesProviderRegistry: '0xC6c4b123e731819AC5f7F9E0fe3A118e9b1227Cd',
       dataHelpers: ['0x11B45acC19656c6C52f93d8034912083AC7Dd756'],
+      v3: true,
     },
   },
   'realtmarkets': {
@@ -422,7 +490,11 @@ const aaveConfigs = {
     },
   },
   'lore': {
-    scroll: '0xBc6DE4458b7D6fbf82240ce8cC0CA6a2f4986eb5',
+    scroll: {
+      addressesProviderRegistry: '0xBc6DE4458b7D6fbf82240ce8cC0CA6a2f4986eb5',
+      isInsolvent: true,
+      deadFrom: "2025-03-24"
+    },
   },
   'iolend': {
     methodology,
@@ -497,6 +569,39 @@ const aaveConfigs = {
       },
     },
   },
+  'primefi-xyz': {
+    methodology: "PRFI/wrapped-native LP staked in PrimeFi staking contracts on each chain.",
+    base: {
+      addressesProviderRegistry: '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07',
+      isInsolvent: true,
+      staking: ['0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80', '0x7BBCf1B600565AE023a1806ef637Af4739dE3255'],
+      pool2: { __sumTokens: { owner: '0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80', tokens: ['0x87B417AF600312df37F551a05ae14bCC3d55bC36'], resolveLP: true } },
+    },
+    hyperliquid: {
+      addressesProviderRegistry: '0x69A3c30A85aA1E22791466a08819c1080f0Aab7f',
+      isInsolvent: true,
+      staking: ['0x33cd734739c6DeD500fD080d476D93135cB813Ef', '0x7BBCf1B600565AE023a1806ef637Af4739dE3255'],
+      pool2: { __sumTokens: { owner: '0x33cd734739c6DeD500fD080d476D93135cB813Ef', tokens: ['0x981F145a71Da6DF4A7cBe892807782c9CC9a5515'], resolveLP: true } },
+    },
+    xdc: {
+      addressesProviderRegistry: '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07',
+      isInsolvent: true,
+      staking: ['0x01E7cd81D3d7A4907815877e0C937a77dE537e99', '0x81B244d0be055EF3BEF1b09B7826Cc2b108B2cBD'],
+      pool2: { __sumTokens: { owner: '0x01E7cd81D3d7A4907815877e0C937a77dE537e99', tokens: ['0xffA04F091128fb89D3B1eCd0149DC677dfAe1C69'], resolveLP: true } },
+    },
+  },
+  'colend': {
+    methodology,
+    core: {
+      // addressesProviderRegistry is ignored when dataHelpers are given; one market per helper
+      dataHelpers: [
+        '0x567AF83d912C85c7a66d093e41D92676fA9076E3', // Main
+        '0x8E43DF2503c69b090D385E36032814c73b746e3d', // LstBTC
+      ],
+      isInsolvent: true,
+      v3: true,
+    },
+  },
   'blend-finance': {
     methodology,
     bevm: {
@@ -533,18 +638,6 @@ const aaveConfigs = {
       isInsolvent: true,
       abis: {
         getAllATokens: "function getAllBTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-      },
-    },
-  },
-  // NOTE: starlay's astar market is handled by the standalone projects/starlay adapter
-  // (its legacy Vyper registry reverts on current Astar state). Only acala remains here.
-  'starlay': {
-    methodology,
-    acala: {
-      addressesProviderRegistry: '0xA666dD28059deF0B45505c1f1a5f49fAd2e03c11',
-      isInsolvent: true,
-      abis: {
-        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])",
       },
     },
   },

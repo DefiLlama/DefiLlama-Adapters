@@ -1,9 +1,0 @@
-{
-  "poolCount": "uint256:poolCount",
-  "arrayPerlinPools": "function arrayPerlinPools(uint256) view returns (address)",
-  "poolIsListed": "function poolIsListed(address) view returns (bool)",
-  "getCurrentTokens": "address[]:getCurrentTokens",
-  "synthCount": "uint256:synthCount",
-  "arraySynths": "function arraySynths(uint256) view returns (address)",
-  "mapSynth_EMP": "function mapSynth_EMP(address) view returns (address)"
-}

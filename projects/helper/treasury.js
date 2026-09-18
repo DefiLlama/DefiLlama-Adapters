@@ -1,6 +1,6 @@
 const ADDRESSES = require('./coreAssets.json')
 const { sumTokensExport, nullAddress } = require('./sumTokens')
-const { ankrChainMapping } = require('./token')
+const { chainsWithTokenPullSupport } = require('./token')
 const { defaultTokens } = require('./cex')
 const { getUniqueAddresses } = require('./utils')
 const sdk = require('@defillama/sdk')
@@ -20,7 +20,7 @@ function treasuryExports(config) {
     if (chain === 'solana') {
       tvlConfig.solOwners = owners;
     } else if (config[chain].fetchCoValentTokens !== false) {
-      if (ankrChainMapping[chain]) {
+      if (chainsWithTokenPullSupport.has(chain)) {
         tvlConfig.fetchCoValentTokens = true;
         if (!tvlConfig.tokenConfig) tvlConfig.tokenConfig = { onlyWhitelisted: false };
       } else if (defaultTokens[chain]) {
@@ -55,7 +55,9 @@ function treasuryExports(config) {
     }
 
     if (ownTokens.length > 0) {
-      const { solOwners, ...other } = config[chain];
+      // token auto-discovery must not run here: this bucket is meant to hold ownTokens
+      // only, and anything it finds is already counted in the tvl bucket above
+      const { solOwners, fetchCoValentTokens, tokenConfig, ...other } = config[chain];
       const opts = {
         ...other,
         owners: [...owners, ...ownTokenOwners],

@@ -1,10 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const {
   queryContract,
   sumTokens: sumTokensCosmos,
 } = require("../helper/chain/cosmos");
-const { sumTokens, } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 const vaultManagerAbi = "address[]:getVaults";
 const vaultAbi = 'function self() view returns (tuple(address underwritingToken, uint32 start, uint32 expiration, uint8 underwritingTokenDecimals) config, tuple(tuple(tuple(uint128 numerator, uint128 denominator)[] expectedXVector, tuple(uint128 numerator, uint128 denominator)[] varCovarMatrix, tuple(uint128 numerator, uint128 denominator) lambda) config) amm, tuple(tuple(address standard, address rollover) underwritingPositionERC20, address nextVault, uint56 poolCount, uint32 latestInteraction, bool paused, uint256 premiums, uint256 premiumsAccruedPerShare, uint256 premiumDripBasis, uint256[] allocationVector) state)'
 
@@ -95,7 +94,7 @@ const networks = {
   fantom: {
     vaults: [
       [
-        ADDRESSES.fantom.USDC,
+        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
         "0xca67B16b02E418CFbC9EF287C7C20B77dbb665f2",
       ],
     ],
@@ -168,35 +167,24 @@ const networks = {
   },
 };
 
-async function getManagedVaults(vaultManager, block, chain) {
+async function getManagedVaults(api, vaultManager) {
   let res = [];
-  const { output: managedVaults } = await sdk.api.abi.call({
+  const managedVaults = await api.call({
     abi: vaultManagerAbi,
     target: vaultManager,
-    block,
-    chain,
   });
 
-  let calls = [];
-  managedVaults.forEach((vault) => {
-    calls.push({
-      target: vault,
-    });
-  });
-
-  const { output: vaultStoragesResult } = await sdk.api.abi.multiCall({
+  const vaultStoragesResult = await api.multiCall({
     abi: vaultAbi,
-    calls,
-    block,
-    chain,
+    calls: managedVaults,
+    permitFailure: true,
   });
 
   // Join the two arrays into [[underwritingToken, vaultAddr]]
-  vaultStoragesResult.forEach((vaultStorageResult) => {
-    if (vaultStorageResult.success) {
-      const underwritingToken =
-        vaultStorageResult.output.config.underwritingToken;
-      res.push([underwritingToken, vaultStorageResult.input.target]);
+  vaultStoragesResult.forEach((vaultStorageResult, i) => {
+    if (vaultStorageResult) {
+      const underwritingToken = vaultStorageResult.config.underwritingToken;
+      res.push([underwritingToken, managedVaults[i]]);
     }
   });
 
@@ -228,7 +216,7 @@ async function terra2(api) {
   return sumTokensCosmos({ balances: api.getBalances(), owner: networks.terra2.masterPool, chain: "terra2", })
 }
 
-async function terra(timestamp, ethBlock, chainBlocks) {
+async function terra() {
   return sumTokensCosmos({ owners: networks.terra.vaults, chain: "terra" });
 }
 
@@ -236,21 +224,13 @@ function evm(chainName) {
   return async (api) => {
     const network = networks[chainName];
 
+    let vaults = network.vaults;
     if (network.vaultManager) {
-      const managedVaults = await getManagedVaults(
-        network.vaultManager,
-        api.block,
-        chainName
-      );
-      network.vaults = [...network.vaults, ...managedVaults];
+      const managedVaults = await getManagedVaults(api, network.vaultManager);
+      vaults = [...vaults, ...managedVaults];
     }
 
-    return sumTokens(
-      undefined,
-      network.vaults,
-      api.block,
-      chainName,
-    );
+    return sumTokens2({ api, tokensAndOwners: vaults });
   };
 }
 

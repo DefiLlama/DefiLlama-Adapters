@@ -1,4 +1,4 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { addTonBalances, addJettonBalances } = require('../helper/chain/ton')
 const { sleep } = require('../helper/utils')
@@ -11,7 +11,7 @@ module.exports = {
   timetravel: false,
   ton: {
     tvl: async (api) => {
-      const response = await get('https://bidask.finance/api/pools?size=1000&all=false')
+      const response = await getConfig('bidask', 'https://bidask.finance/api/pools?size=1000&all=false')
       const pools = response.result;
 
       const tokenToPoolsMap = {}

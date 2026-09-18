@@ -13,6 +13,10 @@ const ARB_VAULTS = [
   { vault: '0x413Ca90D38D964546c2fE03cB103df57372630F6', viewHelper: '0x0Ef66De171293285A8f8fFD0d0D564ca093DA5b6' }, // Snuggle Arbitrum
 ]
 
+const ROBINHOOD_VAULTS = [
+  { vault: '0x1195C074F898b7644bA732407619c9804dFE6DCE', viewHelper: '0x71b55E366a0F43260b1138A32c312ba7bb7F30F7' }, // MaxFi Robinhood
+]
+
 // NFT Position Managers on Base
 const AERO_NFT = '0x827922686190790b37229fd06084350E74485b72'
 const PCS_NFT_BASE = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
@@ -21,6 +25,10 @@ const PCS_NFT_BASE = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
 const SUSHI_NFT_ARB = '0xF0cBce1942A68BEB3d1b73F0dd86C8DCc363eF49'
 const PCS_NFT_ARB = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
 const CAMELOT_NFT_ARB = '0x00c7f3082833e796A5b3e4Bd59f6642FF44DCD15'
+
+// NFT Position Manager on Robinhood (Uniswap V3). Passed explicitly because Robinhood
+// isn't in the helper's default Uniswap V3 NFT registry.
+const UNI_NFT_ROBINHOOD = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3'
 
 // Position adapter addresses → DEX type (Base: Snuggle + MaxFi)
 const BASE_ADAPTER_DEX = {
@@ -40,6 +48,11 @@ const ARB_ADAPTER_DEX = {
   '0x76bdb43d2ec3b190087076649224f47a58c44ef2': 'sushiswap',
   '0xf20bc2825e015be66d26b27ee82988fd4f2b84d9': 'pancakeswap',
   '0x19ec46eb3cbcec146de2d9b4336187e4f147f217': 'camelot',
+}
+
+// Position adapter addresses → DEX type (Robinhood: MaxFi, Uniswap V3 only)
+const ROBINHOOD_ADAPTER_DEX = {
+  '0x76bdb43d2ec3b190087076649224f47a58c44ef2': 'uniswap',
 }
 
 // Camelot V3 (Algebra V1.9): 11 fields (no fee), tickLower/tickUpper/liquidity at indices 4/5/6
@@ -97,10 +110,12 @@ async function resolveVaultPositions(api, vault, viewHelper, adapterDex, chainCo
   if (skipped > 0)
     console.warn(`[snuggle] ${skipped} position(s) skipped for vault ${vault}: adapter not in adapterDex`)
 
-  // Standard Uniswap V3 ABI positions (Uniswap, SushiSwap, PancakeSwap)
+  // Standard Uniswap V3 ABI positions (Uniswap, SushiSwap, PancakeSwap).
+  // uniNft is only set for chains not in the helper's default Uni V3 NFT registry
+  // (Robinhood); Base/Arbitrum leave it unset and use the built-in default.
   const uniIds = groups.uniswap.map(p => p.tokenId)
   if (uniIds.length)
-    await sumTokens2({ api, uniV3ExtraConfig: { positionIds: uniIds } })
+    await sumTokens2({ api, uniV3ExtraConfig: { positionIds: uniIds, ...(chainConfig.uniNft && { nftAddress: chainConfig.uniNft }) } })
   if (groups.aerodrome.length)
     await unwrapSlipstreamNFT({ api, positionIds: groups.aerodrome.map(p => p.tokenId), nftAddress: chainConfig.aeroNft })
   const pcsIds = groups.pancakeswap.map(p => p.tokenId)
@@ -165,10 +180,23 @@ async function arbitrumTvl(api) {
   })
 }
 
+async function robinhoodTvl(api) {
+  const chainConfig = { uniNft: UNI_NFT_ROBINHOOD }
+  const results = await Promise.allSettled(ROBINHOOD_VAULTS.map(({ vault, viewHelper }) => resolveVaultPositions(api, vault, viewHelper, ROBINHOOD_ADAPTER_DEX, chainConfig)))
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') console.warn(`[snuggle] vault ${ROBINHOOD_VAULTS[i].vault} failed:`, r.reason?.message ?? r.reason)
+  })
+  // If EVERY vault failed, rethrow so DefiLlama keeps the last known-good TVL
+  // instead of publishing an incomplete/zero value. allSettled still isolates a
+  // single vault's failure once there is more than one vault on the chain.
+  if (results.length && results.every(r => r.status === 'rejected')) throw results[0].reason
+}
+
 module.exports = {
-  methodology: 'TVL is the value of all concentrated liquidity positions (Uniswap V3, Aerodrome, PancakeSwap, SushiSwap, Camelot) managed by Snuggle and MaxFi (Snuggle whitelabel) vaults on Base and Arbitrum.',
+  methodology: 'TVL is the value of all concentrated liquidity positions (Uniswap V3, Aerodrome, PancakeSwap, SushiSwap, Camelot) managed by Snuggle and MaxFi (Snuggle whitelabel) vaults on Base, Arbitrum, and Robinhood.',
   start: 1704067200,
   doublecounted: true,
   base: { tvl: baseTvl },
   arbitrum: { tvl: arbitrumTvl },
+  robinhood: { tvl: robinhoodTvl },
 }

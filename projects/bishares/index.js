@@ -1,6 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { toa, vaults } = require('./config')
-const abi = require('./abi')
+const abi = {
+  token: "address:token",
+  balance: "uint256:balance",
+}
 
 async function fantom(api) {
   const chain = 'fantom'

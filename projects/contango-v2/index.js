@@ -160,44 +160,48 @@ async function getPriceMap(api, tokens) {
   return sdk.coins.getPrices(tokenKeys, api.timestamp ?? 'now').catch(() => ({}))
 }
 
-async function filterPositionsWithPricedCollateral(api, positions) {
-  const prices = await getPriceMap(api, positions.map(({ instrument: { base } }) => base.id))
+function toUSD(api, prices, token, amount) {
+  const priceData = prices[getPriceKey(api, token)]
+  if (!hasUsablePrice(priceData)) return
+  return Number(amount) / 10 ** priceData.decimals * priceData.price
+}
+
+function filterPositionsWithPricedCollateral(api, positions, prices) {
   if (!Object.keys(prices).length) return positions
 
-  const skippedPositions = []
-  const filteredPositions = positions.filter(({ id, instrument: { base } }) => {
-    const priceData = prices[getPriceKey(api, base.id)]
-    const keep = hasUsablePrice(priceData)
-    if (!keep) {
-      skippedPositions.push({id})
-    }
-    return keep
-  })
-
-  if (skippedPositions.length) {
-    console.log(`skipping ${skippedPositions.length} positions with unpriced collateral`)
-  }
+  const filteredPositions = positions.filter(({ instrument: { base } }) => hasUsablePrice(prices[getPriceKey(api, base.id)]))
+  const skipped = positions.length - filteredPositions.length
+  if (skipped) console.log(`skipping ${skipped} positions with unpriced collateral`)
 
   return filteredPositions
 }
 
 const getPositionsTvl = async (api, lens, graphUrl, borrowed, block, excludedIds) => {
   let positions = (await queryPositions(graphUrl, block)).filter(({ id }) => !excludedIds.includes(id))
-  positions = await filterPositionsWithPricedCollateral(api, positions)
-  const parts = positions
-    .map(({ id, instrument: { base, quote } }) => [id, [base.id, quote.id]]);
+  const prices = await getPriceMap(api, positions.flatMap(({ instrument: { base, quote } }) => [base.id, quote.id]))
+  positions = filterPositionsWithPricedCollateral(api, positions, prices)
 
-  const calls = parts.map(([id]) => ({ target: lens, params: [id] }))
-  const balances = await api.multiCall({ calls, abi: abis.balances })
+  const calls = positions.map(({ id }) => ({ target: lens, params: [id] }))
+  // some closed/migrated positions revert on the lens, skip them instead of failing the chain
+  const balances = await api.multiCall({ calls, abi: abis.balances, permitFailure: true })
 
-  balances.forEach(([collateral, debt], i) => {
-    const [base, quote] = parts[i][1]
-    if (borrowed) api.add(quote, debt)
-    else {
-      api.add(quote, -debt);
-      api.add(base, collateral);
-    }
+  let underwater = 0
+  balances.forEach((res, i) => {
+    if (!res) return;
+    const { collateral, debt } = res
+    const { base, quote } = positions[i].instrument
+    if (borrowed) return api.add(quote.id, debt)
+
+    // tvl = user margin = collateral - debt. Underwater positions (e.g. depegged collateral) have no margin
+    // left and would otherwise drag the whole chain negative, so they contribute nothing to tvl
+    const collateralUSD = toUSD(api, prices, base.id, collateral)
+    const debtUSD = toUSD(api, prices, quote.id, debt)
+    if (collateralUSD !== undefined && debtUSD !== undefined && debtUSD >= collateralUSD) return underwater++
+
+    api.add(quote.id, -debt);
+    api.add(base.id, collateral);
   })
+  if (underwater) console.log(`skipping ${underwater} underwater positions`)
 }
 
 const getVaultTvl = async (api, contango, graphUrl, block) => {

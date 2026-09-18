@@ -7,7 +7,12 @@ const configs = {
   blockchains: {
     ethereum: {
       symbiotic: ["0xdC47953c816531a8CA9E1D461AB53687d48EEA26"],
-      eulerVaultOwners: ["0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B"],
+      eulerVaultOwners: [
+        "0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B",
+        "0x5aB5FE7d04CfDefb9dAF61F6F569a58A53d05eE1", // K3 Capital RLUSD / PYUSD deployer (euler-labels: k3-capital)
+        "0x8baeB9e1742Ef2e194F6fBEd0b29cC0adC4D3a68", // K3 Capital RLUSD / PYUSD deployer (euler-labels: k3-capital)
+        "0xe78C246Ea973389f55BaEadF71E04750d50417D1", // K3 Capital RLUSD / PYUSD deployer (euler-labels: k3-capital)
+      ],
       morphoVaultOwners: ["0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B"],
       mellow: [
         "0xc65433845ecD16688eda196497FA9130d6C47Bd8",
@@ -18,11 +23,29 @@ const configs = {
         "0x0243755a22E37b835486fdAE9A839523ADABd336",
       ],
       erc4626: [
+        "0x3B4802FDb0E5d74aA37d58FD77d63e93d4f9A4AF", // Euler Earn: K3 Capital Earn USDC
+        "0x84fcb0eb9d7ab4EdFd26CCa8AD20AaB4c5aD49CD", // Euler Earn: K3 Capital Earn WETH
+        "0xb072b2779F1EF1A6A9D2d5fAa1766F341B92aB3a", // Euler Earn: K3 Capital Earn USDT
         "0x50bd66d59911f5e086ec87ae43c811e0d059dd11",
         "0xf5503d3d4bd254c2c17690eed523bcb2935db6de",
         "0x866C6c6627303Be103814150fC0e886BE5D9ea83",
         "0xe1B4d34E8754600962Cd944B535180Bd758E6c2e",
         "0x3b3bDAA4462851621818D2CEBC835E077587147A",
+        "0x8f47D9D9d5A8202a5a37c4E41fbDd3146D88A579",
+        "0xD8b27CF359b7D15710a5BE299AF6e7Bf904984C2",
+        "0x056f3a2E41d2778D3a0c0714439c53af2987718E",
+        "0x313603FA690301b0CaeEf8069c065862f9162162",
+        "0x328646cdfBaD730432620d845B8F5A2f7D786C01",
+        "0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9",
+        "0x998D761eC1BAdaCeb064624cc3A1d37A46C88bA4",
+        "0xA28C23a459fF8773EB4dBe0e7250d93F79F1Fe2B",
+        "0xbC4B4AC47582c3E38Ce5940B80Da65401F4628f1",
+        "0xe846ca062aB869b66aE8DcD811973f628BA82eAf",
+        "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
+        "0x2daCa71Cb58285212Dc05D65Cfd4f59A82BC4cF6",
+        "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
+        "0xD5F9aFc441ca3f72B22d0B60d53e55b966c8dE64",
+        "0xe1Ce9AF672f8854845E5474400B6ddC7AE458a10",
       ],
     },
     bsc: {
@@ -30,16 +53,11 @@ const configs = {
         "0x5Bb012482Fa43c44a29168C6393657130FDF0506",
         "0x2E28c94eE56Ac6d82600070300d86b3a14D5d71A",
       ],
-    },
-    avax: {
-      eulerVaultOwners: [
-        "0xa4dC6C20475fDD05b248fbE51F572bD3154dd03B",
-        "0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B",
+      erc4626: [
+        "0x5685fed1008ec25Be9f40E12685c38031Be2d4dD", // Euler Earn: K3 bStocks USDT Lending
+        "0xD98b0B1281E06f2f5036B6B1ef1eaAD3304Daa52", // Euler Earn: K3 Capital USDT Earn Vault
+        "0x27Ec22e4DcB70F7FfE1F6bb89e3284529492c05E", // Euler Earn: K3 Capital USD1
       ],
-      erc4626: ["0x8fc260cd0a00cac30eb1f444b8f1511d71420af9"],
-    },
-    bob: {
-      eulerVaultOwners: ["0xDb81B93068B886172988A1A4Dd5A1523958a23f0"],
     },
     unichain: {
       morphoVaultOwners: ["0xe34A3fb26B3121F4E68bE89Ea553BaC2149F975d"],
@@ -47,6 +65,8 @@ const configs = {
     plasma: {
       eulerVaultOwners: ["0x060DB084bF41872861f175d83f3cb1B5566dfEA3"],
       erc4626: [
+        "0xe818ad0D20D504C55601b9d5e0E137314414dec4", // Euler Earn: K3 Capital USDT0 Vault
+        "0xf5C972B760dBa38Bf57Ddb2912244F856E4F6812", // Euler Earn: K3 USDe Earn Vault
         "0x539b2ee4f3a04f33d53c0813f77e65148963f72b",
         "0xAADEA03f6D6F198Bdc9229bD8113aceD19031773",
         "0x767d33217e7d2670695FfE2a104548B780f4F5d8",
@@ -61,8 +81,31 @@ const configs = {
     arbitrum: {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
     },
+    hyperliquid: {
+      erc4626: ["0x589a57196c16d0CfAB3Ed229Fcfa959f65cA00bf"],
+    },
+    avax: {
+      eulerVaultOwners: [],
+    },
+    optimism: {
+      midasTokens: [
+        "0xcC476B1a49bcDf5192561e87b6Fb8ea78aa28C13",
+      ],
+    },
     monad: {
-      eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
+      accountableVaults: [
+        "0x0143C3eF3a76Ed825Fd5201953f65b52aCEfD799",
+      ],
+      erc4626: [
+        "0x2C803c8C3C57b9D4A9abA011615561315c2b6aC1", // Euler Earn: K3 Capital Earn WETH
+        "0x598035A2E984993229f6FA4C8C3eCf6c52aD51b5", // Euler Earn: K3 Capital Earn AUSD
+        "0x9D42b0D57e88771B365e30c0A589Fcdbeca8828c", // Euler Earn: K3 Capital Earn WMON
+        "0xA981f053C118FE4dB0e1aEBA192AAD20Ec7F7801", // Euler Earn: K3 Capital Earn USDC
+      ],
+      eulerVaultOwners: [
+        "0x987C5739F3905FbA98eCCf4aceBc88730E0eE53D",
+        "0x5144b2B36EBdF0b06f62AcbCB180F016bC531232",
+      ],
     },
   },
 };

@@ -8,6 +8,7 @@ const SUI_PACKAGE_ID =
 const SUI_CHAIN_IDENTIFIER = "sui";
 const ETHEREUM_CHAIN_IDENTIFIER = "ethereum";
 const PHAROS_CHAIN_IDENTIFIER = "pharos";
+const BASE_CHAIN_IDENTIFIER = "base";
 
 // there are only one deposit address
 const blacklistedVaults = [
@@ -16,7 +17,7 @@ const blacklistedVaults = [
 
 async function suiTvl(api) {
   const vaults = (
-    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v2/vaults`)
+    await getConfig('ember-protocol/vaults', `https://vaults.api.prod.ember.so/api/v2/vaults`)
   );
   for (const vault of Object.values(vaults)) {
 
@@ -37,7 +38,7 @@ async function suiTvl(api) {
 
 async function evmTvl(api, chainIdentifier) {
   const vaults = (
-    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v2/vaults`)
+    await getConfig('ember-protocol/vaults', `https://vaults.api.prod.ember.so/api/v2/vaults`)
   );
   const vaultAddresses = []
   for (const vault of Object.values(vaults)) {
@@ -60,4 +61,7 @@ module.exports = {
   pharos: {
     tvl: (api) => evmTvl(api, PHAROS_CHAIN_IDENTIFIER),
   },
+  base: {
+    tvl: (api) => evmTvl(api, BASE_CHAIN_IDENTIFIER),
+  }
 };

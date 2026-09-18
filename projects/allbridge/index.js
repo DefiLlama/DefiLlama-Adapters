@@ -7,7 +7,45 @@ const { staking } = require('../helper/staking');
 const near = require('../helper/chain/near');
 const { default: BigNumber } = require('bignumber.js');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
-const ripple = require('./ripple');
+const {post} = require("../helper/http");
+const {PromisePool} = require("@supercharge/promise-pool");
+
+const endpoint = 'https://s1.ripple.com:51234';
+
+async function sumTokens({ tokens = [], owners = [], balances = {} }) {
+    const { errors } = await PromisePool.withConcurrency(5)
+        .for(owners)
+        .process(async owner => {
+            await getTokenBalances(tokens, owner, { balances })
+        })
+
+    if (errors && errors.length)
+        throw errors[0]
+
+    return balances
+}
+
+async function getTokenBalances(tokens, account, { balances = {} } = {}) {
+    const body =  {
+        method: 'account_lines',
+        params: [{ account, ledger_index: 'validated' }]
+    };
+    const res = await post(endpoint, body);
+
+    const lines = res?.result?.lines;
+    if (!lines) return balances;
+    for (const line of lines) {
+        const token = tokens.find((t) => line.currency === t.currency && line.account === t.issuer);
+        if (token === undefined) continue;
+        const balance = BigNumber(line.balance).toFixed(0);
+        sdk.util.sumSingleBalance(balances, token.name, balance);
+    }
+    return balances;
+}
+const ripple = {
+    getTokenBalances,
+    sumTokens,
+};
 const NATIVE_ADDRESS = nullAddress;
 
 const data = {
@@ -23,7 +61,7 @@ const data = {
             {name: "avalanche-2", address: "0x8e3670fd7b0935d3fe832711debfe13bb689b690", decimals: 18},
             {name: "celo", address: NATIVE_ADDRESS, decimals: 18},
             {name: "celo-dollar", address: ADDRESSES.celo.cUSD, decimals: 18},
-            {name: "celo-euro", address: "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73", decimals: 18},
+            {name: "celo-euro", address: ADDRESSES.celo.cEUR, decimals: 18},
             {name: "saber", address: "0x47264ae1fc0c8e6418ebe78630718e11a07346a8", decimals: 18},
             {name: "solana", address: "0x173234922eb27d5138c5e481be9df5261faed450", decimals: 18},
             {name: "usd-coin", address: ADDRESSES.celo.USDC, decimals: 6},

@@ -1,6 +1,8 @@
 // Just addresses by chains. No ABI/logic here.
     // Format:
     // {
+    //   morphoVaultOwners: [ownerAddr, ...],
+    //   morpho:             [vaultAddr, ...],
     //   erc4626:        [vaultAddr, ...],
     //   issuanceTokens: [tokenAddr, ...],
     //   predeposit:     [tokenAddr, ...],
@@ -9,20 +11,27 @@
 
 const CONFIG = {
   ethereum: {
+    morphoVaultOwners: [
+      '0x1280e86cd7787ffa55d37759c0342f8cd3c7594a', // initial owner of UltraYield/Edge Morpho deployments
+    ],
+    morpho: [
+      '0x0562ae950276b24f3eae0d0a518dadb7ad2f8d66', // Morpho V1 UltraYield USDC
+      '0x965ec3552427b8258bd0a0c7baa234618fc98d01', // Morpho V1 UltraYield USDT
+      '0x62efa7cacc11caa959a8f956ec4f683302397e5c', // Morpho V1 YieldNest RWA
+    ],
     erc4626: [
       '0xc824a08db624942c5e5f330d56530cd1598859fd', // Kelp High Growth ETH
       '0x59d675f75f973835b94d02b6d27b8539757dc65f', // Term UltraYield ETH
       '0x2be901715468c3c5393efa841525a713c583a8ec', // Term UltraYield USDC
-      '0x0562ae950276b24f3eae0d0a518dadb7ad2f8d66', // Morpho Edge UltraYield USDC
       '0x9a6340ce1282e01cb4ec9faae5fc5f4b60ca8839', // Mellow UltraYield x Edge x Allnodes
       '0x8ecc0b419dfe3ae197bc96f2a03636b5e1be91db', // Kelp sbUSD Vault
       '0xeaa3b922e9febca37d1c02d2142a59595094c605', // Upshift upEDGE Vault
       '0x472425cc95be779126afa4aa17980210d299914f', // UltraYield BTC
       '0x546329a16dcedc46e93f7b03a65f49a84700bca1', // UltraYield USD
       '0xaa3cb36be406e6cf208d218fd214e0f1a71e957d', // LoopedBTC
-      '0x965ec3552427b8258bd0a0c7baa234618fc98d01', // Edge UltraYield USDT (Morpho, Ethereum)
       '0xfacaa225fcfcd8644a77f2cce833907537198ae9', // Resolv USR Ecosystem Vault
-      '0x62efa7cacc11caa959a8f956ec4f683302397e5c', // YieldNest RWA
+      '0xc46efcc8e39c8f02425e367423871cd4633b7908', // UltraYield ETH
+      '0x36bdaefd92579da58bfe207e16dafa39835bbcb3', // Edge Credit Vault
     ],
     issuance: [
       '0xbb51e2a15a9158ebe2b0ceb8678511e063ab7a55', // Midas - mEDGE
@@ -108,6 +117,9 @@ const CONFIG = {
       '0x6b343f7b797f1488aa48c49d540690f2b2c89751', // Gearbox Monad USDC
       '0xc4173359087ce643235420b7bc610d9b0cf2b82d', // Gearbox Monad AUSD
       '0x164a35f31e4e0f6c45d500962a6978d2cbd5a16b', // Gearbox Monad USDT0
+    ],
+    issuance: [
+      '0x1c8ee940b654bfced403f2a44c1603d5be0f50fa', // Midas - mEDGE
     ],
   },
   optimism: {

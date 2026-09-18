@@ -4,7 +4,6 @@ const LOAN_TOKEN_CONTRACT = 'loan.token';
 const STAKING_CONTRACT = 'lock.token';
 
 const { post } = require('../helper/http')
-const sdk = require('@defillama/sdk')
 
 const tokenMapping = {
   'xtokens:XBTC': 'bitcoin',
@@ -65,8 +64,7 @@ async function fetchLiquidity(tokenContract, symbol, reserves) {
 // ----------------------------
 // TVL = only available liquidity (cash)
 // ----------------------------
-async function tvl() {
-  const balances = {}
+async function tvl(api) {
   const markets = await fetchMarkets()
 
   const promises = markets.map(async (market) => {
@@ -77,18 +75,17 @@ async function tvl() {
     if (!cgkId) return
 
     const cashAvailable = await fetchLiquidity(tokenContract, symbol, market.total_reserves)
-    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, cashAvailable)
+    api.addCGToken(cgkId, cashAvailable)
   })
 
   await Promise.all(promises)
-  return balances
+  return api.getBalances()
 }
 
 // ----------------------------
 // Borrowed = total variable + stable borrows
 // ----------------------------
-async function borrowed() {
-  const balances = {}
+async function borrowed(api) {
   const markets = await fetchMarkets()
 
   markets.forEach(market => {
@@ -102,10 +99,10 @@ async function borrowed() {
     const cgkId = tokenMapping[internalId]
     if (!cgkId) return
 
-    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, totalBorrows)
+    api.addCGToken(cgkId, totalBorrows)
   })
 
-  return balances
+  return api.getBalances()
 }
 
 async function getTotalStaking(api) {

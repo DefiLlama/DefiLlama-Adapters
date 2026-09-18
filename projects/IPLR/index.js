@@ -1,23 +1,15 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getTokenBalance } = require('../helper/solana')
+const { sumTokens2 } = require('../helper/solana')
 
 const SOL_MINT = ADDRESSES.solana.SOL
 const LP_ACCOUNT = 'GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL'
 const REWARDS_WALLET = 'EftM2RPnZqLMc3UpE7Xjz41DdtAopYziCmB4r1wVAJ9C'
 
-async function pool2() {
-  const solBalance = await getTokenBalance(SOL_MINT, LP_ACCOUNT)
-  return {
-    ['solana:' + ADDRESSES.solana.SOL]: solBalance
-  }
-}
+// native SOL held by the account
+const solOf = (account) => (api) => sumTokens2({ api, solOwners: [account] })
 
-async function staking() {
-  const solBalance = await getTokenBalance(SOL_MINT, REWARDS_WALLET)
-  return {
-    ['solana:' + ADDRESSES.solana.SOL]: solBalance
-  }
-}
+const pool2 = solOf(LP_ACCOUNT)
+const staking = solOf(REWARDS_WALLET)
 
 module.exports = {
   timetravel: false,

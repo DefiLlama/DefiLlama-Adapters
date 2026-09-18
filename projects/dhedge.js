@@ -38,6 +38,10 @@ const CONFIG_DATA_TOROS = {
     dhedgeFactory: "0x96d33bcf84dde326014248e2896f79bbb9c13d6d",
     torosMultisigManager: "0xfbd2b4216f422dc1eee1cff4fb64b726f099def5",
   },
+  hyperliquid: {
+    dhedgeFactory: "0x615037c2df6fa97634c5ad2d8144708b9dd3b176",
+    torosMultisigManager: "0xfbd2b4216f422dc1eee1cff4fb64b726f099def5",
+  },
 };
 /* *** dHEDGE V1 *** */
 
@@ -89,7 +93,7 @@ const tvl = async (api) => {
 
 const getTorosVaultsAddresses = async (api) =>{
   const { chain } = api
-  if (chain !== 'plasma' && chain !== 'hyperliquid'){
+  if (chain !== 'plasma'){
     const { dhedgeFactory, torosMultisigManager } = CONFIG_DATA_TOROS[chain];
     return await api.call({
       abi: DHEDGE_V2_FACTORY_ABI,

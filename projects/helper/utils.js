@@ -58,7 +58,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
   if (chain === 'oasis' && ['LPT', 'GLP'].includes(symbol)) return true
   if (chain === 'iotex' && ['MIMO-LP'].includes(symbol)) return true
-  if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
+  if (chain === 'base' && ['RCKT-V2', 'RUBI-AMM'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
   if (chain === 'fuse' && ['VLP'].includes(symbol)) return true
@@ -69,6 +69,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
   if (chain === 'core' && ['GLP'].includes(symbol)) return true
+  if (chain === 'astar' && ['NLP'].includes(symbol)) return true
   if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true

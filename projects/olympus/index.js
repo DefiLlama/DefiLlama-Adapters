@@ -131,7 +131,7 @@ const chains = {
       ADDRESSES.arbitrum.FRAX,
       JONES,
       '0xfb9E5D956D889D91a82737B9bFCDaC1DCE3e1449', // LQTY
-      '0x93b346b6bc2548da6a1e7d98e9a421b42541425b', // LUSD
+      ADDRESSES.arbitrum.LUSD, // LUSD
       '0x539bde0d7dbd336b79148aa742883198bbf60342', // MAGIC
       ADDRESSES.arbitrum.USDC,
       '0xa684cd057951541187f288294a1e1c2646aa2d24', // VSTA
@@ -176,10 +176,10 @@ const chains = {
       '0x74b23882a30290451a17c44f4f05243b6b58c76d', // wETH (multichain bridge)
       '0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9', // LQDR
       '0xdc301622e621166bd8e82f2ca0a26c13ad0be355', // FRAX (multichain)
-      '0x841fad6eae12c286d1fd18d1d525dffa75c7effe', // BOO
+      ADDRESSES.fantom.BOO, // BOO
       '0xf24bcf4d1e507740041c9cfd2dddb29585adce1e', // BEETS
-      ADDRESSES.fantom.DAI,
-      ADDRESSES.fantom.USDC,
+      "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
     ],
     ownTokens: ['0x91fa20244fb509e8289ca630e5db3e9166233fdc'], // gOHM (Fantom)
   },

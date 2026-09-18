@@ -123,6 +123,6 @@ Object.keys(CONFIG).forEach((chain) => {
   const config = CONFIG[ chain ]
   module.exports[ chain ] = {
     tvl: tvl(config),
-    staking: config?.staking || (() => ({})),
+    staking: config?.staking,
   }
 })

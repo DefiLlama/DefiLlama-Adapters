@@ -1,4 +1,8 @@
-const abi = require("./abi.js");
+const abi = {
+  penPoolsData: "function penPoolsData() view returns (tuple(address id, address stakingAddress, uint256 stakedTotalSupply, uint256 totalSupply, tuple(address id, string symbol, bool stable, address token0Address, address token1Address, address gaugeAddress, address bribeAddress, address[] bribeTokensAddresses, address fees, uint256 totalSupply) poolData)[])",
+  poolsReservesInfo: "function poolsReservesInfo(address[] _poolsAddresses) view returns (tuple(address id, address token0Address, address token1Address, uint256 token0Reserve, uint256 token1Reserve, uint8 token0Decimals, uint8 token1Decimals)[])",
+  locked: "function locked(uint256) view returns (int128 amount, uint256 end)",
+};
 const partnerRewardsPoolAddress = "0x5DD340DD4142D093c1926282CD56B0D4690dEB11";
 const penDystRewardPoolAddress = "0x62f9B938323fb68379B9Ac1641012F9BeE339C69";
 const vlPenAddress = "0x55CA76E0341ccD35c2E3F34CbF767C6102aea70f";

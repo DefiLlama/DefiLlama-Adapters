@@ -1,6 +1,27 @@
 const anchor = require("@project-serum/anchor");
 const { PublicKey } = require("@solana/web3.js");
-const activePoolBases = require("./active-pools.json");
+const activePoolBases = [
+    {
+        "base": "SoLKL9GATA3iSJxkn2Z3ossP4ktgwFoQoTYBSXUzyRs",
+        "coingeckoId": "solana"
+    },
+    {
+        "base": "USDCYdkkgP2zJ3jwF6mzwMpxngaqKi2jfvxPjodrMLi",
+        "coingeckoId": "usd-coin"
+    },
+    {
+        "base": "USDTSdRp4ETB4cKe6YG3XcitKXhgvnbgeWcwzTiRCuu",
+        "coingeckoId": "usd-coin"
+    },
+    {
+        "base": "ETHrj1rqFbiVbHBypZjuG46J6pS5PyL5f6m6v2VniBJV",
+        "coingeckoId": "ethereum"
+    },
+    {
+        "base": "BTCwQoswFGLoX9igmJFfUJrKgAGJkbt5iVF2czw2Qpxn",
+        "coingeckoId": "bitcoin"
+    }
+];
 const { getConnection, decodeAccount } = require("../helper/solana");
 const sdk = require('@defillama/sdk')
 

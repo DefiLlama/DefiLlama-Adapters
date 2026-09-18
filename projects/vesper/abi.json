@@ -1,7 +1,0 @@
-{
-  "token": "address:token",
-  "totalValue": "uint256:totalValue",
-  "pools": "address:pools",
-  "length": "uint256:length",
-  "at": "function at(uint256 index) view returns (address)"
-}

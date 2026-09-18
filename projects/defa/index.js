@@ -1,5 +1,6 @@
 const { callSoroban } = require("../helper/chain/stellar");
 const { queryContract } = require("../helper/chain/cosmos");
+const { call } = require("../helper/chain/starknet");
 
 // ============================================================
 // Stellar — Soroban TVL Logger (get_active_tvl)
@@ -44,6 +45,35 @@ async function zigchainTvl(api) {
 }
 
 // ============================================================
+// Starknet — Cairo TVL Logger (get_active_tvl)
+// Queries the on-chain Logger contract via Starknet RPC.
+// The contract returns active liquidity in DeFa starknet contracts denominated in USD
+// with 6 decimal places.
+// ============================================================
+
+// TVL logger (get_active_tvl, get_tvl_snapshot). Verified 2026-07-03:
+// get_active_tvl returns ~$224,994 of active TVL on mainnet.
+const STARKNET_TVL_CONTRACT = "0x0595a45952ef488d49342cd4fdf062482ab51c0718fcd8c11ff6614034b0939d";
+
+const getActiveTvlAbi = {
+  name: "get_active_tvl",
+  type: "function",
+  inputs: [],
+  outputs: [{ type: "core::integer::u128" }],
+  state_mutability: "view",
+};
+
+async function starknetTvl(api) {
+  const activeTvl = await call({ target: STARKNET_TVL_CONTRACT, abi: getActiveTvlAbi });
+
+  const starknetValue = Number(activeTvl) / 1e6;
+  if (!Number.isFinite(starknetValue) || starknetValue <= 0) throw new Error("Starknet TVL is invalid");
+
+  api.addCGToken("usd-coin", starknetValue);
+  return api.getBalances();
+}
+
+// ============================================================
 // Export
 // ============================================================
 
@@ -51,7 +81,8 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
-    "TVL is the total active liquidity across invoice-backed pools, reported by on-chain Logger contracts on Stellar (Soroban) and ZigChain (CosmWasm).",
+    "TVL is the total active liquidity across invoice-backed pools, reported by on-chain Logger contracts on Stellar (Soroban), ZigChain (CosmWasm), and Starknet (Cairo).",
   stellar: { tvl: stellarTvl },
   zigchain: { tvl: zigchainTvl },
+  starknet: { tvl: starknetTvl },
 };

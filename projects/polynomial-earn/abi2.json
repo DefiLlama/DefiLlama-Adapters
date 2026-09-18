@@ -1,8 +1,0 @@
-{
-  "name": "function name() view returns (bytes32)",
-  "polynomial_COLLATERAL": "address:SUSD",
-  "polynomial_UNDERLYING": "address:UNDERLYING",
-  "polynomial_totalQueuedDeposits": "uint256:totalQueuedDeposits",
-  "polynomial_totalFunds": "uint256:totalFunds",
-  "polynomial_totalQueuedWithdrawals": "uint256:totalQueuedWithdrawals"
-}

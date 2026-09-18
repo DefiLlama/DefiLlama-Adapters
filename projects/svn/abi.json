@@ -1,4 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 lastRewardTime, uint256 accMSharePerShare, bool isStarted)",
-  "poolInfo2": "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 lastRewardTime, uint256 accSavannaPerShare, bool isStarted)"
-}

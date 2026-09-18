@@ -1,6 +1,21 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { call } = require("../helper/chain/starknet");
-const { stakedStrkAbi } = require("./abi");
+const stakedStrk = [
+  {
+    name: "total_assets",
+    type: "function",
+    inputs: [],
+    outputs: [
+      {
+        type: "core::integer::u256",
+      },
+    ],
+    state_mutability: "view",
+  },
+];
+
+const stakedStrkAbi = {};
+stakedStrk.forEach((i) => (stakedStrkAbi[i.name] = i));
 
 const STAKED_STRK =
   ADDRESSES.starknet.NSTSTRK;

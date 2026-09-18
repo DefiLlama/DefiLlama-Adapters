@@ -36,6 +36,9 @@ const configs = {
   'bybitSOL': {
     solana: '2aMLkB5p5gVvCwKkdSo5eZAL1WwhZbxezQr1wxiynRhq',
   },
+  'gateSOL': {
+    solana: '31Mwyr8Qof3LjB7Nn8fuWk6HcGVJCTYFYU3bAmW9fcL1',
+  },
   'starke-sol': {
     solana: '6LXCxeyQZqdAL4yLCtgATFYF6dcayWvsiwjtBFYVfb1N',
   },
@@ -75,6 +78,9 @@ const configs = {
   'bonk-sol': {
     solana: 'ArAQfbzsdotoKB5jJcZa3ajQrrPcWr2YQoDAEAiFxJAC',
   },
+  'bgsol': {
+    solana: '9qrFrE5qoZ3QfYZrZoeXFNRWfErpjzZKudCAoBTvgKjb',
+  },
   'jpool': {
     methodology: "JSOL total supply as it's equal to the SOL staked",
     solana: 'CtMyWsrUtAwXWiGr9WjHT5fC3p3fgV8cyGpLTo2LJzG1',
@@ -94,11 +100,19 @@ const configs = {
       'hy1o2kiYu9rUDFqHJSqwJH4j5ZkM23tBJsaEmqkP9sT',
     ],
   },
-  // getStakedSol adapters
-  'marinade-select': {
-    methodology: 'We sum the amount of SOL staked by account STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps',
-    solana: { type: 'staked', address: 'STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps' },
+  'phase-delegation': {
+    methodology: "Total SOL staked in the Phase Delegation stake pool, read on chain from the SPL stake pool account's totalLamports",
+    solana: 'aero2ePURjuEgLKTzcUmF6RypBncBGd7pMUYCoSsVJ6',
   },
+  'phase-yield': {
+    methodology: "Total SOL staked in the Phase Stake pool, read on chain from the stake pool account's totalLamports",
+    solana: 'phasejkG1akKgqkLvfWzWY17evnH6mSWznnUspmpyeG',
+  },
+  'japan-staked-sol': {
+    methodology: "Total SOL staked in the Japan Staked SOL (JapanSOL) stake pool, read on chain from the stake pool account's totalLamports",
+    solana: 'jHm8bwgfbaZgUv4mAGh29KthFGLTvoNF63oT5wpu4jk',
+  },
+  // getStakedSol adapters
   'thevault': {
     solana: { type: 'staked', address: 'GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW' },
   },

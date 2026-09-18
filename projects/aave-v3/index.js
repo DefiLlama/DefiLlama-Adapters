@@ -4,6 +4,7 @@ const { aaveV3Export } = require("../helper/aave");
 // Ethena backing supply wallets to exclude from TVL
 const ETHENA_BLACKLIST = [
   { user: '0xb8734a14fbd4aa2d44e6aa830405ffc861ba313c' },
+  { user: '0x3feaa7483fcfba130e68b41369dd78ff30465459' },
 ]
 
 const CONFIG = {
@@ -24,7 +25,7 @@ const CONFIG = {
   avax: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   arbitrum: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   optimism: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
-  harmony: ['0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654'],
+  // harmony: ['0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654'],
   fantom: ['0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654'],
   metis: ['0xC01372469A17b6716A38F00c277533917B6859c0'],
   base: ['0xd82a47fdebB5bf5329b09441C3DaB4b5df2153Ad'],
@@ -55,6 +56,7 @@ const CONFIG = {
     blacklist_lenders: ETHENA_BLACKLIST
   },
   xlayer: ['0x6C505C31714f14e8af2A03633EB2Cdfb4959138F'],
+  monad: ['0xB65A68B98274ef7D9a60E0C0747dD1BEc3D32fad']
 };
 
 module.exports = aaveV3Export(CONFIG)

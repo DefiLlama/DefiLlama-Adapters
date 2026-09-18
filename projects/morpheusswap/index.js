@@ -9,16 +9,13 @@ const { stakings } = require("../helper/staking");
 const chef = "0xc7dad2e953Dc7b11474151134737A007049f576E"
 const morph = "0x0789ff5ba37f72abc4d561d00648acadc897b32d"
 
-async function tvl(timestamp, block, chainBlocks, api) {
-  const balances = {}
-  const transformAddress = addr => `fantom:${addr}` //i => `fantom:${i}`;
-  if (chainBlocks.fantom && chainBlocks.fantom < 21182441) { // Factory deployment block
-    await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [morph])
-  } else {
-    const dexTvl = getUniTVL({ factory: '0x9C454510848906FDDc846607E4baa27Ca999FBB6', useDefaultCoreAssets: true })
-    return dexTvl(timestamp, block, chainBlocks, api);
+async function tvl(api) {
+  if (api.block && api.block < 21182441) { // Factory deployment block
+    const balances = {}
+    await addFundsInMasterChef(balances, chef, api.block, api.chain, addr => `fantom:${addr}`, abi.poolInfo, [morph])
+    return balances
   }
-  return balances;
+  return getUniTVL({ factory: '0x9C454510848906FDDc846607E4baa27Ca999FBB6', useDefaultCoreAssets: true })(api)
 }
 
 module.exports = {

@@ -184,6 +184,27 @@ const config = {
         fromBlock: 4278863
       } // v6
     ], 
+  },
+  monad: {
+    factories: [{
+        factory: "0xA3cb62a49b66eB2536cf6F3C7AC82293784888A3",
+        fromBlock: 75588954
+      }, // v6
+    ],
+  },
+  robinhood: {
+    factories: [{
+        factory: "0x544BF81c855AE84c1e8b65d5E38770898D01EeE2",
+        fromBlock: 52515580
+      }, // v6
+    ],
+  },
+  xlayer: {
+    factories: [{
+        factory: "0x544BF81c855AE84c1e8b65d5E38770898D01EeE2",
+        fromBlock: 66872567
+      }, // v6
+    ],
   }
 };
 
@@ -260,22 +281,17 @@ Object.keys(config).forEach((chain) => {
 
       yieldTokens.forEach((yieldToken, i) => {
         const totalSupply = supply[i];
-        if (yieldTokenBals[i] === "0" && totalSupply !== "0") {
-          api.add(
-            yieldToken.toLowerCase(),
-            totalSupply
-          );
-        } else {
-          if (unscaledInfo[yieldToken.toLowerCase()]) {
-            const {
-              rawAsset,
-              rawDecimals
-            } = unscaledInfo[yieldToken.toLowerCase()];
-            yieldTokenBals[i] = (yieldTokenBals[i] * (10 ** rawDecimals) / (10 ** 18));
-            yieldToken = rawAsset;
-          }
-          api.add(yieldToken.toLowerCase(), yieldTokenBals[i])
+        let balance = yieldTokenBals[i];
+        if (balance === "0" && totalSupply !== "0") balance = totalSupply;
+        if (unscaledInfo[yieldToken.toLowerCase()]) {
+          const {
+            rawAsset,
+            rawDecimals
+          } = unscaledInfo[yieldToken.toLowerCase()];
+          balance = (balance * (10 ** rawDecimals) / (10 ** 18));
+          yieldToken = rawAsset;
         }
+        api.add(yieldToken.toLowerCase(), balance)
       });
 
       let balances = api.getBalances();

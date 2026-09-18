@@ -2,6 +2,9 @@ const config = {
   base: {
     masterContract: '0x00000000000c109080dfa976923384b97165a57a',
   },
+  arbitrum: {
+    masterContract: '0x0000000000990400e12543b7f400136e8672e2f0',
+  },
 };
 
 async function tvl(api) {
@@ -22,4 +25,5 @@ async function tvl(api) {
 module.exports = {
   methodology: "Counts TVL by querying all created markets from the Precog Master contract, summing collateral held in each market contract, and including owned launchpad collateral held directly by the Precog Master contract.",
   base: { tvl },
+  arbitrum: { tvl },
 };

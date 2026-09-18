@@ -103,7 +103,7 @@ function fetchChain(chain) {
       }
     })
 
-    return api.sumTokens({ tokensAndOwners, blacklistedTokens })
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens, permitFailure: true })
   }
 }
 
@@ -127,7 +127,3 @@ module.exports = {
   ],
   // deadFrom: '2023-07-12',  // project was abandoned
 }
-
-module.exports.clv.tvl = () => ({})
-module.exports.fusion.tvl = () => ({})
-module.exports.kardia.tvl = () => ({})

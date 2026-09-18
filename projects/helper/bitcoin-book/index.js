@@ -1,16 +1,14 @@
 const imports = [
-  ["wbtc", "./wbtc.js"],
   ["bitmex", "./bitmex.js"],
   ["kucoin", "./kucoin.js"],
   ["okex", "./okex.js"],
   ["chakra", "./chakra.js"],
   ["bitkub", "./bitkub-cex.js"],
-  ["coinbasebtc", "./coinbase-btc.js"],
 ];
 const { sumTokensExport } = require("../sumTokens.js");
 const fetchers = require("./fetchers.js");
 
-const p2pb2b = ["39BFtTzZjj6o2s7eewefFQxqM4617VmhEK"];
+const p2pb2b = ["bc1qsllhrk7w4e4kprc5qhqtqg9p6e83ektc2d7qma"];
 
 const ssiProtocol = ["1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM"];
 
@@ -18,12 +16,9 @@ const bitomato = ["bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9"];
 
 const lbank = ["1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn"];
 
-const stacksSBTC = [
-  // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
-  "bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc",
-  "bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy",
-  "bc1p6ys2ervatu00766eeqfmverzegg9fkprn3xjn0ppn70h53qu5vus3yzl0x",
-];
+// Derived from the signer set's current aggregate key on Stacks, because the reserve
+// address rotates whenever that key does. See ./sbtc.js.
+const { stacksSBTC } = require("./sbtc.js");
 
 const magpie = [
   "1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF",
@@ -38,7 +33,7 @@ function getBTCExport(key) {
 
   if (typeof value === "function")
     return async (api) => {
-      let owners = await value();
+      let owners = await value(api);
       return sumTokensExport({ owners })(api);
     };
 
@@ -306,6 +301,8 @@ module.exports = {
     "3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9",
     "bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34",
     "bc1pkldc3d64ceqshhznxuj78r6e0a3p7gtdrrue07zmcq54xzlyuu9sppvxk0",
+    "bc1q47zfy02qemw2eeqk673dsfcmwlqapsn420yde4",
+    'bc1pyz7l3u2wdhvdwgej0n6myhp6wzrr0qa3982l7zq5v3k5f6fxgmyqg5vkxu'
   ],
   merlin: [
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
@@ -443,6 +440,8 @@ module.exports = {
     "32qqF3w9W96S6br5x3cR75fgtFZwshjh4X",
     "3NnoMUQnURz29QLJcvQ5Xy6ztgJ4TYmqY3",
     "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
+    "3PSEjhkUQDGRNDPWqAcPhy9tEY6g6AHgPN", // add on 18/09/2026
+    "33FyMfJMRnqNvQiPDvE13L9cRHaEAXQziE", // add on 18/09/2026
   ],
   bitmake: [
     // wallet provide by a bitmake team
@@ -458,6 +457,7 @@ module.exports = {
     "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37",
     "3D7pZri6kLqXDQMbf5G8De39K36eBaNKBG",
     "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5",
+    "bc1qdg5fr2zq0w0r8l3hggm25uhdc7rjqs5r0az508",
   ],
   bitvenus: [
     //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
@@ -619,13 +619,6 @@ module.exports = {
     "3NbdrezMzAVVfXv5MTQJn4hWqKhYCTCJoB",
     "34VXKa5upLWVYMXmgid6bFM4BaQXHxSUoL",
   ],
-  mtGoxEntities: [
-    // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
-    "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
-    "bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp",
-    "bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs",
-    "bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg",
-  ],
   silkroadFBIEntities: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
@@ -652,6 +645,7 @@ module.exports = {
     "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
     "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
     "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
+    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh"
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
@@ -778,6 +772,7 @@ module.exports = {
     "bc1qar3hvdpfqy388pkrp95ukewuxsr600wvyf0lxt",
     "bc1qfs5qwymqcwtdtwjkac4z5h99r6dp4wwvvcfxyr",
     "bc1qdt0dgff2u8y5pyj525k3qt9zdqyzy4kzznjrl8",
+    "3Qv1U918UVAbjii8RAX5msoifREmw3cVfL",
   ],
   mtGox: [
     "17Tf4bVQaCzwWrDWGRPC97RLCHnU4LY8Qr",
@@ -909,6 +904,11 @@ module.exports = {
     "bc1qcwk60napcfcljv6phg69gfyfmp3emsgdj9cn5v",
     "bc1q4rtnrtnu829eet3m27huh6ld7x0xczjxd5dg5r",
     "bc1q7vfv3h99vxwu300qej6x2qdfsn58kq6nc9hec6",
+    "bc1qaxrcxhhukne3mnk7jt60d7hgn9a2dqt0gmwh67",
+    "bc1qgu9sf2888glnm6xzfz0q503gpdn64u2swlj2qh",
+    "bc1qh24tm2d8ve8nvjx6uugm2mf28m2z5ytdjvk06v",
+    "bc1ql3fe2x2tpyl75hwn7xe0g42dsenaxvr6qvccdy",
+    "bc1qn54dfx4r8tf7ychn6fvas8tczkcq302gjfsrh4",
   ],
   probit: [
     "19EgVpboqNjortWyhJSDAGRvHDtduqiSfr",
@@ -921,7 +921,6 @@ module.exports = {
     "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2",
   ],
   rosenBridge: ["bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t"],
-  rskBridge: ["3GQ87zLKyTygsRMZ1hfCHZSdBxujzKoCCU"],
   silkroad: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
@@ -1032,12 +1031,6 @@ module.exports = {
     "bc1q0gw7fexuwthyf9wwzrjn4h0flj5veflwgzdxx0727gt9upfk0cfqfjv42k",
     "bc1qfpk3fj2u9kaw8qq96snm72dws5hyxxym5tf8tn",
   ],
-  coinbaseltc: [
-    "LTbMyvoyfSuQNqG5cGihin6BCbiZay11rU",
-    "LVeXnSCw2ci7qq2EGcNwjZqhQ73KrJHNJE",
-    "ltc1qhac8t52gdh8fzeft4ygzxn05nluwwecjrzel99",
-    "LP3k3DmN21xmCay3b5yReLKQKvViCnDPhi",
-  ],
   prosper: [
     "bc1qcrdvx3dvq35kawsp02033pwla244rr6hptg982", //https://app.prosper-fi.com/stats#dao-treasury
   ],
@@ -1121,6 +1114,7 @@ module.exports = {
   bitgetBtc: [
     "bc1pvwjkr0724ckucdvrtxjzml9ka7jnzzjaejvwfnn8a2avvpnljthseg2a0e",
     "bc1pxw4gtelg3lkmatdjmjxsp2kx22t44wyk0snkszhvw4prpygz8ajqaw03fs",
+    "19pFLWW3CwjZujRWpVEMdguBMZEqPuj5nA",
   ],
   magicEden: ["3P4WqXDbSLRhzo2H6MT6YFbvBKBDPLbVtQ"],
   gateBtc: [
@@ -1143,6 +1137,7 @@ module.exports = {
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
     "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",
     "bc1qeg5xn5plttr7w045apm92yx08c2swc6yw2vtj7",
+    "3MPcH8RakXZBD39ggF556qMn6NGh9K274r",
   ],
   bydfi: [
     "bc1qan8q94rc3hl2jfc0vn8vtfsen0r6e58q80dqf0",
@@ -1153,6 +1148,27 @@ module.exports = {
     "1EovnsPsskU15rQhoJJiKpUxQzufryvpGm",
     "3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo",
     "3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh",
+  ],
+  circleBTC: [
+    '1JkKmG26nUBcPS99TsCVsReSXvLkEai4ca',
+    '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
+    '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
+    '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
+  ],
+  subfrost: [
+    // The FROST signer set's taproot output keys that hold the BTC backing frBTC.
+    // Alkanes custody derived from Bitcoin L1 by reading [32:0] opcode 103 (GET_SIGNER) on any metashrew/alkanes node
+    // for the signer's 32-byte internal pubkey, with standard BIP341-tweak (no script tree).
+    "bc1p5lushqjk7kxpqa87ppwn0dealucyqa6t40ppdkhpqm3grcpqvw9s3wdsx7", // Alkanes
+    "bc1pxn3gr0hy70exhdqjzawtuygppzdrk3mer3wlaa2gzkmruk3rrt4qga2qaj", // BRC2.0
+  ],
+  webot: [
+    "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
+    "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
+  ],
+  websea: [
+    "39u712JCmQ1GfqWQtKdQHTyQA9pv2qNnGm",
+    "bc1q730a2njpypegll9ef6566vmdpakuf8t2au70dk",
   ],
 };
 

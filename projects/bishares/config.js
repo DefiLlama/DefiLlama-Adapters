@@ -227,7 +227,7 @@ module.exports = {
         "0x28939911a862bd4e6b10e281f233a5e060114e0b"
       ],
       [
-        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+        ADDRESSES.bsc.CAKE,
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [
@@ -267,7 +267,7 @@ module.exports = {
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [
-        "0xe02df9e3e622debdd69fb838bb799e3f168902c5",
+        ADDRESSES.bsc.bake,
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [

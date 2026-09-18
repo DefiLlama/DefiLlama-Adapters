@@ -37,10 +37,12 @@ const addressBook = {
     usdo: "0x8238884Ec9668Ef77B90C6dfF4D1a9F4F4823BFe", // OpenEden's USDO - Tokenized T-bill
     aave_v3_usdc: "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c", // aEthUSDC
     morpho_vaults: [
-      "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", // kpk-usdc-prime
-      "0x56bfa6f53669B836D1E0Dfa5e99706b12c373ecf", // skymoney-usdc-risk-capital
-      "0x8c106EEDAd96553e64287A5A6839c3Cc78afA3D0", // gauntlet-usdc-prime
+      // "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", // kpk-usdc-prime - No longer in use
+      "0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6", // kpk-usdc-prime - V2 vault
+      "0x56bfa6f53669B836D1E0Dfa5e99706b12c373ecf", // skymoney-usdc-risk-capital - V2 vault
+      "0x8c106EEDAd96553e64287A5A6839c3Cc78afA3D0", // gauntlet-usdc-prime - V2 vault
     ],
+    ipor_fusion_vault: "0xdCD8Cb1E2Ba62fAEF6c4C258508D7D959E5F3408", // https://app.ipor.io/fusion/ethereum/0xdcd8cb1e2ba62faef6c4c258508d7d959e5f3408
     msv: "0x55bAe6690d46EA94D7F05DF7c80A85E322421fB6", // MultiStrategyVault (holds tokens besides usdc)
     reserves: [
       // eTokens
@@ -87,6 +89,9 @@ async function tvl(api) {
   // Also Morpho vaults
   for (const vault of addresses.morpho_vaults) {
     await unwrap4626Tokens({api, tokensAndOwners: [[normalize(vault), normalize(addresses.msv)]] });
+  }
+  if (addresses.ipor_fusion_vault !== undefined) {
+    await unwrap4626Tokens({api, tokensAndOwners: [[normalize(addresses.ipor_fusion_vault), normalize(addresses.msv)]] });
   }
   return sumTokens2({ api, ownerTokens});
 }

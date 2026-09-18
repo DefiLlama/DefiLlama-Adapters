@@ -1,20 +1,58 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { queryV1Beta1, queryV1Beta1V2 } = require('../helper/chain/cosmos.js');
+const { get } = require('../helper/http');
 
 const figureMarketsExchangeID = '1'
+const provenanceApi = 'https://api.provenance.io'
+const provenanceRpc = 'https://rpc.provenance.io'
 
 const collateralizedAssets = [
+    // Institutional USD.TRADING balance: https://api.provenance.io/cosmos/bank/v1beta1/balances/pb100ay24eh6t8mm87j9jkt7hg0daxyzzunjpwejcejcchqmcsq3haqfjzfnl/by_denom?denom=uusd.trading
+    'uusd.trading',
     'pm.sale.pool.3dxq3fk9llvhrqqwhodiap', // YLDS HELOCs
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g', // YLDS CBLs
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy' // YLDS HELOC+
 ]
 
+const getBlockAtTimestamp = async (timestamp) => {
+    const status = await get(`${provenanceRpc}/status`)
+    const syncInfo = status.result.sync_info
+    let low = { height: +syncInfo.earliest_block_height, time: Date.parse(syncInfo.earliest_block_time) / 1000 }
+    let high = { height: +syncInfo.latest_block_height, time: Date.parse(syncInfo.latest_block_time) / 1000 }
+
+    if (timestamp < low.time) throw new Error(`Provenance archive starts at ${syncInfo.earliest_block_time}`)
+    if (timestamp >= high.time) return undefined
+
+    while (high.height - low.height > 100) {
+        const fraction = (timestamp - low.time) / (high.time - low.time)
+        const height = Math.max(low.height + 1, Math.min(high.height - 1, Math.floor(low.height + fraction * (high.height - low.height))))
+        const block = await get(`${provenanceRpc}/block?height=${height}`)
+        const point = { height, time: Date.parse(block.result.block.header.time) / 1000 }
+        if (point.time <= timestamp) low = point
+        else high = point
+    }
+
+    return low.height
+}
+
+const getCommitments = async (block) => {
+    const commitments = []
+    const options = block ? { headers: { 'x-cosmos-block-height': block } } : {}
+    let paginationKey
+
+    do {
+        let url = `${provenanceApi}/provenance/exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=1000`
+        if (paginationKey) url += `&pagination.key=${encodeURIComponent(paginationKey)}`
+        const response = await get(url, options)
+        commitments.push(...response.commitments)
+        paginationKey = response.pagination?.next_key
+    } while (paginationKey)
+
+    return commitments
+}
+
 const getLockedTokens = async (api) => {
-    const commitments = await queryV1Beta1V2({
-        chain: 'provenance',
-        url: `exchange/v1/market/${figureMarketsExchangeID}/commitments`,
-        limit: 1000,
-    })
+    const block = api.block ?? (api.timestamp < Date.now() / 1000 - 3600 ? await getBlockAtTimestamp(api.timestamp) : undefined)
+    const commitments = await getCommitments(block)
     for (const c of commitments) {
         for (const a of c.amount) {
             if (!collateralizedAssets.includes(a.denom)) {
@@ -24,45 +62,14 @@ const getLockedTokens = async (api) => {
     }
 };
 
-// Contracts holding the pool collateral
-const demoPrimePools = [
-    "scope1qp4lyqj9xkp570uj9l0sf6vhh46q599mcf", // Margin USD
-    "scope1qpjqqp93nfn537acqgl6aauhj6ws8xk5ug", // YLDS HELOCS
-    "scope1qztpy0phjx0y8x902phqc4zvnktq0eru49", // YLDS HELOC+
-    "scope1qr84e8k4u2p5tn99wd5ra97mj8sq73e3xk", // YLDS CBL
-    "scope1qq4ghl8h8dv5ugdyty66acmsc0ksld5llq", // Margin SOL
-    "scope1qqq6xkv4g9y50649l0r96us54aasd4ur5l", // Margin BTC
-    "scope1qz6rjfu4ympyxs5wd2nzpa3z0t7s0tw3ud", // Margin USDT
-    "scope1qz8xvt4mckfyssyln509g5ck3ejs7aq9yc", // Margin USDC
-    "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n", // Margin ETH
-]
-
-const getPoolsCollateralValue = async (api) => {
-    let asset = collateralizedAssets[0]
-    await Promise.all(demoPrimePools.map(async pool => {
-        const poolHash = (await queryV1Beta1({
-            chain: 'provenance',
-            url: `metadata/v1/scope/${pool}/record/pool-details`
-        })).records[0]?.record?.outputs[0]?.hash
-        if (poolHash) {
-            const poolInfo = JSON.parse(poolHash)
-            if (poolInfo.leveragePool.collateralAssets.length > 0 && collateralizedAssets.includes(poolInfo.leveragePool.collateralAssets[0])) {
-                asset = poolInfo.leveragePool.collateralAssets[0]
-                api.add(asset, poolInfo.collateralValue)
-            }
-        }
-    }))
-}
-
 const tvl = async (api) => {
     await getLockedTokens(api)
-    await getPoolsCollateralValue(api)
     return sumTokens2({ api })
 }
 
 module.exports = {
     timetravel: true,
     misrepresentedTokens: true,
-    methodology: "Figure Markets TVL is the sum of all tokens locked within the Figure Markets protocol contracts.",
+    methodology: "Figure Markets TVL is the sum of tokens committed to the Figure Markets exchange, excluding USD.TRADING and collateralized pool assets.",
     provenance: { tvl },
 }

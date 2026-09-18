@@ -1,0 +1,800 @@
+{
+  "address": "XPTrnchoawiUc9iYJrpfchS8vgr8Y5X2QGBdHPXukty",
+  "metadata": {
+    "name": "exponent_tranching",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "ExponentTranchingMarket",
+      "discriminator": [
+        119,
+        38,
+        120,
+        122,
+        60,
+        24,
+        58,
+        160
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "CpiAccounts",
+      "docs": [
+        "Account lists for validating CPI calls to the SY program"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "get_sy_state",
+            "docs": [
+              "Fetch SY state"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "deposit_sy",
+            "docs": [
+              "Deposit SY into personal account owned by market"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "withdraw_sy",
+            "docs": [
+              "Withdraw SY from personal account owned by market"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "claim_emission",
+            "docs": [
+              "Settle rewards for market-owned accounts"
+            ],
+            "type": {
+              "vec": {
+                "vec": {
+                  "defined": {
+                    "name": "CpiInterfaceContext"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "get_position_state",
+            "docs": [
+              "Get personal yield position"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiInterfaceContext",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "alt_index",
+            "docs": [
+              "Address-lookup-table index"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "is_signer",
+            "type": "bool"
+          },
+          {
+            "name": "is_writable",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExponentTranchingMarket",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "address_lookup_table",
+            "docs": [
+              "Address to ALT"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "sy_mint",
+            "docs": [
+              "Standardized yield token mint"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "sy_program",
+            "docs": [
+              "Linked SY program id"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "docs": [
+              "Escrow token account that holds SY owned by the market"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp_senior",
+            "docs": [
+              "Senior LP mint"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp_junior",
+            "docs": [
+              "Junior LP mint"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "self_address",
+            "docs": [
+              "Authority PDA for CPI calls owned by the market state"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "return_model_storage",
+            "docs": [
+              "PDA account that stores the active return allocation model."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "signer_bump",
+            "docs": [
+              "PDA signer bump"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "return_model_storage_bump",
+            "docs": [
+              "Return model storage PDA bump"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "seed_id",
+            "docs": [
+              "Unique seed id for the market"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          },
+          {
+            "name": "status_flags",
+            "docs": [
+              "Global status flags"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "market_state",
+            "docs": [
+              "Current market lifecycle state"
+            ],
+            "type": {
+              "defined": {
+                "name": "TranchingMarketState"
+              }
+            }
+          },
+          {
+            "name": "financials",
+            "docs": [
+              "Core financial state"
+            ],
+            "type": {
+              "defined": {
+                "name": "TranchingMarketFinancials"
+              }
+            }
+          },
+          {
+            "name": "tranche_supply_state",
+            "docs": [
+              "Tranche LP supply and escrow state"
+            ],
+            "type": {
+              "defined": {
+                "name": "TrancheSupplyState"
+              }
+            }
+          },
+          {
+            "name": "tranche_asset_state",
+            "docs": [
+              "Tranche-owned SY balances"
+            ],
+            "type": {
+              "defined": {
+                "name": "TrancheAssetState"
+              }
+            }
+          },
+          {
+            "name": "risk_config",
+            "docs": [
+              "Risk parameters"
+            ],
+            "type": {
+              "defined": {
+                "name": "TranchingRiskConfig"
+              }
+            }
+          },
+          {
+            "name": "protocol_fee_config",
+            "docs": [
+              "Protocol fee configuration"
+            ],
+            "type": {
+              "defined": {
+                "name": "TranchingProtocolFeeConfig"
+              }
+            }
+          },
+          {
+            "name": "reserved_padding",
+            "docs": [
+              "Reserved bytes at the former in-market return model slot."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                137
+              ]
+            }
+          },
+          {
+            "name": "roles",
+            "docs": [
+              "Role memberships for market control"
+            ],
+            "type": {
+              "defined": {
+                "name": "TranchingMarketRoles"
+              }
+            }
+          },
+          {
+            "name": "sy_cpi_accounts",
+            "docs": [
+              "Record of CPI accounts for the linked SY program"
+            ],
+            "type": {
+              "defined": {
+                "name": "CpiAccounts"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Number",
+      "docs": [
+        "High precision number, stored as 4 u64 words in little endian"
+      ],
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u64",
+              4
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrancheAssetState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "senior_sy_amount",
+            "docs": [
+              "SY balance owned by the senior tranche"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "junior_sy_amount",
+            "docs": [
+              "SY balance owned by the junior tranche"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrancheSupplyState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "total_senior_lp_supply",
+            "docs": [
+              "Total senior LP supply"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_junior_lp_supply",
+            "docs": [
+              "Total junior LP supply"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "max_senior_lp_supply",
+            "docs": [
+              "Optional max senior LP supply"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "max_junior_lp_supply",
+            "docs": [
+              "Optional max junior LP supply"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pending_senior_protocol_fee_lp_shares",
+            "docs": [
+              "Protocol fee senior LP shares accrued but not minted yet"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pending_junior_protocol_fee_lp_shares",
+            "docs": [
+              "Protocol fee junior LP shares accrued but not minted yet"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pending_senior_deposit_protocol_fee_lp_shares",
+            "docs": [
+              "Senior deposit protocol fee LP shares accrued but not minted yet"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pending_junior_deposit_protocol_fee_lp_shares",
+            "docs": [
+              "Junior deposit protocol fee LP shares accrued but not minted yet"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pending_senior_withdraw_protocol_fee_lp_shares",
+            "docs": [
+              "Senior withdrawal protocol fee LP shares accrued but not minted yet"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pending_junior_withdraw_protocol_fee_lp_shares",
+            "docs": [
+              "Junior withdrawal protocol fee LP shares accrued but not minted yet"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TranchingMarketFinancials",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sr_raw_net_asset",
+            "docs": [
+              "Senior raw net asset value"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "jr_raw_net_asset",
+            "docs": [
+              "Junior raw net asset value"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "sr_effective_net_asset",
+            "docs": [
+              "Senior effective net asset value"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "jr_effective_net_asset",
+            "docs": [
+              "Junior effective net asset value"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "sr_impermanent_loss",
+            "docs": [
+              "Senior impermanent loss balance"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "jr_impermanent_loss",
+            "docs": [
+              "Junior impermanent loss balance"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "utilization",
+            "docs": [
+              "Current utilization"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "current_junior_return_share",
+            "docs": [
+              "Last distributed junior return share"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "tw_junior_return_share_accrued",
+            "docs": [
+              "Accrued time-weighted junior return share"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "last_sync_ts",
+            "docs": [
+              "Last market sync timestamp"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "last_distribution_ts",
+            "docs": [
+              "Last yield distribution timestamp"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "fixed_term_end_ts",
+            "docs": [
+              "Fixed-term end timestamp, if active"
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TranchingMarketRoles",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "sentinel",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TranchingMarketState",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Uninitialized"
+          },
+          {
+            "name": "Active"
+          },
+          {
+            "name": "FixedTermRecovery"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TranchingProtocolFeeConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "protocol_fee_recipient",
+            "docs": [
+              "Protocol fee recipient that receives minted LP fee shares"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "sr_protocol_fee",
+            "docs": [
+              "Protocol fee charged on senior-side yield retained by senior"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "jr_protocol_fee",
+            "docs": [
+              "Protocol fee charged on junior-side raw appreciation retained by junior"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "junior_return_protocol_fee",
+            "docs": [
+              "Protocol fee charged on senior return allocated to junior"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "senior_deposit_protocol_fee",
+            "docs": [
+              "Protocol fee charged on senior tranche deposits"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "junior_deposit_protocol_fee",
+            "docs": [
+              "Protocol fee charged on junior tranche deposits"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "senior_withdraw_protocol_fee",
+            "docs": [
+              "Protocol fee charged on senior tranche withdrawals"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "junior_withdraw_protocol_fee",
+            "docs": [
+              "Protocol fee charged on junior tranche withdrawals"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TranchingRiskConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "min_coverage",
+            "docs": [
+              "Minimum coverage requirement."
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "beta",
+            "docs": [
+              "Junior downside beta."
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "liquidation_utilization",
+            "docs": [
+              "Liquidation utilization threshold."
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "fixed_term_duration_sec",
+            "docs": [
+              "Fixed-term observation period duration"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "min_deposit_amount",
+            "docs": [
+              "Min deposit amount in underlying units"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "sr_self_liquidation_bonus",
+            "docs": [
+              "Senior self-liquidation bonus."
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "sr_net_asset_dust_tolerance",
+            "docs": [
+              "Senior NAV dust tolerance."
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "jr_net_asset_dust_tolerance",
+            "docs": [
+              "Junior NAV dust tolerance."
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -9,6 +9,7 @@ const POOLS_V2 = {
   arbitrum:    'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmSexfnJV8EZTuVmoXaXJTKpJ7Q6ymPmPV7ShppTWZFe12',
   base:        'https://api.subgraph.migration.ormilabs.com/subgraphs/id/Qmb86xPeygvQFMmNN9j8aiCXqqFrcsKHu6nTrqfQwPeoqb',
   bsc:         'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmcZgjPkhJeUteBtoWqbFGKM3FcCQhv51BhTMnqvYGw8eM',
+  apechain:    'https://api.subgraph.apechain.ormilabs.com/api/public/6faf13a5-bc57-441f-9021-487246d622c8/subgraphs/teller-pools-v2-apechain/0.4.22/gn',
   xdc:         'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/tellerv2-poolsv2-xdc/1.0.0/gn',
   katana:      'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-katana/0.4.21.13/gn',
   hyperliquid: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-hyperevm/0.4.21.12/gn',

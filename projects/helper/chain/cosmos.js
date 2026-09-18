@@ -6,9 +6,8 @@ const { log, sleep } = require("../utils");
 const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
+// https://wiki.f5nodes.com/quicksilver/endpoints/
 // https://proxy.atomscan.com/chains.json
-// https://cosmos-chain.directory/chains/cosmoshub
-// https://cosmos-chain.directory/chains
 // https://celestia.publicnode.com/
 // https://api.axelarscan.io/api/getTVL
 const endPoints = {
@@ -29,7 +28,7 @@ const endPoints = {
   cronos: "https://rest.mainnet.crypto.org",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
   stargaze: "https://rest.stargaze-apis.com",
-  quicksilver: "https://rest.cosmos.directory/quicksilver",
+  quicksilver: "https://quicksilver.api.m.anode.team",
   persistence: "https://rest.cosmos.directory/persistence",
   // secret: "https://rpc.ankr.com/http/scrt_cosmos",
   secret: "https://lcd-secret.keplr.app",
@@ -39,9 +38,11 @@ const endPoints = {
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
+  akash: "https://rest.cosmos.directory/akash",
   // neutron: "https://rest-solara.neutron-1.neutron.org",
   neutron: "https://neutron-rest.publicnode.com",
   quasar: "https://quasar-api.polkachu.com",
+  // gravitybridge: "https://gravitychain.io:1317/",
   gravitybridge: "https://gravity-api.polkachu.com",
   // sei: "https://sei-api.polkachu.com",
   sei: "https://rest.sei-apis.com",
@@ -65,8 +66,10 @@ const endPoints = {
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
+  dungeon: 'https://api.dungeongames.io',
   carbon: 'https://api.carbon.network',
   evmos: 'https://evmos-api.polkachu.com',
+  fetchhub: 'https://rest-fetchhub.fetch.ai',
   regen: 'https://rest-regen.ecostake.com',
   // sommelier: 'https://sommelier-rpc.polkachu.com',
   sommelier: 'https://rest.cosmos.directory/sommelier',
@@ -82,6 +85,7 @@ const endPoints = {
   inertia: 'https://rest.inrt.fi',
   union: 'https://rest.union.build',
   zigchain: 'https://public-zigchain-lcd.numia.xyz',
+  axiome: 'http://api-docs.axiomeinfo.org:1317',
 };
 
 const chainSubpaths = {

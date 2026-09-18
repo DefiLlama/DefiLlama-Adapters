@@ -20,6 +20,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   stablePoolSymbol = 'sAMM',
   permitFailure = false,
   skipUnknownTokens = false,
+  memoryOptimization = false,
   blacklistedPools = [],
 }) {
   const blacklistedPoolsSet = new Set(blacklistedPools.map(i => i.toLowerCase()))
@@ -39,6 +40,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
     if (!coreAssets && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
+    const coreAssetsSet = new Set(coreAssets?.map(i => normalizeAddress(i, chain)))
 
     let cache = await _getCache(cacheFolder, key, api)
 
@@ -122,7 +124,20 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       let batchIdx = 0
       for (const calls of batchedCalls) {
         const res = await api.multiCall({ abi: abi.getReserves, calls, permitFailure, })
-        reserves = reserves.concat(res)
+        if (memoryOptimization) {
+          res.forEach((dat, i) => {
+            if (!dat) return;
+            const { _reserve0, _reserve1 } = dat
+            const tokenIndex = batchIdx * queryBatched + i
+            const token0 = cache.token0s[tokenIndex]
+            const token1 = cache.token1s[tokenIndex]
+            if (coreAssetsSet.has(token0.toLowerCase()))
+              api.add(token0, [_reserve0, _reserve0])
+            if (coreAssetsSet.has(token1.toLowerCase()))
+              api.add(token1, [_reserve1, _reserve1])
+          })
+        } else
+          reserves = reserves.concat(res)
         batchIdx++
         sdk.log(`fetched reserves batch ${batchIdx}/${batchedCalls.length} ${((batchIdx / batchedCalls.length) * 100).toFixed(2)}%`)
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
@@ -141,6 +156,8 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     } else
       reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs, permitFailure })
 
+    if (memoryOptimization)
+      return api.getBalances()
 
     const balances = {}
     if (coreAssets) {

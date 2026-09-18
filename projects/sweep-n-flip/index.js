@@ -24,6 +24,8 @@ const config = {
   apechain:    { start: '2026-04-28', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 37153586 }] },
   berachain:   { start: '2026-04-28', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 20200289 }] },
   monad:       { start: '2026-04-28', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 71175180 }] },
+  abstract:    { start: '2026-06-15', factories: [{ factory: '0x4a1775B76D9d4260C60f3376eCDA618e316c662D', fromBlock: 70255154 }] },
+  ronin:       { start: '2026-06-15', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 57049023 }] },
   mode:        { start: '2024-06-01', factories: [{ factory: '0x7962223D940E1b099AbAe8F54caBFB8a3a0887AB', fromBlock: 6989680 }] },
 }
 

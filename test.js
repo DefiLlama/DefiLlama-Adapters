@@ -128,6 +128,9 @@ function validateHallmarks(hallmark) {
 (async () => {
 
   const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
+  // registry keys can be namespaced (e.g. `treasury/gmx`); preserve the full
+  // key so a treasury entry isn't shadowed by a same-named protocol adapter.
+  const registryKey = process.argv[2].replace(/\.js$/, '').replace(/\/index$/, '').replace(/^projects\//, '')
 
   // throw error if module doesnt start with lowercase letters
   if (!/^[a-z]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
@@ -138,10 +141,11 @@ function validateHallmarks(hallmark) {
   try {
     module = require(passedFile)
   } catch (e) {
-    if (allProtocols[moduleArg]) {
-      module = allProtocols[moduleArg]
-      passedFile = `registry:${moduleArg}`
-      console.log(`Loaded module ${moduleArg} from registry`)
+    const registryName = allProtocols[registryKey] ? registryKey : moduleArg
+    if (allProtocols[registryName]) {
+      module = allProtocols[registryName]
+      passedFile = `registry:${registryName}`
+      console.log(`Loaded module ${registryName} from registry`)
     } else {
       console.error("Error loading module:", e)
       return handleError(e)
@@ -199,6 +203,7 @@ function validateHallmarks(hallmark) {
   const tokensBalances = {};
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
+  const failedKeys = [];
 
   let tvlPromises = Object.entries(module).map(([chain, value]) => {
     if (typeof value !== "object" || value === null) {
@@ -215,7 +220,13 @@ function validateHallmarks(hallmark) {
       }
 
       return async () => {
-        await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
+        try {
+          await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
+        } catch (e) {
+          failedKeys.push({ storedKey, error: e && e.message ? e.message : String(e) })
+          console.error(`Error pulling TVL for ${storedKey}:`, e)
+          return;
+        }
         let keyToAddChainBalances = tvlType;
         if (tvlType === "tvl")
           keyToAddChainBalances = "tvl";
@@ -247,6 +258,13 @@ function validateHallmarks(hallmark) {
     }
   });
   if (usdTvls.tvl === undefined) {
+    if (failedKeys.length) {
+      console.error(`\n------ FAILED (${failedKeys.length}) ------`)
+      failedKeys.forEach(({ storedKey, error }) => console.error(storedKey.padEnd(25, " "), error))
+      throw new Error(
+        "Protocol doesn't have total tvl, all the tvl functions above failed to run"
+      );
+    }
     throw new Error(
       "Protocol doesn't have total tvl, make sure to export a tvl key either on the main object or in one of the chains"
     );
@@ -280,6 +298,12 @@ function validateHallmarks(hallmark) {
     }
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
+
+  if (failedKeys.length) {
+    console.error(`------ FAILED (${failedKeys.length}) ------`)
+    failedKeys.forEach(({ storedKey, error }) => console.error(storedKey.padEnd(25, " "), error))
+    console.error("\nNote: total TVL above excludes the failed chains/components listed here.\n")
+  }
 
   await preExit()
   process.exit(0);

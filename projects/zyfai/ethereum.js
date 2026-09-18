@@ -49,6 +49,14 @@ const COMPOUND_POOLS = {
     'Steakhouse Prime Instant USDT': '0xbeef003C68896c7D2c3c60d363e8d71a49Ab2bf9',
     'Sky.money USDT Risk Capital': '0x2bD3A43863c07B6A01581FADa0E1614ca5DF0E3d',
     'Steakhouse High Yield Instant USDT': '0xbeeff07d991C04CD640DE9F15C08ba59c4FEDEb7',
+    'Gauntlet EURC Core V2': '0x842A84Df61DbE701c5dAE345F3f8E64aF727E48C',
+    'Wintermute USDC Prime': '0x5dc53a23AdC9f2Bed98de6F59F7F309a7c71FF2B',
+    'SwissBorg Morpho USDC': '0x4Ff4186188f8406917293A9e01A1ca16d3cf9E59',
+    'KPK USDC Prime Core': '0x1a1985F50352b58090eb36425AfdFacbaC7806F4',
+    'Yearn USDC': '0x68Aea7b82Df6CcdF76235D46445Ed83f85F845A3',
+    'KPK ETH Yield V2': '0x5dbf760b4fd0cDdDe0366b33aEb338b2A6d77725',
+    'KPK USDC Prime': '0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6',
+    'Api3 dCOMP USDC': '0x36cfe1568461E499391ef0A555300F1ae2da2439',
   };
 
   // Fluid (Ethereum mainnet)
@@ -58,6 +66,14 @@ const COMPOUND_POOLS = {
     'WETH - Leveraged': '0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78',
     wstETH: '0x2411802D8BEA09be0aF8fD8D08314a63e706b29C',
     USDT: '0x5C20B550819128074FD538Edf79791733ccEdd18',
+  };
+
+
+  // Superform (Ethereum mainnet)
+  const SUPERFORM_POOLS = {
+    'Flagship WETH SuperVault': '0xa036823b9a24f63c32553367bf181ee04229c3ac', 
+    'Flagship USDC SuperVault': '0xf6ebea08a0dfd44825f67fa9963911c81be2a947',
+    'Flagship WBTC SuperVault': '0x8c365af7094eaac29314edee577b435892ca93a3'
   };
   
   // Dolomite (Ethereum mainnet)
@@ -100,6 +116,7 @@ const COMPOUND_POOLS = {
     ...Object.values(WASABI_POOLS),
     ...Object.values(YEARN_VAULTS),
     ...Object.values(YO_PROTOCOL_VAULTS),
+    ...Object.values(SUPERFORM_POOLS),
   ];
   
   module.exports = {
