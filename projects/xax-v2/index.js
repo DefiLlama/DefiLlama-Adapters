@@ -1,7 +1,4 @@
-// DeFiLlama TVL adapter for XAX (XAUSD ERC-4626 vault), Ethereum mainnet.
-//
-// Copy this file to projects/xax/index.js in a fork of
-// DefiLlama/DefiLlama-Adapters and open a PR (see ./README.md).
+// DeFiLlama TVL adapter for XAX V2 (XAUSD ERC-4626 vault), Ethereum mainnet.
 //
 // Count actual USDT in the vault,
 // less deferred treasury fees. Queued shares stay backed until assets are paid.
