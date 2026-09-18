@@ -481,6 +481,7 @@ const PROTOCOL_TOKENS = {
     '0xc3d688B66703497DAA19211EEdff47f25384cdc3', // CompoundV3 cUSDCv3
     '0xA17581A9E3356d9A858b789D68B4d866e593aE94', // CompoundV3 cWETHv3
     '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840', // CompoundV3 cUSDTv3
+    '0x207158a267cBd2598Bb3D611D8cBdEe2709F2f8C', // CompoundV3 ciUSDCv3 (unpriced, see RECEIPT_VAULTS)
     '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', // CompoundV2 cDAI (ENS supply)
     '0x39AA39c021dfbaE8faC545936693aC917d5E7563', // CompoundV2 cUSDC (ENS supply)
     // --- LP / BPT / CoW-AMM (resolveLP) ---
@@ -557,6 +558,7 @@ const PROTOCOL_TOKENS = {
   optimism: [ADDRESSES.optimism.WETH, ADDRESSES.optimism.USDC_CIRCLE],
   bsc: [
     '0x74d4EE4Ca29cA2fb69b31e9cbD4523B707E64662', // PancakeSwap ETH/COW
+    '0x5bfDaA3f7C28B9994B56135403bF1aCeA02595b0', // COW (bsc)
     ADDRESSES.bsc.WBNB,
     ADDRESSES.bsc.USDC,
   ],
@@ -596,6 +598,7 @@ const TOKEN_PROTOCOLS = {
     '0xc3d688B66703497DAA19211EEdff47f25384cdc3': 'Compound',    // cUSDCv3
     '0xA17581A9E3356d9A858b789D68B4d866e593aE94': 'Compound',    // cWETHv3
     '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840': 'Compound',    // cUSDTv3
+    '0x207158a267cBd2598Bb3D611D8cBdEe2709F2f8C': 'Compound',    // ciUSDCv3 (Compound Institutional USDC)
     '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643': 'Compound',    // cDAI
     '0x39AA39c021dfbaE8faC545936693aC917d5E7563': 'Compound',    // cUSDC
     '0x05ff47AFADa98a98982113758878F9A8B9FddA0a': 'Balancer',    // weETH/rETH
@@ -685,6 +688,8 @@ const BALANCER_TOKENS = {
   ],
   arbitrum: [
     '0x3f09C77B19AD8Bb527355ec32d5ce98421fec2E3', // axlBAL/BAL
+    '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8', // BAL (arbitrum)
+    '0x11c1879227d463b60DB18C17c20AE739Ae8e961a', // axlBAL
   ],
 }
 
@@ -797,15 +802,18 @@ async function sumVaultShares(api, owners, vaults) {
 const getCuratedVaultTvl = (api, owners, vaults) =>
   sumVaultShares(api, owners || activeSafes(api), vaults || getCuratedVaults(api.chain))
 
+const ERC4626 = 'erc4626'
 const RECEIPT_VAULTS = {
   ethereum: {
-    '0xcafeaa466736aC01E0aC9ca72644BeF348694731': 'Nexus Mutual', // Nexus RWI vault (USDC)
+    '0xcafeaa466736aC01E0aC9ca72644BeF348694731': ERC4626,                  // Nexus RWI vault (USDC)
+    '0x207158a267cBd2598Bb3D611D8cBdEe2709F2f8C': ADDRESSES.ethereum.USDC,  // ciUSDCv3 (Compound Institutional USDC)
   },
 }
 const getReceiptVaults = (chain) => Object.keys(RECEIPT_VAULTS[chain] || {})
 
 async function unwrapReceiptVaults(api) {
-  const vaults = getReceiptVaults(api.chain)
+  const receipts = RECEIPT_VAULTS[api.chain] || {}
+  const vaults = Object.keys(receipts)
   if (!vaults.length) return
   const balances = {}
   for (const [key, value] of Object.entries(api.getBalances())) {
@@ -817,11 +825,21 @@ async function unwrapReceiptVaults(api) {
     .filter(([, shares]) => shares > 0)
   if (!held.length) return
 
+  // the 1:1 receipts resolve with no call at all
+  const convert = []
+  for (const [vault, shares] of held) {
+    const target = receipts[vault]
+    if (target === ERC4626) { convert.push([vault, shares]); continue }
+    api.removeTokenBalance(vault)
+    api.add(target, shares)
+  }
+  if (!convert.length) return
+
   const [assets, underlying] = await Promise.all([
-    api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: held.map(([vault, shares]) => ({ target: vault, params: shares.toString() })), permitFailure: true }),
-    api.multiCall({ abi: 'address:asset', calls: held.map(([vault]) => vault), permitFailure: true }),
+    api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: convert.map(([vault, shares]) => ({ target: vault, params: shares.toString() })), permitFailure: true }),
+    api.multiCall({ abi: 'address:asset', calls: convert.map(([vault]) => vault), permitFailure: true }),
   ])
-  held.forEach(([vault, shares], i) => {
+  convert.forEach(([vault, shares], i) => {
     if (!assets[i] || !underlying[i]) return sdk.log(`receipt vault ${vault} on ${api.chain} did not answer as ERC-4626, leaving ${shares} share(s) unpriced`)
     api.removeTokenBalance(vault)
     api.add(underlying[i], assets[i])
@@ -969,6 +987,59 @@ async function getStakeDaoGaugeTvl(api, owners) {
   bals.forEach((b, i) => { if (b && b !== '0') api.add(calls[i].underlying, b) })
 }
 
+// POL delegated to a Polygon validator. The Safe holds that validator's ValidatorShare
+const POLYGON_VALIDATOR_SHARES = {
+  ethereum: ['0x97997023aAB1D6b9760538EB621bf10CfCd84868'], // OKX Earn validator
+}
+const POL = '0x455e53CBB86018Ac2B8092FdCd39d8444aFFC3F6'
+const VALIDATOR_STAKE_ABI = 'function getTotalStake(address user) view returns (uint256 stake, uint256 rate)'
+async function getPolygonStakeTvl(api, owners) {
+  const validators = POLYGON_VALIDATOR_SHARES[api.chain]
+  if (!validators) return
+  owners = owners || activeSafes(api)
+  if (!owners.length) return
+  const calls = []
+  for (const validator of validators) for (const owner of owners) calls.push({ target: validator, params: [owner] })
+  const staked = await api.multiCall({ abi: VALIDATOR_STAKE_ABI, calls, permitFailure: true })
+  staked.forEach((entry) => { if (entry && entry[0] && entry[0] !== '0') api.add(POL, entry[0]) })
+}
+
+// ETH queued to leave Stader. requestWithdraw moves the ETHx OUT of the Safe and into
+// the withdraw manager, which books a request rather than issuing a token - so the
+// ETHx sweep above stops seeing it the moment it is queued and the money vanishes
+// from the adapter until the claim lands. This puts it back.
+//
+// It is the Safe's ETH throughout (the manager is only holding it), so there is no
+// double count with the ETHx line: the shares are gone from the Safe's balance.
+//
+// Which figure to take:
+//   ethFinalized - set when the batch finalises, and authoritative from then on: it
+//                  is what the claim will actually pay, even if a slashing made that
+//                  less than was quoted.
+//   ethExpected  - struck at request time from the ETHx rate then, for a request
+//                  still pending. The claim is fixed in ETH from that moment, which
+//                  is why this is a flat ETH amount and not an ETHx position.
+// A claimed request is DELETED from the mapping, so a zero owner is the guard that
+// keeps it out - and it holds whether or not the id list itself is pruned.
+const STADER_WITHDRAW_MANAGER = { ethereum: '0x9F0491B32DBce587c50c4C43AB303b06478193A7' }
+const STADER_REQUEST_IDS_ABI = 'function getRequestIdsByUser(address) view returns (uint256[])'
+const STADER_REQUEST_ABI = 'function userWithdrawRequests(uint256) view returns (address owner, uint256 ethXAmount, uint256 ethExpected, uint256 ethFinalized, uint256 requestBlock)'
+async function getStaderWithdrawTvl(api, owners) {
+  const manager = STADER_WITHDRAW_MANAGER[api.chain]
+  if (!manager) return
+  owners = owners || activeSafes(api)
+  if (!owners.length) return
+  const ids = await api.multiCall({ abi: STADER_REQUEST_IDS_ABI, calls: owners.map((owner) => ({ target: manager, params: [owner] })), permitFailure: true })
+  const calls = []
+  ids.forEach((list) => (list || []).forEach((id) => calls.push({ target: manager, params: [id.toString()] })))
+  if (!calls.length) return
+  const requests = await api.multiCall({ abi: STADER_REQUEST_ABI, calls, permitFailure: true })
+  requests.forEach((request) => {
+    if (!request || /^0x0+$/.test(request[0])) return // claimed: the struct is gone
+    api.add(ADDRESSES.null, request[3] !== '0' ? request[3] : request[2])
+  })
+}
+
 const MAKER = {
   cdpManager: '0x5ef30b9986345249bc32d8928B7ee64DE9435E39',
   vat: '0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B',
@@ -1080,7 +1151,7 @@ const exportObjects = {
   // mandate assets sit in Aave, Spark, Balancer etc, which count them too
   doublecounted: true,
   methodology:
-    "Assets in Safes actively managed by kpk under a Zodiac Roles Modifier mandate: direct holdings plus positions in Aave, Spark, Stakewise, Aura, Uniswap V3, Maker, StakeDAO, Nexus Mutual, Sablier and Safe staking. Each mandate only counts inside its own management window, though token coverage is not window-scoped. kpk-curated vault shares held by a mandate Safe are excluded, since curated vault TVL is reported separately.",
+    "Assets in Safes actively managed by kpk under a Zodiac Roles Modifier mandate: direct holdings plus positions in Aave, Spark, Stakewise, Aura, Uniswap V3, Maker, StakeDAO, Nexus Mutual, Sablier, Polygon staking, Stader withdrawal claims and Safe staking. Each mandate only counts inside its own management window, though token coverage is not window-scoped. kpk-curated vault shares held by a mandate Safe are excluded, since curated vault TVL is reported separately.",
   start: Math.min(...Object.values(TIME_GATED_ENTITIES).map((entity) => toTs(entity.start))),
 }
 
@@ -1103,6 +1174,8 @@ for (const chain of ZODIAC_CHAINS) {
       await getMakerCdpTvl(api)
       await getStakeDaoGaugeTvl(api)
       await getSablierTvl(api)
+      await getPolygonStakeTvl(api)
+      await getStaderWithdrawTvl(api)
       await unwrapReceiptVaults(api) // last: it normalises whatever the resolvers left
     }
   }
@@ -1145,6 +1218,8 @@ const ZODIAC_PARTS = [
   { protocol: 'Maker', id: 'Maker CDP', fn: getMakerCdpTvl },
   { protocol: 'StakeDAO', fn: getStakeDaoGaugeTvl },
   { protocol: 'Sablier', fn: getSablierTvl },
+  { protocol: 'Polygon Staking', fn: getPolygonStakeTvl },
+  { protocol: 'Stader', id: 'Stader withdrawals', pool: STADER_WITHDRAW_MANAGER.ethereum, fn: getStaderWithdrawTvl },
 ]
 
 // Direct Safe balances, split so each receipt token reports under its issuer and
