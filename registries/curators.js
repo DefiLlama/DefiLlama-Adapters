@@ -125,6 +125,11 @@ const configs = {
             '0xEB4Af6fA3AFA08B10d593EC8fF87efB03BC04645',
           ],
         },
+        hyperliquid: {
+          morphoVaultOwners: [
+            '0x36bb55C8f2fb92317767254bF8eDCef0E2Fe61e1', // Alpha USDT Prime V2
+          ],
+        },
       }
     },
   },
