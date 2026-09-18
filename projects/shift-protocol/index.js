@@ -2,6 +2,7 @@ const config = {
   ethereum: {
     v2: [
       "0xF4761cC51DC4532b064b7E0Bf0883bcA3F84375e", // shiftEUR
+      "0x5F70E536190C15E5959DbFeF2F2632E540da74CD", // risexUSDC
     ],
   },
   base: {

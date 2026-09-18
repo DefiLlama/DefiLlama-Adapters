@@ -14,8 +14,8 @@ const configs = {
     owners: [assetVault, ...custodyWallets],
     tokens: [
       ADDRESSES.null,
-      '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
-      '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
+      ADDRESSES.arbitrum.USDT,
+      ADDRESSES.arbitrum.USDC_CIRCLE,
     ],
   },
   ethereum: {
@@ -28,7 +28,7 @@ const configs = {
   },
   berachain: {
     owners: custodyWallets,
-    tokens: ['0x779ded0c9e1022225f8e0630b35a9b54be713736'],
+    tokens: [ADDRESSES.stable.USDT0],
   },
 }
 

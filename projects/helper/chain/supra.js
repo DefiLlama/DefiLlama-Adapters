@@ -66,7 +66,7 @@ const getTableItemByKey = async (tableHandle, keyType, valueType, key) => {
 
 const NATIVE_SUPRA_COIN = ADDRESSES.supra.SUPRA;
 const EVM_NULL_ADDRESSES = new Set([
-  "0x0000000000000000000000000000000000000000",
+  ADDRESSES.null,
   "0x0",
 ]);
 

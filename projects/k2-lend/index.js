@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { callSoroban } = require('../helper/chain/stellar')
 const { lendingMarket } = require('../helper/methodologies')
 

@@ -1,6 +1,6 @@
 const { getApplicationAddress } = require("../helper/chain/algorandUtils/address");
 const { lookupAccountByID, lookupApplicationsCreatedByAccount } = require("../helper/chain/algorand");
-const axios = require('axios');
+const { getConfig } = require('../helper/cache');
 const { getCachedPrices } = require('../folks-xalgo/prices');
 const { lookupApplications } = require("../helper/chain/algorand");
 
@@ -8,11 +8,11 @@ const USDC_ASSET_ID = 31566704; // USDC asset ID on Algorand
 
 
 async function getAlphaArcadeMarkets() {
-    const response = await axios.get("https://g08245wvl7.execute-api.us-east-1.amazonaws.com/api/get-markets");
-    if (!response.data || !response.data.markets) {
+    const data = await getConfig('alpha-arcade', "https://g08245wvl7.execute-api.us-east-1.amazonaws.com/api/get-markets");
+    if (!data || !data.markets) {
         throw new Error("Failed to fetch markets from Alpha Arcade API");
     }
-    return response.data.markets;
+    return data.markets;
 }
 
 async function getMarketTvl(marketAppId) {

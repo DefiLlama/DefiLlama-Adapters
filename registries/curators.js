@@ -4,6 +4,21 @@ const { getCuratorExport } = require('../projects/helper/curators')
 // top-level metadata). Each entry holds the raw config object passed to getCuratorExport,
 // plus any extra top-level keys under _meta.
 const configs = {
+  "kamui": {
+    config: {
+      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced and Boosted vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. Also counted under Lagoon.',
+      start: '2026-08-27', // vaults redeployed through the Lagoon OptinProxyFactory
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xcDA323c2DF692d989B24BA51D0aCCa924cf9a344', // Lagoon: Kamui Stable Vault (USDst)
+            '0xA5AE405242f42C47996a0C6857ff10a77F9bdeE6', // Lagoon: Kamui Balanced Vault (USDbl)
+            '0x9E0DB8F43bb91e2148B0Db920E21370525CF3Aab', // Lagoon: Kamui Boosted Vault (USDbt)
+          ],
+        },
+      }
+    },
+  },
   "9summits": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by 9Summits.',
@@ -16,6 +31,13 @@ const configs = {
             '0xb5e4576C2FAA16b0cC59D1A2f3366164844Ef9E0', // co-curator with tulip-capital
             '0x1E2aAaDcF528b9cC08F43d4fd7db488cE89F5741', // co-curator with tulip-capital
             '0x0bB2751a90fFF62e844b1521637DeD28F3f5046A', // co-curator with tulip-capital
+          ],
+          erc4626: [
+            '0x03D1eC0D01b659b89a87eAbb56e4AF5Cb6e14BFc', // Lagoon: 9Summits Flagship USDC
+            '0x07ed467acD4ffd13023046968b0859781cb90D9B', // Lagoon: 9Summits Flagship ETH
+            '0xD0C4C9386F7509c44987F43136BE7d4349Ccddc9', // Lagoon: 9Summits Flagship EURC
+            '0x7f35dEa44a192764aa50d50e5f0eCE1d5a8b0e45', // Lagoon: Flint USD
+            '0xB09F761Cb13baCa8eC087Ac476647361b6314F98', // Lagoon: Flagship cbBTC, co-curated with Tulipa Capital
           ],
           turtleclub: [
             '0xa853d8f5f253468495c5a92d54a3fe6cca2aa26b',
@@ -32,6 +54,42 @@ const configs = {
         unichain: {
           morphoVaultOwners: [
             '0x59e608E4842162480591032f3c8b0aE55C98d104',
+          ],
+        },
+        avax: {
+          erc4626: [
+            '0x3048925B3EA5A8C12eeCCcb8810F5F7544dB54af', // Lagoon: Turtle Avalanche USDC
+            '0x4aF3aBE954259fb70b97C57EBD7Ac1eb822028Ef', // Euler Earn: 9Summits USDC
+          ],
+        },
+      }
+    },
+  },
+  "bitwise": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Bitwise.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x3585f2427b5D2746472A49406321b71799402a7d',
+          ],
+        },
+        base: {
+          morphoVaultOwners: [
+            '0x510F3b6621D9eA392d4F7632d02aBCf8ba92Bd6F',
+          ],
+        },
+      }
+    },
+  },
+  "sharpbyte-capital": {
+    config: {
+      methodology: 'Counts assets deposited in the SharpByte USDT Prime Morpho V2 vault.',
+      start: '2026-07-03',
+      blockchains: {
+        ethereum: {
+          morpho: [
+            '0x65a6334c0e2b5f7640c2A6b9ce615e162b1E909B',
           ],
         },
       }
@@ -151,6 +209,18 @@ const configs = {
       }
     },
   },
+  "architect": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults created by Architect\'s verified initial deployment owner.',
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xC2f4848Adc95Adb16Cc79a3365814cB08439ee28',
+          ],
+        },
+      }
+    },
+  },
   "armitage": {
     config: {
       methodology: 'Counts all assets that are deposited in all vaults curated by Armitage.',
@@ -159,6 +229,27 @@ const configs = {
           morpho: [
             '0x5dc53a23AdC9f2Bed98de6F59F7F309a7c71FF2B',
             '0xA2EAaD0D586cF9FD73bb2c09cF6A7E3e187D68cd',
+            '0x55C1B6e461a6334B567bAF0FEb5D728715446f05',
+            '0xBf29043164660C60A2a72Cd15FFe2304e87B6838',
+            '0x500aE64100D7DbDb640531085C2F5d40cDC8930D',
+            '0x3d5EcCb62974178236A768A7ef14D3ce468Fbe91',
+          ],
+        },
+      },
+    },
+  },
+  "august-digital": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by August Digital.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x2a155ed454Dc5861a755F9C6bc7334a23B80cdAF', // initial owner — August Digital
+          ],
+        },
+        monad: {
+          morphoVaultOwners: [
+            '0x2a155ed454Dc5861a755F9C6bc7334a23B80cdAF', // initial owner — August Digital
           ],
         },
       },
@@ -166,13 +257,19 @@ const configs = {
   },
   "avantgarde": {
     config: {
-      methodology: 'Count all assets are deposited in all vaults curated by Avantgarde.',
+      methodology: 'Counts all assets deposited in all vaults curated by Avantgarde.',
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
             '0xb263237E30fe9be53d6F401FCC50dF125D60F01a',
+            '0xc714F33c2527BF61749C06eA0389EC957D8153D4',
           ],
         },
+        base: {
+          morphoVaultOwners: [
+            '0x80C6c6438a438Ad3B3736a02B47793D6f854f2bF',
+           ],
+         },
       }
     },
   },
@@ -193,6 +290,19 @@ const configs = {
           ],
         },
       }
+    },
+  },
+  "bizantine-labs": {
+    config: {
+      methodology: 'TVL is the sum of totalAssets() reported by the bizUSDT0 and bizFXRP Superform vaults curated by Bizantine Labs. ',
+      blockchains: {
+        flare: {
+          erc4626: [
+            '0xb7c1c8f7191c7d76b5c6650a6fb20f6f8027bf0d', // bizUSDT0
+            '0x34f90dfa0f1b2f691ee3a3a87954f8d282193c16', // bizFXRP
+          ],
+        },
+      },
     },
   },
   "blend": {
@@ -228,6 +338,19 @@ const configs = {
         }
       },
       // deadFrom: 'xxx', // https://github.com/DefiLlama/DefiLlama-Adapters/pull/18409 - shifting focus to tradfi rails
+    },
+  },
+  "capital-1212": {
+    config: {
+      methodology: 'Sum settled underlying assets in the 1212 Stable and Alpha funds on Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xbb30c3b6046debcbe941281218d18dec8ecebeb5', // 1212.Stable
+            '0xc35ce0c1acfc448d18ddacbf641b09f2a18e1958', // 1212.Alpha
+          ],
+        },
+      },
     },
   },
   "cassa": {
@@ -271,6 +394,7 @@ const configs = {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
+            '0x40DdCcAC38E4F6f2cB802c09F0a08f39d3dCb48F', // Morpho V2 Noon Ecosystem Vault: owner at creation
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
@@ -293,6 +417,7 @@ const configs = {
           erc4626: [
             '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
             '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23', // IPOR Fusion yoGOLD
+            '0x32Cf8bd02A916c3cf1E4Ccb9c7A00D4a3f96BfDF', // Euler Earn: Clearstar Continuum USDC
           ],
           upshiftV2: [
             '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
@@ -312,6 +437,8 @@ const configs = {
         katana: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0x829A13850b684A575C0580a83322890e19c5eFaa', // Morpho V2 Core USDC
+            '0x8c5FDDE03DFd6AC0D3d492321974f2Ff573DE1bd', // Morpho V2 Core USDT
           ],
           erc4626: [
             '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // vbUSDC Metavault on Spectra
@@ -389,9 +516,37 @@ const configs = {
       },
     },
   },
+  "dacm": {
+    config: {
+      methodology: 'Count settled USDC NAV of the DACM LIT Strategy Lagoon vault.',
+      blockchains: {
+        arbitrum: {
+          erc4626: ['0x018282d5b510f00dcacb8f4a81c3901d2fc9da51'],
+        },
+      },
+    },
+  },
+  "damm-capital": {
+    config: {
+      methodology: 'Counts assets in DAMM Capital flagship funds. Internal DAMMethAlgo and DAMMbtcAlgo execution vehicles are excluded because their assets are already represented in the flagship funds.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x3c63f3ce75dc83735745cf4e86b63414d95ee355', // DAMMeth
+            '0x7ededf832b5c9d8afa8f7365936100581a6db756', // DAMMbtc
+          ],
+        },
+        arbitrum: {
+          erc4626: [
+            '0xe5d6eb448ac5a762c1ebe8cd1692b9cd08025176', // DAMMstable
+          ],
+        },
+      },
+    },
+  },
   "edge-capital": {
     config: {
-      methodology: 'Counts all assets deposited in vaults curated by Muscadine.',
+      methodology: 'Counts all assets deposited in vaults curated by Edge-Capital.',
       blockchains: {
         tac: {
           eulerVaultOwners: [
@@ -435,10 +590,30 @@ const configs = {
             '0x85fCb4604f25e17Ae4e1EAc202adba4F999d7FF5', // Feather MegaETH vault
           ],
         },
+        polygon: {
+          morpho: [
+            '0x902Af532d51D4983DBf9B8E29d1f01E430B24435', // Feather BRZ vault
+            '0x922c843349e3Bd9e4C3572171DfCa5e08836151F', // Feather frxUSD vault
+          ],
+        },
       }
     },
     _meta: {
       methodology: 'Counts all assets that are deposited in all vaults curated by Feather.',
+    },
+  },
+  "felix-vaults": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho V1 and V2 vaults created through the verified Felix deployment owners on HyperEVM.',
+      blockchains: {
+        hyperliquid: {
+          morphoVaultOwners: [
+            '0x2157f54f7a745c772e686AA691Fa590B49171eC9',
+            '0xcc8f1bDE0d42017c0e52321e69325F9B26F7c2D6',
+            '0xDd00059904ddF45e30b4131345957f76F26b8f6c',
+          ],
+        },
+      },
     },
   },
   "fence": {
@@ -453,12 +628,27 @@ const configs = {
       }
     },
   },
+  "flowdesk": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults created by Flowdesk\'s verified initial deployment owner.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x415ca88b148CD7a3bbAd61788A9b90F2a788EEc7',
+          ],
+        },
+      }
+    },
+  },
   "galaxy": {
     config: {
       methodology: "TVL is calculated by summing the assets deposited in all Morpho vaults curated by Galaxy on each supported chain.",
       blockchains: {
         ethereum: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
+          morpho: [
+            '0xd95fE7adF5075fad9D6Bf853E0f9Fe53369E8D96', // Galaxy USDC Enhanced; deployed by a different initial owner
+          ],
         },
         base: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
@@ -526,6 +716,19 @@ const configs = {
       },
     },
   },
+  "gamma-research": {
+    config: {
+      methodology: 'TVL is the AUSD managed by the earnAUSD vault curated by Gamma Research, measured on Monad through the vault\'s getTotalAssets() value.',
+      start: '2025-11-24',
+      blockchains: {
+        monad: {
+          upshiftV2: [
+            '0x36eDbF0C834591BFdfCaC0Ef9605528c75c406aA', // Upshift earnAUSD
+          ],
+        },
+      },
+    },
+  },
   "hakutora": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Hakutora.',
@@ -560,10 +763,39 @@ const configs = {
       }
     },
   },
+  "jpeg-trading": {
+    config: {
+      methodology: 'Counts assets deposited in the Euler Earn vault curated by JPEG Trading.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x018b86A893F57a632F90c4A8308353Ac938adc01', // Euler Earn: JPEG Trading x Tenbin RWAs
+          ],
+        },
+      }
+    },
+  },
+  "keyrock": {
+    config: {
+      methodology: 'Counts all assets deposited in the Morpho vaults curated by Keyrock.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0xbA75546ACD56b3a9142f94F179b03970eE4283Fd', // initial owner — Keyrock V1/V2 vaults
+          ],
+        },
+      }
+    },
+  },
   "keyring": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Keyring Network.',
       blockchains: {
+        ethereum: {
+          eulerVaultOwners: [
+            '0x0B50beaE6aac0425e31d5a29080F2A7Dec22754a',
+          ],
+        },
         avax: {
           eulerVaultOwners: [
             '0x0B50beaE6aac0425e31d5a29080F2A7Dec22754a',
@@ -596,24 +828,54 @@ const configs = {
       }
     },
   },
+  "monarq": {
+    config: {
+      methodology: 'Count FXRP managed by the Monarq XRP Yield Vault through its on-chain getTotalAssets value.',
+      blockchains: {
+        flare: {
+          upshiftV2: ['0x2439D4bb753A0f3777d4C9011AFacc475ba6B951'],
+        },
+      },
+    },
+  },
+  "mt-pelerin": {
+    config: {
+      methodology: 'Sum settled underlying assets in the Mt Pelerin USD, ETH and BTC strategy pools on Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x28663161f9fa2963eb6102b88a741e195e974df6', // USD
+            '0xb118de4917f4bac5c3a453ea8de915a7cd84891c', // ETH
+            '0xbc6a48b30405cc1660627d8dfb3872505f14bca0', // BTC
+          ],
+        },
+      },
+    },
+  },
   "muscadine": {
     config: {
-      methodology: 'Counts all assets deposited in Muscadine Morpho vaults on Base.',
+      methodology: 'Counts all assets deposited in all vaults curated by Muscadine.',
       blockchains: {
         base: {
-          morpho: [
-            // V1 Vaults
-            '0xf7e26Fa48A568b8b0038e104DfD8ABdf0f99074F', // Muscadine USDC Vault
-            '0xAeCc8113a7bD0CFAF7000EA7A31afFD4691ff3E9', // Muscadine cbBTC Vault
-            '0x21e0d366272798da3A977FEBA699FCB91959d120', // Muscadine WETH Vault
-            // V2 Vaults
-            '0x89712980cb434ef5ae4ab29349419eb976b0b496', // Muscadine USDC Prime
-            '0xd6dcad2f7da91fbb27bda471540d9770c97a5a43', // Muscadine WETH Prime
-            '0x99dcd0d75822ba398f13b2a8852b07c7e137ec70', // Muscadine cbBTC Prime
-            '0x314fD07319ef645bA7D548915CCd91F4788A1839', // Muscadine USDC Frontier
+          morphoVaultOwners: [
+            '0xf35B121bA32cBeaA27716abEfFb6B65a55f9B333', // V2 Prime USDC, WETH, cbBTC, Frontier USDC.
           ],
         },
       }
+    },
+  },
+  "odyssey-digital-am": {
+    config: {
+      methodology: 'Count settled assets in Odyssey Digital AM funds on Lagoon',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xa00f63e85b3d242568a9edecb48f5e2cf879b07b', // USDC
+            '0x2f945864126c6ba1dcadcb97ad114c9ef94f1379', // BTC
+            '0x08d7eef35f3e317001fe12c19a32f93307b008b4', // ETH
+          ],
+        },
+      },
     },
   },
   "ouroboros": {
@@ -636,6 +898,23 @@ const configs = {
       }
     },
   },
+  "pangolins": {
+    config: {
+      methodology: 'TVL is the sum of underlying assets deposited in Pangolins-curated ERC-4626 vaults on Morpho and Lista.',
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xB8108fA53B7228D8bfC84712Ba3B870c78Ab7c2E', // initial owner — Pangolins USDC
+          ],
+        },
+        bsc: {
+          erc4626: [
+            '0xEB4F6FFB1038E1cCa701e7d53083B37ec5b6Ba33', // Pangolins USDT by Lista
+          ],
+        },
+      }
+    },
+  },
   "poppie": {
     config: {
       methodology: 'Count all assets deposited in Euler vaults curated by Poppie.',
@@ -643,6 +922,19 @@ const configs = {
         bsc: {
           eulerVaultOwners: [
             '0xf4d92bC8006836132364B355DB9CfF204466ABc3',
+          ],
+        },
+      },
+    },
+  },
+  "presto": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Presto.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x21d7f2430E33054151AC3963aCBD4813e78cB3C9', // Presto USDC Prime initial owner
+            '0xb41437827266a20aB30bf457A81561f7b5e1bE6D', // Presto USDC Forte initial owner
           ],
         },
       },
@@ -684,6 +976,12 @@ const configs = {
         base: {
           morphoVaultOwners: [
             '0xD8B0F4e54a8dac04E0A57392f5A630cEdb99C940',
+            '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c', // Re7 USDC V2 initial owner
+          ],
+        },
+        optimism: {
+          morphoVaultOwners: [
+            '0xf86199f0D9F126CB548f4bc1756b6833121E132C', // Re7 WETH V2 initial owner
           ],
         },
         sonic: {
@@ -809,6 +1107,19 @@ const configs = {
       }
     },
   },
+  "sharewoods": {
+    config: {
+      methodology: 'Count all assets are deposited in all vaults curated by Sharewoods.',
+      blockchains: {
+        robinhood: {
+          morpho: [
+            '0x5FE15021a7C0Ff4A9965b400E474f616451BA128', // Sharewoods RWA USDG
+            '0xf8f8654A26bfe134ee290d0b6a749Ba45F03a104', // Sharewoods Classic USDG
+          ],
+        },
+      }
+    },
+  },
   "singularv": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by singularV.',
@@ -817,6 +1128,7 @@ const configs = {
           morphoVaultOwners: [
             '0x46057881E0B9d190920FB823F840B837f65745d5',
           ],
+          upshiftV2: ['0x73B04B604DF15A6d920Ee62E228548cD88DD3549'], // SingularV USDC Max Yield
         },
       }
     },
@@ -839,6 +1151,38 @@ const configs = {
       }
     },
   },
+  "solon": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon on Robinhood Chain.',
+      blockchains: {
+        robinhood: {
+          morphoVaultOwners: [
+            '0xD0340F008bee8F6101cD609E0447cd3d44f8cC84', // Solon curator/owner - auto-tracks current & future vaults
+          ],
+          morpho: [
+            '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault (explicit fallback)
+          ],
+        },
+      }
+    },
+  },
+  "stake-dao-curator": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Stake DAO.',
+      start: '2025-11-04',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0xB0552b6860CE5C0202976Db056b5e3Cc4f9CC765', // Stake DAO governance : frxUSD v1/v2
+          ],
+          morpho: [
+            '0x13AA4f80AD5F06cE4f1A3a3cA58C37059F0EE4c5', // Stake DAO USDC v1
+            '0x8EDCC305E633d29BFB383872e79401c506cE9E6f', // Stake DAO USDC v2
+          ],
+        },
+      },
+    },
+  },
   "steakhouse": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Steakhouse Financial.',
@@ -856,6 +1200,7 @@ const configs = {
             '0xec0Caa2CbAe100CEAaC91A665157377603a6B766', // v2 USDT/ETH/AUSD
           ],
           morpho: [
+            '0xbEEF00A59B577423653A1526c7009bdE103F542B', // Steakhouse Confidential Prime USDC
             '0x6cbF3Eed95976D226FFB0bEb09550A9407f47b60', // Steakhouse High Yield ETH
             '0xbeef003E31546C7210687f1A7b40d096BE83ec58', // Steakhouse Prime EURC
             '0xbeef009FF4FB1727297BF2526806F4A73E4b99aD', // Steakhouse Prime frxUSD
@@ -877,7 +1222,12 @@ const configs = {
             '0xBEEFFFC57A26fD8D3b693Ba025ead597DbECEBfe', // USDC High Yield Term
             '0xBEEf3f3A04e28895f3D5163d910474901981183D', // 3F Ecosystem Vault
             '0xBeefF08dF54897e7544aB01d0e86f013DA354111', // Steakhouse Prime
-            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Steakhouse High Yield
+            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC
+            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC
+            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Waterline Reservoir USDC
+            '0xAb5955EB671d150527f8E61A42B703832F86616C', // M1 USDC
+            '0xbeEFF75262b2eC16a3C62a807F02EE7627654931', // Waterline InfiniFi USDC
+            '0x7d4741ba166B21cf3168A9A0ea71388531C52FF7', // Tenbin USDC
             '0x6f48cE6380693808682E43140E3Eeb877a096Aa1', // USDC T-Prime Instant
             '0xBEEFFF4716a49418D69c251cab8759bB107e57C8', // USDC Turbo
             '0xBEEFFFDE1CABD3d8A3cd4fd5e04DbA51B9D4Ac39', // XAUT Turbo
@@ -938,6 +1288,7 @@ const configs = {
           morphoVaultOwners: [
             '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
             '0xe6FC2a011153DD5a230725a9F0c89a9c81aB4887',
+            '0x627e54a84134Ffb3C8ee85A5A675CD50C2dB239B', // Morpho V2
           ],
         },
         monad: {
@@ -946,6 +1297,7 @@ const configs = {
             '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
             '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
+            '0x96632d28Ac99A3edAb5F7B223a88d8fAf9004178', // Ethena x Steakhouse mUSD
           ],
         },
         polygon: {
@@ -1024,7 +1376,17 @@ const configs = {
         base: {
           erc4626: [
             '0x01a6ff6eb333c1393ef424f5894b18367f1499a8',
-            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8'
+            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
+            '0x19ba57ba620a94d57b0d408d5eadb94bcdb8c69c',
+            '0x4cff826ed74ecf74374f691fe454c2c847645f75',
+            '0x0c755ef12fa9fa3e857fa2464cfc52deb4878265',
+            '0x7f1f605e755c06d428a80db3d473fc46a14ee2cb',
+            '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
+            '0xbe49dd45d9d28f2380cbee3e57a8243e736e4552',
+            '0x79505efad14d289c84a71c28369b944ada25b131',
+            '0x31744e44d6af88225c1dbefbe5df8308faea641b',
+            '0xCd19f18884bf388b866D05cDd1ae351133821F01',
+            '0x01DBDB9748ECf71B1fFbb62f5cB41318531bA362'
           ]
         }
       }
@@ -1245,6 +1607,23 @@ const configs = {
       }
     },
   },
+  "waterline": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Waterline.',
+      blockchains: {
+        ethereum: {
+          morpho: [
+            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Waterline Reservoir USDC (V2)
+            '0xAb5955EB671d150527f8E61A42B703832F86616C', // M1 USDC (V2)
+            '0xbeEFF75262b2eC16a3C62a807F02EE7627654931', // Waterline InfiniFi USDC (V2)
+            '0x7d4741ba166B21cf3168A9A0ea71388531C52FF7', // Tenbin USDC (V2)
+            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC (V1)
+            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC (V1)
+          ],
+        },
+      },
+    },
+  },
   "yearn-curating": {
     config: {
       methodology: 'Counts all assets that are deposited in all vaults curated by Yearn.',
@@ -1304,6 +1683,28 @@ const configs = {
       }
     },
   },
+  "dirac-classic-curation": {
+    config:{
+      methodology: "Counts assets deposited in the Morpho Vault V2 vaults curated by Dirac, discovered on-chain via the DefiLlama curators registry by their deployer/owner address (morphoVaultOwners). One of Dirac Finance's two curation modes; the other is delta-neutral DiracVault strategies (dirac-delta-neutral-curation)",
+      blockchains:{
+        base: {
+          // Dirac vault deployers (current + legacy) = the initial owner emitted by
+          // the Morpho VaultV2 factory's CreateVaultV2 event.
+          morphoVaultOwners: [
+            '0x317848EBa554a92d34a763C4175C38170753ea8A',
+            '0x7d45718c79186Da8889111b5D8d7eDe6d128fb14',
+          ],
+        },
+        robinhood: {
+          // Dirac vault deployer on Robinhood (earn / Morpho-only chain, no
+          // delta-neutral stack).
+          morphoVaultOwners: [
+            '0x56d119aa73062e69c688870e1d22f589f4fa69c1',
+          ],
+        },
+      }
+    }
+  }
 }
 
 const allProtocols = {}

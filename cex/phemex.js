@@ -82,7 +82,6 @@ module.exports = {
       'THAABzWrhp84Nr7gxss7qhtzA5mp3d1qUo',
       'TMHKjGvQ2trQkBEnAgx7RvV77Xn8w1JDP7',
       'THe3CVBSKGdfeW58B2MLCJ9u5W74MCGL8M',
-      'TM7rxykbNRuFd2iZ1zVH4P8xrpSCduw9vD',
       'TEdkCXtBpmze8VmmbMV1WEBiagvrUf7Hk5'
     ],
   },

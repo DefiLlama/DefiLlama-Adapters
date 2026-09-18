@@ -206,6 +206,7 @@ const configs = {
         '0x34eCe536d2ae03192B06c0A67030D1Faf4c0Ba43', // MEV Capital sgfEURCV
         '0x5593bf07cB1aDa24462EF23240c530441BBAd3e8', // MEV Capital sgfUSDCV
         '0x1c530D6de70c05A81bF1670157b9d928e9699089', // MEV Capital MCwBTC
+        '0x9480034D908989B006D78bDBBd7bD509c92E8bbC', // MEV CAPITAL USDC V2
       ],
       mellow: [
         '0x5fd13359ba15a84b76f7f87568309040176167cd', // Amphor Restaked ETH
@@ -292,7 +293,8 @@ const configs = {
             '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Morpho WHYPE
             '0x8e1650d3343023c527b6a6cc0c2551bb100fe22b', // Morpho UBTC
             '0x4851d4891321035729713d43be1f4bb883dffd34', // Morpho USDC
-            '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8' // Morpho USDT0
+            '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Morpho USDT0
+            '0x62BBfAA81F70DFc66Fc5e03d5DE64ceAad8473AD' // MEV Capital HYPE V2
         ]
     },
     sonic: {

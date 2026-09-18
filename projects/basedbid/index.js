@@ -13,7 +13,7 @@ const BASED_BID = {
   ethereum: '0x3cb3D9E659653de02D8e3Aecd4963Ba1Ae429682',
   bsc:      '0x920b4Ee4970CFE1ef523a0679200f9d9b2F87B2c',
   base:     '0x0F2C33F406D58144Dec03FCdb69571249F0b0286',
-  megaeth:  '0x695e175c9704432cdFB98e3C193966F95a5F119D',
+  robinhood: '0x6EC95a3C6C7b8368C9bF37Ff664672E55df3550d',
 }
 
 const USD1_ETH_BSC = ADDRESSES.bsc.USD1
@@ -39,10 +39,10 @@ const TRACKED_TOKENS = {
     ADDRESSES.base.USDT,
     ADDRESSES.base.USDC,
   ],
-  megaeth: [
+  robinhood: [
     ADDRESSES.null,
-    ADDRESSES.megaeth.ETH,
-    ADDRESSES.megaeth.USDT,
+    ADDRESSES.robinhood.WETH,
+    ADDRESSES.robinhood.USDG,
   ],
 }
 
@@ -50,7 +50,7 @@ const WRAPPED_NATIVE = {
   ethereum: ADDRESSES.ethereum.WETH,
   bsc:      ADDRESSES.bsc.WBNB,
   base:     ADDRESSES.base.WETH,
-  megaeth:  ADDRESSES.megaeth.ETH,
+  robinhood: ADDRESSES.robinhood.WETH,
 }
 
 const SOL_PROGRAM_ID = new PublicKey('CuodpYRDz4k87K6ZUFxk7X8JkVv5dNVZAcTQX2TEzTef')
@@ -59,6 +59,7 @@ const METEORA_DAMM_V2 = new PublicKey('cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1s
 const RAYDIUM_CLMM = new PublicKey('CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK')
 const SOL_USD1 = 'USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB'
 const METEORA_DEX = 1
+const SOL_EMPTY_ACCOUNT = '11111111111111111111111111111111'
 
 const TRACKED_TOKENS_SOL = [
   ADDRESSES.solana.SOL,
@@ -81,8 +82,9 @@ const UNIV3_LIKE_NFTS = {
     '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1',
     PANCAKE_V3_NFT,
   ],
-  megaeth: [
-    '0xcb91c75a6b29700756d4411495be696c4e9a576e',
+  robinhood: [
+    '0x73991a25c818bf1f1128deaab1492d45638de0d3',
+    PANCAKE_V3_NFT,
   ],
 }
 
@@ -91,6 +93,11 @@ const UNIV4_POSM = {
   ethereum: '0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e',
   bsc:      '0x7A4a5c919aE2541AeD11041A1AEeE68f1287f95b',
   base:     '0x7C5f5A4bBd8fD63184577525326123B519429bDc',
+  robinhood: '0x58daec3116aae6d93017baaea7749052e8a04fa7',
+}
+
+const UNIV4_STATE_VIEW = {
+  robinhood: '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b',
 }
 
 // PancakeSwap Infinity CL position managers (BSC + Base)
@@ -112,8 +119,13 @@ const GET_MEME_TOKEN_DATA_ABI =
   'function getMemeTokenData(address memeToken) view returns (tuple(address memeOwner, uint256 volumn, uint256 virtualReserveETH, uint256 virtualReserveToken, uint256 initialVirtualReserveETH, uint256 initialVirtualReserveToken, uint256 virtualReserveETHHardcap, uint256 virtualReserveETHSoftcap, bytes32 subBoard, bytes32 keyForXSale, uint8 package, bool isXSale, bool isListed, bool isCancelled, bool isTaxToken, uint8 _padding, tuple(address baseTokenForPair, uint256 liquidityForHardcap, uint256 liquidityForSoftcap, uint256 marketCap, uint256 maxAllocationPerUser, uint256 maxAllocationPerWhitelistedUser, bytes32 whitelistMerkleRoot, uint24 buyReferralFeePer, uint24 sellMemeTokenOwnerFeePer, uint24 buyMemeTokenOwnerFeePer, uint24 finalizeFeePer, uint24 delayTradeTime, uint40 startTime, uint40 endTime, bool isWhitelist, uint48 _padding, tuple(address routerOrPositionManager, uint256 poolId, uint24 fee, int24 tickSpacing, uint24 per, bool isLPBurn, uint8 _padding)[] dex, string metaData) initialData, tuple(uint24 buyFee, uint24 sellFee) fee, uint256 tokenVersion))'
 const GET_FLASH_TOKEN_COUNT_ABI = 'function getTokenCountForFlashLaunchV4() view returns (uint256)'
 const GET_FLASH_TOKEN_ABI = 'function getTokenForFlashLaunchV4(uint256 index) view returns (address token)'
+const V4_HOOK_DATA_TUPLE =
+  'tuple(bool hasV4Hook, tuple(uint16 liquidityFeeBps, uint16 buybackFeeBps, uint16 rewardFeeBps, address[] customWallets, uint16[] customWalletBps) hookFeeDistributionConfig, uint256 feeThreshold, address rewardToken, tuple(address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) rewardPoolKey, uint8 feeKind, uint24 staticPoolFeeBpsBuy, uint24 staticPoolFeeBpsSell, uint24 hookFeeBpsBuy, uint24 hookFeeBpsSell, tuple(uint24 minBaseFeeBpsBuy, uint24 minBaseFeeBpsSell, uint24 maxBaseFeeBpsBuy, uint24 maxBaseFeeBpsSell, uint32 baseFeeFactorBuy, uint32 baseFeeFactorSell, uint24 defaultBaseFeeBpsBuy, uint24 defaultBaseFeeBpsSell, uint32 surgeDecayPeriodSeconds, uint32 surgeMultiplierPpm, bool perSwapMode, uint32 capAutoTuneStepPpm, uint32 capAutoTuneIntervalSeconds) dynamicFeeConfig, tuple(uint16[] buyFeesBps, uint16[] sellFeesBps, uint256[] buyFeeTierAmountLevels, uint256[] sellFeeTierAmountLevels) tieredFeeConfig, uint48 protectPeriod, uint256 maxBuyPerOrigin, bool isAntiSandwich, uint32 cooldownSeconds, uint24 penaltyFeeBps, tuple(uint32 volumeIntervalSeconds, uint256[] volumeLevels, uint16[] volumeMultiplierBps) volumeConfig)'
 const GET_FLASH_POOL_DATA_ABI =
-  'function getFlashLaunchV4PoolData(address tokenAddress) view returns (tuple(address owner, bool isTokenBurn, uint8 _padding1, address baseToken, uint8 _padding2, bytes32 subBoard, string metaData, address positionManager, uint8 _padding3, uint256 poolId, address hooks, tuple(bool hasV4Hook, tuple(uint16 liquidityFeeBps, uint16 buybackFeeBps, uint16 rewardFeeBps, address[] customWallets, uint16[] customWalletBps) hookFeeDistributionConfig, uint256 feeThreshold, address rewardToken, tuple(address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) rewardPoolKey, uint8 feeKind, uint24 staticPoolFeeBpsBuy, uint24 staticPoolFeeBpsSell, uint24 hookFeeBpsBuy, uint24 hookFeeBpsSell, tuple(uint24 minBaseFeeBpsBuy, uint24 minBaseFeeBpsSell, uint24 maxBaseFeeBpsBuy, uint24 maxBaseFeeBpsSell, uint32 baseFeeFactorBuy, uint32 baseFeeFactorSell, uint24 defaultBaseFeeBpsBuy, uint24 defaultBaseFeeBpsSell, uint32 surgeDecayPeriodSeconds, uint32 surgeMultiplierPpm, bool perSwapMode, uint32 capAutoTuneStepPpm, uint32 capAutoTuneIntervalSeconds) dynamicFeeConfig, tuple(uint16[] buyFeesBps, uint16[] sellFeesBps, uint256[] buyFeeTierAmountLevels, uint256[] sellFeeTierAmountLevels) tieredFeeConfig, uint48 protectPeriod, uint256 maxBuyPerOrigin, bool isAntiSandwich, uint32 cooldownSeconds, uint24 penaltyFeeBps, tuple(uint32 volumeIntervalSeconds, uint256[] volumeLevels, uint16[] volumeMultiplierBps) volumeConfig) v4HookData))'
+  `function getFlashLaunchV4PoolData(address tokenAddress) view returns (tuple(address owner, bool isTokenBurn, uint8 _padding1, address baseToken, uint8 _padding2, bytes32 subBoard, string metaData, address positionManager, uint8 _padding3, uint256 poolId, address hooks, ${V4_HOOK_DATA_TUPLE} v4HookData))`
+const GET_LIQUIDITY_V4_LIST_ABI = 'function getLiquidityV4List() view returns (address[] tokens)'
+const GET_LIQUIDITY_V4_POOL_DATA_ABI =
+  `function getLiquidityV4Pooldata(address token) view returns (tuple(address owner, bool isTokenBurn, address baseToken, bytes32 subBoard, string metaData, address positionManager, uint256 poolId, address hooks, ${V4_HOOK_DATA_TUPLE} v4HookData, tuple(bool isWhitelist, uint256 maxBuyPerOrigin) whitelistOption) poolData)`
 
 const PCS_INFINITY_POSITIONS_ABI =
   'function positions(uint256) view returns ((address currency0, address currency1, address hooks, address poolManager, uint24 fee, bytes32 parameters) poolKey, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, address subscriber)'
@@ -224,6 +236,24 @@ async function collectV4PositionsFromContract(api) {
     })
   }
 
+  const liquidityV4Tokens = await api.call({
+    target: basedBid,
+    abi: GET_LIQUIDITY_V4_LIST_ABI,
+  }) || []
+
+  if (liquidityV4Tokens.length) {
+    const liquidityV4PoolDataList = await api.multiCall({
+      target: basedBid,
+      abi: GET_LIQUIDITY_V4_POOL_DATA_ABI,
+      calls: liquidityV4Tokens,
+      permitFailure: true,
+    })
+    liquidityV4PoolDataList.forEach((poolData) => {
+      if (!poolData) return
+      registerPosition(ctx, chain, poolData.positionManager, poolData.poolId)
+    })
+  }
+
   const verifiedUniV4ByNft = {}
   for (const [nftAddress, ids] of Object.entries(uniV4ByNft)) {
     const ownedIds = await getOwnedPositionIds(api, nftAddress, [...ids], basedBid)
@@ -244,7 +274,9 @@ async function unwrapUniV4Positions(api, uniV4ByNft) {
       uniV4ExtraConfig: {
         nftAddress,
         positionIds,
+        stateViewer: UNIV4_STATE_VIEW[api.chain],
       },
+      uniV3WhitelistedTokens: TRACKED_TOKENS[api.chain],
     })
   }
 }
@@ -281,37 +313,40 @@ async function unwrapPancakeInfinityCL(api, positionIds) {
   })
 
   const wrappedNative = WRAPPED_NATIVE[api.chain]
+  const allow = new Set(TRACKED_TOKENS[api.chain].map(lc))
+  const memeSides = new Set()
 
   validIdx.forEach((i, j) => {
     const pos = positions[i]
     const slot = slot0[j]
     if (!pos || !slot || !pos.liquidity || pos.liquidity == 0) return
 
+    const token0 = pos.poolKey.currency0 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency0
+    const token1 = pos.poolKey.currency1 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency1
+
     addUniV3LikePosition({
       api,
-      token0: pos.poolKey.currency0 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency0,
-      token1: pos.poolKey.currency1 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency1,
+      token0,
+      token1,
       liquidity: pos.liquidity,
       tickLower: Number(pos.tickLower),
       tickUpper: Number(pos.tickUpper),
       tick: Number(slot.tick),
     })
+
+    if (!allow.has(lc(token0))) memeSides.add(lc(token0))
+    if (!allow.has(lc(token1))) memeSides.add(lc(token1))
   })
+
+  memeSides.forEach((token) => api.removeTokenBalance(token))
 }
 
-async function tvl(api) {
-  const owner = BASED_BID[api.chain]
-
-  // Native coin + stablecoins held directly by based.bid.
-  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[api.chain] || [] })
-}
-
-async function pool2(api) {
+async function addEvmLpPositions(api) {
   const owner = BASED_BID[api.chain]
 
   // Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager).
   for (const nftAddress of UNIV3_LIKE_NFTS[api.chain] || []) {
-    await sumTokens2({ api, owner, uniV3ExtraConfig: { nftAddress } })
+    await sumTokens2({ api, owner, uniV3ExtraConfig: { nftAddress }, uniV3WhitelistedTokens: TRACKED_TOKENS[api.chain] })
   }
 
   // Uniswap V4 + PancakeSwap Infinity CL — position managers and tokenIds
@@ -319,6 +354,14 @@ async function pool2(api) {
   const { uniV4ByNft, pcsInfinityIds } = await collectV4PositionsFromContract(api)
   await unwrapUniV4Positions(api, uniV4ByNft)
   await unwrapPancakeInfinityCL(api, pcsInfinityIds)
+}
+
+async function tvl(api) {
+  const owner = BASED_BID[api.chain]
+
+  // Native coin + stablecoins held directly by based.bid.
+  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[api.chain] || [] })
+  await addEvmLpPositions(api)
 }
 
 function deriveMeteoraPositionPda(nftMint) {
@@ -386,6 +429,8 @@ async function addMeteoraPositions(api, lockPdas) {
   })
   if (!decodedPositions.length) return
 
+  const allow = new Set(TRACKED_TOKENS_SOL)
+
   const poolAccounts = await connection.getMultipleAccountsInfo(poolIds)
   poolAccounts.forEach((acc, i) => {
     if (!acc?.data) return
@@ -397,8 +442,10 @@ async function addMeteoraPositions(api, lockPdas) {
     const shareDen = pool.poolLiquidity
     const amountA = allocateShare(pool.tokenAAmount, shareNum, shareDen)
     const amountB = allocateShare(pool.tokenBAmount, shareNum, shareDen)
-    if (amountA > 0n) api.add(pool.tokenAMint.toBase58(), amountA.toString())
-    if (amountB > 0n) api.add(pool.tokenBMint.toBase58(), amountB.toString())
+    const mintA = pool.tokenAMint.toBase58()
+    const mintB = pool.tokenBMint.toBase58()
+    if (amountA > 0n && allow.has(mintA)) api.add(mintA, amountA.toString())
+    if (amountB > 0n && allow.has(mintB)) api.add(mintB, amountB.toString())
   })
 }
 
@@ -441,19 +488,28 @@ async function addRaydiumClmmPositions(api, lockPdas) {
     })
   }
 
+  const allow = new Set(TRACKED_TOKENS_SOL)
+  const memeMints = new Set()
+
   positions.forEach((position) => {
     const poolInfo = pools.get(position.poolId.toBase58())
     if (!poolInfo) return
+    const token0 = poolInfo.mintA.toBase58()
+    const token1 = poolInfo.mintB.toBase58()
     addUniV3LikePosition({
       api,
-      token0: poolInfo.mintA.toBase58(),
-      token1: poolInfo.mintB.toBase58(),
+      token0,
+      token1,
       liquidity: position.liquidity.toNumber(),
       tickLower: position.tickLower,
       tickUpper: position.tickUpper,
       tick: poolInfo.tickCurrent,
     })
+    if (!allow.has(token0)) memeMints.add(token0)
+    if (!allow.has(token1)) memeMints.add(token1)
   })
+
+  memeMints.forEach((mint) => api.removeTokenBalance(mint))
 }
 
 async function addTreasuryLockBalances(api, treasury, lock) {
@@ -485,6 +541,7 @@ function addBondingCurveReserves(api, memeTokens) {
     if (raised <= 0n) return
 
     const baseMint = account.initialData.baseTokenForPair.toBase58()
+    if (baseMint === SOL_EMPTY_ACCOUNT) return
     api.add(baseMint, raised.toString())
   })
 }
@@ -500,13 +557,8 @@ async function solanaTvl(api) {
 
   await addTreasuryLockBalances(api, appStorage.treasury, appStorage.lock)
   addBondingCurveReserves(api, memeTokens)
-}
 
-async function solanaPool2(api) {
-  const provider = getProvider()
-  const program = new Program(idl, SOL_PROGRAM_ID, provider)
   const lockPdas = await program.account.lockPda.all()
-
   await addMeteoraPositions(api, lockPdas)
   await addRaydiumClmmPositions(api, lockPdas)
 }
@@ -514,10 +566,11 @@ async function solanaPool2(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: 'TVL: (1) native coin and USDT/USDC/USD1/wrapped-native balances at the based.bid contract (EVM) or treasury/lock accounts (Solana), plus (2) active bonding-curve collateral on Solana. pool2: meme coin/native Uniswap V3, Uniswap V4, PancakeSwap V3, and PancakeSwap Infinity CL positions owned by based.bid (EVM), plus Meteora DAMM v2 and Raydium CLMM positions controlled by based.bid lock PDAs (Solana).',
-  ethereum: { tvl, pool2 },
-  bsc:      { tvl, pool2 },
-  base:     { tvl, pool2 },
-  megaeth:  { tvl, pool2 },
-  solana:   { tvl: solanaTvl, pool2: solanaPool2 },
+  methodology: 'TVL includes (1) native coin and USDT/USDC/USD1/wrapped-native balances at the based.bid contract (EVM) or treasury/lock accounts (Solana), (2) active bonding-curve collateral on Solana, and (3) LP positions: Uniswap V3, Uniswap V4, PancakeSwap V3, and PancakeSwap Infinity CL positions owned by based.bid (EVM), plus Meteora DAMM v2 and Raydium CLMM positions controlled by based.bid lock PDAs (Solana).',
+  ethereum: { tvl },
+  bsc:      { tvl },
+  base:     { tvl },
+  robinhood: { tvl },
+  megaeth: { tvl: () => ({}) },
+  solana:   { tvl: solanaTvl },
 }

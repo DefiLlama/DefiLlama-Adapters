@@ -2,13 +2,13 @@
 // https://playground.open-rpc.org/?uiSchema%5BappBar%5D%5Bui:splitView%5D=false&schemaUrl=https://raw.githubusercontent.com/starkware-libs/starknet-specs/master/api/starknet_api_openrpc.json&uiSchema%5BappBar%5D%5Bui:input%5D=false&uiSchema%5BappBar%5D%5Bui:darkMode%5D=true&uiSchema%5BappBar%5D%5Bui:examplesDropdown%5D=false
 // https://docs.alchemy.com/reference/starknet-getevents
 const { getUniqueAddresses } = require('../tokenMapping')
-const { Contract, validateAndParseAddress, number, hash, CallData } = require('starknet')
+const { validateAndParseAddress, number, getSelectorFromName, encodeCalldata, decodeOutput } = require('../utils/starknet')
 const abi = require('../../10kswap/abi')
 const axios = require('axios')
 const plimit = require('p-limit')
 const { sliceIntoChunks, sleep } = require('../utils')
 const { getUniTVL } = require('../cache/uniswap')
-const { getCache } = require('../cache')
+const { getCache, setCache } = require('../cache')
 const { getEnv } = require('../env')
 const ADDRESSES = require('../coreAssets.json')
 
@@ -29,21 +29,16 @@ const AGGREGATE_CHUNK_SIZE = 50
 function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   if ((params || params === 0) && !Array.isArray(params))
     params = [params]
-  const contract = new Contract([abi, ...allAbi,], target, null)
-  const requestData = contract.populate(abi.name, params)
-  requestData.entry_point_selector = hash.getSelectorFromName(requestData.entrypoint)
-  requestData.contract_address = requestData.contractAddress
-  delete requestData.contractAddress
-  delete requestData.entrypoint
-  if (abi.customInput === 'address') requestData.calldata = params
+  // customInput === 'address': params are passed through as raw felts
+  let calldata = abi.customInput === 'address' ? params : encodeCalldata(abi, params, allAbi)
   // Starknet RPC now (2026-06-11) rejects calldata felts without a 0x prefix.
-  // `populate` emits decimal strings (e.g. "0"), so normalize every felt to hex.
-  requestData.calldata = requestData.calldata.map(i => number.toHex(i))
-  return getCallBody(requestData, id)
-
-  function getCallBody(i) {
-    return { jsonrpc: "2.0", id, method: "starknet_call", params: [i, "latest"] }
+  calldata = calldata.map(i => number.toHex(i))
+  const requestData = {
+    contract_address: target.toLowerCase(),
+    entry_point_selector: getSelectorFromName(abi.name),
+    calldata,
   }
+  return { jsonrpc: "2.0", id, method: "starknet_call", params: [requestData, "latest"] }
 }
 
 function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj = {} } = {}) {
@@ -53,7 +48,7 @@ function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj =
     throw new Error(`Starknet call failed: ${errorMessage}`)
   }
 
-  let response = new CallData([abi, ...allAbi]).parse(abi.name, result)
+  let response = decodeOutput(abi, result, allAbi)
   // convert BigInt to string
   for (const key in response) {
     if (typeof response[key] === 'bigint') response[key] = response[key].toString()
@@ -114,7 +109,7 @@ async function aggregateMultiCall({ calls, rootAbi, allAbi }) {
       aggCalldata.push(number.toHex(body.calldata.length))
       body.calldata.forEach((d) => aggCalldata.push(d))
     })
-    const aggSelector = hash.getSelectorFromName('aggregate')
+    const aggSelector = getSelectorFromName('aggregate')
     const reqBody = {
       jsonrpc: '2.0', id: 0, method: 'starknet_call',
       params: [{ contract_address: MULTICALL_AGGREGATOR, entry_point_selector: aggSelector, calldata: aggCalldata }, 'latest'],
@@ -234,6 +229,78 @@ function dexExport({ factory, abis = {}, fetchBalances = false }) {
   return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(api, undefined, undefined, { api, })
 }
 
+async function rpc(method, params = []) {
+  const { data } = await axios.post(STARKNET_RPC, { jsonrpc: '2.0', id: 1, method, params })
+  if (data.error) throw new Error(`Starknet ${method} failed: ${data.error.data?.revert_error ?? data.error.message}`)
+  return data.result
+}
+
+async function getBlockNumber() {
+  return rpc('starknet_blockNumber')
+}
+
+const LOGS_CACHE_FOLDER = 'starknet-logs'
+
+/**
+ * Fetch events emitted by a contract via starknet_getEvents, with an incremental cache:
+ * blocks that were already scanned are never pulled again, only [cache.toBlock + 1, latest].
+ *
+ * @param {string}   target      contract address
+ * @param {number}   fromBlock   deployment block (scan start on first run)
+ * @param {string[]} topics      event selectors (any of them) - shorthand for keys: [topics]
+ * @param {string[][]} keys      raw starknet_getEvents keys filter (positional, each an OR list)
+ * @param {string}   extraKey    extra cache-key segment (when the same target is queried with different filters)
+ * @param {boolean}  skipCache   don't read/write the cache
+ * @param {number}   chunkSize   page size for starknet_getEvents (providers cap this, 1000 is widely accepted)
+ * @returns raw events: { block_number, transaction_hash, from_address, keys, data }
+ */
+async function getLogs({ target, fromBlock, topics, keys, extraKey, skipCache = false, chunkSize = 1000 }) {
+  if (!target) throw new Error('Missing target!')
+  if (!fromBlock) throw new Error('Missing fromBlock!')
+  if (!keys && topics) keys = [topics]
+  keys = (keys ?? []).map(k => (Array.isArray(k) ? k : [k]).map(i => number.toHex(i)))
+  target = target.toLowerCase()
+
+  const keySegment = keys.flat().map(i => i.slice(2, 10)).join('_')
+  const cacheKey = [target, keySegment, extraKey].filter(Boolean).join('-')
+
+  let cache = skipCache ? {} : await getCache(LOGS_CACHE_FOLDER, cacheKey)
+  if (!cache.logs || cache.fromBlock > fromBlock) cache = { logs: [], fromBlock }
+
+  const toBlock = await getBlockNumber()
+  const start = cache.toBlock ? cache.toBlock + 1 : fromBlock
+  if (start > toBlock) return cache.logs
+
+  const filter = {
+    from_block: { block_number: start },
+    to_block: { block_number: toBlock },
+    address: target,
+    keys,
+    chunk_size: chunkSize,
+  }
+  let continuationToken
+  do {
+    if (continuationToken) filter.continuation_token = continuationToken
+    else delete filter.continuation_token
+    const page = await rpc('starknet_getEvents', [filter])
+    cache.logs.push(...page.events)
+    continuationToken = page.continuation_token
+  } while (continuationToken)
+
+  // defensive dedupe (Starknet events carry no log index)
+  const seen = new Set()
+  cache.logs = cache.logs.filter(i => {
+    const id = `${i.transaction_hash}|${i.from_address}|${(i.keys ?? []).join(',')}|${(i.data ?? []).join(',')}`
+    if (seen.has(id)) return false
+    seen.add(id)
+    return true
+  })
+  cache.toBlock = toBlock
+
+  if (!skipCache) await setCache(LOGS_CACHE_FOLDER, cacheKey, cache)
+  return cache.logs
+}
+
 module.exports = {
   call: rateLimited(call),
   multiCall: rateLimited(multiCall),
@@ -241,24 +308,9 @@ module.exports = {
   sumTokens: rateLimited(sumTokens),
   number,
   dexExport,
-}
-
-// WIP
-async function getLogs({ fromBlock, topic, target }) {
-  const cache = await getCache('starknet-logs', topic)
-  fromBlock = cache.toBlock || fromBlock
-  const { data: { result: to_block } } = await axios.post(STARKNET_RPC, { "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
-  const params = {
-    filter: {
-      from_block: fromBlock,
-      to_block,
-      keys: [topic],
-      "address": target,
-    }
-  }
-
-  const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
-  const { data } = await axios.post(STARKNET_RPC, body)
+  rpc,
+  getBlockNumber,
+  getLogs: rateLimited(getLogs),
 }
 
 api.call = module.exports.call

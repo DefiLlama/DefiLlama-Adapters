@@ -31,7 +31,7 @@ module.exports = {
   },
   "bulk-trade": {
     "timetravel": false,
-    "methodology": "Counts USDC deposited into the Bulk Trade Season 1 pre-deposits.",
+    "methodology": "Counts USDC held in BULK's Solana mainnet custody vault, which backs collateral deposited for trading and margin.",
     "solana": { "tokenAccounts": ["HwdwwKH1tMXo7ggTKcA5cdQrpcgqSoVib2eQh3BiyEQL"] }
   },
   "stakenova": {
@@ -51,17 +51,6 @@ module.exports = {
         "H1YCpzUXcoYFnek3Qc8VtekAe4gDTDNZZDVLwYuC9J1C", // LP Vault
         "BFm4z6Z2H84GrpcKkydmE1qZVidwuj2sP3N3wTNZemJt", // Fee Vault
         "266CZZpRb1PFDGQf4bNE5ASPVxAUkon6tv6BvRYpP7x9" // Insurance Fund
-      ]
-    }
-  },
-  "hylo": {
-    "timetravel": false,
-    "doublecounted": true,
-    "methodology": "TVL is calculated by summing all LSTs locked in Hylo protocol.",
-    "solana": {
-      "tokenAccounts": [
-        "2Y3TLkdGoJwbdizxqrZmQwNLYJyGKTgzC4tbetbkvQ43", // jitoSOL
-        "7VNBQCDKt4cxLWW51suV8a6VAYC4R66CfyySiYJek7Rj" // hyloSOL
       ]
     }
   },
@@ -122,7 +111,8 @@ module.exports = {
       "tvl": {
         "tokenAccounts": [
           "CRFtzwkekKorgdTRSdvsYeqL1vEuVvwGRvweuWCyaRt3", // jitoSOL @ kySOL Vault
-          "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd" // JTO @ kyJTO Vault
+          "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd", // JTO @ kyJTO Vault
+          "HmozbbPg927xtj6Z4oMUBUBSGKA2fDRmUFqWfJFEidbC" // kySOL @ Drip
         ]
       },
       "staking": {
@@ -729,5 +719,47 @@ module.exports = {
   "pascal": {
     "methodology": "TVL is the USDC collateral held in Pascal's vault token account on Solana.",
     "solana": { "tokenAccounts": ["5vRGRcwN4iYaiQdso1vgWbTDFYbS8GQNUDRMMKE2ycZS"] }
+  },
+  "n1-exchange-bridge": {
+    "methodology": "Counts the USDC held in the N1 Exchange bridge custody wallet on Solana.",
+    "solana": {
+      "owners": ["2ds4b3zrkgZ9FU8vNBSpT1UzACnmfYtjGsazPRzsbCCz"],
+      "tokens": [ADDRESSES.solana.USDC]
+    }
+  },
+  "satrush": {
+    "timetravel": false,
+    "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault. Staking counts RUSH received from mining held in the Rush Vault and RUSH staked in the SatRush staking program.",
+    "solana": {
+      "tvl": {
+        "tokenAccounts": [
+          "2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9", // Sats Vault cbBTC
+        ]
+      },
+      "staking": {
+        "tokenAccounts": [
+          "G9iBFqhbu3rPCtTEnHzZmn8UDqy3t5d7VLqbnU8faYdT", // Rush Vault RUSH
+          "7c3iepAJkw8MRF6Rm5LyxB1Vbkxgq4EAAkGy7LNQtFfV", // Staking treasury staked RUSH
+        ]
+      }
+    }
+  },
+  "tessera-v": {
+    "methodology": "TVL is the value of SPL and Token-2022 balances held in Tessera V vaults controlled by its Solana authority account.",
+    "solana": {
+      "owner": "8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF"
+    }
+  },
+  "arcpad": {
+    // every launch opens a Uniswap V3 token/USDC pool (1% tier) and the LP NFT is locked forever in ArcFeeLocker
+    // https://arcpad.meme/docs#contracts
+    "methodology": "USDC held in the locked Uniswap V3 launch positions owned by the ArcPad fee locker",
+    "doublecounted": true, // already counted as uniswap v3 tvl
+    "start": "2026-09-03", // first launch position locked, block 19015290
+    "arc": {
+      "owners": ["0x69A615DD32B89fE40D87b2e3123baE4162f2d450"],
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.arc.USDC],
+    }
   },
 }

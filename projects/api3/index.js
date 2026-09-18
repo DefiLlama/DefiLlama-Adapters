@@ -7,6 +7,11 @@ const api3CirculatingSupply = "0xcD34bC5B03C954268d27c9Bc165a623c318bD0a8"
 
 const configs = {
   blockchains: {
+    base: {
+      morphoVaultOwners: [
+        '0x9f0566F2E8Ff51901DD0C0E7aad937A94931f75C'
+      ]
+    },
     ethereum: {
       morphoVaultOwners: [
         '0x9f0566F2E8Ff51901DD0C0E7aad937A94931f75C',

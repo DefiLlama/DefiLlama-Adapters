@@ -6,7 +6,7 @@ const ERC20_MANAGER = '0x16fCff97822fcf3345Fa76D29c229b11C49EaE12';
 
 const VARA_RPC = 'https://rpc.vara.network'
 const WVARA_VFT = '0x29c42c668012b1ce20720e4615229215023281ef4676fdc77bf047d7fbcb9d17'
-const VFT_MANAGER = '0xe01ddc667f80cf57704352b557668b710c345395abcac0752c01402d16e3e81b'
+const VFT_MANAGER = '0xc97d76b9aa85ca7738ac2b9eb30756edb985abd93a65834438e751bd0a5237af'
 const GAS_LIMIT = 750000000000
 
 // SCALE-encode a string: https://github.com/paritytech/parity-scale-codec

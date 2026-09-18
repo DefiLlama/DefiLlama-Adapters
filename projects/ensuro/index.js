@@ -42,6 +42,7 @@ const addressBook = {
       "0x56bfa6f53669B836D1E0Dfa5e99706b12c373ecf", // skymoney-usdc-risk-capital - V2 vault
       "0x8c106EEDAd96553e64287A5A6839c3Cc78afA3D0", // gauntlet-usdc-prime - V2 vault
     ],
+    ipor_fusion_vault: "0xdCD8Cb1E2Ba62fAEF6c4C258508D7D959E5F3408", // https://app.ipor.io/fusion/ethereum/0xdcd8cb1e2ba62faef6c4c258508d7d959e5f3408
     msv: "0x55bAe6690d46EA94D7F05DF7c80A85E322421fB6", // MultiStrategyVault (holds tokens besides usdc)
     reserves: [
       // eTokens
@@ -88,6 +89,9 @@ async function tvl(api) {
   // Also Morpho vaults
   for (const vault of addresses.morpho_vaults) {
     await unwrap4626Tokens({api, tokensAndOwners: [[normalize(vault), normalize(addresses.msv)]] });
+  }
+  if (addresses.ipor_fusion_vault !== undefined) {
+    await unwrap4626Tokens({api, tokensAndOwners: [[normalize(addresses.ipor_fusion_vault), normalize(addresses.msv)]] });
   }
   return sumTokens2({ api, ownerTokens});
 }

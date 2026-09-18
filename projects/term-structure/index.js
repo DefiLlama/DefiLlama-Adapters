@@ -358,12 +358,24 @@ const ADDRESSES = {
         address: "0x03c4FCF963E5FBC0dC5851d2340624E70492acb9",
         fromBlock: 21550658,
       },
+      // Start of TermMax Alpha
+      {
+        address: "0xF8F8D8E6f139841a30C8C3d6A2F656f195755Ceb",
+        fromBlock: 25939853,
+      },
+      // End of TermMax Alpha
     ],
     VaultFactoryV2: [
       {
         address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
         fromBlock: 21550718,
       },
+      // Start of TermMax Alpha
+      {
+        address: "0x1C2a752db503b7E447114ff0C61802F19D8f765B",
+        fromBlock: 25939844,
+      },
+      // End of TermMax Alpha
     ],
     TermMax4626Factory: [
       { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 21550753 },

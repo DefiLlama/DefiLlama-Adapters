@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const { multiCall } = require('../helper/chain/starknet')
 
 const API_URL = 'https://api.starknet.extended.exchange/api/v1'
@@ -14,7 +15,7 @@ const decimalsAbi = {
 }
 
 async function tvl(api) {
-  const { data: markets } = await get(`${API_URL}/info/markets`)
+  const { data: markets } = await getConfig('extended-spot-orderbook', `${API_URL}/info/markets`)
   const spotMarkets = markets.filter(m => m.type === 'SPOT' && m.active && m.status === 'ACTIVE')
 
   const tokens = spotMarkets.map(m => m.l2Config.syntheticId)

@@ -1,5 +1,4 @@
 async function tvl(api) {
-  const block = await api.getBlock();
   const chainId = api.chainId;
 
   // Endpoint returns data calculated by these two packages:
@@ -8,11 +7,13 @@ async function tvl(api) {
   // 2. https://github.com/defisaver/defisaver-positions-sdk/
   //
   // By getting subscription data from the first package you can calculate balances for each position using `get${protocol_name_here}AccountBalances` method from the second package
-
-  const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=${block - 10000}`);
+  //
+  // The DefiSaver indexer can fall days behind the chain head and returns 404 for any block it
+  // hasn't indexed yet, so we ask for its latest indexed snapshot instead of a specific block
+  const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=latest`);
   const data = await response.json();
 
-  if (response.status !== 200)
+  if (response.status !== 200 || !data.balances)
     throw new Error(data.message || 'Error not handled');
 
   Object.entries(data.balances).forEach(([token, balance]) => {
@@ -22,7 +23,7 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
-  timetravel: false, // because we do block - 10k, remove that to refill
+  timetravel: false, // the API only serves its latest indexed snapshot
   methodology: 'TVL accounts for all assets deposited into the automated strategies.',
   ethereum: { tvl },
   arbitrum: { tvl },

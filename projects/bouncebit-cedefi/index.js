@@ -272,7 +272,7 @@ const V2_GATEWAY = {
       ADDRESSES.bsc.USDT,
       '0x570a5d26f7765ecb712c0924e4de545b89fd43df', // SOL (Wormhole)
       ADDRESSES.bsc.BTCB,
-      '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', // USD1
+      ADDRESSES.bsc.USD1, // USD1
       NATIVE,
     ],
   },

@@ -27,6 +27,10 @@ const helpers = {
   "bitcoin": require("./chain/bitcoin"),
   "litecoin": require("./chain/litecoin"),
   "dash": require("./chain/dash"),
+  "kaspa": require("./chain/kaspa"),
+  "bsv": require("./chain/bsv"),
+  "arweave": require("./chain/arweave"),
+  "pi": require("./chain/pi"),
   "polkadot": require("./chain/polkadot"),
   "acala": require("./chain/acala"),
   "bifrost": require("./chain/bifrost"),
@@ -152,8 +156,14 @@ async function sumTokens(options) {
   }
 
   const geckoId = geckoMapping[chain]
+  if (api) balances = api.getBalances() // write native + token balances into the same object
   const balanceArray = await Promise.all(owners.map(i => getBalance(chain, i)))
   sdk.util.sumSingleBalance(balances, geckoId, balanceArray.reduce((a, i) => a + +i, 0))
+  // issued currencies (trustlines) - counted only when a whitelist is passed
+  const rippleTokens = chain === 'ripple' ? tokens.filter(t => t !== nullAddress) : []
+  if (api && rippleTokens.length)
+    for (const owner of owners)
+      await addRippleTokenBalance({ account: owner, api, whitelistedTokens: rippleTokens })
   return balances
 
   function getUniqueToA(toa, chain) {
@@ -171,10 +181,34 @@ const rippleApiWithLimiter = (fn, tokensToRemove = 1) => async (...args) => {
 
 const getRippleBalance = rippleApiWithLimiter(_getRippleBalance)
 
+// public XRPL JSON-RPC nodes that answer bursts without throttling (xrpl.ws / xrpl.link 429 after a few calls).
+// each call starts from a random node and rotates on failure ("tooBusy", "slowDown", 429) so load is spread
+const rippleEndpoints = ['https://s1.ripple.com:51234', 'https://s2.ripple.com:51234', 'https://xrplcluster.com']
+
+async function ripplePost(body, { retries = rippleEndpoints.length * 2 } = {}) {
+  let lastError
+  const start = Math.floor(Math.random() * rippleEndpoints.length)
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const url = rippleEndpoints[(start + attempt) % rippleEndpoints.length]
+    try {
+      const res = await post(url, body)
+      const error = res?.result?.error
+      if (!res?.result || (error && !['actNotFound', 'actMalformed'].includes(error))) {
+        throw new Error(`xrpl ${url} returned ${error ?? 'no result'}: ${res?.result?.error_message ?? ''}`)
+      }
+      return res
+    } catch (e) {
+      lastError = e
+      await sleep(1000 * (attempt + 1))
+    }
+  }
+  throw lastError
+}
+
 async function _getRippleBalance(account) {
-  const body = { "method": "account_info", "params": [{ account }] }
+  const body = { "method": "account_info", "params": [{ account, ledger_index: 'validated' }] }
   await sleep(500);
-  const res = await post('https://s1.ripple.com:51234', body)
+  const res = await ripplePost(body)
   if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return 0
   return res.result.account_data.Balance / 1e6
 }
@@ -191,8 +225,8 @@ async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
     }]
   }
   await sleep(500);
-  const res = await post('https://s1.ripple.com:51234', body)
-  if (res.result.error === 'actNotFound') return {}
+  const res = await ripplePost(body)
+  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return {}
 
 
   // Add token balances
@@ -200,11 +234,18 @@ async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
     res.result.lines.forEach(line => {
       const tokenKey = `${line.currency}.${line.account}`
       if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
-      api.add(tokenKey, parseFloat(line.balance))
+      // account_lines amounts are human-readable; scale tokens whose coins-server entry expects raw units
+      const decimals = rippleTokenDecimals[tokenKey.toLowerCase()] ?? 0
+      api.add(tokenKey, parseFloat(line.balance) * 10 ** decimals)
     })
   }
 
   return api.getBalances()
+}
+
+// coins-server decimals for issued currencies that aren't stored as 0
+const rippleTokenDecimals = {
+  '524c555344000000000000000000000000000000.rmxckbedwqr76quhesumdegf4b9xj8m5de': 6, // RLUSD
 }
 
 module.exports = {
