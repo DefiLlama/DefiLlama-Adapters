@@ -18,6 +18,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the quote currency (ETH or an approved ERC20) held by the bonding curve of every token launched through the Tsunami factory on Ink. A curve that graduates forwards its raise into a Calamari v4 pool, so it stops being counted here.',
-  start: 1788184430,
+  start: '2026-08-31',
   ink: { tvl },
 }
