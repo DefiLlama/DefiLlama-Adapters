@@ -111,6 +111,7 @@ const configs = {
     katana: {
       morphoVaultOwners: [
         '0x5D8C96b76A342c640d9605187daB780f8365F69f',
+        '0x66200a81fC7e131C7cf04b3FF02a06aFbf544358', // Morpho V2 USDT
       ],
     },
     tempo: {

@@ -15,6 +15,12 @@ const config = {
       fromBlock: 324144504
     },
   },
+  arc: {
+    optinProxyFactory: {
+      address: "0xf185b0083fd2446d3742FE3f4C3175B7e306752b",
+      fromBlock: 20837440
+    },
+  },
   avax: {
     optinProxyFactory: {
       address: "0xC094C224ce0406BC338E00837B96aD2e265F7287",
@@ -150,6 +156,12 @@ const config = {
     optinProxyFactory: {
       address: "0xfa032de1214fd89b465c306bf46f778318bde357",
       fromBlock: 960000
+    },
+  },
+  robinhood: {
+    optinProxyFactory: {
+      address: "0x1e17e7848b2f56f75b16550471f455071a9f955f",
+      fromBlock: 54200817
     },
   },
   sonic: {

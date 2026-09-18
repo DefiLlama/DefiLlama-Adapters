@@ -75,17 +75,18 @@ async function getV2Reserves(api, addressesProviderRegistry, dataHelperAddress, 
 
   const aTokenMarketData = await api.multiCall({ calls: validProtocolDataHelpers, abi: abis.getAllATokens || abi["getAllATokens"], })
 
-  let aTokenAddresses = [];
-  aTokenMarketData.map((aTokensData) => {
-    aTokenAddresses = [
-      ...aTokenAddresses,
-      ...aTokensData.map((aToken) => aToken[1]),
-    ];
+  const aTokenAddresses = [];
+  const reserveHelpers = []; // data helper each aToken/reserve belongs to
+  aTokenMarketData.forEach((aTokensData, i) => {
+    aTokensData.forEach((aToken) => {
+      aTokenAddresses.push(aToken[1])
+      reserveHelpers.push(validProtocolDataHelpers[i])
+    })
   });
 
   const underlyingAddressesData = await api.multiCall({ calls: aTokenAddresses, abi: abi["getUnderlying"], })
   const reserveAddresses = underlyingAddressesData
-  return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0]]
+  return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0], undefined, reserveHelpers]
 }
 
 async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress) {
@@ -102,7 +103,7 @@ async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transf
   sdk.util.sumMultiBalanceOf(balances, balanceOfUnderlying, true, transformAddress)
 }
 
-async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3 = false, { borrowedAmounts } = {}) {
+async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3 = false, { borrowedAmounts, reserveHelpers } = {}) {
   if (!transformAddress) transformAddress = id => id
   if (borrowedAmounts) {
     borrowedAmounts.forEach((amount, idx) => {
@@ -111,8 +112,9 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
     return balances
   }
   const reserveData = await sdk.api.abi.multiCall({
-    calls: v2ReserveTokens.map((token) => ({
-      target: dataHelper,
+    // each reserve is queried on the data helper of its own market
+    calls: v2ReserveTokens.map((token, i) => ({
+      target: reserveHelpers?.[i] ?? dataHelper,
       params: [token],
     })),
     abi: v3 ? abi.getTotalDebt : abi.getHelperReserveData,
@@ -131,9 +133,9 @@ function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, da
     const chain = api.chain
     const block = api.block
     const balances = {}
-    const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, } = await getData({ api, oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, v3, })
+    const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, reserveHelpers, } = await getData({ api, oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, v3, })
     if (borrowed) {
-      await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3, { borrowedAmounts, });
+      await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3, { borrowedAmounts, reserveHelpers, });
     } else {
       await getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress);
     }
@@ -175,7 +177,7 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
 
   const transformAddress = transformAddressRaw || getChainTransform(chain)
   const fixBalances = getFixBalances(chain)
-  const [v2Atokens, v2ReserveTokens, dataHelper, borrowedAmounts,] = await getV2Reserves(api, addressesProviderRegistry, dataHelperAddresses, { abis, v3, })
+  const [v2Atokens, v2ReserveTokens, dataHelper, borrowedAmounts, reserveHelpers,] = await getV2Reserves(api, addressesProviderRegistry, dataHelperAddresses, { abis, v3, })
   let updateBalances
 
   if (oracle) {
@@ -200,7 +202,7 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
     }
   }
 
-  return { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, }
+  return { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, reserveHelpers, }
 }
 
 const oracleAbis = {

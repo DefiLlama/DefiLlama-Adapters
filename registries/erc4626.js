@@ -326,6 +326,17 @@ const configs = {
   'protectorate': {
     ethereum: ['0xaF53431488E871D103baA0280b6360998F0F9926'],
   },
+  'the-722-capital': {
+  doublecounted: true,
+  methodology: 'TVL is the sum of asset()-denominated totalAssets() reported on-chain by the two public 722 Capital Lagoon vaults on Base.',
+  base: [
+    '0xfce2064b4221c54651b21c868064a23695e78f09', // 722Capital-ETH
+    '0xb09f761cb13baca8ec087ac476647361b6314f98', // 722Capital-USDC
+  ],
+  hyperliquid: [
+    '0x7dD73A986F6188da1bAaf68541FD6EBd455ABd1D', // 722 Capital Hype
+  ]
+},
   'hlp0': {
     methodology: "TVL is calculated by summing the total assets of the HLP0 vault on Arbitrum. The HLP0 token is a LayerZero OFT, but the underlying assets are held in the Arbitrum vault.",
     arbitrum: ['0x3D75F2BB8aBcDBd1e27443cB5CBCE8A668046C81'],
@@ -398,13 +409,15 @@ const configs = {
   },
   'ammalgam-vaults': {
     methodology: 'Counts the reported total assets of the Ammalgam USDC and WETH ERC-4626 vaults.',
+    doublecounted: true,
     ethereum: [
       '0x8417430a31851ae0a36a854394227c5d86be8fc9', // USDC
       '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH
     ],
   },
   'aihedge': {
-    ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400']
+    ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400'],
+    base: ['0x100F0aC3be2c93c76b2ee1B8cA98d8928cDC0871'],
   },
   'secured-finance-vaults': {
     ethereum: ['0x7a6E3635694952dC00F6bA4d4AD1a7B892028789']
@@ -461,6 +474,58 @@ const configs = {
     methodology: "TVL is the net asset value of the Syntetika strategy vaults, read on-chain as totalAssets() - the outstanding supply of vault share tokens valued at the independently attested NAV per share - and denominated in the vault deposit asset (cbBTC).",
     doublecounted: true,
     base: ["0x9C2dCDbDB3F0A0F628D1112bBCABD9AE75353df3"]
+  },
+  'fija-finance': {
+    start: '2023-10-02',
+    doublecounted: true,
+    misrepresentedTokens: true,
+    methodology: 'TVL is the sum of totalAssets() across fija Finance terminal strategy contracts on Ethereum and Arbitrum. User-facing vaults and intermediate wrapper strategies are excluded because multiple vaults can route into the same terminal strategy. Each strategy is reported in its accounting asset. These assets are deployed into external protocols including Curve, Convex, Aave, GMX, and Morpho, so this TVL is double-counted with those protocols.',
+    ethereum: [
+      '0x833225309dA2267d637CC05788ad5E3B113e698E',
+      '0xCF8EafC3b1d92801238faAdC22D2a7B83FB96C10',
+      '0xf0B8904b2C1C122e47a5CCD6898feD7301282beB',
+      '0x6155C331Aa73a9872B22871EB6D7516c6Fb52a69',
+      '0x13acF63100DAB1935f698B7B08eAa311ce1dCAeA',
+      '0x6EF41Dea92e3be6a5F3D5303F5eA0eF62382d2A6',
+      '0x49A991e33B80d6c5F727242C778DbFeb606b6259',
+    ],
+    arbitrum: [
+      '0xea7aaf1713348be6f3556d4b94a44ddff20f9e4b',
+      '0x3163a647ff4c819b6286d2dbc8405a124c93eba6',
+      '0x645c2712fda24a41ed61064054429e00cb4293bb',
+      '0x3b1ef6cca0672bb08df2c817b37dca22a69b005f',
+      '0x748c04f19b35e1a7f3e01c5ca4a7cdc0e5652c37',
+      '0x187478fcfe9ffd22b1a00d81d59e7b58042ef384',
+      '0xb3881520f0ff13ddf910ad91d35d5c0a1c3d7e38',
+      '0xadbb6ec1d07b0e9708451fd657e7812327ec6501',
+      '0xaa38b9475d7a9ea7a2a2bada7e41d56c5db132b8',
+      '0x0eca3aa20cd8179968ed259d579241aa7d56f153',
+      '0xaad007b3e4fb25c73fa05b160f756e3ea7f41c40',
+      '0x96cf061342bf05a32f7086a3f9837231feec36af',
+      '0x87cab1a26f2e9d834be36311dd17619596c4c580',
+      '0x0ce1b4a31a5e60ca7fb26658388a54b1cf8f908d',
+      '0x864fa4246254ea9136507426022c067eb6ec0f0d',
+      '0x4581124613f145d6f3f07e7acfd46eaca97ca205',
+      '0x8c2bb72f96df793a361cfd9fdec03e7dc020b59f',
+      '0x5b933af326575bf39e00d0dfd272e3ef84fddbee',
+      '0x78b01ff3bc9d2393dbfc880e3e50ec6e39c5fd56',
+      '0xa43a52c0c7179ccdd52216999b240ca371bfaf18',
+      '0x547b8ae8faacbe4077420b0fd94813c58b800462',
+      '0xc8b7753b1e6307caec24938b319b3b03f2804579',
+      '0xd77e220612f92f493172e23654b502d7f1f6b5c6',
+      '0xf1d4847110aff666fd6c870341d3ecefe143838a',
+      '0x7d71f0849a180a192dd2014230ce07c6635805b1',
+    ],
+  },
+  'southpole': {
+    methodology: "TVL counts the USDC deposited into the SouthPole USDC vault (a standard ERC-4626 vault) on Arbitrum.",
+    arbitrum: ['0xeA59d9343FF0d70470DD6709cfCD5Bc735d9aDBC']
+  },
+  'otomate': {
+    start: '2026-03-12',
+    doublecounted: true,
+    methodology: "Underlying assets in Otomate ERC-4626 vaults on Ink, measured with totalAssets net of accrued protocol fees. Assets are supplied to Tydro and already included in Tydro TVL.",
+    ink: ['0x919C57BF59484798Ff2f90018640fd0A08242aC2', '0x2baA4C3f66Fa6f0c2d56242BaAE446a4De878B98', '0xcc7DcF43b17D8EdC437a6e33a6A325C57eba1ED7', '0x59046e5a0cbb5b64981b4668a31ab3a5ed0e7dd0']
   }
 }
 

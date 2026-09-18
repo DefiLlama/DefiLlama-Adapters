@@ -22,8 +22,13 @@ const IGNORED = new Set([
   '0x7C10a3b7EcD42dd7D79C0b9d58dDB812f92B574A' // DogeShrek rebranded to ChewySwap and was listed again; we cant fix by backfilling since dogechain's RPC fails on the necessary historical queries
 ].map(a => a.toLowerCase()));
 
-// e.g. { 'some-cex': ['0xabc...'], ... }
+// ignore specific addresses shared between adapters e.g. { 'some-cex': ['0xabc...'], ... }
 const IGNORED_OWNERS = {};
+
+// ignores entire adapter conflicts for protocols with many duplicates
+const IGNORED_OWNER_GROUPS = [
+  ['osl', 'osl-hk'],
+];
 
 // Based on defillama-server/defi/src/utils/discord.ts
 async function sendDiscord(message, formatted = true) {
@@ -150,7 +155,9 @@ function findOwnerDuplicates(rawConfigs) {
 
   const duplicates = {};
   for (const [key, protocols] of Object.entries(ownerMap)) {
-    if (protocols.length > 1) duplicates[key] = protocols.join(', ');
+    if (protocols.length < 2) continue;
+    if (IGNORED_OWNER_GROUPS.some(group => protocols.every(p => group.includes(p)))) continue;
+    duplicates[key] = protocols.join(', ');
   }
   return duplicates;
 }

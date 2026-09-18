@@ -8,7 +8,7 @@ const tokens = [
   ADDRESSES.bsc.BTCB,
   ADDRESSES.bsc.ETH,
   "0x9c65ab58d8d978db963e63f2bfb7121627e3a739",
-  "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+  ADDRESSES.bsc.CAKE,
   ADDRESSES.bsc.USDC,
   "0xbb238fce6e2ee90781cd160c9c6eaf3a4cfad801",
   ADDRESSES.null,

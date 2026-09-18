@@ -53,7 +53,7 @@ const defaultTokens = {
     '0x11eef04c884e24d9b7b4760e7476d06ddf797f36', //MX TOKEN, mecx exchange token
     '0xa4be4cDC552891a6702E1aE9645EF445179a4463', //FON
     '0x356A5160F2B34BC8d88FB084745465eBBbed0174', //invi
-    '0x9813037ee2218799597d83D4a5B6F3b6778218d9', //bone
+    ADDRESSES.ethereum.BONE, //bone
     '0xf3b9569F82B18aEf890De263B84189bd33EBe452',//caw
     // '0x04abeda201850ac0124161f037efd70c74ddc74c',//nest -- old token, hacked
     '0x9d71CE49ab8A0E6D2a1e7BFB89374C9392FD6804',//nvir
@@ -150,7 +150,7 @@ const defaultTokens = {
     'TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6', // HTX
     'TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc', //USD1
     'TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz', //USDD
-    'TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4', // BTT
+    ADDRESSES.tron.BTT, // BTT
     'TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7', // WIN
     'TFczxzPhnThNSqr5by8tvxsdCFRRz6cPNq', // NFT
   ],
@@ -163,7 +163,7 @@ const defaultTokens = {
     ADDRESSES.polygon.WBTC, //WBTC
     ADDRESSES.polygon.USDC, //USDC
     ADDRESSES.polygon.DAI, //DAI
-    '0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e', //xen
+    ADDRESSES.ethpow.vvXEN, //xen
     '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', //ALGB
     '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f', //voxel
     '0xa3f751662e282e83ec3cbc387d225ca56dd63d3a', //APEPE (Ape Pepe)
@@ -260,7 +260,7 @@ const defaultTokens = {
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
     ADDRESSES.arbitrum.DAI, // DAI
-    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b', //aidoge
+    ADDRESSES.arbitrum.aidoge, //aidoge
     '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
     ADDRESSES.arbitrum.LPT, //lpt
     '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
@@ -334,7 +334,7 @@ const defaultTokens = {
     ADDRESSES.cronos.USDC,
     ADDRESSES.cronos.USDT,
     ADDRESSES.cronos.WBTC,
-    "0xe44fd7fcb2b1581822d0c862b68222998a0c299a" //weth
+    ADDRESSES.cronos.weth //weth
   ],
   ton: [
     nullAddress,
@@ -342,10 +342,10 @@ const defaultTokens = {
     ADDRESSES.ton.TON_1,
     ADDRESSES.ton.TON_2,
     ADDRESSES.ton.TON_3,
-    'EQAIb6KmdfdDR7CN1GBqVJuP25iCnLKCvBlJ07Evuu2dzP5f', // USDe
-    'EQCvxJy4eG8hyHBFsZ7eePxrRsUQSFE_jpptRAYBmcG_DOGS', // DOGS
-    'EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT', // NOT
-    'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI
+    ADDRESSES.ton.USDe, // USDe
+    ADDRESSES.ton.DOGS, // DOGS
+    ADDRESSES.ton.NOT, // NOT
+    ADDRESSES.ton.CATI, // CATI
   ],
   sui: [
     '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI', // SUI
@@ -353,12 +353,12 @@ const defaultTokens = {
     '0x76a49ebaf991fa2d4cb6a352af14425d453fe2ba6802b5ed2361b227150b6689::take::TAKE', // TAKE
     '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US', // US
     '0x9f854b3ad20f8161ec0886f15f4a1752bf75d22261556f14cc8d3a1c5d50e529::magma::MAGMA', // MAGMA
-    '0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP', // DEEP
+    ADDRESSES.sui.DEEP, // DEEP
     '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS', // CETUS
     '0x35169bc93e1fddfcf3a82a9eae726d349689ed59e4b065369af8789fe59f8608::mmt::MMT', // MMT
     '0xe1b45a0e641b9955a20aa0ad1c1f4ad86aad8afb07296d4085e349a50e90bdca::blue::BLUE', // BLUE
-    '0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL', // WAL
-    '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC', // USDC
+    ADDRESSES.sui.WAL, // WAL
+    ADDRESSES.sui.USDC_CIRCLE, // USDC
     '0x7262fb2f7a3a14c888c438a3cd9b912469a58cf60f367352c46584262e8299aa::ika::IKA', // IKA
     '0x8993129d72e733985f7f1a00396cbd055bad6f817fee36576ce483c8bbb8b87b::sudeng::SUDENG', // HIPPO
     '0x4c981f3ff786cdb9e514da897ab8a953647dae2ace9679e8358eec1e3e8871ac::dmc::DMC', // DMC
@@ -449,11 +449,11 @@ const defaultTokens = {
   ],
   taiko: [
     nullAddress,
-    '0xA9d23408b9bA935c230493c40C73824Df71A0975', // TAIKO
+    ADDRESSES.taiko.TAIKO, // TAIKO
   ],
   megaeth: [
     nullAddress,
-    '0x28b7e77f82b25b95953825f1e3ea0e36c1c29861', // MEGA
+    ADDRESSES.megaeth.MEGA, // MEGA
   ],
   stable: [
     nullAddress,
@@ -522,7 +522,7 @@ function cexExports(config) {
         console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
         tokens = [...(options.tokens ?? []), ...binanceTokensOnChain]
       }
-      const runtimeOptions = { ...options, owners, tokens }
+      const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
       if (chain === 'solana') runtimeOptions.solOwners = owners
       return sumTokensExport(runtimeOptions)(api)
     } }

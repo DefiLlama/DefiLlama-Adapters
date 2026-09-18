@@ -1,25 +1,15 @@
-const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/unwrapLPs')
 const APE_STAKE_CONTRACT = "0x4Ba2396086d52cA68a37D9C0FA364286e9c7835a"
-const getPoolsUI = "function getPoolsUI() view returns ((uint256,uint256,(uint48,uint48,uint96,uint96))[3])"
 
+// getPoolsUI() started reverting on every RPC after the last staking season ended (2025-12-11);
+// staked APE is native on apechain, so the contract's native balance is the staked amount
 async function stakingTvl(api) {
-    const balances = {};
-
-    const pools = await api.call({
-        target: APE_STAKE_CONTRACT,
-        abi: getPoolsUI,
-        chain: 'apechain'
-    });
-
-    const totalStaked = pools.reduce((sum, pool) => sum + BigInt(pool[1]), 0n);    
-    sdk.util.sumSingleBalance(balances, nullAddress, totalStaked.toString(), 'apechain')    
-    return balances;
+  return api.sumTokens({ owner: APE_STAKE_CONTRACT, tokens: [nullAddress] })
 }
 
 module.exports = {
-    apechain: {
-        tvl: () => ({}),
-        staking: stakingTvl
-    }
+  apechain: {
+    tvl: () => ({}),
+    staking: stakingTvl
+  }
 };

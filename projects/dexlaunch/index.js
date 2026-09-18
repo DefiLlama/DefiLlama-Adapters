@@ -12,6 +12,10 @@ const config = {
     lens: "0x5aF7A226F75AF0F0bA99DFdaE05D7167e5B1fc16",
     wnative: ADDRESSES.hyperliquid.WHYPE,
   },
+  bot: {
+    lens: "0x5aF7A226F75AF0F0bA99DFdaE05D7167e5B1fc16",
+    wnative: ADDRESSES.bot.WBOT,
+  },
 };
 
 const abi = {
@@ -22,8 +26,9 @@ async function tvl(api) {
   const { lens, wnative } = config[api.chain];
   const src = await api.call({ target: lens, abi: abi.getTvlSources });
 
-  // 1. Bonding-curve pad: exact native backing of live curves.
-  api.add(ADDRESSES.null, src.padEthWei);
+  // 1. Bonding-curve pad: exact native backing of live curves. Added as wrapped native, which
+  // is the same asset and resolves in the price lookup on every deployed chain.
+  api.add(wnative, src.padEthWei);
 
   // 2. Locked graduation LP + every sale's funding asset.
   const ownerTokens = [[src.lockerTokens, src.locker]];

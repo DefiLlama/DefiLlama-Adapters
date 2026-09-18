@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs');
 const { get } = require('../helper/http');
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs');
@@ -209,7 +210,7 @@ async function tvlArbitrumLinea(api) {
   await fetchSickleNftPositions(api, sickles, config[api.chain].NonfungiblePositionManager);
   await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
 
-  api.removeTokenBalance('0xe80772eaf6e2e18b651f160bc9158b2a5cafca65')
+  api.removeTokenBalance(ADDRESSES.arbitrum.USDplus)
   return sumTokens2({ api, resolveLP: true });
 }
 

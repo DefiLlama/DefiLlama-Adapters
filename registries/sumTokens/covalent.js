@@ -259,7 +259,7 @@ module.exports = {
     "flare": {
       "tokensAndOwners": [
         [
-          "0x12e605bc104e93B45e1aD99F9e555f659051c2BB",
+          ADDRESSES.flare.sFLR,
           "0x19831cfB53A0dbeAD9866C43557C1D48DfF76567"
         ],
         [
@@ -1026,7 +1026,8 @@ module.exports = {
         "0x944644Ea989Ec64c2Ab9eF341D383cEf586A5777",
         "0x674bdf20A0F284D710BC40872100128e2d66Bd3f"
       ],
-      "fetchCoValentTokens": true
+      "fetchCoValentTokens": true,
+      "permitFailure": true
     },
     "taiko": {
       "owners": ["0x3e71a41325e1d6B450307b6535EC48627ac4DaCC"],

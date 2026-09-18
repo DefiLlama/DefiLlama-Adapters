@@ -11,7 +11,7 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   SEI_BLOCK_LOW: "150023881",
-  STARKNET_RPC: 'https://rpc.starknet.lava.build/',
+  STARKNET_RPC: 'https://api.zan.top/public/starknet-mainnet',
   STARKNET_MULTICALL: '0x01a33330996310a1e3fa1df5b16c1e07f0491fdd20c441126e02613b948f0225',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
@@ -36,8 +36,12 @@ const DEFAULTS = {
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
+  SHIDO_RPC: 'https://shidoscan.net/api/eth-rpc',
+  BITKUB_RPC: 'https://www.kubscan.com/api/eth-rpc',
+  REI_RPC: 'https://scan.rei.network/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
-  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
+  // dwellir throttles queryStorageAt bursts across both bifrost endpoints (same key) which stalled bifrost-dex; polkadot side moved to liebi
+  BIFROST_P_RPC: "wss://eu.bifrost-polkadot-rpc.liebi.com/ws",
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
   BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
@@ -46,7 +50,20 @@ const DEFAULTS = {
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
+  PROM_RPC: 'https://promscan.io/api/eth-rpc,https://prom-rpc.eu-north-2.gateway.fm',
+  PROM_RPC_MULTICALL: '0xfF785aF3De8C2cb5727A8665984E741c16679131',
+  NIBIRU_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
+  ARC_RPC: 'https://rpc.mainnet.arc.io',
+  ARC_RPC_CHAIN_ID: '5042',
+  ARC_ARCHIVAL_RPC: 'https://explorer.arc.io/api/eth-rpc', // public rpc.mainnet.arc.io rejects large eth_getLogs ranges
+  // Arc is not in the SDK Multicall3 deployment map. Without this, eth.getBalances skips
+  // getEthBalance() and fans out getBalance against ARC_RPC (429s). Archival is getLogs-only.
+  ARC_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  ARC_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  // chains with no provider in the SDK providers list (chainid.network RPCs)
+  AREA_RPC: 'https://mainnet-rpc.areum.network,https://mainnet-rpc2.areum.network', // Areum Network, chainId 463
+  BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
 }
 
 const ENV_KEYS = [
@@ -70,6 +87,7 @@ const ENV_KEYS = [
   'SMARDEX_SUBGRAPH_API_KEY',
   'ALLIUM_API_KEY',
   'DUNE_API_KEYS',
+  'NEAR_RPC',
   'TON_API_KEY',
   'FLOW_NON_EVM_RPC',
   'PROXY_AUTH',
@@ -79,6 +97,7 @@ const ENV_KEYS = [
   'TATUM_PUBLIC_API_KEY',
   'TATUM_API_KEY',
   'TEAM_WEBHOOK',
+  'HIRO_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
