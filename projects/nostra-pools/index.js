@@ -1,4 +1,4 @@
-const { addAddressPadding } = require('starknet')
+const { addAddressPadding } = require('../helper/utils/starknet')
 const { call, multiCall, parseAddress } = require("../helper/chain/starknet");
 const { getCache, setCache } = require("../helper/cache");
 const factoryAbi = [

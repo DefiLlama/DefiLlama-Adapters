@@ -30,7 +30,6 @@
     "@solana/web3.js": "^1.87.6",
     "@supercharge/promise-pool": "^2.1.0",
     "axios": "^1.6.5",
-    "base-x": "^5.0.1",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
     "bn.js": "^5.2.1",
@@ -47,7 +46,6 @@
     "limiter": "2.1.0",
     "miscreant": "^0.3.2",
     "p-limit": "^3.1.0",
-    "starknet": "^5.24.3",
     "ws": "^8.18.3"
   },
   "overrides": {},
