@@ -440,6 +440,8 @@ module.exports = {
     "32qqF3w9W96S6br5x3cR75fgtFZwshjh4X",
     "3NnoMUQnURz29QLJcvQ5Xy6ztgJ4TYmqY3",
     "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
+    "3PSEjhkUQDGRNDPWqAcPhy9tEY6g6AHgPN", // add on 18/09/2026
+    "33FyMfJMRnqNvQiPDvE13L9cRHaEAXQziE", // add on 18/09/2026
   ],
   bitmake: [
     // wallet provide by a bitmake team
