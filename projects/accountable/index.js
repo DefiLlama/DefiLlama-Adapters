@@ -36,10 +36,12 @@ const FACTORIES = {
     ],
 }
 
+// Strategies deployed directly by an EOA rather than by a registered factory, so
+// strategyProxies/strategyVaults never return them.
 const EXTRA_VAULTS = {
     monad: [
-        '0x23b148d8f389C5821739381f1FF87bB7e1162566',
-        '0x721928108fA84aE8A13545BFEe3e6958626Cee60',
+        '0x23b148d8f389C5821739381f1FF87bB7e1162566', // aHyperLoop
+        '0x721928108fA84aE8A13545BFEe3e6958626Cee60', // aHyperBTCLoop
     ],
 }
 
@@ -62,15 +64,6 @@ const EXCLUDED_STRATEGIES = {
         '0x945dc31b38c811a0188b5b30cf1ea7721666cf7c',
         '0x33ca98cfca7f25735d8719e67f616fcc44d7771e',
     ],
-}
-
-const USD_PEGGED_WRAPPERS = {
-    base: {
-        '0xba515eed0119acb7cfe8fab3acd6b362f3ed5319': {
-            usdToken: ADDRESSES.base.USDC,
-            scale: 1e12,
-        },
-    },
 }
 
 const abis = {
@@ -146,40 +139,9 @@ function tvl(isBorrowed) {
             api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
         ])
 
-        const pegged = USD_PEGGED_WRAPPERS[api.chain] || {}
-        const amounts = vaults.map((_, i) => {
-            if (!underlyings[i] || !totalAssets[i]) return null
-            return isBorrowed ? totalAssets[i] - liquidity[i] : liquidity[i]
-        })
-
-        const exactAmount = (i) => {
-            const total = BigInt(totalAssets[i])
-            const liquid = BigInt(liquidity[i] || 0)
-            return (isBorrowed ? total - liquid : liquid).toString()
-        }
-        const wrapped = vaults
-            .map((_, i) => ({ i, cfg: underlyings[i] && pegged[underlyings[i].toLowerCase()] }))
-            .filter(({ i, cfg }) => cfg && amounts[i])
-        const unwrapped = wrapped.length
-            ? await api.multiCall({
-                abi: abis.convertToAssets,
-                calls: wrapped.map(({ i }) => ({ target: underlyings[i], params: [exactAmount(i)] })),
-                permitFailure: true,
-            })
-            : []
-
-        const unwrappedByIndex = {}
-        wrapped.forEach(({ i }, k) => { if (unwrapped[k]) unwrappedByIndex[i] = unwrapped[k] })
-
         vaults.forEach((_, i) => {
-            if (amounts[i] === null) return
-            const cfg = underlyings[i] && pegged[underlyings[i].toLowerCase()]
-            if (cfg) {
-                if (unwrappedByIndex[i] === undefined) return
-                api.add(cfg.usdToken, Number(unwrappedByIndex[i]) / cfg.scale)
-                return
-            }
-            api.add(underlyings[i], amounts[i])
+            if (!underlyings[i] || !totalAssets[i]) return
+            isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], liquidity[i])
         })
     }
 }
@@ -202,11 +164,11 @@ module.exports = {
         tvl: tvl(false),
         borrowed: tvl(true)
     },
-    base: {
+    robinhood: {
         tvl: tvl(false),
         borrowed: tvl(true)
     },
-    robinhood: {
+    base: {
         tvl: tvl(false),
         borrowed: tvl(true)
     },
