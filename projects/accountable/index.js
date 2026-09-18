@@ -29,11 +29,19 @@ const FACTORIES = {
         '0x474B612F970491801743BF0e4B9153620FC36096',
         '0xA4d6a4aD35fc632aEE1dC48A2aEc2aaa37B51F9f', // yield factory
     ],
+    base: [
+        '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
+        '0xB4082B8126AF8B5345CfB159AC5d4b4F05F54bC5',
+        '0xC0f778b51bF9751BBccBF4e78A107026aDaDbe43', // yield factory
+    ],
 }
 
+// Strategies deployed directly by an EOA rather than by a registered factory, so
+// strategyProxies/strategyVaults never return them.
 const EXTRA_VAULTS = {
     monad: [
-        '0x23b148d8f389C5821739381f1FF87bB7e1162566',
+        '0x23b148d8f389C5821739381f1FF87bB7e1162566', // aHyperLoop
+        '0x721928108fA84aE8A13545BFEe3e6958626Cee60', // aHyperBTCLoop
     ],
 }
 
@@ -157,6 +165,10 @@ module.exports = {
         borrowed: tvl(true)
     },
     robinhood: {
+        tvl: tvl(false),
+        borrowed: tvl(true)
+    },
+    base: {
         tvl: tvl(false),
         borrowed: tvl(true)
     },
