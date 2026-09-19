@@ -83,7 +83,7 @@ async function evmTvl(api) {
   itsAssets.forEach(({ chains = {} }) => {
     const entry = chains[mappedChain]
     if (!entry?.tokenAddress || !entry.tokenManager) return
-    if (entry.tokenManagerType && entry.tokenManagerType !== 'lockUnlock') return
+    if (entry.tokenManagerType && !entry.tokenManagerType.startsWith('lockUnlock')) return
     tokensAndOwners.push([entry.tokenAddress, entry.tokenManager])
   })
 
