@@ -18,17 +18,21 @@ const UP_V2_BOX_LOCKER = '0x21797736C25851A6102D196afbA78F978f589017'
 const FOREVER_ESCROW = '0x1338c12dAb6D80313819612784cC3C5bfaaD7f4d'
 // Canonical ETH/STONKBROKER 1% Uniswap v4 posm NFT held by the forever escrow.
 const FOREVER_POSM_ID = 175704
-// Generous ceilings — lock NFTs mint sequentially from 1; empty/unknown ids
-// return zero-liquidity rows and are skipped.
-const V4_LOCK_ID_CEILING = 200
-const UP_V2_LOCK_ID_CEILING = 50
+// First block each locker exists. Calls before this throw and wipe the
+// chain's historical TVL, so each surface is skipped until it is live.
+const V4_BOX_BLOCK = 19331425
+const UP_V2_BOX_BLOCK = 32711195
+const FOREVER_ESCROW_BLOCK = 19498880
+// StonkLockerOwnershipNFT: slot 6 owner, slot 7 locker, slot 8 _nextTokenId.
+// Verified on the live V4 (next = 87) and up. V2 (next = 8) receipt NFTs.
+const LOCK_NFT_NEXT_ID_SLOT = 8
 
 const STONK_ESCROW = '0x799AE26fA515ceF145e8bC8636F7fFF87B05Cf62'
 const STONKBROKER = '0xe934e36A439C94017B64a3FecE66AF12099aBF50'
 
-// Priced legs counted across every Safety Deposit Box surface. Meme / stock
-// base legs stay unpriced unless they sit in a Smart LP vault (those count
-// both sides). Native ETH pairs use address(0) on Uniswap v4.
+// A lock must have one of these as a quote or it is a fake-pool spam lock.
+// Both legs are still credited (DefiLlama prices known tokens, rest stay $0).
+// Native ETH pairs use address(0) on Uniswap v4.
 const PRICED_TOKENS = [
   ADDRESSES.null,
   ADDRESSES.robinhood.WETH,
@@ -41,6 +45,12 @@ const PRICED_TOKENS = [
 // surface; each listed vault owns exactly one NFPM position plus small idle
 // token balances between compounds.
 const SMART_LP_REGISTRY = '0xE8749183Fbf6A657EB58B3a4D3E4B9Cc09560146'
+const SMART_LP_REGISTRY_BLOCK = 55893170
+// Same vault bytecode, chain-local registry. First VaultListed on Arbitrum
+// is block 505449978 (2026-09-15); the from-block sits just before that.
+const ARB_SMART_LP_REGISTRY = '0xFB2eA53b16C07011d4390A2e449385180A54eD5e'
+const ARB_SMART_LP_FROM_BLOCK = 505000000
+const ARB_UNI_V3_NFPM = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
 
 // Nightshades (Civilization) anti-snipe launch — the StonkBrokers-built
 // CivAntiSnipePad runs a 99%→1% decaying snipe tax over a 99-minute window
@@ -52,6 +62,9 @@ const SMART_LP_REGISTRY = '0xE8749183Fbf6A657EB58B3a4D3E4B9Cc09560146'
 const CIV_ANTI_SNIPE_PAD = '0xca389585c4940B107D49AF4A37aD259c5fb69081'
 const CIV_FACTION_VAULT = '0xfff716727d7E80E29eab5D3498b7F28431e65C58'
 const UNI_V4_POOL_MANAGER = '0x8366a39cc670b4001a1121b8f6a443a643e40951'
+// Pad and vault landed in the same minute. Reading either before this block
+// reverts and would zero the whole historical robinhood series.
+const CIV_STACK_BLOCK = 62553796
 // PoolManager `_pools` mapping slot (Pool.State is at storage slot 6).
 const V4_POOLS_SLOT = 6n
 
@@ -85,6 +98,43 @@ function isEthLike(token) {
 function pricedToken(token) {
   if (!token || token === '0x0000000000000000000000000000000000000000') return ADDRESSES.null
   return token
+}
+
+function liveAt(api, block) {
+  return api.block == null || Number(api.block) >= block
+}
+
+// Credit both legs. The caller already required a known quote token and
+// dropped spam liquidity, so a stock / meme base is safe to add: DefiLlama
+// prices the ones it knows and leaves the rest at $0.
+function addLegs(api, currency0, currency1, amount0, amount1) {
+  const add = (token, amount) => {
+    let n
+    if (typeof amount === 'bigint') n = amount
+    else if (typeof amount === 'string') {
+      const whole = amount.split('.')[0]
+      if (!whole || whole === '0' || whole === '-0') return
+      n = BigInt(whole)
+    } else {
+      if (!Number.isFinite(amount) || amount <= 0) return
+      n = BigInt(Math.round(amount))
+    }
+    if (n <= 0n) return
+    api.add(pricedToken(token), n.toString())
+  }
+  add(currency0, amount0)
+  add(currency1, amount1)
+}
+
+async function lastMintedLockId(api, locker) {
+  const nft = await api.call({ abi: 'address:lockNft', target: locker })
+  const word = api.block == null
+    ? await api.provider.getStorage(nft, LOCK_NFT_NEXT_ID_SLOT)
+    : await api.provider.getStorage(nft, LOCK_NFT_NEXT_ID_SLOT, api.block)
+  const next = BigInt(word)
+  if (next <= 1n) return 0
+  if (next > 20001n) throw new Error(`unexpected lockNft next id ${next} on ${locker}`)
+  return Number(next - 1n)
 }
 
 function v4PoolId(key) {
@@ -130,6 +180,7 @@ function addPricedLegs(api, currency0, currency1, amount0, amount1) {
 }
 
 async function nightshadesTvl(api) {
+  if (!liveAt(api, CIV_STACK_BLOCK)) return
   const WETH = ADDRESSES.robinhood.WETH
   // Escrowed raises still inside the anti-snipe window (pre-bond) + the
   // vault's earmarked snipe-tax WETH (boost pot / LP pots / free quote).
@@ -169,11 +220,13 @@ async function nightshadesTvl(api) {
 }
 
 async function v4BoxTvl(api) {
+  if (!liveAt(api, V4_BOX_BLOCK)) return
   // V4 box mints raw PoolManager positions (salt = bytes32(lockTokenId)), so
-  // there is no posm NFT to resolve. Enumerate lock rows and value remaining
-  // liquidity at the live pool tick. Spam locks on unpriced fake pools are
-  // dropped by the priced-token filter.
-  const ids = Array.from({ length: V4_LOCK_ID_CEILING }, (_, i) => i + 1)
+  // there is no posm NFT to resolve. Walk every minted lock id (receipt NFT
+  // _nextTokenId) and value remaining liquidity at the live pool tick.
+  const lastId = await lastMintedLockId(api, V4_BOX_LOCKER)
+  if (!lastId) return
+  const ids = Array.from({ length: lastId }, (_, i) => i + 1)
   const locks = await api.multiCall({
     abi: v4LockAbi,
     target: V4_BOX_LOCKER,
@@ -235,15 +288,19 @@ async function v4BoxTvl(api) {
     const eth0 = isEthLike(l.currency0) ? amount0 : 0
     const eth1 = isEthLike(l.currency1) ? amount1 : 0
     if (eth0 > MAX_ETH_AMOUNT || eth1 > MAX_ETH_AMOUNT) return
-    addPricedLegs(api, l.currency0, l.currency1, amount0, amount1)
+    addLegs(api, l.currency0, l.currency1, amount0, amount1)
   })
 }
 
 async function upV2BoxTvl(api) {
+  if (!liveAt(api, UP_V2_BOX_BLOCK)) return
   // up. V2 lockers escrow Solidly-style LP tokens in per-lock vaults (or a
-  // gauge while staked). Value the remaining LP share of pool reserves;
-  // only priced legs (WETH / USDG / STONKBROKER) are credited.
-  const ids = Array.from({ length: UP_V2_LOCK_ID_CEILING }, (_, i) => i + 1)
+  // gauge while staked). Value the remaining LP share of pool reserves.
+  // Both legs are credited; a known quote is still required so a two-meme
+  // spam lock cannot enter.
+  const lastId = await lastMintedLockId(api, UP_V2_BOX_LOCKER)
+  if (!lastId) return
+  const ids = Array.from({ length: lastId }, (_, i) => i + 1)
   const locks = await api.multiCall({
     abi: upV2LockAbi,
     target: UP_V2_BOX_LOCKER,
@@ -276,8 +333,51 @@ async function upV2BoxTvl(api) {
     const r1 = BigInt(reserves[i][1] || reserves[i]['1'] || 0)
     const amount0 = (r0 * l.remaining) / supply
     const amount1 = (r1 * l.remaining) / supply
-    addPricedLegs(api, l.token0, l.token1, amount0.toString(), amount1.toString())
+    addLegs(api, l.token0, l.token1, amount0.toString(), amount1.toString())
   })
+}
+
+async function everListedVaults(api, registry, fromBlock) {
+  // all() is the live listing. Delist removes a vault from that array but
+  // does not move its position NFT, so deposits in a delisted vault would
+  // vanish from TVL. VaultListed is the full set; union both.
+  const toBlock = api.block == null ? await api.getBlock() : Number(api.block)
+  const [listed, logs] = await Promise.all([
+    api.call({ abi: 'address[]:all', target: registry }),
+    api.getLogs({
+      target: registry,
+      eventAbi: 'event VaultListed(address indexed vault, address indexed pool, uint8 mode)',
+      fromBlock,
+      toBlock,
+      onlyArgs: true,
+      maxBlockRange: 100000,
+    }),
+  ])
+  const set = new Set()
+  const add = (vault) => {
+    if (!vault || vault === ADDRESSES.null) return
+    set.add(ethers.getAddress(vault))
+  }
+  listed.forEach(add)
+  for (const log of logs) add(log.vault ?? log[0])
+  return [...set]
+}
+
+async function smartLpTvl(api, registry, nftAddress, fromBlock) {
+  const vaults = await everListedVaults(api, registry, fromBlock)
+  if (!vaults.length) return
+  await sumTokens2({
+    api,
+    owners: vaults,
+    resolveUniV3: true,
+    uniV3ExtraConfig: { nftAddress },
+  })
+  const [token0s, token1s] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: vaults }),
+    api.multiCall({ abi: 'address:token1', calls: vaults }),
+  ])
+  const ownerTokens = vaults.map((vault, i) => [[token0s[i], token1s[i]], vault])
+  await sumTokens2({ api, ownerTokens })
 }
 
 async function tvl(api) {
@@ -298,47 +398,46 @@ async function tvl(api) {
     nftAddress: UP_SLIPSTREAM_NFPM,
   })
   // Canonical ETH/STONKBROKER v4 LP in the ownerless forever escrow (posm #175704).
-  await sumTokens2({
-    api,
-    owner: FOREVER_ESCROW,
-    resolveUniV4: true,
-    uniV4ExtraConfig: { positionIds: [FOREVER_POSM_ID] },
-  })
-  // Uniswap v4 box locker (raw PoolManager positions) — priced legs only,
-  // with spam-liquidity guards (see v4BoxTvl).
+  if (liveAt(api, FOREVER_ESCROW_BLOCK)) {
+    await sumTokens2({
+      api,
+      owner: FOREVER_ESCROW,
+      resolveUniV4: true,
+      uniV4ExtraConfig: { positionIds: [FOREVER_POSM_ID] },
+    })
+  }
+  // Uniswap v4 box locker (raw PoolManager positions). Both legs, with
+  // spam-liquidity guards (see v4BoxTvl).
   await v4BoxTvl(api)
-  // up. V2 LP locker (Solidly-style pool LP) — priced legs only.
+  // up. V2 LP locker (Solidly-style pool LP). Both legs.
   await upV2BoxTvl(api)
   // Smart LP vaults: registry-enumerated, each vault owns one Uniswap V3
   // position on the canonical NFPM. Both position legs are counted (quote
   // legs are WETH/USDG; base legs are tokenized stocks / ecosystem tokens),
   // plus the idle token0/token1 balances each vault holds between compounds.
-  const smartLpVaults = await api.call({ abi: 'address[]:all', target: SMART_LP_REGISTRY })
-  if (smartLpVaults.length) {
-    await sumTokens2({
-      api,
-      owners: smartLpVaults,
-      resolveUniV3: true,
-      uniV3ExtraConfig: { nftAddress: UNI_V3_NFPM },
-    })
-    const [token0s, token1s] = await Promise.all([
-      api.multiCall({ abi: 'address:token0', calls: smartLpVaults }),
-      api.multiCall({ abi: 'address:token1', calls: smartLpVaults }),
-    ])
-    const ownerTokens = smartLpVaults.map((vault, i) => [[token0s[i], token1s[i]], vault])
-    await sumTokens2({ api, ownerTokens })
+  if (liveAt(api, SMART_LP_REGISTRY_BLOCK)) {
+    await smartLpTvl(api, SMART_LP_REGISTRY, UNI_V3_NFPM, SMART_LP_REGISTRY_BLOCK)
   }
   // Nightshades anti-snipe launch: escrowed raise + vault pots + bonded v4 LP.
   await nightshadesTvl(api)
   return api.getBalances()
 }
 
+async function arbitrumTvl(api) {
+  await smartLpTvl(api, ARB_SMART_LP_REGISTRY, ARB_UNI_V3_NFPM, ARB_SMART_LP_FROM_BLOCK)
+  return api.getBalances()
+}
+
 module.exports = {
   methodology:
-    'TVL is liquidity locked across the Safety Deposit Box family on Robinhood Chain: Uniswap V3 position NFTs in the V3 box; up. DEX Slipstream positions in the up. CL box (including every Stonklauncher / Safe Launch graduation pool — raise + LP tax reserve locked forever at bond); Uniswap v4 PoolManager positions in the V4 box (priced legs only, with liquidity/amount guards against spam locks); up. V2 Solidly-style LP in the up. V2 box (priced legs); and the ownerless forever-escrow holding the canonical ETH/STONKBROKER Uniswap v4 LP (posm #175704). V3 / Slipstream / forever-escrow positions count both legs — DefiLlama prices known tokens and leaves the rest at $0. Plus Smart LP (Volatility Farming) vaults: registry-listed immutable concentrated-liquidity vaults on canonical Uniswap V3 pools — each vault owns one position NFT (both legs counted) plus idle balances held between compounds. Plus the Nightshades anti-snipe launch (Civilization faction tokens launched through the StonkBrokers CivAntiSnipePad): the WETH raise escrowed in the pad pre-bond, the snipe-tax WETH earmarked in the FactionLiquidityVault, and priced legs of each bonded faction\'s protocol-owned Uniswap v4 position. Staking tracks STONKBROKER tokens in the escrow contract.',
+    'TVL is liquidity locked across the Safety Deposit Box family on Robinhood Chain: Uniswap V3 position NFTs in the V3 box; up. DEX Slipstream positions in the up. CL box (including every Stonklauncher / Safe Launch graduation pool — raise + LP tax reserve locked forever at bond); Uniswap v4 PoolManager positions in the V4 box (both legs, liquidity and ETH-amount guards against spam locks); up. V2 Solidly-style LP in the up. V2 box (both legs); and the ownerless forever-escrow holding the canonical ETH/STONKBROKER Uniswap v4 LP (posm #175704). Every locker position counts both legs — DefiLlama prices known tokens and leaves the rest at $0. Plus Smart LP (Volatility Farming) vaults on Robinhood Chain and Arbitrum One: every vault the registry has ever listed (delist only hides a vault from the UI; its position NFT stays put) on canonical Uniswap V3 pools — each vault owns one position NFT (both legs counted) plus idle balances held between compounds. Plus the Nightshades anti-snipe launch (Civilization faction tokens launched through the StonkBrokers CivAntiSnipePad): the WETH raise escrowed in the pad pre-bond, the snipe-tax WETH earmarked in the FactionLiquidityVault, and priced legs of each bonded faction\'s protocol-owned Uniswap v4 position. Staking tracks STONKBROKER tokens in the escrow contract.',
   doublecounted: true,
   robinhood: {
     tvl,
     staking: sumTokensExport({ owner: STONK_ESCROW, tokens: [STONKBROKER] }),
+  },
+  arbitrum: {
+    start: '2026-09-15',
+    tvl: arbitrumTvl,
   },
 }
