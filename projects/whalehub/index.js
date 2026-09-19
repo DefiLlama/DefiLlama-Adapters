@@ -1,24 +1,35 @@
 const { callSoroban } = require('../helper/chain/stellar')
 
 const STAKING_CONTRACT = 'CC72BEVVKHQ57PB5FCKAZYRXCSR6DOQSTN46QR7RZMMM64YWNRPDS24S'
-const BLUB_TOKEN = 'CBMFDIRY5OKI4JJURXC4SMEQPWB4UUADIADJK4NA6CYBNOYK4W4TMLLF'
 const AQUA_TOKEN = 'CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK'
-const POOL_0_SHARE_TOKEN = 'CDMRHKJCYYHZTRQVR7NY43PR7ISMRBYC2O57IMVAQ7B7P2I2XGIZLI5E'
 const AQUARIUS_POOL_0 = 'CAMXZXXBD7DFBLYLHUW24U4MY37X7SU5XXT5ZVVUBXRXWLAIM7INI7G2'
 
-// TVL: AQUA locked by stakers
+// TVL: AQUA deposited by users, represented by the BLUB minted against it.
+//
+// WhaleHub is a liquid staking protocol: users deposit AQUA and receive BLUB
+// 1:1, and the AQUA is committed to Aquarius ICE governance on their behalf, so
+// it does not sit in this contract. BLUB is the on-chain record of that locked
+// AQUA and is priced as AQUA (1:1 by mint).
+//
+// Previously this read get_global_state().total_locked — a transient counter
+// that rises on deposit and unwinds toward zero as deposits move on to ICE. It
+// never held the protocol's locked value and now reads 0, which is why the
+// listing shows $0 TVL while the same value is reported under "staking".
+//
+// total_blub_supply is used rather than the contract's BLUB token balance
+// because that balance also holds protocol-owned BLUB from liquidity
+// operations: a treasury rebalance on 2026-09-16 moved ~10M BLUB into this
+// contract and moved the balance ~35% in a day without any user depositing.
+// Supply is unaffected by those transfers. It includes the ~0.1x protocol-
+// minted portion that funds POL, so this runs ~9% high, which is the
+// conservative direction for a stable series.
 async function tvl(api) {
   const state = await callSoroban(STAKING_CONTRACT, 'get_global_state')
-  if (state && state.total_locked != null) {
-    api.add(AQUA_TOKEN, state.total_locked)
-  }
-}
-
-// Staking: BLUB staked in the contract (priced as AQUA)
-async function staking(api) {
-  const blubBalance = await callSoroban(BLUB_TOKEN, 'balance', [STAKING_CONTRACT])
-  if (blubBalance > 0n) {
-    api.add(AQUA_TOKEN, blubBalance)
+  const supply = state && state.total_blub_supply != null
+    ? BigInt(state.total_blub_supply)
+    : 0n
+  if (supply > 0n) {
+    api.add(AQUA_TOKEN, supply)
   }
 }
 
@@ -45,6 +56,7 @@ async function pool2(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: 'TVL counts AQUA locked in staking. Staking counts BLUB staked by users. Pool2 counts vault user LP deposits in the Aquarius BLUB-AQUA pool. BLUB is priced as AQUA since it lacks a separate price feed. Protocol-owned liquidity is tracked separately in treasury.',
-  stellar: { tvl, staking, pool2 },
+  methodology:
+    'WhaleHub is a liquid staking protocol on Stellar: users deposit AQUA and receive BLUB 1:1, while the AQUA is committed to Aquarius ICE governance on their behalf. TVL counts BLUB supply minted against those deposits, which is the on-chain record of user-locked AQUA; BLUB is priced as AQUA (1:1 by mint) since it has no separate price feed. Pool2 counts vault user LP deposits in the Aquarius BLUB-AQUA pool. Protocol-owned liquidity is excluded from both.',
+  stellar: { tvl, pool2 },
 }
