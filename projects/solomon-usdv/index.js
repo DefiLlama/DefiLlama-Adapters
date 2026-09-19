@@ -1,8 +1,9 @@
 const { getTokenSupplies, } = require("../helper/solana");
 
-async function tvl(api) {
-  const usdvAddress = "Ex5DaKYMCN6QWFA4n67TmMwsH8MJV68RX6YXTmVM532C";
+// Issuer Token-2022 mint. Not old vault Ex5DaKY…532C.
+const usdvAddress = "USDvUSpnhCr9yBgj3UyVrD239HRUv4RsHwH2FxsWuMk";
 
+async function tvl(api) {
   const res = await getTokenSupplies([usdvAddress]);
   api.add(usdvAddress, res[usdvAddress]);
 }
