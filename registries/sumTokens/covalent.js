@@ -1156,6 +1156,7 @@ module.exports = {
     "unichain": {
       "owners": ["0x322e86E6c813d77a904C5B4aa808a13E0AD4412f", "0x354869495Fd916ADAFc0626C3d60115240dc06f1"],
       "fetchCoValentTokens": true,
+      permitFailure: true,
       "tokenConfig": { "ignoreMissingChain": true }
     },
     "wc": {
