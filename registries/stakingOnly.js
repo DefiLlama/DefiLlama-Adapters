@@ -177,6 +177,13 @@ const configs = {
       staking: ['0x321b7ff75154472B18EDb199033fF4D116F340Ff', '0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf'],
     },
   },
+  'capminal': {
+    methodology: 'Counts CAP held in the ScapStaking contract on Base, including staked and unbonding principal plus funded but unclaimed CAP rewards.',
+    start: '2026-05-30',
+    base: {
+      staking: ['0x92ee42A61CF55642949B4fE74bB4796978ddB47a', '0xbfa733702305280F066D470afDFA784fA70e2649'],
+    },
+  },
   'velhalla': {
     velas: {
       staking: ['0x7DeD7f9D3dF541190F666FB6897483e46D54e948', '0x8d9fb713587174ee97e91866050c383b5cee6209'],
