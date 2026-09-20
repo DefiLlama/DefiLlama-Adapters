@@ -1,4 +1,3 @@
-
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const YN_ETH = '0x09db87a538bd693e9d08544577d5ccfaa6373a48'
@@ -18,7 +17,7 @@ module.exports = {
       api.add(lsds, bals)
       const maxethBalance = await api.call({ abi: 'uint256:totalAssets', target: yn_ETHx })
       api.add(ADDRESSES.null, maxethBalance)
-      
+
       const ynUSDxBalance = await api.call({ abi: 'uint256:totalAssets', target: yn_USDx })
       api.add(ADDRESSES.ethereum.USDC, ynUSDxBalance)
 
@@ -34,8 +33,12 @@ module.exports = {
       const ynCoBTCk = '0x132376b153d3cFf94615fe25712DB12CaAADf547'
       const ynBfBTCk = '0x1B015705214bdcAAf43E8EDeCa13023143224Ab7'
 
-  
-      return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynCoBTCk, ynBfBTCk], isOG4626: true})
+      // coBTC is pegged 1:1 to BTC but is not priced as a core asset. Keep it
+      // out of erc4626Sum and report its underlying balance as BTCB instead,
+      // which prevents the vault from disappearing from TVL when it refills.
+      await api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynBfBTCk], isOG4626: true })
+      const coBTCBalance = await api.call({ abi: 'uint256:totalAssets', target: ynCoBTCk })
+      api.add(ADDRESSES.bsc.BTCB, coBTCBalance)
     }
   },
 }
