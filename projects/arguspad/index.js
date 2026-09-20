@@ -1,5 +1,7 @@
+const sdk = require('@defillama/sdk')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getCache, setCache } = require('../helper/cache')
 
 // ArgusPad launches a tax token and seeds a single concentrated-liquidity position with the whole
 // supply. The LP NFT is minted to a locker clone created for that launch, and the locker has no
@@ -46,47 +48,94 @@ const PORTALS = [
 ]
 
 const PAGE_SIZE = 500
+const CACHE_PROJECT = 'arguspad'
 
-async function tvl(api) {
-  // Launches come from each Portal's own registry, not from TokenCreated logs: several unrelated
-  // launchpads on Arc run forks of this codebase and emit a byte-identical event, so matching on
-  // topic0 would attribute their launches to ArgusPad.
+// Each Portal's registry is append-only: getTokens(offset, limit) indexes a push-only array and
+// tokenCount() is its length, so a launch's slot never moves and its positionId is minted once and
+// never reissued. That makes tokenCount() an exact cursor - everything below the cached count is
+// already known and is not read again. Only the tail is enumerated on each run, which is what keeps
+// a 140k-launch protocol affordable: the per-launch reads that remain are the position reads, which
+// have to be redone every run because they are the TVL.
+async function getLaunches(api) {
+  const cache = await getCache(CACHE_PROJECT, api.chain, { skipCompression: true })
+  const cached = cache.portals ?? {}
+
   const counts = await api.multiCall({ abi: 'uint256:tokenCount', calls: PORTALS.map(i => i.address) })
 
   const pageShapes = []
   const pageCalls = []
   PORTALS.forEach(({ address, shape }, i) => {
-    for (let offset = 0; offset < +counts[i]; offset += PAGE_SIZE) {
+    const key = address.toLowerCase()
+    if (!cached[key] || !Array.isArray(cached[key].launches)) cached[key] = { count: 0, launches: [] }
+    // A run at a past block sees a shorter registry than the cache holds. Because the registry is
+    // append-only, the launches this block knew about are exactly the first tokenCount() of them,
+    // so the cached list is read short rather than re-enumerated - and, below, it is not written
+    // back, so a historical run cannot truncate the cache for the live one.
+    const from = Math.min(cached[key].launches.length, +counts[i])
+    for (let offset = from; offset < +counts[i]; offset += PAGE_SIZE) {
       pageShapes.push(shape)
-      pageCalls.push({ target: address, params: [offset, PAGE_SIZE] })
+      pageCalls.push({ target: address, params: [offset, Math.min(PAGE_SIZE, +counts[i] - offset)] })
     }
   })
-  // getTokens reads one cold storage slot per token returned, so these are chunked well below the
-  // node's 30M gas ceiling on eth_call; every other call here is cheap enough for the default chunk.
-  const pages = await api.multiCall({
-    abi: 'function getTokens(uint256 offset, uint256 limit) view returns (address[])',
-    calls: pageCalls, chunkSize: 10,
+
+  if (pageCalls.length) {
+    // getTokens reads one cold storage slot per token returned, so these are chunked well below the
+    // node's 30M gas ceiling on eth_call; every other call here is cheap enough for the default chunk.
+    const pages = await api.multiCall({
+      abi: 'function getTokens(uint256 offset, uint256 limit) view returns (address[])',
+      calls: pageCalls, chunkSize: 10,
+    })
+
+    const newCalls = {}
+    pages.forEach((tokens, i) => {
+      const shape = pageShapes[i]
+      if (!newCalls[shape]) newCalls[shape] = []
+      tokens.forEach(token => newCalls[shape].push({ target: pageCalls[i].target, params: token }))
+    })
+
+    for (const [shape, calls] of Object.entries(newCalls)) {
+      const launches = await api.multiCall({ abi: LAUNCH_ABI[shape], calls })
+      launches.forEach(({ positionId }, i) => {
+        const key = calls[i].target.toLowerCase()
+        cached[key].launches.push([calls[i].params.toLowerCase(), String(positionId)])
+      })
+    }
+  }
+
+  // Each Portal's registry states how many launches it has; anything else means a page was lost.
+  const out = PORTALS.map(({ address, shape }, i) => {
+    const entry = cached[address.toLowerCase()]
+    if (entry.launches.length < +counts[i])
+      throw new Error(`arguspad: ${address} enumerated ${entry.launches.length} launches, registry reports ${counts[i]}`)
+    entry.count = entry.launches.length
+    return { shape, launches: entry.launches.slice(0, +counts[i]) }
   })
 
-  const launchCalls = {}
-  pages.forEach((tokens, i) => {
-    const shape = pageShapes[i]
-    if (!launchCalls[shape]) launchCalls[shape] = []
-    tokens.forEach(token => launchCalls[shape].push({ target: pageCalls[i].target, params: token }))
-  })
+  // Only ever grow the stored list. A past-block run reads a prefix of it and writes nothing.
+  if (pageCalls.length) await setCache(CACHE_PROJECT, api.chain, { portals: cached }, { skipCompression: true })
+  const total = out.reduce((acc, p) => acc + p.launches.length, 0)
+  sdk.log(`[arguspad] ${total} launches at this block (${pageCalls.length} pages read this run)`)
+  return out
+}
+
+async function tvl(api) {
+  // Launches come from each Portal's own registry, not from TokenCreated logs: several unrelated
+  // launchpads on Arc run forks of this codebase and emit a byte-identical event, so matching on
+  // topic0 would attribute their launches to ArgusPad. The registry is also the only source that
+  // does not depend on log retention - two of the four public Arc endpoints keep only about two
+  // days of logs, and the first launch is well outside that.
+  const portals = await getLaunches(api)
 
   // A launch token can itself be one of the quote assets - ARGUS and ARCASH were both launched on
   // ArgusPad. Those positions are grouped on their own so the launch token can be blacklisted for
   // them, leaving every position contributing only the side that is not its own launch token.
   const groups = {}
-  for (const [shape, calls] of Object.entries(launchCalls)) {
-    const launches = await api.multiCall({ abi: LAUNCH_ABI[shape], calls })
-    launches.forEach(({ positionId }, i) => {
-      const token = calls[i].params.toLowerCase()
+  for (const { shape, launches } of portals) {
+    for (const [token, positionId] of launches) {
       const self = QUOTE_SET.has(token) ? token : ''
       if (!groups[self]) groups[self] = { v3: [], v4: [] }
       groups[self][shape === 'v3' ? 'v3' : 'v4'].push(positionId)
-    })
+    }
   }
 
   for (const [self, { v3, v4 }] of Object.entries(groups)) {

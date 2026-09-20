@@ -67,9 +67,33 @@ const DEFAULTS = {
   PROM_RPC_MULTICALL: '0xfF785aF3De8C2cb5727A8665984E741c16679131',
   NIBIRU_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
-  ARC_RPC: 'https://rpc.mainnet.arc.io',
+  // Measured 2026-09-20 against all four public Arc endpoints. explorer.arc.io/api/eth-rpc, which
+  // was the archival entry here, sits behind a Cloudflare managed challenge and answers every
+  // programmatic request with HTTP 403, so it served nothing, leaving rpc.mainnet.arc.io to take
+  // the whole load at the SDK's default 100 parallel requests, and it 429d.
+  // Order matters, because these hosts differ by method and by block:
+  //   eth_call at the latest block   - drpc, mainnet and blockdaemon all serve Multicall3 batches
+  //                                    of 300 (56KB of calldata) in well under a second
+  //   eth_call at a PAST block       - only drpc serves it (8400 reads/s at 4-way concurrency).
+  //                                    blockdaemon answers "state at block N is pruned", and
+  //                                    rpc.mainnet.arc.io 429s every archival read, even one batch
+  //                                    of 50 after sitting idle - its archive reads are metered
+  //                                    separately and far harder than its latest-block reads.
+  // So drpc leads: it is the only host that can serve a backfill at all, and it is also the
+  // fastest of the three at the latest block. The other two remain as fallbacks.
+  ARC_RPC: 'https://rpc.drpc.mainnet.arc.io,https://rpc.mainnet.arc.io,https://rpc.blockdaemon.mainnet.arc.io',
   ARC_RPC_CHAIN_ID: '5042',
-  ARC_ARCHIVAL_RPC: 'https://explorer.arc.io/api/eth-rpc', // public rpc.mainnet.arc.io rejects large eth_getLogs ranges
+  // eth_getLogs is the other way round from the name: rpc.mainnet.arc.io and drpc hold logs to
+  // genesis, while rpc.arc-scan.org and the blockdaemon host keep only the last ~387k blocks
+  // (~2.2 days) and answer anything older with "pruned history unavailable". Block range per
+  // call: arc-scan/blockdaemon 20000+, mainnet 10000, drpc 101. The two wide, unmetered hosts lead
+  // because an ordinary window is well inside their retention; the deep-history hosts are reached
+  // through ARC_RPC behind them.
+  ARC_ARCHIVAL_RPC: 'https://rpc.arc-scan.org,https://rpc.blockdaemon.mainnet.arc.io',
+  ARC_RPC_GET_LOGS_CONCURRENCY_LIMIT: '4',
+  // 8 is where the measurement tops out: drpc served 8400 archival reads a second at 4- and
+  // 8-way concurrency with no failures, and started returning 408s above that.
+  ARC_RPC_MAX_PARALLEL: '8',
   // Arc is not in the SDK Multicall3 deployment map. Without this, eth.getBalances skips
   // getEthBalance() and fans out getBalance against ARC_RPC (429s). Archival is getLogs-only.
   ARC_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
