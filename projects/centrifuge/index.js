@@ -112,7 +112,7 @@ const getTokens = async (api, block, factories) => {
   return [...new Set(logs.flat())]
 }
 
-const tvl = async (api) => {
+const tvlInner = async (api) => {
   const chain = api.chain
   const block = await api.getBlock() - 100
   const { factories, assets } = CONFIG[chain]
@@ -151,6 +151,21 @@ const tvl = async (api) => {
   if (uniqueVaults.length === 0) return
 
   await api.erc4626Sum({ calls: uniqueVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
+}
+
+// Public RPCs intermittently drop requests (seen on BSC log scans and
+// multicalls); a dropped read would fail the whole adapter and zero out all
+// chains, so retry a few times with backoff before giving up.
+const { sleep } = require('../helper/utils')
+const tvl = async (api, attempts = 3) => {
+  for (let i = 1; ; i++) {
+    try {
+      return await tvlInner(api)
+    } catch (e) {
+      if (i >= attempts) throw e
+      await sleep(2000 * i)
+    }
+  }
 }
 
 module.exports.methodology = `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`
