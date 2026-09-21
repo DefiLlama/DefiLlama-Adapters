@@ -56,3 +56,6 @@ module.exports = {
 
 for (const [chain, chainId] of Object.entries(chains))
   module.exports[chain] = { tvl: api => tvl(api, chainId) };
+
+// fantom is no longer in the API response; keep the export so historical TVL stays in the API
+module.exports.fantom = { tvl: () => ({}) };
