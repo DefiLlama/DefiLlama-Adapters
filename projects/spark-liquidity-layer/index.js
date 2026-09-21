@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const ADDRESSES = require('../helper/coreAssets.json')
 const morphoAbi = require('../helper/abis/morpho.json')
 const { getExports } = require('../helper/heroku-api')
@@ -132,15 +131,10 @@ async function tvl(api) {
   api.add(allTokens, balances)
 
   if (api.chain === 'ethereum') {
-    // track anchorage allocation (custody position, read from the off-chain store)
-    try {
-      const tvl  = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
-      const anchorageBalance = await tvl(api)
-      api.addBalances(anchorageBalance)
-    } catch (e) {
-      if (e.message !== 'Elasticsearch client not configured') throw e
-      sdk.log('spark-liquidity-layer: anchorage allocation skipped, no elastic client configured')
-    }
+    // track anchorage allocation
+    const tvl = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
+    const anchorageBalance = await tvl(api)
+    api.addBalances(anchorageBalance)
   }
 }
 
