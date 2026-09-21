@@ -20,6 +20,7 @@ module.exports = {
     timetravel: false,
     cardano: {
         tvl: () => ({}),
+        pool2: () => ({}),
         staking: stake
     }
 }
