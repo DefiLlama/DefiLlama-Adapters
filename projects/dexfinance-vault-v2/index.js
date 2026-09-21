@@ -33,7 +33,7 @@ const CONFIG = {
   },
   arc: {
     factory: '0x3ca7c79263101e7512ce5dd4bc7daf0f52cb24f5',
-    start: 21144429, // 2026-09-21
+    start: 1789948800, // 2026-09-21
   },
 };
 
