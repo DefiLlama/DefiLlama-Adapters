@@ -16,7 +16,7 @@ const ETI_ETX_PAIR = '0x88f179117BE4402a71ca3e9094E7942D03Db84b3'
 // so the WEGAZ/ETX pool is counted by its ETX side only.
 const coreAssets = [ETI]
 
-const uniTvl = getUniTVL({ factory: SWAP_FACTORY, coreAssets, blacklistedTokens: [WEGAZ] })
+const uniTvl = getUniTVL({ factory: SWAP_FACTORY, coreAssets, blacklistedTokens: [WEGAZ, STAKED_ETX] })
 
 async function tvl(api) {
   api.addBalances(await uniTvl(api))
@@ -31,6 +31,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     'TVL is the value of tokens held in EticaSwap V2 pools plus the ETX side of the ETX/stETX stableswap. ' +
     'Staking is the ETX deposited in the stETX ERC-4626 vault. ETX is priced through the ETI/ETX EticaSwap ' +
