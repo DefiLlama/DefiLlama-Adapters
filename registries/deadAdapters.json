@@ -6970,5 +6970,353 @@
       "staking": "_f"
     },
     "deadFrom": "2026-09-15"
+  },
+  "revault": {
+    "start": "2021-10-13",
+    "bsc": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-12-18"
+  },
+  "keeper-dao": {
+    "start": "2021-01-30",
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-12-18"
+  },
+  "hord-fi": {
+    "timetravel": false,
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-12-18"
+  },
+  "remora-markets": {
+    "solana": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-02-23"
+  },
+  "core-markets": {
+    "timetravel": false,
+    "start": 236678,
+    "blast": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2024-09-25"
+  },
+  "defi-basket": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "methodology": "The TVL is calculated by summing the value of all assets that are in the wallets deployed by the DeFiBasket contract.",
+    "polygon": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-01"
+  },
+  "pstake": {
+    "methodology": "Total amount of liquid staked tokens on Persistence.",
+    "bsc": {
+      "tvl": "_f"
+    },
+    "persistence": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-02-25"
+  },
+  "hashmix": {
+    "methodology": "HashMix FIL Liquid Staking Protocol is a decentralized staking protocol on Filecoin, connecting FIL holders and miners in the ecosystem.",
+    "filecoin": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-01"
+  },
+  "printr-protocol": {
+    "timetravel": false,
+    "methodology": "Sum of reserves locked in active Printr bonding curves and tokens locked in Proof of Belief (POB) staking pools. Each curve holds a base pair token (e.g., USDC, USDT, USD1) that users deposit to buy tokens. Graduated tokens (curves with completionThreshold=0) are excluded as their liquidity has moved to DEX pools (Meteora on Solana, Uniswap V3 on ETH/Base/Arb/Avax, PancakeSwap V3 on BNB/Monad, Merchant Moe on Mantle). Locked POB tokens are not used as liquidity, they represent onchain commitment only.",
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "base": {
+      "tvl": "_f"
+    },
+    "avax": {
+      "tvl": "_f"
+    },
+    "mantle": {
+      "tvl": "_f"
+    },
+    "monad": {
+      "tvl": "_f"
+    },
+    "solana": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-08-31"
+  },
+  "settleton": {
+    "methodology": "The methodology for calculating the total TVL is based on analyzing liquidity pool data and LP token balances. \nFor each Vaults we iterate through all LP tokens and calculate their price based on following onchain data: (reserve0, reserve1, total_lp_supply)\nFor each pool, a calculation is performed to determine the equivalent amount of TON based on the current pool reserves and the share of LP tokens held. \nThis calculation takes into account the reserve ratios and adjusts the token value to TON.\nFor multi-indices, the TVL of all pools is summed up, while for single indices, the value of the sole pool is used. The final TVL is represented in TON, and the index price is calculated by dividing the TVL by the total supply of the index.",
+    "timetravel": false,
+    "doublecounted": true,
+    "ton": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-11-22"
+  },
+  "tonpools": {
+    "methodology": "Ton Pools's TVL includes all deposited supported assets",
+    "ton": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-01"
+  },
+  "sparklex": {
+    "doublecounted": true,
+    "hallmarks": [
+      [
+        "2025-07-24",
+        "SparkleX Official Launch"
+      ]
+    ],
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "base": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-11"
+  },
+  "ebisu-finance": {
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "mode": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-28"
+  },
+  "sushiswap-furo": {
+    "ethereum": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "polygon": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "fantom": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "bsc": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "avax": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "optimism": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "xdai": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "harmony": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "moonbeam": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "moonriver": {
+      "tvl": "_f",
+      "vesting": "_f"
+    },
+    "deadFrom": "2026-01-01"
+  },
+  "synthetix": {
+    "timetravel": false,
+    "optimism": {
+      "tvl": "_f"
+    },
+    "ethereum": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "methodology": "Counts the value of all SNX staked in the 420 pool & legacy escrow contracts under staking",
+    "deadFrom": "2024-01-01"
+  },
+  "xlink": {
+    "methodology": "TVL of Brotocol is the sum of the tokens locked in its contracts",
+    "timetravel": false,
+    "bitcoin": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "core": {
+      "tvl": "_f"
+    },
+    "bsquared": {
+      "tvl": "_f"
+    },
+    "bob": {
+      "tvl": "_f"
+    },
+    "merlin": {
+      "tvl": "_f"
+    },
+    "ailayer": {
+      "tvl": "_f"
+    },
+    "mode": {
+      "tvl": "_f"
+    },
+    "xlayer": {
+      "tvl": "_f"
+    },
+    "stacks": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-15"
+  },
+  "magnify-cash": {
+    "methodology": "Count TVL by getting balance of USDC in V1, V2 Contracts. Counts total active borrowed using LoanRequested events subtracted by LoanRepaid events from V1 and V2 Contracts",
+    "wc": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "deadFrom": "2026-05-09"
+  },
+  "solar-studios": {
+    "timetravel": false,
+    "eclipse": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-08-11"
+  },
+  "syncus": {
+    "ethereum": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "era": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "deadFrom": "2024-04-21"
+  },
+  "hbtc": {
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-03-31"
+  },
+  "omicron": {
+    "arbitrum": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2023-01-30"
+  },
+  "luxor": {
+    "fantom": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2023-05-01"
+  },
+  "stream": {
+    "methodology": "Calculates the TVL of all Stream vaults",
+    "start": 1739697390,
+    "hallmarks": [
+      [
+        "2025-02-23",
+        "Stream V2 Launch"
+      ],
+      [
+        "2025-11-04",
+        "Reported loss $93 million users fund"
+      ]
+    ],
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-11-04"
+  },
+  "deepbook-sui": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "sui": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-01"
+  },
+  "perennial-v2": {
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "perennial": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-30"
+  },
+  "lumin-finance": {
+    "methodology": "Gets v1 total deposits, and v2 staking statistics on-chain.",
+    "arbitrum": {
+      "staking": "_f",
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "deadFrom": "2024-11-30"
+  },
+  "umoja": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "arbitrum": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2025-04-25"
+  },
+  "IPLR": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "methodology": "Tracks SOL in the IPLR/SOL LP vault (pool2) and in the rewards wallet (staking).",
+    "solana": {
+      "tvl": "_f",
+      "pool2": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2025-05-24"
+  },
+  "apechainstake": {
+    "apechain": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2025-12-12"
   }
 }
