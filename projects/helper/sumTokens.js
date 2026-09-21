@@ -42,6 +42,7 @@ const helpers = {
   "starknet": require("./chain/starknet"),
   "brc20": require("./chain/brc20"),
   "doge": require("./chain/doge"),
+  "zcash": require("./chain/zcash"),
   "bittensor": require("./chain/bittensor"),
   "fuel": require("./chain/fuel"),
   "radixdlt": require("./chain/radixdlt"),

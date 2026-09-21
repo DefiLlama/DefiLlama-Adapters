@@ -28406,6 +28406,20 @@ const configs = {
         ADDRESSES.null
       ]
     },
+    "base": {
+      "owner": "0x749b898E5B523f08E9e371D259e0409c19AE8454",
+      "tokens": [
+        ADDRESSES.null,
+        "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+      ]
+    },
+    "avax": {
+      "owner": "0x84e49dDcAD2eBFE7474Fa7A3d3eb1fe8bC103A16",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    zcash: { owners: ['t1KbKkQ7WisJF52sSepMjYokQJbkJCJ1i3C'] },
   },
   "universe": {
     "methodology": "TVL counts tokens that have been deposited to the yield farming vaults. Pool2 TVL counts SushiSwap LP tokens (USDC-XYZ) that have been deposited to the yield farm.",
