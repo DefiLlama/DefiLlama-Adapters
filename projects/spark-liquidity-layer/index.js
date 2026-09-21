@@ -14,6 +14,15 @@ const almProxy = {
   xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
 }
 
+const pauAlmProxies = {
+  ethereum: {
+    spusdc: '0x8D719A830b00e5571db00D173505CD56c0Ec224a'
+  },
+  xlayer: {
+    spusdc: '0xe6D5d041Fc5e7fDD0A53C13e78a1cc7e4ffCb667'
+  }
+}
+
 const mainnetAllocatorToTokens = {
   '0xAfA2DD8a0594B2B24B59de405Da9338C4Ce23437': [
     '0x4DEDf26112B3Ec8eC46e7E31EA5e123490B05B8B', // spDai
@@ -41,11 +50,15 @@ const mainnetAllocatorToTokens = {
     '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho Spark Blue Chip USDC Vault
     '0xc7CDcFDEfC64631ED6799C95e3b110cd42F2bD22', // morpho Spark Blue Chip USDT Vault v1
     '0xb0c424116172B55CbB6dD3136F5989F7959e5B91', // morpho Spark Blue Chip USDT Vault v2
+    '0xFC8C624B6080a0a780583799f2A862DE936F6E22', // morpho Sentora x Spark RLUSD Vault
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
     '0x8292bb45bf1ee4d140127049757c2e0ff06317ed', // rlUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
   ],
+  [pauAlmProxies.ethereum.spusdc]: [
+    ADDRESSES.ethereum.USDC,
+  ]
 }
 
 const baseAllocatorToTokens = {
@@ -86,6 +99,7 @@ const robinhoodAllocatorToTokens = {
 
 const xlayerAllocatorToTokens = {
   [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
+  [pauAlmProxies.xlayer.spusdc]: [ADDRESSES.xlayer.USDC]
 }
 
 const CONFIG = {
