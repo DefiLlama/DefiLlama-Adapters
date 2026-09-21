@@ -1,6 +1,7 @@
 const { getCuratorExport } = require("../helper/curators")
 const { sumTokensDebank } = require("../helper/debank")
 const { getCache } = require("../helper/cache")
+const { dydxLiveTvl, dydxHistoricalTvl } = require("./dydx")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
@@ -20,7 +21,7 @@ const GearboxCompressorABI = {
 // ---- Config (extend as needed) ----
 const configs = {
   methodology:
-    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, kpk Fund AUM, and positions in Safes actively managed by kpk via Zodiac Roles Modifier.",
+    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, kpk Fund AUM, positions in Safes actively managed by kpk via Zodiac Roles Modifier, and the dYdX mandate's DYDX delegated, unbonding and held on dYdX chain.",
   blockchains: {
     ethereum: {
       // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
@@ -182,13 +183,15 @@ const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc'
 // exclusion the DeBank sweep applies through blacklistedPools - so the two figures
 // are meant to be interchangeable, DeBank for today and the store for any earlier day.
 //
-// The store is mandates ONLY: no curated vaults, no Gearbox/Aleph, no OIV fund Safes.
-// Vaults, Gearbox and Aleph keep running from their own on-chain sources at
-// historical blocks. The OIV Safes have no historical source and are skipped on past
-// dates: they only exist since 2026-03 and production has tracked them via DeBank
-// since 2026-06-16, so a refill of the history before that loses nothing. From that
-// date on the stored days are already complete and a historical run would REPLACE
-// them with a total missing the OIV Safes, so the historical path refuses those dates.
+// The store is mandates ONLY: no curated vaults, no Gearbox/Aleph, no OIV fund Safes,
+// no dYdX chain. Vaults, Gearbox and Aleph keep running from their own on-chain
+// sources at historical blocks, and the dYdX chain has its own source (see dydx.js).
+// The OIV Safes have no historical source and are skipped on past dates: they only
+// exist since 2026-03 and production has tracked them via DeBank since 2026-06-16, so
+// a refill of the history before that loses nothing. From that date on the stored
+// days are already complete and a historical run would REPLACE them with a total
+// missing the OIV Safes, so the historical path refuses those dates. A refill writes
+// every chain of a date at once, so the dYdX chain is bound by the same cutoff.
 const IR_CACHE_PROJECT = 'kpk-treasury-ir'
 const IR_CACHE_FILE = 'daily'
 const HISTORICAL_CUTOFF = '2026-06-16' // first day production tracked the OIV Safes
@@ -265,6 +268,11 @@ for (const chain of allChains) {
       }
     }
   }
+}
+
+// dYdX chain: the LCD today, today's anchor walked back through Allium for any past date
+exportObjects.dydx = {
+  tvl: async (api) => isHistoricalRun(api) ? dydxHistoricalTvl(api) : dydxLiveTvl(api),
 }
 
 module.exports = exportObjects
