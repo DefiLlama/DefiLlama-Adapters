@@ -104,6 +104,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
       case 'base': stateViewer = '0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71'; break;
       case 'monad': stateViewer = '0x77395f3b2e73ae90843717371294fa97cc419d64'; break;
       case 'robinhood': stateViewer = '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b'; break;
+      case 'arc': stateViewer = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b'; break;
       default: throw new Error('missing default uniswap state viewer address chain: ' + chain)
     }
 
@@ -117,6 +118,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
       case 'base': nftAddress = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'; break;
       case 'monad': nftAddress = '0x5b7ec4a94ff9bedb700fb82ab09d5846972f4016'; break;
       case 'robinhood': nftAddress = '0x58daec3116aae6d93017baaea7749052e8a04fa7'; break;
+      case 'arc': nftAddress = '0x6049c9a0e26405C0985f9E3685C87d0aE917f82B'; break;
       default: throw new Error('missing default uniswap nft address chain: ' + chain)
     }
 
