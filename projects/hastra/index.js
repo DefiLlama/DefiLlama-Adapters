@@ -13,6 +13,7 @@ const solanaAutoWYLDSVaultAccount = "GtWPVP3KPTJC8z9wPLAop4mPp9jZiRKzL8deDD4PfQ7
 // Ethereum
 const ethereumPrimeStakingContract = "0x19ebb35279A16207Ec4ba82799CC64715065F7F6"
 const ethereumAutoStakingContract = "0x997E2Efbce91D170B00EA402e35a66C887EE1da9"
+const ethereumSmbStakingContract = "0xBd49537Cc9105E8c1651Ed12b94cD9A3D79Bf3d9"
 
 async function solanaTvl(api) {
   const balances = await getTokenAccountBalances([
@@ -31,6 +32,7 @@ async function ethereumTvl(api) {
   return api.sumTokens({ tokensAndOwners: [
     [ethereumWYLDSContract, ethereumPrimeStakingContract],
     [ethereumWYLDSContract, ethereumAutoStakingContract],
+    [ethereumWYLDSContract, ethereumSmbStakingContract],
     [ADDRESSES.ethereum.USDC, ethereumRedeemVaultAccount]
   ]})
 }
