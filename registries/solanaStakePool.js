@@ -126,6 +126,10 @@ const configs = {
   'blazestake': {
     solana: { type: 'staked', address: '6WecYymEARvjG5ZyqkrVQ6YkhPfujNzWpSPwNKXHCbV2' },
   },
+  'definity-staked-sol': {
+    methodology: "TVL is the total amount of SOL staked in the Definity definSOL stake pool.",
+    solana: 'Bvbu55B991evqqhLtKcyTZjzQ4EQzRUwtf9T4CcpMmPL',
+  },
 }
 
 module.exports = buildProtocolExports(configs, solanaStakePoolExportFn)
