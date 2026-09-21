@@ -15,6 +15,11 @@ const ethereumPrimeStakingContract = "0x19ebb35279A16207Ec4ba82799CC64715065F7F6
 const ethereumAutoStakingContract = "0x997E2Efbce91D170B00EA402e35a66C887EE1da9"
 const ethereumSmbStakingContract = "0xBd49537Cc9105E8c1651Ed12b94cD9A3D79Bf3d9"
 
+/**
+ * Counts wYLDS in the Solana PRIME and AUTO vaults, plus unredeemed tokens in the Solana redemption vault.
+ * @param {object} api DefiLlama chain API used to record token balances
+ * @returns {Promise<object>} Token balances counted toward Solana TVL
+ */
 async function solanaTvl(api) {
   const balances = await getTokenAccountBalances([
     solanaPrimeWYLDSVaultAccount,
@@ -28,6 +33,11 @@ async function solanaTvl(api) {
   return api.getBalances();
 }
 
+/**
+ * Counts wYLDS in the Ethereum PRIME, AUTO, and SMB staking vaults, plus USDC in the Ethereum redemption vault.
+ * @param {object} api DefiLlama chain API used to record token balances
+ * @returns {Promise<object>} Token balances counted toward Ethereum TVL
+ */
 async function ethereumTvl(api) {
   return api.sumTokens({ tokensAndOwners: [
     [ethereumWYLDSContract, ethereumPrimeStakingContract],
