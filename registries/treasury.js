@@ -373,11 +373,10 @@ const configs = {
         '0x921D8FDF089775D5AC61b2d6e8f34F1edd554D8f',
         '0xa8D00712abE7af3446cdC651c159737cCFB43255',
         '0xed7cb3973C7bFE4bf78dA8E5f52EB04c0dF53d3B',
-        '0x62DE034b1A69eF853c9d0D8a33D26DF5cF26682E',
-        '0x8c8E076Cd7D2A17Ba2a5e5AF7036c2b2B7F790f6',
         '0xAbA69f6E893B18bE066a237f723F43315BBF9D9A',
       ],
       ownTokens: ['0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7'],
+      fetchCoValentTokens: false,
     },
   },
   'treasury/abachi': {

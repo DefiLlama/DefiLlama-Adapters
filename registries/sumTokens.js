@@ -15218,7 +15218,7 @@ const configs = {
         "owners": [
           "addr_vkh1ahllvc7n0lzljafmcs3zurdzhlsg4fydkzph6tpjnt0tx0asedu",
           "addr_vkh14rtl7h85cytjwq5gxuhe4j8peedhtzhptfu9r3qkvxjgcz7xfs0",
-          "addr_vkh1pgev05dyt75xrj9x3qffrxarhgv87tdxmp8ldppctvsxgnnucxs"
+          "script1pgev05dyt75xrj9x3qffrxarhgv87tdxmp8ldppctvsxgl0w5wk" // v2.0 orders: script-hash payment credential (was mis-encoded as addr_vkh, which blockfrost rejects)
         ]
       }
     },
