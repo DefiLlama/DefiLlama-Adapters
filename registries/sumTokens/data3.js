@@ -1017,4 +1017,15 @@ module.exports = {
       ]
     }
   },
+  "charity-billionaire": {
+    "methodology": "TVL is the CharityPrizeVault's aBasUSDC balance on Base — every USDC deposited by users, supplied to Aave v3 to earn interest. Deposits are never spent: only the interest is distributed each week (90% to one depositor drawn by Chainlink VRF, 5% to a rotating charity, 5% to operations), and depositors can withdraw their full principal at any time. Because the underlying position is supplied into Aave v3, this TVL is also counted by Aave and should be treated as double counted.",
+    "start": "2026-06-24",
+    "doublecounted": true,
+    "base": {
+      "owner": "0x3993bD557E0d4a1E5A8Ec09a005E7Eee3E032f70",
+      "tokens": [
+        "0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB"
+      ]
+    },
+  },
 }
