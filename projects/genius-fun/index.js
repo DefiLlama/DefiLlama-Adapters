@@ -13,24 +13,25 @@ const getLaunchedToken = 'function getLaunchedToken(address) view returns ((addr
 
 async function tvl(api) {
   const block = await api.getBlock()
-  await Promise.all(factories.filter(f => block >= f.fromBlock).map(async ({ address, fromBlock }) => {
+  for (const { address, fromBlock } of factories.filter(f => block >= f.fromBlock)) {
     const launches = (await getEventLogs({
       chain: api.chain, target: address, fromBlock, toBlock: block, eventAbi: tokenLaunched, onlyArgs: true,
       maxBlockRange: 9000,
     })).filter(l => l.pairToken.toLowerCase() !== genius)
-    if (!launches.length) return
+    if (!launches.length) continue
 
+    // Public BSC RPCs limit eth_call request bodies; the SDK's default 300-call batch exceeds them.
     const records = await api.multiCall({
-      target: address, abi: getLaunchedToken, calls: launches.map(l => l.token),
+      target: address, abi: getLaunchedToken, calls: launches.map(l => l.token), chunkSize: 50,
     })
     const active = records.filter(l => String(l.phase) === '0') // NotGraduated
-    const reserves = await api.multiCall({ abi: 'uint256:realQuoteReserve', calls: active.map(l => l.curve) })
+    const reserves = await api.multiCall({ abi: 'uint256:realQuoteReserve', calls: active.map(l => l.curve), chunkSize: 50 })
     active.forEach((l, i) => api.add(l.pairToken, reserves[i]))
 
     // The crossing buy first transfers reserves into the factory. Keep counting them until the
     // separate graduation transaction seeds PancakeSwap Infinity, or the owner rescues them.
     records.filter(l => String(l.phase) === '1').forEach(l => api.add(l.pairToken, l.sweptQuote))
-  }))
+  }
 }
 
 module.exports = {
