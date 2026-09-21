@@ -1873,6 +1873,12 @@ const uniV3Configs = {
       blacklistedOwners: ['0xa9d452042d4740dfce99ec54dda138d32cde742f'],
     },
   },
+  'buglefamily': {
+    arc: {
+      factory: '0xB09f790A1907a1db006e88F14C4f0168fBee9598',
+      fromBlock: 21118790,
+    },
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
