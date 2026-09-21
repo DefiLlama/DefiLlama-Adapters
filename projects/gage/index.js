@@ -1,120 +1,194 @@
+// DefiLlama TVL adapter for gage (DefiLlama-Adapters: projects/gage/index.js). Upstream copy of this file.
+// Every address comes from ./universe.json, generated from the live deployment manifest by
+// `node scripts/defillama-universe.mjs` in github.com/DebenLabs/gagedotcash (docs/TVL-REPORTING.md).
 const { unwrapUniswapV3NFT, unwrapUniswapV4NFTs } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
+const U = require('./universe.json')
 
-// Immutable deployments; new vaults must be added explicitly.
-// https://docs.gage.cash/protocol/addresses
-const vaults = [
-  { address: '0x3D979740785ABd8b7Dd5c2Ff7Bf100CBe86fcBDF', fromBlock: 57067880, kind: 1 },
-  { address: '0xc23A08282AA1A9141C6fD7A29e7dFbFe841cC6B6', fromBlock: 57225875, kind: 1 },
-  { address: '0xe3628a01eaca2e7b0EC71Ed7bA616b997fEf9cDE', fromBlock: 57272387, kind: 2 },
-]
-const stateViewer = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b'
-const blacklistedTokens = [
-  '0x7163ae1b5aea2f09ebc609c52b4dcac0a7a4bc2d', // GAGE
-  '0x78c88cf8f6e612955526ceb501be82bf3279bd5d', // sGAGE
-  '0x647d46c0577453be8c75039f829740b5d2e44938', // GAGE-RECEIPT: 1-wei internal receipt, deals are router round-trips with no collateral
-]
+const KIND = { ERC20: 0, UNIV4_POSITION: 1, UNIV3_POSITION: 2 }
+const DEAL = { LISTED: 0, FUNDED: 1, RECLAIMED: 2, CLAIMED: 3, CANCELLED: 4 }
+const LOAN = { NONE: 0, FUNDING: 1, ACTIVE: 2, REPAID: 3, DEFAULTED: 4, CANCELLED: 5 }
+const UNITS = 4n
+const ZERO = '0x0000000000000000000000000000000000000000'
+const excluded = new Set(U.excludedTokens)
+const lower = (a) => String(a).toLowerCase()
+const isExcluded = (token) => excluded.has(lower(token))
+const range = (n) => Array.from({ length: Number(n) }, (_, i) => i + 1)
+
 const dealAbi = 'function getDeal(uint256) view returns ((address borrower, uint8 kind, uint8 state, uint32 term, uint40 listingExpiry, address token, uint40 fundedAt, uint40 expiry, uint256 amountOrTokenId, uint128 cap, uint128 minPrice, address lender, uint128 price, uint128 fee))'
 const bidAbi = 'function getBid(uint256) view returns ((uint256 dealId, address lender, uint128 price, uint40 expiry, uint8 state))'
-const balanceUSDGAbi = 'function balanceUSDG(address) view returns (uint256)'
-const isBlacklisted = (token) => blacklistedTokens.includes(token.toLowerCase())
+const loanAbi = 'function getLoan(uint256) view returns ((address originator, address account, address token, address collateralBeneficiary, uint8 kind, uint8 state, uint8 filled, uint32 term, uint40 fundingDeadline, uint40 fundedAt, uint40 closedAt, uint128 principal, uint128 cap, uint128 originationFee, uint128 borrowerReward, uint128 lenderReward, uint256 collateral, bytes32 exposureKey, uint256 exposureAmount))'
 
-async function getVaults(api) {
-  const block = await api.getBlock() // Pin discovery, custody and LP state to the same block.
-  return Promise.all(vaults.filter(v => block >= v.fromBlock).map(async (vault) => {
-    const [count, usdg] = await Promise.all([
-      api.call({ target: vault.address, abi: 'uint256:dealCount' }),
-      api.call({ target: vault.address, abi: 'address:USDG' }),
-    ])
-    const length = Number(count)
-    if (!Number.isSafeInteger(length) || length < 0) throw new Error('Invalid Gage deal count')
-    const allDeals = length ? await api.multiCall({
-      target: vault.address, abi: dealAbi,
-      calls: Array.from({ length }, (_, i) => i + 1),
-    }) : []
-    // allDeals is kept for USDG credit accounting; deals excludes blacklisted collateral from tvl and borrowed.
-    const deals = allDeals.filter(d => !isBlacklisted(d.token))
-    return { ...vault, usdg, deals, allDeals }
-  }))
+// GageV2Vault._slice: principal split in four, the first slots carrying the remainder.
+const slice = (total, i) => total / UNITS + (BigInt(i) < total % UNITS ? 1n : 0n)
+function fundingEscrow(loan) {
+  if (Number(loan.state) !== LOAN.FUNDING) return 0n
+  let amount = 0n
+  for (let i = 0; i < Number(loan.filled); i++) amount += slice(BigInt(loan.principal), i)
+  return amount
 }
 
-// USDG held by a vault is either lender escrow for OPEN bids or a balanceUSDG credit awaiting withdrawal
-// (borrower loan proceeds, lender repayments, withdrawn bids, protocol fees). Only the escrow is TVL:
-// subtract every credit holder's balance. Credit holders are the fee sink, deal parties and bid lenders.
-async function getUsdgCredits(api, vault, feeSink) {
-  const bidCount = Number(await api.call({ target: vault.address, abi: 'uint256:bidCount' }))
-  const bids = bidCount ? await api.multiCall({
-    target: vault.address, abi: bidAbi,
-    calls: Array.from({ length: bidCount }, (_, i) => i + 1),
-  }) : []
-  const creditHolders = [feeSink]
-  for (const d of vault.allDeals) creditHolders.push(d.borrower, d.lender) // unfunded deals have a zero lender, which simply reads 0
-  for (const b of bids) creditHolders.push(b.lender)
-  const parties = [...new Set(creditHolders.map(a => a.toLowerCase()))]
-  const credits = await api.multiCall({ target: vault.address, abi: balanceUSDGAbi, calls: parties })
+async function vaultDeals(api, vault) {
+  const block = await api.getBlock()
+  if (block < vault.startBlock) return { deals: [], bids: [] }
+  const [count, bidCount] = await Promise.all([
+    api.call({ target: vault.address, abi: 'uint256:dealCount' }),
+    api.call({ target: vault.address, abi: 'uint256:bidCount' }),
+  ])
+  const [deals, bids] = await Promise.all([
+    Number(count) ? api.multiCall({ target: vault.address, abi: dealAbi, calls: range(count) }) : [],
+    Number(bidCount) ? api.multiCall({ target: vault.address, abi: bidAbi, calls: range(bidCount) }) : [],
+  ])
+  return { deals, bids }
+}
+
+// USDG a vault holds is lender escrow for open bids plus credits awaiting withdrawal (loan proceeds, repayments,
+// withdrawn bids, protocol fees). Only the escrow is TVL: subtract every credit holder's balance.
+async function usdgCredits(api, vault, deals, bids) {
+  const holders = [...new Set([vault.feeSink, ...deals.flatMap((d) => [d.borrower, d.lender]), ...bids.map((b) => b.lender)].map(lower).filter((a) => a !== ZERO))]
+  const credits = await api.multiCall({ target: vault.address, abi: 'function balanceUSDG(address) view returns (uint256)', calls: holders })
   return credits.reduce((sum, c) => sum + BigInt(c), 0n)
 }
 
-async function tvl(api) {
-  for (const vault of await getVaults(api)) {
-    const [feeSink, manager] = await Promise.all([
-      api.call({ target: vault.address, abi: 'address:FEE_SINK' }),
-      api.call({ target: vault.address, abi: 'address:POSITION_MANAGER' }),
-    ])
-    // Include tokens from settled and delisted deals: withdrawals are a separate transaction.
-    const tokens = [...new Set([vault.usdg, ...vault.deals.filter(d => Number(d.kind) === 0).map(d => d.token)]
-      .map(t => t.toLowerCase()))].filter(t => !isBlacklisted(t))
-    const [balances, usdgCredits] = await Promise.all([
-      api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(target => ({ target, params: vault.address })) }),
-      getUsdgCredits(api, vault, feeSink),
-    ])
-    tokens.forEach((token, i) => {
-      let amount = BigInt(balances[i])
-      if (token === vault.usdg.toLowerCase()) amount -= usdgCredits
-      if (amount < 0n) throw new Error(`Gage USDG credits exceed custody: ${vault.address}`)
-      api.add(token, amount.toString())
-    })
-
-    const nftDeals = vault.deals.filter(d => Number(d.kind) !== 0)
-    if (nftDeals.some(d => Number(d.kind) !== vault.kind || d.token.toLowerCase() !== manager.toLowerCase()))
-      throw new Error(`Unexpected Gage position manager or kind: ${vault.address}`)
-    // Settled positions stay in TVL until their user credit is withdrawn. A withdrawn NFT can
-    // later be burned; do not call ownerOf for it or count unsolicited transferFrom donations.
-    const settled = nftDeals.filter(d => [3, 4, 5].includes(Number(d.state)))
-    const owed = settled.length ? await api.multiCall({
-      target: vault.address, abi: 'function owedNFT(address,uint256) view returns (bool)',
-      calls: settled.map(d => ({ params: [Number(d.state) === 4 ? d.lender : d.borrower, d.amountOrTokenId] })),
-    }) : []
-    const positionIds = [...new Set([
-      ...nftDeals.filter(d => [1, 2].includes(Number(d.state))),
-      ...settled.filter((_, i) => owed[i]),
-    ].map(d => String(d.amountOrTokenId)))]
-    const owners = positionIds.length ? await api.multiCall({
-      target: manager, abi: 'function ownerOf(uint256) view returns (address)',
-      calls: positionIds,
-    }) : []
-    if (owners.some(owner => typeof owner !== 'string' || owner.toLowerCase() !== vault.address.toLowerCase()))
-      throw new Error(`Gage user NFT is missing from vault custody: ${vault.address}`)
+async function unwrap(api, groups) {
+  for (const [key, positionIds] of groups) {
+    const [protocol, manager] = key.split(':')
     if (!positionIds.length) continue // An empty v4 ID list would trigger unsupported subgraph discovery.
-
-    const config = { api, balances: api.getBalances(), nftAddress: manager, blacklistedTokens }
-    if (vault.kind === 1) await unwrapUniswapV4NFTs({ ...config, stateViewer, uniV4ExtraConfig: { positionIds } })
+    const config = { api, balances: api.getBalances(), nftAddress: manager, blacklistedTokens: U.excludedTokens }
+    if (protocol === 'v4') await unwrapUniswapV4NFTs({ ...config, stateViewer: U.stateView, uniV4ExtraConfig: { positionIds } })
     else await unwrapUniswapV3NFT({ ...config, uniV3ExtraConfig: { positionIds } })
   }
 }
+const group = (groups, protocol, manager, id) => {
+  const key = `${protocol}:${lower(manager)}`
+  if (!groups.has(key)) groups.set(key, [])
+  if (!groups.get(key).includes(String(id))) groups.get(key).push(String(id))
+}
 
+async function legacyTvl(api, groups) {
+  for (const vault of U.vaults) {
+    const { deals, bids } = await vaultDeals(api, vault)
+    if (!deals.length && !bids.length) continue
+    // Collateral awaiting withdrawal after settlement still counts: withdrawal is a separate transaction.
+    const tokens = [...new Set([U.usdg, ...deals.filter((d) => Number(d.kind) === KIND.ERC20).map((d) => lower(d.token))])].filter((t) => !isExcluded(t))
+    const [balances, credits] = await Promise.all([
+      api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map((target) => ({ target, params: vault.address })) }),
+      usdgCredits(api, vault, deals, bids),
+    ])
+    tokens.forEach((token, i) => {
+      let amount = BigInt(balances[i])
+      if (token === U.usdg) amount -= credits
+      if (amount < 0n) throw new Error(`Gage USDG credits exceed custody: ${vault.address}`)
+      api.add(token, amount.toString())
+    })
+    const nftDeals = deals.filter((d) => Number(d.kind) !== KIND.ERC20)
+    const settled = nftDeals.filter((d) => [DEAL.RECLAIMED, DEAL.CLAIMED, DEAL.CANCELLED].includes(Number(d.state)))
+    const owed = settled.length ? await api.multiCall({
+      target: vault.address, abi: 'function owedNFT(address,uint256) view returns (bool)',
+      calls: settled.map((d) => ({ params: [Number(d.state) === DEAL.CLAIMED ? d.lender : d.borrower, d.amountOrTokenId] })),
+    }) : []
+    const held = [...nftDeals.filter((d) => [DEAL.LISTED, DEAL.FUNDED].includes(Number(d.state))), ...settled.filter((_, i) => owed[i])]
+    if (!held.length) continue
+    // A withdrawn NFT can later be burned: only positions the vault still owns are unwrapped.
+    const owners = await api.multiCall({ abi: 'function ownerOf(uint256) view returns (address)', calls: held.map((d) => ({ target: d.token, params: [d.amountOrTokenId] })), permitFailure: true })
+    held.forEach((d, i) => {
+      if (typeof owners[i] !== 'string' || lower(owners[i]) !== vault.address) throw new Error(`Gage user NFT is missing from vault custody: ${vault.address} #${d.amountOrTokenId}`)
+      group(groups, Number(d.kind) === KIND.UNIV3_POSITION ? 'v3' : 'v4', d.token, d.amountOrTokenId)
+    })
+  }
+}
+
+async function engineLoans(api, engine) {
+  const block = await api.getBlock()
+  if (block < engine.startBlock) return []
+  const count = await api.call({ target: engine.engine, abi: 'uint256:loanCount' })
+  if (!Number(count)) return []
+  const loans = await api.multiCall({ target: engine.engine, abi: loanAbi, calls: range(count) })
+  return loans.map((l, i) => ({ ...l, id: i + 1 })) // Loan IDs are local to an engine and start at 1.
+}
+
+// V2 engines keep each loan's collateral in its own account contract and lender USDG in the engine until the
+// fourth slot fills. Whatever an account still holds is user value in custody, whatever the loan's state.
+async function engineTvl(api, groups) {
+  for (const engine of U.engines) {
+    const loans = (await engineLoans(api, engine)).filter((l) => Number(l.state) !== LOAN.NONE && lower(l.account) !== ZERO)
+    let escrow = 0n
+    for (const l of loans) escrow += fundingEscrow(l)
+    if (escrow > 0n) api.add(U.usdg, escrow.toString())
+    const erc20 = loans.filter((l) => Number(l.kind) === KIND.ERC20 && !isExcluded(l.token))
+    if (erc20.length) {
+      const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: erc20.map((l) => ({ target: l.token, params: l.account })) })
+      erc20.forEach((l, i) => api.add(lower(l.token), balances[i]))
+    }
+    const nft = loans.filter((l) => Number(l.kind) !== KIND.ERC20)
+    if (!nft.length) continue
+    const owners = await api.multiCall({ abi: 'function ownerOf(uint256) view returns (address)', calls: nft.map((l) => ({ target: l.token, params: [l.collateral] })), permitFailure: true })
+    const recovered = nft.filter((l, i) => Number(l.state) === LOAN.DEFAULTED && (typeof owners[i] !== 'string' || lower(owners[i]) !== lower(l.account)))
+    nft.forEach((l, i) => {
+      if (typeof owners[i] === 'string' && lower(owners[i]) === lower(l.account)) group(groups, Number(l.kind) === KIND.UNIV3_POSITION ? 'v3' : 'v4', l.token, l.collateral)
+    })
+    // A finalised default unwinds the position into the two underlying tokens, which wait in the account.
+    if (recovered.length) {
+      const logs = await getLogs({ api, target: engine.engine, eventAbi: 'event DefaultRecovered(uint256 indexed id, address[2] tokens, uint256[2] amounts)', onlyArgs: true, fromBlock: engine.startBlock })
+      const byId = new Map(logs.map((log) => [String(log.id), log.tokens.map(lower)]))
+      const calls = []
+      for (const l of recovered) for (const token of byId.get(String(l.id)) ?? []) if (token !== ZERO && !isExcluded(token)) calls.push({ target: token, params: l.account })
+      if (calls.length) {
+        const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls })
+        calls.forEach((c, i) => api.add(lower(c.target), balances[i]))
+      }
+    }
+  }
+}
+
+// Earn strategies: USDG idle in the strategy and its position in the external ERC-4626 reserve, at the reserve's own
+// conversion. Principal a strategy has lent is engine principal and is reported under borrowed, never twice.
+async function earnTvl(api) {
+  const block = await api.getBlock()
+  const vaults = new Set(U.earn.filter((s) => block >= s.startBlock).map((s) => s.vault))
+  for (const f of U.factories) {
+    if (block < f.startBlock) continue
+    const count = Number(await api.call({ target: f.address, abi: 'uint256:count' }))
+    if (count) (await api.multiCall({ target: f.address, abi: 'function vaults(uint256) view returns (address)', calls: range(count).map((i) => i - 1) })).forEach((v) => vaults.add(lower(v)))
+  }
+  const list = [...vaults]
+  if (!list.length) return
+  const [cash, shares, reserves] = await Promise.all([
+    api.multiCall({ abi: 'uint256:cash', calls: list }),
+    api.multiCall({ abi: 'uint256:reserveShares', calls: list }),
+    api.multiCall({ abi: 'address:RESERVE', calls: list }),
+  ])
+  const assets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: list.map((_, i) => ({ target: reserves[i], params: [shares[i]] })) })
+  list.forEach((_, i) => api.add(U.usdg, (BigInt(cash[i]) + BigInt(assets[i])).toString()))
+}
+
+async function tvl(api) {
+  const groups = new Map()
+  await legacyTvl(api, groups)
+  await engineTvl(api, groups)
+  await earnTvl(api)
+  await unwrap(api, groups)
+}
+
+// Gross funded principal stays outstanding until repayment or the collateral claim. A legacy deal backed by an
+// engine receipt is that engine's loan and is counted there.
 async function borrowed(api) {
-  for (const vault of await getVaults(api)) {
-    // Gross funded principal remains outstanding until reclaim/claim, including the grace period.
-    // Repayment caps are not balances, and proceeds awaiting withdrawal are still gross funded loans.
-    const amount = vault.deals.filter(d => Number(d.state) === 2).reduce((sum, d) => sum + BigInt(d.price), 0n)
-    api.add(vault.usdg, amount.toString())
+  for (const vault of U.vaults) {
+    const { deals } = await vaultDeals(api, vault)
+    const amount = deals.filter((d) => Number(d.state) === DEAL.FUNDED && !isExcluded(d.token)).reduce((sum, d) => sum + BigInt(d.price), 0n)
+    if (amount > 0n) api.add(U.usdg, amount.toString())
+  }
+  for (const engine of U.engines) {
+    const loans = await engineLoans(api, engine)
+    const amount = loans.filter((l) => Number(l.state) === LOAN.ACTIVE).reduce((sum, l) => sum + BigInt(l.principal), 0n)
+    if (amount > 0n) api.add(U.usdg, amount.toString())
   }
 }
 
 module.exports = {
-  timetravel: true, // Historical runs require an archive RPC, e.g. https://rpc.ordofi.network.
-  doublecounted: true, // Escrowed LP underlying assets are also counted by Uniswap V3/V4.
-  start: '2026-09-07',
-  methodology: 'Counts user ERC20 collateral held in all three Gage lending vaults, including collateral awaiting withdrawal, plus USDG escrowed for open lender bids. USDG credited to accounts for withdrawal (borrower loan proceeds, lender repayments, withdrawn bids, protocol fees) is excluded. Vault-owned Uniswap V3/V4 NFTs are unwrapped into underlying principal, excluding uncollected LP fees; these LP assets overlap with Uniswap V3/V4 TVL. Outstanding gross funded principal is reported separately under borrowed until reclaim or claim, including overdue unsettled deals. Excludes GAGE/sGAGE, the internal GAGE-RECEIPT token and deals collateralised by it, reward reserves, treasury and the external GAGE/sGAGE pool. Token balances are priced by DefiLlama.',
-  robinhood: { tvl, borrowed },
+  timetravel: true, // Historical runs need an archive RPC for Robinhood Chain.
+  doublecounted: true, // LP collateral overlaps Uniswap V3/V4; the Earn reserve overlaps its own ERC-4626 listing.
+  start: U.start,
+  methodology: 'Counts user collateral in custody across every Gage lending contract the deployment manifest names: the legacy deal vaults (ERC-20 collateral, including collateral awaiting withdrawal, and USDG escrowed for open bids) and the V2 engines (collateral held by each loan account, whatever the loan state, and USDG committed to loans that have not activated). Earn strategies add their idle USDG and their position in the external ERC-4626 reserve. USDG credited for withdrawal (loan proceeds, repayments, withdrawn bids, protocol fees) is excluded. Vault-owned Uniswap V3/V4 NFTs are unwrapped into underlying principal without uncollected fees. Gross active loan principal is reported separately under borrowed until repayment or claim. Excludes GAGE, sGAGE, the internal receipt tokens, reward reserves, the treasury and the protocol-owned GAGE/sGAGE pool. Token balances are priced by DefiLlama.',
+  [U.chain]: { tvl, borrowed },
 }
