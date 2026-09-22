@@ -440,6 +440,8 @@ module.exports = {
     "32qqF3w9W96S6br5x3cR75fgtFZwshjh4X",
     "3NnoMUQnURz29QLJcvQ5Xy6ztgJ4TYmqY3",
     "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
+    "3PSEjhkUQDGRNDPWqAcPhy9tEY6g6AHgPN", // add on 18/09/2026
+    "33FyMfJMRnqNvQiPDvE13L9cRHaEAXQziE", // add on 18/09/2026
   ],
   bitmake: [
     // wallet provide by a bitmake team
@@ -1130,7 +1132,10 @@ module.exports = {
     "14yyRRiEMJ5q5LmDCH4Nf6Emx7UKhoRfxR",
     "16pP3Pm2PEVZiMREQ6FJXieTWKE5ZMPfpU",
   ],
-  sodex: ["bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju"],
+  sodex: [
+    "bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju",
+    "bc1qj7nf62drtxgtssgslvyp6dyqrq7a3yfjj84zv4",
+  ],
   weex: [
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
     "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",

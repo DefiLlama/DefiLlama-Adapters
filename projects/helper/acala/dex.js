@@ -1,28 +1,22 @@
-
-const { getAPI, } = require('./api')
+// Dex.LiquidityPool: map Twox64Concat TradingPair(CurrencyId, CurrencyId) => (Balance, Balance), read over HTTP JSON-RPC
+const { getStorageEntries, stripHasher, ScaleReader } = require('../chain/substrate')
+const { readCurrencyId, currencyName } = require('./currency')
 const { transformDexBalances } = require('../portedTokens')
-const { getCoreAssets } = require('../tokenMapping')
-
 
 async function dex(chain) {
-  const api = await getAPI(chain)
-  const data = await api.query.dex.liquidityPool.entries();
+  const entries = await getStorageEntries(chain, { pallet: 'Dex', item: 'LiquidityPool' })
 
-  const coreAssets = getCoreAssets(chain)
-  const dexData = []
-
-  const getTokenName = tokenJson => {
-    tokenJson = tokenJson.toJSON()
-    if (tokenJson.token && coreAssets.includes(tokenJson.token.toLowerCase())) return tokenJson.token
-    return chain + ':' + JSON.stringify(tokenJson).replace(/(\{|\}|\s|")/g, '')
-  }
-  data.forEach(([token, amount]) => {
-    dexData.push({
-      token0: getTokenName(token.args[0][0]),
-      token0Bal: +amount[0],
-      token1: getTokenName(token.args[0][1]),
-      token1Bal: +amount[1],
-    })
+  const dexData = entries.map(({ rest, value }) => {
+    const key = new ScaleReader(stripHasher(rest, 'Twox64Concat'))
+    const token0 = readCurrencyId(key)
+    const token1 = readCurrencyId(key)
+    const amounts = new ScaleReader(value)
+    return {
+      token0: currencyName(chain, token0),
+      token0Bal: Number(amounts.u128()),
+      token1: currencyName(chain, token1),
+      token1Bal: Number(amounts.u128()),
+    }
   })
 
   return transformDexBalances({ chain, data: dexData })

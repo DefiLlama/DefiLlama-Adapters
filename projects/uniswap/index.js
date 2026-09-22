@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { uniV3Export } = require('../helper/uniswapV3')
 const { cachedGraphQuery, getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -71,7 +72,7 @@ const uniV3Config = {
   sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
   unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
   lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
-  xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664, blacklistedTokens: ['0x5d5f074837f5d4618b3916ba74de1bf9662a3fed'] },
+  xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664, blacklistedTokens: [ADDRESSES.xdc.SRX] },
   lens: { factory: "0xe0704DB90bcAA1eAFc00E958FF815Ab7aa11Ef47", fromBlock: 1 },
   // etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
   // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
@@ -83,6 +84,7 @@ const uniV3Config = {
   megaeth: { factory: '0x3a5f0cd7d62452b7f899b2a5758bfa57be0de478', fromBlock: 7009646 },
   robinhood: { factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', fromBlock: 8930 },
   ink: { factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424', fromBlock: 284117 },
+  arc: { factory: '0xf0db7b58379503491d857db50ac9ece64c653918', fromBlock: 1946500 },
 }
 
 Object.keys(uniV3Config).forEach(chain => {

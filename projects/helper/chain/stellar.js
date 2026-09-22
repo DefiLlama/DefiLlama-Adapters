@@ -32,8 +32,9 @@ async function sumTokens(config) {
     return transformBalances(api.chain, api.getBalances())
   } else {
     const { balances } = await get(`https://api.stellar.expert/explorer/public/account/${owner}/value`)
-    balances.forEach(({ asset, value }) => {
-      api.add(asset, value)
+    // `balance` is the raw on-chain amount (7 decimals); `value` is a USD estimate and must not be used as a balance
+    balances.forEach(({ asset, balance }) => {
+      api.add(asset, balance)
     })
   }
   if (config.skiTransform) return api.getBalances()

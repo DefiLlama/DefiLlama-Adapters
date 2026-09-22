@@ -5,7 +5,7 @@ const tokens = [
   ADDRESSES.polygon.WMATIC_2,
   ADDRESSES.polygon.WETH_1,
   ADDRESSES.polygon.USDT,
-  '0x831753dd7087cac61ab5644b308642cc1c33dc13', //QUICK
+  ADDRESSES.polygon.QUICK_2, //QUICK
 ];
 const fundedContracts = [
   '0x3C58EA8D37f4fc6882F678f822E383Df39260937', //masterchef

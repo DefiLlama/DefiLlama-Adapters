@@ -1,10 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * ARMSys — Dynamic-Fee Hook for Uniswap v4
  *
  *   Base mainnet:    ETH/USDC v4 pool, ARMSHookV3 (round-30, 2026-04-27).
  *   Robinhood Chain: NVDA/USDG, INTC/USDG and SPCX/USDG v4 pools,
  *                    ARMSHookV3RWA (2026-07-31 / 2026-08-03) — tokenized
- *                    US equities issued on the broker's own chain.
+ *                    US equities issued on the broker's own chain; and the
+ *                    v5 generation, ARMSHookV5RWA (2026-09-17, migration in
+ *                    progress — both hook generations run in parallel).
  *
  * Base uses the standard uniV4HookExport helper. That helper resolves a pool's
  * TVL through the Uniswap v4 subgraph and only supports chains present in its
@@ -26,8 +29,10 @@ const HOOK = '0x7fB4846d3987476577319f112731BB04f45880C8'; // Base, round-30
 // ─── Robinhood Chain ────────────────────────────────────────────────────
 const RH_POOL_MANAGER = '0x8366a39CC670B4001A1121B8F6A443A643e40951';
 const RH_POSITION_MANAGER = '0x58daec3116aae6D93017bAAea7749052E8a04fA7';
-const RH_HOOK = '0x20f8B7ec9cC3Bb5c739deDB15a8b4275F84B00c8';
-const USDG = '0x5fc5360d0400a0fd4f2af552add042d716f1d168';
+const RH_HOOK = '0x20f8B7ec9cC3Bb5c739deDB15a8b4275F84B00c8';        // v4 (live)
+const RH_HOOK_V5 = '0x73dfD2AeC79C0E8990906628c1718f878F8EC0c8';     // v5 (2026-09-17)
+const RH_HOOKS = new Set([RH_HOOK, RH_HOOK_V5].map((a) => a.toLowerCase()));
+const USDG = ADDRESSES.robinhood.USDG;
 
 // One entry per live pool. `slot0` is the PoolManager storage location of the
 // pool's slot0, precomputed as keccak256(abi.encode(poolId, uint256(6))).
@@ -42,6 +47,13 @@ const RH_POOLS = [
   {
     id: '0x0703d548618b02c35d53acc889c1edb792aabccde3217004cd7dabb604fad3bd',
     slot0: '0xc7f8fc209311bad5754f42a62ba9bd9cff4ea8ae6d3e4bad3e693a8fb87a465c',
+    token0: USDG,
+    token1: '0xc72b96e0e48ecd4dc75e1e45396e26300bc39681', // INTC
+  },
+  {
+    // v5 INTC/USDG (ARMSHookV5RWA), listed 2026-09-17
+    id: '0x4d0e6d81d9634c20ea0fd3f980f67560c06a76f3d530eef9654ecca7381acb53',
+    slot0: '0x941508664b2006f7ea4c3d744b5adfa607b269b2e345fd16a33383b588422aba',
     token0: USDG,
     token1: '0xc72b96e0e48ecd4dc75e1e45396e26300bc39681', // INTC
   },
@@ -133,8 +145,8 @@ async function robinhoodTvl(api) {
       const info = infos[i];
       const liquidity = liquidities[i];
       if (!liquidity || liquidity === '0') continue;
-      // Defensive: the position must belong to our hook.
-      if ((info[0][4] || '').toLowerCase() !== RH_HOOK.toLowerCase()) continue;
+      // Defensive: the position must belong to one of our hook generations.
+      if (!RH_HOOKS.has((info[0][4] || '').toLowerCase())) continue;
 
       // PositionInfo layout: bit 8..31 tickLower, bit 32..55 tickUpper (int24).
       const packed = BigInt(info[1]);

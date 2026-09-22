@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * TartSwap — BNB Smart Chain (chainId 56)
  *

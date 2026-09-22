@@ -104,6 +104,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
       case 'base': stateViewer = '0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71'; break;
       case 'monad': stateViewer = '0x77395f3b2e73ae90843717371294fa97cc419d64'; break;
       case 'robinhood': stateViewer = '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b'; break;
+      case 'arc': stateViewer = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b'; break;
       default: throw new Error('missing default uniswap state viewer address chain: ' + chain)
     }
 
@@ -117,6 +118,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
       case 'base': nftAddress = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'; break;
       case 'monad': nftAddress = '0x5b7ec4a94ff9bedb700fb82ab09d5846972f4016'; break;
       case 'robinhood': nftAddress = '0x58daec3116aae6d93017baaea7749052e8a04fa7'; break;
+      case 'arc': nftAddress = '0x6049c9a0e26405C0985f9E3685C87d0aE917f82B'; break;
       default: throw new Error('missing default uniswap nft address chain: ' + chain)
     }
 
@@ -329,6 +331,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], api, own
         case 'hyperliquid': nftAddress = '0x6eDA206207c09e5428F281761DdC0D300851fBC8'; break;
         case 'unichain': nftAddress = '0x943e6e07a7E8E791dAFC44083e54041D743C46E9'; break;
         case 'robinhood': nftAddress = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3'; break;
+        case 'arc': nftAddress = '0x39654A85A4C05127f5Fd6ED22CAeC077A0fB1377'; break;
         case 'stable': nftAddress = '0x3BdC3437405f7D801b6036532713fc1F179136a6'; break; // stableswap
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
@@ -696,6 +699,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   let ethBalanceInputs = []
 
   tokensAndOwners = tokensAndOwners.filter(i => {
+    if (i[1] === nullAddress) return false  // ignore nullAddress owners, as they are usually used to burn tokens
     const token = normalizeAddress(i[0], chain)
     if (token !== nullAddress && !gasTokens.includes(token))
       return true

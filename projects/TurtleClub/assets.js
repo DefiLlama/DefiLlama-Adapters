@@ -65,7 +65,7 @@ const tokens = {
         USDC: ADDRESSES.arbitrum.USDC,
         USDT: ADDRESSES.arbitrum.USDT,
         WETH: ADDRESSES.arbitrum.WETH,
-        RAM: '0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418',
+        RAM: ADDRESSES.arbitrum.RAM,
         Silo: '0x0341C0C0ec423328621788d4854119B97f44E391',
         SYO: '0x577Fd586c9E6BA7f2E85E025D5824DBE19896656',
         WBTC: ADDRESSES.arbitrum.WBTC,
@@ -124,7 +124,7 @@ const tokens = {
     base: {
         WETH: ADDRESSES.base.WETH,
         USDC: ADDRESSES.base.USDC,
-        AERO: '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
+        AERO: ADDRESSES.base.AERO,
         USDT: ADDRESSES.base.USDT,
         SKYA: '0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9',
         ETH: ADDRESSES.null,

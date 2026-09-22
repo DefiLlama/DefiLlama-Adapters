@@ -38,7 +38,7 @@ const farms = {
     ADDRESSES.null,// BNB
     ADDRESSES.bsc.USDT,// USDT-B
     ADDRESSES.bsc.BUSD,// BUSD
-    '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',// CAKE
+    ADDRESSES.bsc.CAKE,// CAKE
   ],
   ethereum: [
     ADDRESSES.null,// ETH

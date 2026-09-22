@@ -15,6 +15,12 @@ const config = {
       fromBlock: 324144504
     },
   },
+  arc: {
+    optinProxyFactory: {
+      address: "0xf185b0083fd2446d3742FE3f4C3175B7e306752b",
+      fromBlock: 20837440
+    },
+  },
   avax: {
     optinProxyFactory: {
       address: "0xC094C224ce0406BC338E00837B96aD2e265F7287",

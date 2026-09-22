@@ -14,6 +14,15 @@ const almProxy = {
   xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
 }
 
+const almProxyFreezable = {
+  ethereum: '0xe5c6318456a7Cb6f74f93B4eee4616dB5fcef699',
+  base: '0x92d7B06e5844e67174AE9E86bdCb06428482DDF9',
+  arbitrum: '0x4eE67c8Db1BAa6ddE99d936C7D313B5d31e8fa38',
+  avax: '0x93c81ADc7F98FdBC8C7a15eCBeD312c8F6adbcB3',
+  robinhood: '0xAEa9f5dE56e6C20383a1fcC2C3629Dca0A92cE41',
+  xlayer: '0x9449ed367C60ea757544fd990B57e1C2D0Ec3A94',
+}
+
 const mainnetAllocatorToTokens = {
   '0xAfA2DD8a0594B2B24B59de405Da9338C4Ce23437': [
     '0x4DEDf26112B3Ec8eC46e7E31EA5e123490B05B8B', // spDai
@@ -99,6 +108,12 @@ const CONFIG = {
   xlayer: xlayerAllocatorToTokens,
 }
 
+// each freezable proxy holds the same asset set as the ALM proxy it succeeds
+Object.entries(almProxyFreezable).forEach(([chain, freezable]) => {
+  const tokens = CONFIG[chain][almProxy[chain]]
+  if (tokens) CONFIG[chain][freezable] = tokens
+})
+
 async function tvl(api) {
   const tokenRecords = CONFIG[api.chain]
   const balanceCalls = Object.entries(tokenRecords).flatMap(([allocator, tokens]) => {
@@ -122,6 +137,8 @@ async function tvl(api) {
     api.addBalances(anchorageBalance)
   }
 }
+
+module.exports.methodology = 'Counts the assets held by the Spark Liquidity Layer allocators (ALM Proxy, freezable ALM Proxy and PSM3) on each chain. Sky-minted USDS, sUSDS and DAI are excluded, and their SparkLend and Morpho positions are counted only to the extent third parties have borrowed against them; other supplied assets such as PYUSD, USDT and USDC are counted in full. spWETH is excluded as it backs Spark Savings ETH, which is counted under spark-savings. The Anchorage custody allocation is sourced off-chain.'
 
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }

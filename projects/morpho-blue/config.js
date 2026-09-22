@@ -206,12 +206,11 @@ const config = {
   klaytn: {
     morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
     fromBlock: 208021118,
-  },/* still in private mainnet
+  },
   arc: {
     morphoBlue: "0x34CD04070dD72b14E241112F6d83812Df5Af7fCD",
-    fromBlock: 1,
+    fromBlock: 1946500,
   },
-  */
   "0g": {
     morphoBlue: "0x9CDD13a2212D94C4f12190cA30783B743E83C89e",
     fromBlock: 7526486,

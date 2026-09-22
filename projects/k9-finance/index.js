@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require("../helper/unknownTokens");
 
 const vestingSettingsAbi = "function settings() view returns (bool lockedOnly, uint64 backingRatio, uint64 vestingRatio, uint64 vestingPeriod)"
 
-const BONE_TOKEN = "0x9813037ee2218799597d83D4a5B6F3b6778218d9";
+const BONE_TOKEN = ADDRESSES.ethereum.BONE;
 const BONE_CONTRACT = "0x3358FCA51d7C0408750FBbE7777012E0b67C027F";
 
 const REAL_YIELD_STAKING = "0xe13824Fb7b206E585c775B30431600528572C3E7";

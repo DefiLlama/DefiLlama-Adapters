@@ -259,7 +259,7 @@ module.exports = {
     "flare": {
       "tokensAndOwners": [
         [
-          "0x12e605bc104e93B45e1aD99F9e555f659051c2BB",
+          ADDRESSES.flare.sFLR,
           "0x19831cfB53A0dbeAD9866C43557C1D48DfF76567"
         ],
         [
@@ -1156,6 +1156,7 @@ module.exports = {
     "unichain": {
       "owners": ["0x322e86E6c813d77a904C5B4aa808a13E0AD4412f", "0x354869495Fd916ADAFc0626C3d60115240dc06f1"],
       "fetchCoValentTokens": true,
+      permitFailure: true,
       "tokenConfig": { "ignoreMissingChain": true }
     },
     "wc": {

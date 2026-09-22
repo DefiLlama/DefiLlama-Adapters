@@ -199,7 +199,8 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
 
     try {
       const cachedTokens = cache?.tokens ?? {}
-      const problemChains = ['zksync_era', 'moonbeam', 'linea', "polygon_zkevm",]
+      // rollux/syscoin: ankr dropped support (Sep 2026) and rejects the whole request if they are in the list
+      const problemChains = ['zksync_era', 'moonbeam', 'linea', "polygon_zkevm", 'rollux', 'syscoin',]
       const problemChainSet = new Set(problemChains)
       const options = {
         method: 'POST',

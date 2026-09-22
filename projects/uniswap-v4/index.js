@@ -50,6 +50,7 @@ const config = {
   tempo: { factory: "0x33620f62c5b9b2086dd6b62f4a297a9f30347029", fromBlock: 6475880 },
   megaeth: { factory: "0xacb7e78fa05d562e0a5d3089ec896d57d057d38e", fromBlock: 7009653 },
   robinhood: { factory: "0x8366a39CC670B4001A1121B8F6A443A643e40951", fromBlock: 9070 },
+  arc: { factory: "0x8366a39cc670b4001a1121b8f6a443a643e40951", fromBlock: 1946500 },
 }
 const subgraphs = {
   xlayer: {endpoint: '2fc6nFafrPs4xybzHMnmD48qgUYoHTizhDk1mCJJUDjD', factory: '0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32' }

@@ -27,7 +27,7 @@ const config = {
       "0x864a7fa57e0f8902a2de4892e925f1272edbe3fa",
       "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
       "0x092fe28430bade62c7c044b9c77d0aaa06241319",
-      "0x934186fd8352fa734eb0df82e8863e6449193294"
+      "0x934186fd8352fa734eb0df82e8863e6449193294",
     ],
   },
   ethereum: {
@@ -142,7 +142,7 @@ const config = {
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x0c4681e6c0235179ec3d4f4fc4df3d14fdd96017",
       "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
-      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
     ],
   },
   optimism: {
@@ -181,7 +181,7 @@ const config = {
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
       "0x9b0cb31f3e9232196aeaa7cac03ea95c5a4f0e35",
-      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
     ],
   },
   ripple: {
@@ -206,6 +206,8 @@ const config = {
       "7TWnq4WeYcwQWBCwKeEX2Q9xqVtthPGkB7adNvueuVuh",
       "EPxGiguU5j5tKFnMQpzMrzczEQ5NRtLWrpG9fADvtadX",
       "8ZPaybdHeNwpoxmU1ALcbLoE3eK443Jq4emk82VCscag",
+      "3RtJvxpkok13LGQsQ3Ye4QvCkbP3ioMpra7ccuf9XqsF", // add on 18/09/2026
+      "Bk57qr4wSvzCqGKHD2vAc6n88oHyDoD8b3HnvGEF5iQN", // add on 18/09/2026
     ],
   },
   doge: {
@@ -278,6 +280,7 @@ const config = {
       "EQDJlZqZfh1OQ4PY2ze4bSEBznjc8fGzkE2YiP5XLvDv1M6u",
       "EQAXl6XExQorMSzpkn_28S79OwtY_zEURRGMLS5kMStdeQng",
       "EQBggwBbNUqxxHhaqM6Ck-5cnBgukkjyfpyQdPNcFjQggwrJ",
+      "UQCe6OZlNFHXWBai5V3CzYsdO68yZR2GMdMYWO6NJ1wYi5PA", // add on 18/09/2026
     ],
   },
   klaytn: {
