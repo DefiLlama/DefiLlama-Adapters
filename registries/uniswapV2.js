@@ -3186,6 +3186,15 @@ const uniV2Configs = {
     start: '2026-06-01',
     pulse: '0xA024e4574406BEf89e624c75758c700B5bED27C7',
   },
+  'megapump-dex': {
+    _options: {
+      fetchBalances: true
+    },
+    megaeth: {
+      factory: '0x4188aDbFfBec026EdE44F2C3A7E22beDD880a46f',
+    },
+    start: '2026-07-10',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
