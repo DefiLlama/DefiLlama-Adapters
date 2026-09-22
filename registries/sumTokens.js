@@ -12820,7 +12820,10 @@ const configs = {
     },
   },
   "denaria": {
-    "methodology": "Counts USDC locked in Denaria Vault(s) on Linea.",
+    "methodology": "Counts USDC locked in the vault(s) of Denaria's own vAMM perp engine on Linea (sunset 2026-09-03). On Arbitrum Denaria trades on GMX V2 and holds no user funds: that collateral is counted under GMX V2.",
+    "hallmarks": [
+      ["2026-09-14", "Trading moves to GMX V2 on Arbitrum"]
+    ],
     "linea": {
       "tokensAndOwners": [
         [
