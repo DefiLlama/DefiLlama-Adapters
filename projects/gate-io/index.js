@@ -1655,7 +1655,7 @@ const config = {
       "GBJ746LVE2LFZ5OA2QEQUE35QHHI3OXZ75RH4USXY2GBFAKCBKQG3HKU",
       "GCLP5OZ4SFU4X2MD4BGZKC7FFJY3NGM3Y6TVULOWLUNNWHEFNUJGAW5Y",
       "GCE2HXJTGSI66KBPEVQYFU7N4KWAGRIG4TJPZTPWRGVSH2MZCC4EAY63",
-      "GBOL3FQURYYBAPWMAGMY5IS3ZFQRYOLBANZTVGGFL5MAN545QB5NAEUT"
+      // "GBOL3FQURYYBAPWMAGMY5IS3ZFQRYOLBANZTVGGFL5MAN545QB5NAEUT"
     ]
   },
   "sui": {
@@ -1926,6 +1926,9 @@ const config = {
       "zig155svs6sgxe55rnvs6ghprtqu0mh69kehze2lzt"
     ]
   },
+  robinhood: {
+    owners: ['0xc882b111a75c0c657fc507c04fbfcd2cc984f071', '0x0d0707963952f2fba59dd06f2b425ace40b492fe'],
+  }
 };
 
 // remove chains w/o historical tvl
@@ -2164,17 +2167,4 @@ Object.entries(earnReceiptTokens).forEach(([chain, args]) => {
 })
 
 module.exports = mergeExports([cexExports(config), gateEarnTvl]);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
