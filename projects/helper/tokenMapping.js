@@ -34,9 +34,6 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
-  horizen: {
-    '0x57da2D504bf8b83Ef304759d9f2648522D7a9280': 'base:0xf43eb8de897fbc7f2502483b2bef7bb9ea179229',
-  },
 }
 const ibcMappings = {
   // Sample Code
@@ -49,9 +46,6 @@ const fixBalancesTokens = {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
-  },
-  horizen: {
-    '0x57da2D504bf8b83Ef304759d9f2648522D7a9280': { coingeckoId: 'horizen', decimals: 18 },
   },
 }
 

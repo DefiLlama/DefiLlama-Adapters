@@ -14,6 +14,5 @@ module.exports =  [
   'hoo',
   'rari',
   'nova',
-  'eon',
   ...sdk.chainUtils.getDeadChains()
 ]
