@@ -13,8 +13,10 @@ async function fetchWalletEquity(walletAddress) {
   const period = walletPortfolio.find(([name]) => name === "day") ?? walletPortfolio[0];
   const accountValueHistory = period?.[1]?.accountValueHistory;
   const latestSnapshot = accountValueHistory?.[accountValueHistory.length - 1];
-  if (!latestSnapshot?.[1]) return 0;
-  return Number(latestSnapshot[1]);
+  const equity = Number(latestSnapshot?.[1]);
+  if (!Number.isFinite(equity))
+    throw new Error(`Unexpected Hyperliquid portfolio response for ${walletAddress}: ${JSON.stringify(walletPortfolio).slice(0, 300)}`);
+  return equity;
 }
 
 async function tvl(api) {
