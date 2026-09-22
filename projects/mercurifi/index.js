@@ -17,6 +17,13 @@ const FACTORY_BLOCK = 22060881 // LaunchFactory deployment
 const NATIVE_USDC = ADDRESSES.null
 const PHASE_GRADUATED = 2 // BondingCurve.Phase: Trading, GraduationPending, Graduated
 
+/**
+ * Sums what the protocol holds on Arc: the native USDC still sitting in bonding curves that have not
+ * graduated, plus the USDC side of the Uniswap V4 positions locked in the LiquidityLocker.
+ *
+ * @param {Object} api - the adapter's chain API for this block and chain
+ * @returns {Promise<Object|undefined>} the balances object, or undefined when nothing has launched yet
+ */
 async function tvl(api) {
   const launches = await getLogs2({
     api, target: FACTORY, fromBlock: FACTORY_BLOCK,
