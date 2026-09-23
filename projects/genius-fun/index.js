@@ -17,7 +17,8 @@ const events = {
 }
 
 async function tvl(api) {
-  for (const { target, fromBlock } of factories) {
+  const block = await api.getBlock()
+  for (const { target, fromBlock } of factories.filter(f => block >= f.fromBlock)) {
     const logs = {}
     for (const [key, eventAbi] of Object.entries(events))
       logs[key] = await getLogs2({ api, target, fromBlock, eventAbi, extraKey: key, maxBlockRange: 9000 })
