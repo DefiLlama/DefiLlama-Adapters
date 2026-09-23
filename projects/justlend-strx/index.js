@@ -7,8 +7,20 @@ const STRX_PROXY = 'TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5'
 
 const STAKED_RESOURCES = [undefined, 'BANDWIDTH', 'ENERGY']
 
+// TRON_WALLET_RPC is a comma separated list of wallet API hosts (TRON_RPC holds the EVM json-rpc endpoints)
+async function getAccount(address) {
+  const hosts = getEnv('TRON_WALLET_RPC').split(',')
+  for (const [i, host] of hosts.entries()) {
+    try {
+      return await post(`${host}/wallet/getaccount`, { address, visible: true })
+    } catch (e) {
+      if (i === hosts.length - 1) throw e
+    }
+  }
+}
+
 async function tvl(api) {
-  const account = await post(`${getEnv('TRON_RPC')}/wallet/getaccount`, { address: STRX_PROXY, visible: true })
+  const account = await getAccount(STRX_PROXY)
   const { frozenV2 = [], unfrozenV2 = [], account_resource: resource = {} } = account
 
   const amounts = [
