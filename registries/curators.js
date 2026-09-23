@@ -876,6 +876,18 @@ const configs = {
       }
     },
   },
+  "nova-nlp": {
+    config: {
+      methodology: "Counts the settled USDC NAV reported on-chain by the Nova NLP Lagoon vault on HyperEVM.",
+      blockchains: {
+        hyperliquid: {
+          erc4626: [
+            '0xEeEd7BB939d65938Fe8f40dd898Cd5942E32f09E', // Lagoon: Nova NLP (sNLP)
+          ],
+        },
+      },
+    },
+  },
   "odyssey-digital-am": {
     config: {
       methodology: 'Count settled assets in Odyssey Digital AM funds on Lagoon',
