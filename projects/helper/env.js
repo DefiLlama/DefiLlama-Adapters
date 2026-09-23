@@ -34,6 +34,7 @@ const DEFAULTS = {
   COOKIECHAIN_RPC: 'https://rpc.cookiescan.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
+  TRON_WALLET_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
