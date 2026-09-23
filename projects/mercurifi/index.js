@@ -33,7 +33,7 @@ async function tvl(api) {
     for (let attempt = 0; attempt < 4; attempt++) {
       try {
         logs = await getLogs2({
-          api, target: FACTORY, fromBlock, toBlock,
+          api, target: FACTORY, fromBlock, toBlock, extraKey: `created-${fromBlock}`,
           eventAbi: 'event TokenCreated(address indexed token, address indexed curve, address indexed creator, address deployer, string name, string symbol, string metadataURI, bytes32 configHash, (uint256,uint256,uint256,uint256,uint256,uint256,uint16,uint16,uint16,uint16,uint32) config)',
         })
         break
