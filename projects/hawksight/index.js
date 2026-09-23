@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
 const { getConnection, getMultipleAccounts, decodeAccount, sumTokens2 } = require('../helper/solana')
@@ -25,11 +26,22 @@ async function tvl(api) {
   const connection = getConnection(api.chain)
   const ownerSet = new Set(await getUserPdas(connection))
   // no dataSize filter: resized positions are larger than the base PositionV2 account
-  const rows = await connection.getProgramAccounts(DLMM_PROGRAM, {
-    filters: [{ memcmp: { offset: 0, bytes: bs58.encode(POSITION_V2_DISCRIMINATOR) } }],
-    dataSlice: { offset: 40, length: 32 },
+  // the scan is sharded by the owner's first byte, a single scan over all positions exceeds the RPC's scan limit
+  const positionKeys = []
+  await sdk.util.runInPromisePool({
+    concurrency: 3,
+    items: [...Array(256).keys()],
+    processor: async (ownerByte) => {
+      const rows = await connection.getProgramAccounts(DLMM_PROGRAM, {
+        filters: [
+          { memcmp: { offset: 0, bytes: bs58.encode(POSITION_V2_DISCRIMINATOR) } },
+          { memcmp: { offset: 40, bytes: bs58.encode(Buffer.from([ownerByte])) } },
+        ],
+        dataSlice: { offset: 40, length: 32 },
+      })
+      rows.forEach(({ pubkey, account }) => { if (ownerSet.has(new PublicKey(account.data).toBase58())) positionKeys.push(pubkey) })
+    },
   })
-  const positionKeys = rows.filter(({ account }) => ownerSet.has(new PublicKey(account.data).toBase58())).map(({ pubkey }) => pubkey)
 
   const positions = (await getMultipleAccounts(positionKeys)).filter(Boolean).map(info => {
     const position = decodeAccount('meteoraPosition', info)
