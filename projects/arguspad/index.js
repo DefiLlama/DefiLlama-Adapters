@@ -52,14 +52,16 @@ const PAGE_SIZE = 500
 async function getLaunches(api) {
   const cache = await getCache('arguspad', api.chain)
   const portals = [...PORTALS.v4.map(p => [p, 'v4']), ...PORTALS.v3.map(p => [p, 'v3'])]
-  const counts = await api.multiCall({ abi: 'uint256:tokenCount', calls: portals.map(([p]) => p) })
+  // A Portal deployed after the block being read has no code there and its tokenCount() reverts, so a
+  // failed read is an empty registry, not an error: the first Portal (V3-1) predates the last (P7) by 10 days.
+  const counts = await api.multiCall({ abi: 'uint256:tokenCount', calls: portals.map(([p]) => p), permitFailure: true })
   let updated = false
   const launches = { v3: [], v4: [] }
 
   for (const [i, [portal, version]] of portals.entries()) {
     const key = portal.toLowerCase()
     const known = cache[key] ?? []
-    const count = +counts[i]
+    const count = +(counts[i] ?? 0)
     if (known.length < count) {
       const pages = []
       for (let offset = known.length; offset < count; offset += PAGE_SIZE) pages.push([offset, Math.min(PAGE_SIZE, count - offset)])
