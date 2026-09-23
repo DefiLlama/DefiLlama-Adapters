@@ -155,7 +155,9 @@ const config = {
   rls: {
     optinProxyFactory: {
       address: "0xfa032de1214fd89b465c306bf46f778318bde357",
-      fromBlock: 960000
+      // factory deployed at block 961852. Lowered from 960000 so the log cache resets and rescans:
+      // the public RPC returned no historical logs, so only 2 of the factory's vaults had been cached
+      fromBlock: 950000
     },
   },
   robinhood: {

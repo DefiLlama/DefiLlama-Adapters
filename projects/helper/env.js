@@ -74,6 +74,7 @@ const DEFAULTS = {
   // getEthBalance() and fans out getBalance against ARC_RPC (429s). Archival is getLogs-only.
   ARC_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   ARC_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  RLS_ARCHIVAL_RPC: 'https://mainnet-archive.rayls.com', // public mainnet-rpc.rayls.com returns no eth_getLogs/receipts older than a few days; archive caps ranges at 100k blocks
   // chains with no provider in the SDK providers list (chainid.network RPCs)
   AREA_RPC: 'https://mainnet-rpc.areum.network,https://mainnet-rpc2.areum.network', // Areum Network, chainId 463
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
