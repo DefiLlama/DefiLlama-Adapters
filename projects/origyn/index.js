@@ -2,19 +2,13 @@ const { toUSDTBalances } = require("../helper/balances");
 const { get } = require('../helper/http')
 
 async function staking(api) {
-  // Get the total supply in OGY
-  // Ref: https://github.com/ORIGYN-SA/origyn-sns/blob/master/backend/canisters/token_metrics/impl/src/queries/http_request.rs#L40
-  const totalSupplyUrl = 'https://juolv-3yaaa-aaaal-ajc6a-cai.raw.icp0.io/total-supply';
-  const totalSupply = await get(totalSupplyUrl);
-  
-  // Get the circulating supply in OGY
-  // Ref: https://github.com/ORIGYN-SA/origyn-sns/blob/master/backend/canisters/token_metrics/impl/src/queries/http_request.rs#L43
-  const circulatingSupplyUrl = 'https://juolv-3yaaa-aaaal-ajc6a-cai.raw.icp0.io/circulating-supply';
-  const circulatingSupply = await get(circulatingSupplyUrl);
+  // Get the total and circulating supply in OGY (e8s)
+  // Ref: https://gateway.origyn.com/docs/#/Tokens/get_origyn_supply_summary
+  const { total_supply, circulating_supply } = await get('https://gateway.origyn.com/v1/tokens/OGY/supply/summary');
 
   // The token value locked is the locked supply
   // total supply - circulating supply
-  const tokenTvl = (totalSupply - circulatingSupply);
+  const tokenTvl = Number(BigInt(total_supply) - BigInt(circulating_supply)) / 1e8;
 
   api.addCGToken('origyn-foundation', tokenTvl)
 }
