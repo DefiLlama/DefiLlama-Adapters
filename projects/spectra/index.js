@@ -118,7 +118,7 @@ const SPECTRA = "0x64fcc3a02eeeba05ef701b7eed066c6ebd5d4e51"
 const veSPECTRA = "0x6a89228055c7c28430692e342f149f37462b478b"
 
 module.exports = {
-  methodology: `All deposited underlying in Spectra Principal Tokens and all underlying supplied as liquidity in Spectra Markets. On Stellar, sum each registered Principal Token's total_assets in its declared underlying asset. This measures the contracts' underlying-denominated collateral value; non-custodial orders and PT/YT supplies are not added separately.`,
+  methodology: `All deposited underlying in Spectra Principal Tokens and all underlying supplied as liquidity in Spectra Markets. On Stellar, sum each registered Principal Token's total_assets in its declared underlying asset. Open limit orders that buy PT or YT with the IBT leg are added at their fillable amount: per maker and token, the remaining order size capped by the maker's balance and allowance to the order engine, valued in underlying. PT/YT sell orders and PT/YT supplies are not added, since their collateral is already counted.`,
   hallmarks: [['2024-05-30', "V2 Launch"]],
 };
 
