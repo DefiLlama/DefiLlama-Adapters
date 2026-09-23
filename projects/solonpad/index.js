@@ -7,6 +7,8 @@ const POSITION_MANAGER = '0x6049c9a0e26405C0985f9E3685C87d0aE917f82B' // Uniswap
 const STATE_VIEW = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b' // Uniswap V4 StateView on Arc
 const USDC = '0x0000000000000000000000000000000000000000' // native USDC (gas token, 18 decimals)
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+const SOLON_STAKING = '0xB3E0b89b3Ba098D83072dd60c1946CFB3231688f'
+const SOLON_USDC_POOL = '0xe4c4b7da3706193e7bf6e7b236156718a5856bc6d6866440661969ae3dcb0a77' // Uniswap V4 USDC/SOLON 1%, no hook
 
 async function tvl(api) {
   // 1. Quote asset held by live (non-graduated) bonding curves, read as balances.
@@ -36,8 +38,20 @@ async function tvl(api) {
   })
 }
 
+async function staking(api) {
+  // Staked principal only. The contract also holds the SOLON reward reserve (buyback + genesis
+  // streams), which is protocol-funded and not counted.
+  const staked = BigInt(await api.call({ target: SOLON_STAKING, abi: 'uint256:totalStaked' }))
+  if (staked === 0n) return
+  // SOLON has no coins-server price on Arc: value it at the spot price of its main pool.
+  // currency0 is native USDC and currency1 is SOLON (both 18 decimals), so USDC = SOLON * Q96^2 / sqrtPriceX96^2.
+  const { sqrtPriceX96 } = await api.call({ target: STATE_VIEW, params: [SOLON_USDC_POOL], abi: 'function getSlot0(bytes32) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)' })
+  const sqrtPrice = BigInt(sqrtPriceX96)
+  api.add(USDC, (staked * (1n << 192n) / (sqrtPrice * sqrtPrice)).toString())
+}
+
 module.exports = {
-  methodology: 'TVL is the quote asset (native USDC) held by non-graduated bonding curves plus the USDC side of the permanently locked Uniswap V4 launch positions held by the FeeSplitter, enumerated from PositionManager Transfer events and re-verified with ownerOf. Launched tokens and uncollected trading fees are excluded. Marked doublecounted because the locked positions already sit inside Uniswap V4 TVL on Arc.',
+  methodology: 'TVL is the quote asset (native USDC) held by non-graduated bonding curves plus the USDC side of the permanently locked Uniswap V4 launch positions held by the FeeSplitter, enumerated from PositionManager Transfer events and re-verified with ownerOf. Launched tokens and uncollected trading fees are excluded. Marked doublecounted because the locked positions already sit inside Uniswap V4 TVL on Arc. Staking is the SOLON principal staked in SolonStaking (totalStaked, excluding the reward reserve), valued at the spot price of the USDC/SOLON Uniswap V4 pool.',
   doublecounted: true,
-  arc: { tvl },
+  arc: { tvl, staking },
 }
