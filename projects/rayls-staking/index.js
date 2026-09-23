@@ -13,7 +13,9 @@ const abi = {
 
 async function staking(api) {
   const validators = await api.call({ target: CONSENSUS_REGISTRY, abi: abi.getValidators, params: [VALIDATOR_STATUS_ANY] })
-  const calls = validators.map((v) => v.validatorAddress)
+  const calls = validators
+    .filter((v) => !v.isRetired)
+    .map((v) => v.validatorAddress)
   const [selfStake, delegated] = await Promise.all([
     api.multiCall({ target: CONSENSUS_REGISTRY, abi: abi.getBalanceBreakdown, calls }),
     api.multiCall({ target: DELEGATION_POOL, abi: abi.getTotalDelegatedStake, calls }),
