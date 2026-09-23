@@ -6,8 +6,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { ethers } = require('ethers')
 
-const HARVEST = '0x4f41a6f17b1f64465105fd022b61fd6c52d7af7a' // current (v7); lists the stock rotation
-const HARVESTS = [HARVEST,
+const HARVESTS = ['0x4f41a6f17b1f64465105fd022b61fd6c52d7af7a', // current (v7)
   '0x52d4817569bcc772766f9960359ba38b0d068699', '0x1887e5e321f6d13165e98ca0d654c4f175904364', '0x5532563ece12ee2506775dbbbe2bc08352b4bb24',
   '0x26b7a0e2a7bdea0c9a4f77adf65a44d0d5394300', '0x6440b61d0bb325c3dcaee1d960698408ddf22f6a', '0x64f55d15b7074d527108001894c3937c78bc9161']
 const ADAPTERS = ['0x78b5c9dabd4819cc7900bcb90dbff99ba58c9230', '0x2a5b80ce7e619313d4618a93d5d2172d43b4e9c9', '0x3ae47dadc9c91e89b50c8f1f9de20a32891a6f79',
@@ -36,7 +35,9 @@ const poolId = (k) => ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
   ['address', 'address', 'uint24', 'int24', 'address'], [k.currency0, k.currency1, k.fee, k.tickSpacing, k.hooks]))
 
 async function positions(api) {
-  const stocks = await api.fetchList({ lengthAbi: abi.stockCount, itemAbi: abi.stocks, target: HARVEST })
+  // every Harvest version keeps its own stock rotation; older adapters can still hold positions for any of them
+  const lists = await Promise.all(HARVESTS.map(target => api.fetchList({ lengthAbi: abi.stockCount, itemAbi: abi.stocks, target })))
+  const stocks = [...new Set(lists.flat().map(s => s.toLowerCase()))]
   const calls = ADAPTERS.flatMap(target => stocks.map(stock => ({ target, params: [stock] })))
   const res = await api.multiCall({ abi: abi.position, calls, permitFailure: true })
   const live = res.map((r, i) => r && BigInt(r.liquidity) > 0n ? { ...r, stock: calls[i].params[0] } : null).filter(Boolean)
