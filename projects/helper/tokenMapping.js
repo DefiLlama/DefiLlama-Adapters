@@ -47,6 +47,11 @@ const fixBalancesTokens = {
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
+  rls: {
+    // USDr is the Rayls gas token, minted 1:1 against USDC. It is exposed both as an ERC20 precompile at 0x400 and as the native balance
+    [ADDRESSES.rls.USDR]: { coingeckoId: 'usd-coin', decimals: 18 },
+    [nullAddress]: { coingeckoId: 'usd-coin', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
