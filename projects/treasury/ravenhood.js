@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { sumTokensExport, unwrapSlipstreamNFT } = require('../helper/unwrapLPs')
+const { sumTokensExport, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
 
 // RavenhoodVault — permanently locked, protocol-owned RVH/WETH Uniswap V3 position
 const VAULT = '0x5e1485137E025bf7774F52DE4E33fa6E498f6ede'
@@ -39,8 +39,6 @@ const ALANDALE_V2_RVH_WETH_GAUGE = '0x97C920CD393300Fb886F7E8036107F309808f050'
 // underlying LUTE, not the non-fungible wrapper itself.
 const VELUTE_NFT = '0xc1a79e3A7b04c3f21C6409a78Ab58A8C822bE7dC'
 
-const ALANDALE_POSITIONS_ABI = 'function positions(uint256 tokenId) view returns (uint96 nonce,address operator,address token0,address token1,int24 tickLower,int24 tickUpper,uint128 liquidity,uint256 feeGrowthInside0LastX128,uint256 feeGrowthInside1LastX128,uint128 tokensOwed0,uint128 tokensOwed1)'
-const ALANDALE_GLOBAL_STATE_ABI = 'function globalState() view returns (uint160 price,int24 tick,uint16 lastFee,uint8 pluginConfig,uint16 communityFee,bool unlocked)'
 const VELUTE_STATE_ABI = 'function getNftState(uint256 tokenId) view returns (tuple(tuple(int128 amount,uint256 end,bool isPermanentLocked) locked,bool isVoted,bool isAttached,uint256 lastTranferBlock,uint256 pointEpoch))'
 
 const lower = (v) => v.toLowerCase()
@@ -49,40 +47,6 @@ function shouldAdd(token, blacklistedTokens = [], whitelistedTokens = []) {
   token = lower(token)
   if (whitelistedTokens.length) return whitelistedTokens.map(lower).includes(token)
   return !blacklistedTokens.map(lower).includes(token)
-}
-
-function tickToPrice(tick) {
-  return Math.pow(1.0001, tick)
-}
-
-function addAlgebraPosition({ api, position, tick, blacklistedTokens = [], whitelistedTokens = [] }) {
-  const token0 = position.token0
-  const token1 = position.token1
-  const liquidity = Number(position.liquidity)
-  if (!liquidity) return
-
-  const bottomTick = Number(position.tickLower)
-  const topTick = Number(position.tickUpper)
-  const sa = tickToPrice(bottomTick / 2)
-  const sb = tickToPrice(topTick / 2)
-
-  let amount0 = 0
-  let amount1 = 0
-
-  if (tick < bottomTick) {
-    amount0 = liquidity * (sb - sa) / (sa * sb)
-  } else if (tick < topTick) {
-    const price = tickToPrice(tick)
-    const sp = price ** 0.5
-
-    amount0 = liquidity * (sb - sp) / (sp * sb)
-    amount1 = liquidity * (sp - sa)
-  } else {
-    amount1 = liquidity * (sb - sa)
-  }
-
-  if (shouldAdd(token0, blacklistedTokens, whitelistedTokens)) api.add(token0, Math.floor(amount0).toString())
-  if (shouldAdd(token1, blacklistedTokens, whitelistedTokens)) api.add(token1, Math.floor(amount1).toString())
 }
 
 const univ3Tvl = sumTokensExport({
@@ -104,6 +68,10 @@ async function updexTvl(api) {
   return balances
 }
 
+// Staked UPDex positions leave the DAO wallet and sit in the gauge, so owner-based
+// discovery misses them. Walk the voter's gauges and ask each for the DAO's stake.
+// stakedLength/stakedByIndex are CL-gauge only, hence permitFailure there: 6 of the
+// 93 gauges are non-CL and revert on it.
 async function getUpdexStakedPositionIds(api) {
   const count = await api.call({ target: UPDEX_VOTER, abi: 'uint256:length' })
   const pools = await api.multiCall({
@@ -115,7 +83,6 @@ async function getUpdexStakedPositionIds(api) {
     target: UPDEX_VOTER,
     abi: 'function gauges(address) view returns (address)',
     calls: pools,
-    permitFailure: true,
   })).filter(Boolean).filter((gauge) => gauge !== ADDRESSES.null)
   const lengths = await api.multiCall({
     abi: 'function stakedLength(address depositor) view returns (uint256)',
@@ -135,46 +102,27 @@ async function getUpdexStakedPositionIds(api) {
 }
 
 async function alandaleCl({ api, blacklistedTokens = [], whitelistedTokens = [] }) {
-  const count = await api.call({ target: ALANDALE_NFT_MANAGER, abi: 'erc20:balanceOf', params: DAO_WALLET })
-  const positionIds = await api.multiCall({
-    target: ALANDALE_NFT_MANAGER,
-    abi: 'function tokenOfOwnerByIndex(address owner,uint256 index) view returns (uint256)',
-    calls: Array.from({ length: Number(count) }, (_, i) => ({ params: [DAO_WALLET, i] })),
-  })
-  const positions = await api.multiCall({ target: ALANDALE_NFT_MANAGER, abi: ALANDALE_POSITIONS_ABI, calls: positionIds })
-  const active = positions.filter((position) => position.liquidity > 0)
-  if (!active.length) return api.getBalances()
-
-  const factory = await api.call({ target: ALANDALE_NFT_MANAGER, abi: 'address:factory' })
-  const pools = await api.multiCall({
-    target: factory,
-    abi: 'function poolByPair(address tokenA,address tokenB) view returns (address)',
-    calls: active.map((position) => ({ params: [position.token0, position.token1] })),
-  })
-  const states = await api.multiCall({ abi: ALANDALE_GLOBAL_STATE_ABI, calls: pools })
-  active.forEach((position, i) => addAlgebraPosition({
+  await unwrapUniswapV3NFT({
     api,
-    position,
-    tick: Number(states[i].tick),
+    owner: DAO_WALLET,
+    nftAddress: ALANDALE_NFT_MANAGER,
     blacklistedTokens,
     whitelistedTokens,
-  }))
+    isAlgebra: true,
+  })
   return api.getBalances()
 }
 
 async function alandaleV2({ api, blacklistedTokens = [], whitelistedTokens = [] }) {
-  const [token0, token1, totalSupply, reserves, balances] = await Promise.all([
+  const [token0, token1, totalSupply, reserves, directBalance, stakedBalance] = await Promise.all([
     api.call({ target: ALANDALE_V2_RVH_WETH_LP, abi: 'address:token0' }),
     api.call({ target: ALANDALE_V2_RVH_WETH_LP, abi: 'address:token1' }),
     api.call({ target: ALANDALE_V2_RVH_WETH_LP, abi: 'function totalSupply() view returns (uint256)' }),
     api.call({ target: ALANDALE_V2_RVH_WETH_LP, abi: 'function getReserves() view returns (uint112 reserve0,uint112 reserve1,uint32 blockTimestampLast)' }),
-    api.multiCall({
-      target: ALANDALE_V2_RVH_WETH_LP,
-      abi: 'function balanceOf(address owner) view returns (uint256)',
-      calls: [DAO_WALLET, ALANDALE_V2_RVH_WETH_GAUGE],
-    }),
+    api.call({ target: ALANDALE_V2_RVH_WETH_LP, abi: 'erc20:balanceOf', params: DAO_WALLET }),
+    api.call({ target: ALANDALE_V2_RVH_WETH_GAUGE, abi: 'erc20:balanceOf', params: DAO_WALLET }),
   ])
-  const balance = balances.reduce((sum, value) => sum + BigInt(value), 0n)
+  const balance = BigInt(directBalance) + BigInt(stakedBalance)
   if (!balance || !totalSupply) return api.getBalances()
 
   const amount0 = BigInt(reserves.reserve0) * balance / BigInt(totalSupply)
