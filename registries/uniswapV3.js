@@ -1159,11 +1159,7 @@ const uniV3Configs = {
       fromBlock: 277686,
       isAlgebra: true,
     },
-    soneium: {
-      factory: '0x8Ff309F68F6Caf77a78E9C20d2Af7Ed4bE2D7093',
-      fromBlock: 1681559,
-      isAlgebra: true,
-    },
+    soneium: { tvl: () => ({}) },
   },
   'rabbitswap-v3': {
     tomochain: {
