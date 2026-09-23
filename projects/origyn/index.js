@@ -2,15 +2,11 @@ const { toUSDTBalances } = require("../helper/balances");
 const { get } = require('../helper/http')
 
 async function staking(api) {
-  // Get the total and circulating supply in OGY (e8s)
-  // Ref: https://gateway.origyn.com/docs/#/Tokens/get_origyn_supply_summary
-  const { total_supply, circulating_supply } = await get('https://gateway.origyn.com/v1/tokens/OGY/supply/summary');
+  // Get governance staked OGY (in e8s)
+  // Ref: https://gateway.origyn.com/docs/#/Tokens/get_origyn_governance_stats
+  const { total_staked } = await get('https://gateway.origyn.com/v1/tokens/OGY/governance/stats');
 
-  // The token value locked is the locked supply
-  // total supply - circulating supply
-  const tokenTvl = Number(BigInt(total_supply) - BigInt(circulating_supply)) / 1e8;
-
-  api.addCGToken('origyn-foundation', tokenTvl)
+  api.addCGToken('origyn-foundation', Number(total_staked) / 1e8)
 }
 
 async function tvl() {
