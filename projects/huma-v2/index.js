@@ -38,7 +38,9 @@ const LIQUID_TOKENS = [
 
 // Kamino Lend keeps deposits in an Obligation PDA, not a token account, so the reserve
 // wallet scan cannot see them. Offsets: Obligation = disc(8) tag(8) last_update(16)
-// lending_market(32) owner(32) deposits[8]; Reserve = header(128) liquidity collateral(2560).
+// lending_market(32) owner(32) deposits[8]. Reserve = header(128) liquidity(1232)
+// padding(1200), so ReserveCollateral starts at 2560 and its mint_total_supply at 2592 -
+// verified on chain: the mint at 2560 reports exactly the supply stored at 2592.
 const KLEND = 'KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD'
 const OBLIGATION_OWNER = 64
 const OBLIGATION_DEPOSITS = 96
@@ -46,9 +48,9 @@ const OBLIGATION_COLLATERAL_SIZE = 136
 const RESERVE_LIQUIDITY_MINT = 128
 const RESERVE_AVAILABLE_AMOUNT = 224
 const RESERVE_BORROWED_SF = 232
-const RESERVE_PROTOCOL_FEES_SF = 328
-const RESERVE_REFERRER_FEES_SF = 344
-const RESERVE_PENDING_REFERRER_FEES_SF = 360
+const RESERVE_PROTOCOL_FEES_SF = 344
+const RESERVE_REFERRER_FEES_SF = 360
+const RESERVE_PENDING_REFERRER_FEES_SF = 376
 const RESERVE_COLLATERAL_SUPPLY = 2592
 const SF = 2n ** 60n
 
