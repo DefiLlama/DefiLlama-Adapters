@@ -526,6 +526,11 @@ const configs = {
     doublecounted: true,
     methodology: "Underlying assets in Otomate ERC-4626 vaults on Ink, measured with totalAssets net of accrued protocol fees. Assets are supplied to Tydro and already included in Tydro TVL.",
     ink: ['0x919C57BF59484798Ff2f90018640fd0A08242aC2', '0x2baA4C3f66Fa6f0c2d56242BaAE446a4De878B98', '0xcc7DcF43b17D8EdC437a6e33a6A325C57eba1ED7', '0x59046e5a0cbb5b64981b4668a31ab3a5ed0e7dd0']
+  },
+  'trumarket': {
+    methodology: 'Counts the on-chain settled USDC NAV (totalAssets) of the TruMarket Lagoon vault on Base.',
+    doublecounted: true, // This vault is also included in Lagoon's protocol TVL.
+    base: ['0xbE7Db44F4Ce20Dac83b578B94FD35087F66E9754'],
   }
 }
 
