@@ -25,10 +25,28 @@ const PHASE_GRADUATED = 2 // BondingCurve.Phase: Trading, GraduationPending, Gra
  * @returns {Promise<Object|undefined>} the balances object, or undefined when nothing has launched yet
  */
 async function tvl(api) {
-  const launches = await getLogs2({
-    api, target: FACTORY, fromBlock: FACTORY_BLOCK,
-    eventAbi: 'event TokenCreated(address indexed token, address indexed curve, address indexed creator, address deployer, string name, string symbol, string metadataURI, bytes32 configHash, (uint256,uint256,uint256,uint256,uint256,uint256,uint16,uint16,uint16,uint16,uint32) config)',
-  })
+  const lastBlock = await api.getBlock()
+  const launchByToken = new Map()
+  for (let fromBlock = FACTORY_BLOCK; fromBlock <= lastBlock; fromBlock += 8000) {
+    const toBlock = Math.min(fromBlock + 7999, lastBlock)
+    let logs
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        logs = await getLogs2({
+          api, target: FACTORY, fromBlock, toBlock,
+          eventAbi: 'event TokenCreated(address indexed token, address indexed curve, address indexed creator, address deployer, string name, string symbol, string metadataURI, bytes32 configHash, (uint256,uint256,uint256,uint256,uint256,uint256,uint16,uint16,uint16,uint16,uint32) config)',
+        })
+        break
+      } catch (error) {
+        const rateLimited = error?.errors?.some(i => i.error?.includes('429'))
+        if (!rateLimited || attempt === 3) throw error
+        await new Promise(resolve => setTimeout(resolve, 2000 * 2 ** attempt))
+      }
+    }
+    for (const log of logs) launchByToken.set(log.token.toLowerCase(), log)
+    if (toBlock < lastBlock) await new Promise(resolve => setTimeout(resolve, 350))
+  }
+  const launches = [...launchByToken.values()]
   if (!launches.length) return
 
   // 1. USDC still held by curves that have not graduated. A graduated curve keeps nothing: it hands its
