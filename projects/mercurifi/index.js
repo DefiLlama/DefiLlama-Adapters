@@ -41,9 +41,9 @@ async function tvl(api) {
   // each token, so the ids are read from it rather than enumerated from PositionManager Transfer events.
   const positions = await api.multiCall({
     target: LIQUIDITY_LOCKER, abi: 'function positionOf(address) view returns (uint256)',
-    calls: launches.map(i => i.token), permitFailure: true,
+    calls: launches.map(i => i.token),
   })
-  const positionIds = positions.filter(i => i && +i > 0).map(i => i.toString())
+  const positionIds = positions.filter(i => +i > 0).map(i => i.toString())
   if (!positionIds.length) return
 
   return sumTokens2({
