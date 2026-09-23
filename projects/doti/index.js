@@ -27,12 +27,12 @@ async function ethereumTvl(api) {
   return sumTokens2({
     api,
     owners: [DOTI_REGISTRY],
-    tokens: [ADDRESSES.null], // Native ETH
+    tokens: [ADDRESSES.null], // Native ETH on Ethereum
   });
 }
 
 module.exports = {
-  methodology: 'Tracks native ETH and assets across DotI Name Service contracts on Arbitrum One, Optimism, and Ethereum.',
+  methodology: 'Counts native ETH held in DotI Name Service contracts across Arbitrum One, Optimism, and Ethereum.',
   arbitrum: {
     tvl: arbitrumTvl,
   },
