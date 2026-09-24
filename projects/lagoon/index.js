@@ -228,6 +228,7 @@ const vaultsBlacklist = new Set([
   "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
   "0xb114b5a99652a6f6e1e9c13da0a544dc634007b5", // hyperliquid (hyperevm)
   "0x17488aed11845d92f1f113e8df51f497465d715c", // base test vault with fake totalAssets
+  "0xbE7Db44F4Ce20Dac83b578B94FD35087F66E9754", // base TruMarket: NAV from the curator Safe re-depositing its own USDC, ~125 USDC held
 ].map(i => i.toLowerCase()))
 
 function keepVault(vault, vaultBlacklist) {
