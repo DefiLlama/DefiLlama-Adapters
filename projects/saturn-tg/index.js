@@ -21,7 +21,6 @@
  */
 const ADDRESSES = require("../helper/coreAssets.json");
 const { call } = require("../helper/chain/ton");
-const { get } = require("../helper/http");
 
 const GSC = "EQAmaMdwCmpZNJSRfvbNZDu1HkjFbw2VtvvI1FDKvLJMgyXE";
 const DIGGY = "EQAmTUciPykaNw5bZ9DlYXzpB9vFjUZOd5re_TiCHbaYmzvU";
@@ -68,36 +67,21 @@ async function lpToReserves(lpMaster, lpUnits) {
   return { ton: (r0 * lpUnits) / supply, jetton: (r1 * lpUnits) / supply };
 }
 
-// GSC and DIGGY are not on DefiLlama's price feed yet, so the jetton legs are
-// booked at TonAPI's USD rate — the same `useTonApiForPrices` path the TON
-// helper's sumTokens takes (rate × units, added as a USD value). Both jettons
-// have 9 decimals.
-let ratesPromise;
-async function usdRate(token) {
-  ratesPromise ??= get(`https://tonapi.io/v2/rates?tokens=${GSC},${DIGGY}&currencies=usd`).then((r) => r.rates ?? {});
-  const rates = await ratesPromise;
-  return rates[token]?.prices?.USD ?? null;
-}
-async function addJetton(api, token, units) {
-  const price = await usdRate(token);
-  if (price == null) { api.add(token, units.toString()); return; }   // let DefiLlama price it if it can
-  api.add("tether", (Number(units) / 1e9) * price, { skipChain: true });
-}
-
+// GSC and DIGGY are booked as raw jetton amounts; they count once DefiLlama prices them.
 async function addLpPool(api, { pool, lp, token }) {
   const units = await stakedUnits(pool);
   const { ton, jetton } = await lpToReserves(lp, units);
   api.add(ADDRESSES.ton.TON, ton.toString());
-  await addJetton(api, token, jetton);
+  api.add(token, jetton.toString());
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    "Member deposits in Saturn's custody staking pools, read from each pool's `principal` getter. Staked STON.fi LP is unwrapped to its pro-rata share of the pool reserves; the GSC and DIGGY legs are valued at TonAPI's rate. House reward inventory held in the same pools is excluded. GSC is the house token, so staked GSC/GRAM LP is reported under pool2; DIGGY and DIGGY/GRAM LP staking are TVL.",
+    "Member deposits in Saturn's custody staking pools, read from each pool's `principal` getter. Staked STON.fi LP is unwrapped to its pro-rata share of the pool reserves. GSC and DIGGY are reported as token amounts and count only once DefiLlama has a price for them. House reward inventory held in the same pools is excluded. GSC is the house token, so staked GSC/GRAM LP is reported under pool2; DIGGY and DIGGY/GRAM LP staking are TVL.",
   ton: {
     tvl: async (api) => {
-      await addJetton(api, DIGGY, await stakedUnits(POOLS.DIGGY.pool));
+      api.add(DIGGY, (await stakedUnits(POOLS.DIGGY.pool)).toString());
       await addLpPool(api, POOLS.DIGGY_GRAM_LP);
     },
     pool2: async (api) => {
