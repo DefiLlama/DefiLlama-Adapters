@@ -1,4 +1,4 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { getCreateAddress } = require('ethers')
 const { unwrapUniswapLPs, sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
@@ -7,7 +7,6 @@ const config = {
     pair: '0x9b272AC6b44fd63225Eb2D5D1183081Ad5f7e7D6',
     staking: ['0x570368acB1e839542062189c73E02CF228523A8E', '0xf496e7addc7f806891B14079D149A8Be3B5E0E43'],
     campaignFactory: '0xFe3C330528a0503B9F7391AFb468BCA9E05dCf1C',
-    fromBlock: 107199962,
     positionManager: '0xa5007e0501Fc8ecef075f80c44108278342A49d9',
   },
   bsc: {
@@ -15,12 +14,10 @@ const config = {
     pair: '0x6f31245791151f104d02d9645a0b1da5877C9444',
     staking: ['0xae7ba1fdf2e643f5b4F19689b9904C6a25EEa107', '0xA63893aB679e5Bb12B74D956167972f9B05E4cC4'],
     campaignFactory: '0xbA07ACd648E6B609109D2129b8af75a6F8375982',
-    fromBlock: 121698245,
     positionManager: '0xf34d5E2d4C53015D4B564B7fD1c1682D9236dd80',
   },
 }
 
-const campaignEvent = 'event CampaignCreated(address indexed campaign, address indexed creator, address indexed pool, uint8 protocol, uint256 budget, uint64 startTime, uint64 endTime)'
 const campaignLists = new Map()
 
 async function campaigns(api) {
@@ -38,22 +35,32 @@ async function campaigns(api) {
 }
 
 async function readCampaigns(api) {
-  const { campaignFactory, fromBlock, rewardToken } = config[api.chain]
-  const logs = await getLogs({ api, target: campaignFactory, fromBlock, eventAbi: campaignEvent, onlyArgs: true })
-  const unique = [...new Map(logs.map(log => [log.campaign.toLowerCase(), log])).values()]
+  const { campaignFactory, rewardToken } = config[api.chain]
   const count = await api.call({ target: campaignFactory, abi: 'uint256:campaignCount' })
-  if (BigInt(count) !== BigInt(unique.length)) throw new Error('Incomplete BBBFi campaign discovery')
-  const pools = unique.map(log => log.pool)
+  // These immutable factories only CREATE campaigns, once per successful
+  // campaignCount increment, starting at nonce 1. Verify every derived address
+  // against isCampaign; never silently accept a partial list or a failed read.
+  const length = Number(count)
+  if (!Number.isSafeInteger(length) || length < 0) throw new Error('Invalid BBBFi campaign count')
+  const owners = Array.from({ length }, (_, i) => getCreateAddress({ from: campaignFactory, nonce: i + 1 }))
+  const verified = await api.multiCall({
+    target: campaignFactory, abi: 'function isCampaign(address) view returns (bool)', calls: owners,
+  })
+  if (verified.length !== length || verified.some(value => value !== true)) throw new Error('Incomplete BBBFi campaign discovery')
+  const [pools, protocols] = await Promise.all([
+    api.multiCall({ abi: 'address:pool', calls: owners }),
+    api.multiCall({ abi: 'uint8:protocol', calls: owners }),
+  ])
   const [token0s, token1s] = await Promise.all([
     api.multiCall({ abi: 'address:token0', calls: pools }),
     api.multiCall({ abi: 'address:token1', calls: pools }),
   ])
-  return unique.map((log, i) => {
-    const protocol = Number(log.protocol)
+  return owners.map((owner, i) => {
+    const protocol = Number(protocols[i])
     if (protocol !== 2 && protocol !== 3) throw new Error('Unsupported BBBFi campaign protocol')
     return {
-      owner: log.campaign,
-      pool: log.pool,
+      owner,
+      pool: pools[i],
       protocol,
       pool2: [token0s[i], token1s[i]].some(token => token.toLowerCase() === rewardToken.toLowerCase()),
     }
