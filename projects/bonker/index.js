@@ -13,7 +13,7 @@ const OWNER_OF_ABI = 'function ownerOf(uint256 tokenId) view returns (address)'
 // held by a superseded one, which is exactly what happened on Robinhood Chain's 2026-09-09
 // redeploy (the old locker's fee-conversion swap couldn't decode that chain's forked router, but
 // it kept every liquidity position it already held).
-function tvlForChain({ lockers, positionManager, weth, startBlock }) {
+function tvlForChain({ lockers, positionManager, pairedToken, stateViewer, startBlock, maxBlockRange }) {
   return async (api) => {
     const allLockedPositionIds = []
 
@@ -23,6 +23,7 @@ function tvlForChain({ lockers, positionManager, weth, startBlock }) {
         target: locker,
         eventAbi: TOKEN_REWARD_ADDED_EVENT,
         fromBlock: startBlock,
+        maxBlockRange,
       })
 
       const positionIds = [
@@ -53,8 +54,10 @@ function tvlForChain({ lockers, positionManager, weth, startBlock }) {
       api,
       resolveUniV4: true,
       uniV4ExtraConfig: {
+        nftAddress: positionManager,
         positionIds: allLockedPositionIds,
-        whitelistedTokens: [weth],
+        stateViewer,
+        whitelistedTokens: [pairedToken],
       },
     })
   }
@@ -62,14 +65,14 @@ function tvlForChain({ lockers, positionManager, weth, startBlock }) {
 
 module.exports = {
   methodology:
-    'Counts the WETH side of Uniswap V4 liquidity positions created by the Bonker factory and permanently held by a Bonker LP locker. Positions are enumerated on-chain from TokenRewardAdded events, and launchpad-minted tokens are excluded to avoid circular pricing. A chain can have more than one locker across its history since setLocker() only adds, never replaces, so every locker that has ever been live on a chain is summed.',
+    'Counts the paired-currency side of Uniswap V4 liquidity positions created by the Bonker factory and permanently held by a Bonker LP locker. Positions are enumerated on-chain from TokenRewardAdded events, and launchpad-minted tokens are excluded to avoid circular pricing. A chain can have more than one locker across its history since setLocker() only adds, never replaces, so every locker that has ever been live on a chain is summed.',
   start: '2026-03-06',
   doublecounted: true,
   base: {
     tvl: tvlForChain({
       lockers: ['0xBf05b1d5E356f3219D0086A4e09c969ADbe2e7d0'],
       positionManager: '0x7C5f5A4bBd8fD63184577525326123B519429bDc',
-      weth: ADDRESSES.base.WETH,
+      pairedToken: ADDRESSES.base.WETH,
       startBlock: 43_000_832,
     }),
   },
@@ -83,8 +86,19 @@ module.exports = {
         '0x97d863C592ffe30c8D8621c869f143cF34F18A9D',
       ],
       positionManager: '0x58daec3116aae6d93017baaea7749052e8a04fa7',
-      weth: ADDRESSES.robinhood.WETH,
+      pairedToken: ADDRESSES.robinhood.WETH,
       startBlock: 53_621_593,
+    }),
+  },
+  arc: {
+    tvl: tvlForChain({
+      lockers: ['0x7Fe433A7E1a89ab598834ac2fB0695041F8DB7Ca'],
+      positionManager: '0x6049c9a0e26405C0985f9E3685C87d0aE917f82B',
+      pairedToken: ADDRESSES.arc.USDC,
+      stateViewer: '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b',
+      startBlock: 21_167_882,
+      // Arc's archive RPC caps eth_getLogs at 100,000 blocks.
+      maxBlockRange: 100_000,
     }),
   },
 }

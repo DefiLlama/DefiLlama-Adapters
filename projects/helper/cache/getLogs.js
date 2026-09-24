@@ -10,7 +10,7 @@ const problematicChainSet = new Set(['rbn',])
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer, maxBlockRange }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -82,7 +82,7 @@ async function getLogs({ target,
 
     let logs
 
-    if (!useIndexer) {
+    if (!useIndexer && !maxBlockRange) {
 
       logs = (await sdk.api.util.getLogs({
         chain, target, topic, keys, topics, fromBlock, toBlock,
@@ -92,7 +92,7 @@ async function getLogs({ target,
       // if use indexer flag is enabled, we use the new getLogs method that tries to pull from indexer if it is configured, else from chain rpcs
 
       logs = await sdk.getEventLogs({
-        chain, target, topic, keys, topics, fromBlock, toBlock, skipIndexer: !useIndexer, entireLog: true,
+        chain, target, topic, keys, topics, fromBlock, toBlock, skipIndexer: !useIndexer, entireLog: true, maxBlockRange,
       })
 
     }

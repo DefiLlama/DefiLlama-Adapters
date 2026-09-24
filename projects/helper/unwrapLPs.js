@@ -226,6 +226,7 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
 
   slot0.forEach((slot, i) => {
     lpInfoArray[i].tick = slot.tick;
+    lpInfoArray[i].sqrtPriceX96 = slot.sqrtPriceX96;
   });
 
   positions.map(addV4PositionBalances)
@@ -285,7 +286,8 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
     const liquidity = position.liquidity
     const bottomTick = +position.tickLower
     const topTick = +position.tickUpper
-    const tick = +lpInfo[getKey(position)].tick
+    const poolInfo = lpInfo[getKey(position)]
+    const tick = +poolInfo.tick
     const sa = tickToPrice(bottomTick / 2)
     const sb = tickToPrice(topTick / 2)
 
@@ -295,8 +297,10 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
     if (tick < bottomTick) {
       amount0 = liquidity * (sb - sa) / (sa * sb)
     } else if (tick < topTick) {
-      const price = tickToPrice(tick)
-      const sp = price ** 0.5
+      // `tick` is rounded down. Close to a boundary, reconstructing sqrt price from that
+      // integer can materially overstate one side of a concentrated position. StateView
+      // already returns the exact sqrtPriceX96, so use it for the in-range calculation.
+      const sp = Number(poolInfo.sqrtPriceX96) / 2 ** 96
 
       amount0 = liquidity * (sb - sp) / (sp * sb)
       amount1 = liquidity * (sp - sa)
@@ -1414,4 +1418,3 @@ module.exports = {
   unwrapHypervisorVaults,
   unwrapUniswapV4NFTs,
 }
-
