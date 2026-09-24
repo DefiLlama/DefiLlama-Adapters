@@ -100,6 +100,7 @@ const defaultTokens = {
     '0x1ffEFD8036409Cb6d652bd610DE465933b226917', //ever
     '0xaaa9214f675316182eaa21c85f0ca99160cc3aaa', //QANX
     ADDRESSES.ethereum.SNX, //SNX
+    '0x96f6ef951840721adbf46ac996b59e0235cb985c', //  USDY
     '0xe76c5b78f93909d34404e9eb4c1f19e7582a5de1', //H (Humanity Protocol)
     ADDRESSES.ethereum.ETHFI, //ETHFI (ether.fi)
     '0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f', //GHO (Aave stablecoin)
@@ -190,6 +191,7 @@ const defaultTokens = {
     'rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof', //RENDER
     'Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk', //USELESS
     '4eDf52YYzL6i6gbZ6FXqrLUPXbtP61f1gPSFM66M4XHe', //SOON
+    'HNg5PYJmtqcmzXrv6S9zP1CDKk5BgDuyFBxbvNApump', //ALCH
   ],
   bsc: [
     nullAddress,
@@ -249,6 +251,7 @@ const defaultTokens = {
     '0xc07e1300dc138601fa6b0b59f8d0fa477e690589', // Q
     '0x9558a9254890b2a8b057a789f413631b9084f4a3', // AIN
     '0x55ad16bd573b3365f43a9daeb0cc66a73821b4a5', // AIOT
+    '0x10d4183389e99233db3cc981c43443ebd28ebd5e', // DGAI
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -469,6 +472,11 @@ const defaultTokens = {
     '0xB6CEceAB302E2E4948951eE7843FC24E92933061', //USDC
     ADDRESSES.stable.USDT0, //USD₮0
     '0x87b4a8176B3Df6b71e26CC095edcAf4Db07506B4', //PAYPAL USD
+  ],
+  robinhood: [
+    nullAddress,
+    '0x39dbed3a2bd333467115de45665cc57f813c4571', // PONS
+    '0x020bfc650a365f8bb26819deaabf3e21291018b4', // CASHCAT
   ],
 }
 

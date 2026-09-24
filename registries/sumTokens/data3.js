@@ -20,9 +20,9 @@ module.exports = {
     },
   },
   "gblin": {
-    "methodology": "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V6 Vault contract on Base.",
+    "methodology": "TVL is the WETH, cbBTC and USDC held by the GBLIN vault on Base, plus the balance still held by the previous index contract until its holders migrate.",
     "base": {
-      "tvl": { "owner": "0x36C81d7E1966310F305eA637e761Cf77F90852f0", "tokens": [ADDRESSES.optimism.WETH_1,ADDRESSES.ethereum.cbBTC,ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0xc2181d975c05c8c724b334bcED0764c0b86B1D53", "0x36C81d7E1966310F305eA637e761Cf77F90852f0"], "tokens": [ADDRESSES.optimism.WETH_1,ADDRESSES.ethereum.cbBTC,ADDRESSES.base.USDC] },
     },
   },
   "risq": {

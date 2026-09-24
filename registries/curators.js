@@ -876,6 +876,18 @@ const configs = {
       }
     },
   },
+  "nova-nlp": {
+    config: {
+      methodology: "Counts the settled USDC NAV reported on-chain by the Nova NLP Lagoon vault on HyperEVM.",
+      blockchains: {
+        hyperliquid: {
+          erc4626: [
+            '0xEeEd7BB939d65938Fe8f40dd898Cd5942E32f09E', // Lagoon: Nova NLP (sNLP)
+          ],
+        },
+      },
+    },
+  },
   "odyssey-digital-am": {
     config: {
       methodology: 'Count settled assets in Odyssey Digital AM funds on Lagoon',
@@ -1272,6 +1284,7 @@ const configs = {
             '0xBeEF00283d2b26a55F56B9f8c283b25e9a22E95b', // Steakhouse Morpho V2
             '0xBEEff02DE231f8B08c627C769edC73e7AcE47264', // Steakhouse Morpho V2
             '0xBEEFFFe68dFc2D3BD1ABdAd37c70634973b16478', // USDC Turbo
+            '0xBeEfF0be997Cca5B1c13A7433c2004637975739e', // Ethena x Steakhouse USDC (deployed via a factory wrapper, missed by the owner filter)
           ],
         },
         corn: {
@@ -1310,6 +1323,10 @@ const configs = {
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
             '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
             '0x96632d28Ac99A3edAb5F7B223a88d8fAf9004178', // Ethena x Steakhouse mUSD
+          ],
+          morpho: [
+            '0xBEEF0C61DA39F7EA2bFa7B0f9d6338A3a2DD2fF0', // Steakhouse USDC
+            '0xBEEF067C9D2591aCCAB7d1C336a41ca3bd45b8f5', // Steakhouse mUSD
           ],
         },
         polygon: {
@@ -1693,6 +1710,18 @@ const configs = {
           ],
         },
       }
+    },
+  },
+  "zharta-finance": {
+    config: {
+      methodology: "Counts the settled USDC NAV reported on-chain by the Zharta RWA Prime USDC Lagoon vault on Ethereum.",
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xB4a4C9a736f91E2694c6b921445eeF3E3585a591', // Lagoon: Zharta RWA Prime USDC (zrwaUSDC)
+          ],
+        },
+      },
     },
   },
   "dirac-classic-curation": {

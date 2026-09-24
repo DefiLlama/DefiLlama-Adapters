@@ -11,12 +11,14 @@ const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 // the same constraint — the PoolManager singleton holds every pool's reserves at once, so a single
 // protocol's share cannot be read off its balance.
 //
-// https://robinhoodchain.blockscout.com/address/0x62cA64f87E051a2E190d17caA98E4a08f4a597dc
+// https://robinhoodchain.blockscout.com/address/0x3AAB7D1317565d768b92A07b4417B128F470Da68
 const LAUNCHPADS = [
-  // Current deployment. New coins are created here.
+  // Current deployment (V2.1). New coins are created here since 2026-09-23.
+  { launchpad: '0x3AAB7D1317565d768b92A07b4417B128F470Da68', vault: '0xb7Ab4c5e3d133cfbE4fCd627728849B8E6F0dbF0', fromBlock: 69908367 },
+  // Earlier deployments: heks.fun moved coin creation off V2 on 2026-09-23 and off V1 on 2026-09-15,
+  // but their positions are locked and still trade, so the liquidity locked in them is still heks
+  // liquidity.
   { launchpad: '0x62cA64f87E051a2E190d17caA98E4a08f4a597dc', vault: '0x89c0983D9B01F6CAe4FEcbb6b5D6296b44536400', fromBlock: 62705679 },
-  // Previous deployment: creation was closed on 2026-09-15, but its positions are locked and still
-  // trade, so the liquidity locked in them is still heks liquidity.
   { launchpad: '0x0647b0f4bFDEC1f64ffaD55Edcf24504269058de', vault: '0x3025685BE0c6Fa2Ce7ec3Ed6CdBdAF2E6309638f', fromBlock: 56970549 },
 ]
 

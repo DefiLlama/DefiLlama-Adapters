@@ -2218,6 +2218,12 @@ const uniV2Configs = {
     theta: '0xa2De4F2cC54dDFdFb7D27E81b9b9772bd45bf89d',
   },
   'voltswap-v2': {
+    _options: {
+      blacklistedTokens: [
+        ADDRESSES.meter.WMTR,  // hacked
+        ADDRESSES.meter.MTRG,  // hacked
+      ],
+    },
     base: '0x2A5478bE24F9E536cCb91DBF650EFD6cE6C00398',
     meter: '0xb33dE8C0843F90655ad6249F20B473a627443d21',
   },
@@ -3185,6 +3191,15 @@ const uniV2Configs = {
   'trenchdex-v2': {
     start: '2026-06-01',
     pulse: '0xA024e4574406BEf89e624c75758c700B5bED27C7',
+  },
+  'megapump-dex': {
+    _options: {
+      fetchBalances: true
+    },
+    megaeth: {
+      factory: '0x4188aDbFfBec026EdE44F2C3A7E22beDD880a46f',
+    },
+    start: '2026-07-10',
   },
 }
 

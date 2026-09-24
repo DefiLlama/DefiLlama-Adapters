@@ -1159,11 +1159,7 @@ const uniV3Configs = {
       fromBlock: 277686,
       isAlgebra: true,
     },
-    soneium: {
-      factory: '0x8Ff309F68F6Caf77a78E9C20d2Af7Ed4bE2D7093',
-      fromBlock: 1681559,
-      isAlgebra: true,
-    },
+    soneium: { tvl: () => ({}) },
   },
   'rabbitswap-v3': {
     tomochain: {
@@ -1859,10 +1855,6 @@ const uniV3Configs = {
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint8 indexed poolType, int24 tickSpacing, uint24 fee, address pool)',
       topics: ['0x3871766f55926cc6499881a4481d190672266d76354ee598765dea432553fac7'],
     },
-  },
-  'synthra-v3': {
-    arc: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 12953009 },
-    robinhood: { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 9539103 },
   },
   'trenchdex-v3': {
     start: '2026-06-01',
