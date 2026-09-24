@@ -2218,6 +2218,12 @@ const uniV2Configs = {
     theta: '0xa2De4F2cC54dDFdFb7D27E81b9b9772bd45bf89d',
   },
   'voltswap-v2': {
+    _options: {
+      blacklistedTokens: [
+        ADDRESSES.meter.WMTR,  // hacked
+        ADDRESSES.meter.MTRG,  // hacked
+      ],
+    },
     base: '0x2A5478bE24F9E536cCb91DBF650EFD6cE6C00398',
     meter: '0xb33dE8C0843F90655ad6249F20B473a627443d21',
   },
