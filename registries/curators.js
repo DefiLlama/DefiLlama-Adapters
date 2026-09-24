@@ -753,6 +753,18 @@ const configs = {
       }
     },
   },
+  "hub-capital": {
+    config: {
+      methodology: 'Counts the assets deposited in the Lagoon USDC vault curated by Hub Capital.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xca790385506b790554571cbc9da73f0130cdcfd5', // Lagoon: Hub Capital USDC
+          ],
+        },
+      },
+    },
+  },
   "invariant-group": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Invariant Group.',
