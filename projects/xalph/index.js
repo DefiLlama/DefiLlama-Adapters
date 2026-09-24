@@ -13,7 +13,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  doublecounted: true,
   timetravel: false,
   methodology: "TVL is the ALPH locked in the xALPH contract and backing issued xALPH.",
   alephium: { tvl },
