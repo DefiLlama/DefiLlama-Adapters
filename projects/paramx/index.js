@@ -12,10 +12,8 @@ const USDC =
 
 async function tvl(api) {
   const exchange = await sui.getObject(EXCHANGE);
-  const { accounts, contracts, fees } = exchange.fields;
-
-  // Accrued protocol fees (Balance<USDC>, serialized as a u64 string).
-  api.add(USDC, fees);
+  // Accrued protocol fees (Exchange.fees) are admin-withdrawable revenue and are not counted.
+  const { accounts, contracts } = exchange.fields;
 
   // Users' free collateral: Table<address, Account<USDC>>, Account.balance.
   const accountEntries = await sui.getDynamicFieldObjects({
@@ -37,6 +35,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "TVL is the USDC held by the ParamX Exchange object on Sui: users' deposited account balances, collateral locked in minted grid contracts, and accrued protocol fees.",
+    "TVL is the USDC held by the ParamX Exchange object on Sui: users' deposited account balances and collateral locked in minted grid contracts. Accrued protocol fees are excluded.",
   sui: { tvl },
 };
