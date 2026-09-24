@@ -35,9 +35,14 @@ async function tvl(api) {
     permitFailure: true,
   })
 
-  poolTokenInfo.forEach(info => {
-    if (!info) return
-    const { tokens, balancesRaw } = info
+  // ...but a dead RPC must not pass for an empty protocol: reporting 0 overwrites the chart,
+  // while throwing only skips this run. An empty `pools` stays a legitimate 0 — that is a
+  // chain where no pool has been created yet.
+  const read = poolTokenInfo.filter(Boolean)
+  if (pools.length && !read.length)
+    throw new Error(`puzzle-ranges: all ${pools.length} getPoolTokenInfo calls failed on ${api.chain}`)
+
+  read.forEach(({ tokens, balancesRaw }) => {
     tokens.forEach((token, i) => {
       // a few range pools hold other range pools' BPTs; the child pool's own balances are
       // already counted above, so counting the BPT too would double count it
