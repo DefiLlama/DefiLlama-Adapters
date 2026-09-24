@@ -15,6 +15,7 @@ const WEGAZ_ETX_PAIR = '0xa18050ABE8d4b9384fE3b88D3b88eC311e8CcdF8'
 // (WEGAZ -> ETX -> ETI), which the unknown-token helper does not chain, so the WEGAZ
 // held in pools is converted to ETI here and the helper is told to skip it.
 const coreAssets = [ETI]
+const RESTRICT_TOKEN_RATIO = 5
 
 const uniTvl = getUniTVL({ factory: SWAP_FACTORY, coreAssets, blacklistedTokens: [WEGAZ, STAKED_ETX] })
 
@@ -36,8 +37,9 @@ async function addWegazAsEti(api) {
     etxReserves(api, ETI_ETX_PAIR),
   ])
   if (!wegazPool.other || !etiPool.etx) return
-  const etiPerWegaz = (wegazPool.etx / wegazPool.other) * (etiPool.other / etiPool.etx)
-  api.add(ETI, Math.round(wegazPool.other * etiPerWegaz))
+  // same guard as transformDexBalances: never convert more than 5x the ETX sitting in the ETI/ETX pool
+  const etxEquivalent = Math.min(wegazPool.etx, etiPool.etx * RESTRICT_TOKEN_RATIO)
+  api.add(ETI, Math.round(etxEquivalent * (etiPool.other / etiPool.etx)))
 }
 
 async function tvl(api) {
