@@ -42,9 +42,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  etica: {
-    '0x34c61EA91bAcdA647269d4e310A86b875c09946f': { coingeckoId: 'etica', decimals: 18 },
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
