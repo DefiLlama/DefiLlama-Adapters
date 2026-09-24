@@ -36,17 +36,14 @@ module.exports.ethereum = {
     // Earn currently invests in its own USDC EVK vault and another Euler market.
     // Keep the uncounted assets of the Earn vault while excluding its own EVK shares.
     const [earnAssets, sharesInOwnVault] = await Promise.all([
-      api.call({ target: earn, abi: 'uint256:totalAssets', permitFailure: true }),
-      api.call({ target: nestedUsdcVault, abi: 'function balanceOf(address) view returns (uint256)', params: [earn], permitFailure: true }),
+      api.call({ target: earn, abi: 'uint256:totalAssets' }),
+      api.call({ target: nestedUsdcVault, abi: 'function balanceOf(address) view returns (uint256)', params: [earn] }),
     ])
-    if (earnAssets == null || sharesInOwnVault == null) return
     const ownVaultAssets = await api.call({
       target: nestedUsdcVault,
       abi: 'function convertToAssets(uint256) view returns (uint256)',
       params: [sharesInOwnVault],
-      permitFailure: true,
     })
-    if (ownVaultAssets == null) return
     const remainder = BigInt(earnAssets) - BigInt(ownVaultAssets)
     if (remainder > 0n) api.add(underlyingUsdc, remainder.toString())
   },
