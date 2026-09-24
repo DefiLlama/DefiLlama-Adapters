@@ -1,0 +1,145 @@
+{
+  "addresses": "https://docs.gage.cash/protocol/addresses",
+  "chain": "robinhood",
+  "chainId": 4663,
+  "start": "2026-09-07",
+  "usdg": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+  "weth": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+  "ownTokens": [
+    "0x7163ae1b5aea2f09ebc609c52b4dcac0a7a4bc2d",
+    "0x78c88cf8f6e612955526ceb501be82bf3279bd5d"
+  ],
+  "receipts": [
+    "0x2166a547bc27fef846c9858e3101b84d1a8d994e",
+    "0x647d46c0577453be8c75039f829740b5d2e44938"
+  ],
+  "excludedTokens": [
+    "0x7163ae1b5aea2f09ebc609c52b4dcac0a7a4bc2d",
+    "0x78c88cf8f6e612955526ceb501be82bf3279bd5d",
+    "0x2166a547bc27fef846c9858e3101b84d1a8d994e",
+    "0x647d46c0577453be8c75039f829740b5d2e44938"
+  ],
+  "stateView": "0xf3334192d15450cdd385c8b70e03f9a6bd9e673b",
+  "v3Factories": [
+    "0x1f7d7550b1b028f7571e69a784071f0205fd2efa"
+  ],
+  "vaults": [
+    {
+      "id": "flagship",
+      "name": "Gage (flagship)",
+      "address": "0x3d979740785abd8b7dd5c2ff7bf100cbe86fcbdf",
+      "feeSink": "0xbe2066a95cf3ecc28c9665e5b024c3f8a313e19f",
+      "positionManager": "0x58daec3116aae6d93017baaea7749052e8a04fa7",
+      "nftProtocol": "v4",
+      "startBlock": 57067911
+    },
+    {
+      "id": "market-1",
+      "name": "Meme / USDG LP",
+      "address": "0xc23a08282aa1a9141c6fd7a29e7dfbfe841cc6b6",
+      "feeSink": "0xaf7703f8d41da5140a8407aa0725e4f44a8e88a7",
+      "positionManager": "0x58daec3116aae6d93017baaea7749052e8a04fa7",
+      "nftProtocol": "v4",
+      "startBlock": 57225919
+    },
+    {
+      "id": "market-2",
+      "name": "PONS / WETH LP",
+      "address": "0xe3628a01eaca2e7b0ec71ed7ba616b997fef9cde",
+      "feeSink": "0x9bb55ed269d0096d50ecd08e34c283362d215f32",
+      "positionManager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "nftProtocol": "v3",
+      "startBlock": 57272430
+    },
+    {
+      "id": "market-3",
+      "name": "Borrow LP Zap",
+      "address": "0x73efe72f500f01da3042a4bb03c647d200021bf5",
+      "feeSink": "0x87ca030782bf45fc48a3df9627c121b762efad4c",
+      "positionManager": "0x58daec3116aae6d93017baaea7749052e8a04fa7",
+      "nftProtocol": "v4",
+      "startBlock": 57713175
+    },
+    {
+      "id": "market-4",
+      "name": "CASHCAT / USDG zap",
+      "address": "0x4d52435086570d0a442320a843e0bfbef2a57f8c",
+      "feeSink": "0x440b11b7f4843a49c9ef1ee9212b7c139721033d",
+      "positionManager": "0x58daec3116aae6d93017baaea7749052e8a04fa7",
+      "nftProtocol": "v4",
+      "startBlock": 57923723
+    }
+  ],
+  "engines": [
+    {
+      "name": "V2",
+      "engine": "0x22658055b70b8b09616b1e0953f2a51cc66cf493",
+      "cashoutRouter": "0x38e37cc00427dd2a930d2a31e29e4104530d671b",
+      "startBlock": 58114969,
+      "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
+    },
+    {
+      "name": "V2",
+      "engine": "0x08561c817a5bf5230f91c001800449f047e4c07d",
+      "cashoutRouter": "0x8f0ddfbb88a4a70ef4c82ab237eb8407c6b6d866",
+      "startBlock": 60445674,
+      "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
+    },
+    {
+      "name": "V3",
+      "engine": "0xfee799ade96229c2c128bc5ed9e55f8d9d01a7e9",
+      "cashoutRouter": "0x895285fdbbec09eada41fc3784117d5177427acc",
+      "startBlock": 62950248,
+      "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
+    }
+  ],
+  "earn": [
+    {
+      "id": "gage-mix",
+      "title": "Gage USDG Mix",
+      "version": 2,
+      "vault": "0x1e95dd1ec0a80133d132279b2afa9182d9d63ca4",
+      "reserve": "0xbeeff033f34c046626b8d0a041844c5d1a5409dd",
+      "startBlock": 61572059
+    },
+    {
+      "id": "gage-stocks",
+      "title": "Gage USDG Stocks",
+      "version": 2,
+      "vault": "0x21a8771dc8c260b12c916820ba8168b01ab619bc",
+      "reserve": "0xbeeff033f34c046626b8d0a041844c5d1a5409dd",
+      "startBlock": 61652887
+    },
+    {
+      "id": "stocks",
+      "title": "Gage USDG Stocks",
+      "version": 3,
+      "vault": "0x36b438761aa271d9852549f54e88283987977b7a",
+      "reserve": "0xbeeff033f34c046626b8d0a041844c5d1a5409dd",
+      "startBlock": 64910936
+    },
+    {
+      "id": "memes",
+      "title": "Gage USDG Memes",
+      "version": 3,
+      "vault": "0xc04a365061e5d3cf7f614cf353494294b0e3f0c9",
+      "reserve": "0xbeeff033f34c046626b8d0a041844c5d1a5409dd",
+      "startBlock": 64981242
+    }
+  ],
+  "factories": [
+    {
+      "kind": "hybrid",
+      "address": "0x1544b5e7bd7ab57fccb991586694a8acf054868b",
+      "startBlock": 61572036
+    },
+    {
+      "kind": "earn",
+      "address": "0x124d74d5626d392e937c3410c0325ea464700682",
+      "startBlock": 64910936
+    }
+  ]
+}
