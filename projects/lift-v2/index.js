@@ -1,6 +1,6 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { addUniV3LikePosition } = require('../helper/unwrapLPs')
-const { sliceIntoChunks, sleep } = require('../helper/utils')
+const { sliceIntoChunks } = require('../helper/utils')
 
 const FACTORY = '0x1ca37B3C40e89aaD48b5ad3352269c2293CFD3DA' // LaunchpadFactoryV4
 const FROM_BLOCK = 21077993
@@ -24,11 +24,11 @@ async function tvl(api) {
     const compounded = await api.multiCall({ abi: ABI.getPositionInfo, target: STATE_VIEW, calls: chunk.map((l) => ({ params: [l.poolId, HOOK, l.tickLower, l.tickUpper, ZERO_SALT] })) })
     chunk.forEach((l, i) => {
       const liquidity = Number(BigInt(l.liquidity) + BigInt(compounded[i].liquidity))
-      // the quote is always currency0 of a LIFT pool; only the quote side is counted
-      addUniV3LikePosition({ api, token0: l.quote, token1: l.token, liquidity, tickLower: Number(l.tickLower), tickUpper: Number(l.tickUpper), tick: Number(slot0[i].tick) })
+      // currency0 is the lower address; only the quote side is counted
+      const [token0, token1] = l.quote.toLowerCase() < l.token.toLowerCase() ? [l.quote, l.token] : [l.token, l.quote]
+      addUniV3LikePosition({ api, token0, token1, liquidity, tickLower: Number(l.tickLower), tickUpper: Number(l.tickUpper), tick: Number(slot0[i].tick) })
       api.removeTokenBalance(l.token)
     })
-    await sleep(1000) // the public Arc RPC rate-limits bursts of multicalls
   }
 }
 
