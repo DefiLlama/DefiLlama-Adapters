@@ -11,6 +11,9 @@ const REGISTRY = '0x36656e3a30ee4b57705a4d42936af48a2f0f7e3a'
 // Order book replaced on 2026-09-20. Bids posted there keep their escrow until
 // filled or cancelled.
 const RETIRED_BOOKS = ['0x1d4238c266974525c371d9bf7c823e7de8ffb1b7']
+// Factories the registry no longer points at. Their markets keep their
+// collateral until redeemed, so add the old factory here if it is ever replaced.
+const RETIRED_FACTORIES = []
 
 const abi = {
   marketFactory: 'address:marketFactory',
@@ -35,7 +38,7 @@ async function tvl(api) {
   const factory = await api.call({ target: REGISTRY, abi: abi.marketFactory })
   const book = await api.call({ target: REGISTRY, abi: abi.orderBook })
   const sources = [
-    { target: factory, count: abi.marketCount, item: abi.allMarkets, isMarket: true },
+    ...[factory, ...RETIRED_FACTORIES].map(target => ({ target, count: abi.marketCount, item: abi.allMarkets, isMarket: true })),
     ...[book, ...RETIRED_BOOKS].map(target => ({ target, count: abi.bidCount, item: abi.allBids })),
   ]
 
@@ -51,7 +54,7 @@ async function tvl(api) {
     const resolvedAt = isMarket ? await api.multiCall({ abi: abi.resolvedAt, calls: empty }) : []
     const settled = new Set(empty.filter((_, i) => !isMarket || resolvedAt[i] !== '0'))
 
-    live.forEach((holder, i) => { if (balances[i] !== '0') api.add(USDST, balances[i]) })
+    balances.forEach(balance => { if (balance !== '0') api.add(USDST, balance) })
     cache[key] = { scanned: total, live: live.filter(a => !settled.has(a)) }
   }
 
