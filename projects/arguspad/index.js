@@ -77,7 +77,9 @@ const DEPLOY_BLOCKS = {
 
 // Registry size of each Portal, 0 for a Portal not yet deployed at the block.
 async function registrySizes(api, portals, getter) {
-  const live = portals.filter(portal => !api.block || api.block >= DEPLOY_BLOCKS[portal])
+  // api.block is only resolved from the timestamp inside the first call, so resolve it before filtering
+  const block = await api.getBlock()
+  const live = portals.filter(portal => block >= DEPLOY_BLOCKS[portal])
   const sizes = await api.multiCall({ abi: `uint256:${getter}`, calls: live })
   return portals.map(portal => live.includes(portal) ? +sizes[live.indexOf(portal)] : 0)
 }
