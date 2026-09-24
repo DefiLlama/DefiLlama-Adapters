@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getCache, setCache } = require('../helper/cache')
-const { getCreateAddress, Interface } = require('ethers')
+const { getCreateAddress } = require('ethers')
 
 // ArgusPad launches a tax token and seeds a single concentrated-liquidity position with the whole
 // supply. The LP NFT is minted to a locker clone created for that launch, and the locker has no
@@ -62,26 +62,24 @@ const PORTAL_8_PARTS_FACTORY = '0xD969062076F75fbC4fd0195561501dC13eF87C72'
 const PORTAL_8_LAUNCH_ABI = 'function launches(address token) view returns (address hook, address escrow, address locker, uint256 positionId, int24 tickStart, int24 tickBond, bool tokenIsToken0)'
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-// A registry size that fails in the batch is read again with a direct eth_call, which the SDK's
-// provider retries across every configured endpoint. A Portal that did not exist yet at the block
-// has no code there, and a call to an address with no code succeeds with empty return data, so
-// '0x' - and only '0x' - is an empty registry; a deployed Portal answers 32 bytes. A revert, or an
-// RPC error on every endpoint, throws rather than becoming a silent zero.
+// Deployment block of every Portal. The Portals were deployed over three weeks, so a run at a past
+// block skips the ones that did not exist yet instead of calling them.
+const DEPLOY_BLOCKS = {
+  '0x0F1C7Cb26D6cD36BD4189E41947658b39437587A': 18817867,
+  '0xBed9880A0ba12722ba4b8791c0B6F8c74338246C': 19056397,
+  '0x7A17Ab0106C46C0be30623F3EB7F299CC0058338': 19674154,
+  '0xa36c443A797771Df82533B8B4A86F0AFfd970862': 19690658,
+  '0x07a688a001f416cC433c68Ff56Aa26bC5131Cc6E': 20081606,
+  '0xA5628A11c412596E1f63b75a2C0284F843C549d6': 20240260,
+  '0xB021Be536808f551b31789422Fd28a6c9c6e97Da': 20395275,
+  [PORTAL_8]: 22251798,
+}
+
+// Registry size of each Portal, 0 for a Portal not yet deployed at the block.
 async function registrySizes(api, portals, getter) {
-  const abi = `function ${getter}() view returns (uint256)`
-  const iface = new Interface([abi])
-  const sizes = await api.multiCall({ abi, calls: portals, permitFailure: true })
-  return Promise.all(portals.map(async (portal, i) => {
-    if (sizes[i] != null) return +sizes[i]
-    let raw
-    try {
-      raw = await api.provider.call({ to: portal, data: iface.encodeFunctionData(getter), blockTag: api.block ?? 'latest' })
-    } catch (e) {
-      throw new Error(`arguspad: ${getter}() on ${portal} at block ${api.block ?? 'latest'} failed on every RPC, not an empty registry: ${JSON.stringify(e?.errors ?? e?.message ?? e).slice(0, 300)}`)
-    }
-    if (raw === '0x') return 0
-    return +iface.decodeFunctionResult(getter, raw)[0].toString()
-  }))
+  const live = portals.filter(portal => !api.block || api.block >= DEPLOY_BLOCKS[portal])
+  const sizes = await api.multiCall({ abi: `uint256:${getter}`, calls: live })
+  return portals.map(portal => live.includes(portal) ? +sizes[live.indexOf(portal)] : 0)
 }
 
 // Cached as [token, positionId, factory nonce], in nonce order, which is launch order. A run at a
@@ -116,8 +114,6 @@ async function getPortal8Launches(api, cache, count) {
 async function getLaunches(api) {
   const cache = await getCache('arguspad', api.chain)
   const portals = [...PORTALS.v4.map(p => [p, 'v4']), ...PORTALS.v3.map(p => [p, 'v3'])]
-  // The Portals were deployed over three weeks (V3-1 carried a launch on 2026-09-02, Portal 8 was
-  // deployed on 2026-09-22), so a run at a past block reads Portals that did not exist yet.
   const counts = await registrySizes(api, portals.map(([p]) => p), 'tokenCount')
   const [portal8Count] = await registrySizes(api, [PORTAL_8], 'launchCount')
   let updated = false
