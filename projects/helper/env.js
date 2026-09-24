@@ -68,13 +68,17 @@ const DEFAULTS = {
   PROM_RPC_MULTICALL: '0xfF785aF3De8C2cb5727A8665984E741c16679131',
   NIBIRU_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
-  ARC_RPC: 'https://rpc.mainnet.arc.io',
+  // PAST block is served only by drpc: blockdaemon answers "state at block N is pruned" and
+  // rpc.mainnet.arc.io 429s every archival read, even a single batch of 50 after sitting idle.
+  // drpc therefore leads, and is also the fastest of the three at the latest block.
+  ARC_RPC: 'https://rpc.drpc.mainnet.arc.io,https://rpc.mainnet.arc.io,https://rpc.blockdaemon.mainnet.arc.io',
   ARC_RPC_CHAIN_ID: '5042',
-  ARC_ARCHIVAL_RPC: 'https://explorer.arc.io/api/eth-rpc', // public rpc.mainnet.arc.io rejects large eth_getLogs ranges
-  // Arc is not in the SDK Multicall3 deployment map. Without this, eth.getBalances skips
-  // getEthBalance() and fans out getBalance against ARC_RPC (429s). Archival is getLogs-only.
+  // explorer.arc.io/api/eth-rpc answers every programmatic request with HTTP 403.
+  ARC_ARCHIVAL_RPC: 'https://rpc.arc-scan.org,https://rpc.blockdaemon.mainnet.arc.io,https://rpc.nodeflare.app/arc/public', // public archive fallbacks; use <=100k-block log ranges
+  // Arc is not in the SDK Multicall3 deployment map; canonical Multicall3 is deployed there.
   ARC_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   ARC_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  ARC_MULTICALL_CHUNK_SIZE: '50',
   // chains with no provider in the SDK providers list (chainid.network RPCs)
   AREA_RPC: 'https://mainnet-rpc.areum.network,https://mainnet-rpc2.areum.network', // Areum Network, chainId 463
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
