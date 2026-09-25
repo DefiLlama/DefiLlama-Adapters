@@ -6,6 +6,6 @@ module.exports = {
   methodology: 'HyperDex holds no user funds: swaps and bridges execute through LI.FI, deposits sit in the underlying protocols. TVL is 0.',
 }
 
-;['robinhood', 'base', 'arbitrum', 'ethereum', 'arc', 'bsc', 'solana'].forEach(chain => {
+;['robinhood', 'base', 'arbitrum', 'ethereum', 'arc', 'solana'].forEach(chain => {
   module.exports[chain] = { tvl }
 })
