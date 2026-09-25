@@ -224,8 +224,10 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
     calls: poolInfos,
   });
 
+  // value positions from sqrtPriceX96, not tick: a swap that stops exactly on a tick boundary moving down reports
+  // tick = boundary - 1 while the price sits on the boundary, which would count a full tick of liquidity that isn't there
   slot0.forEach((slot, i) => {
-    lpInfoArray[i].tick = slot.tick;
+    lpInfoArray[i].sqrtPrice = Number(slot.sqrtPriceX96) / 2 ** 96;
   });
 
   positions.map(addV4PositionBalances)
@@ -285,19 +287,16 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
     const liquidity = position.liquidity
     const bottomTick = +position.tickLower
     const topTick = +position.tickUpper
-    const tick = +lpInfo[getKey(position)].tick
+    const sp = lpInfo[getKey(position)].sqrtPrice
     const sa = tickToPrice(bottomTick / 2)
     const sb = tickToPrice(topTick / 2)
 
     let amount0 = 0
     let amount1 = 0
 
-    if (tick < bottomTick) {
+    if (sp <= sa) {
       amount0 = liquidity * (sb - sa) / (sa * sb)
-    } else if (tick < topTick) {
-      const price = tickToPrice(tick)
-      const sp = price ** 0.5
-
+    } else if (sp < sb) {
       amount0 = liquidity * (sb - sp) / (sp * sb)
       amount1 = liquidity * (sp - sa)
     } else {
