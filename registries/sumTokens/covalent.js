@@ -42,12 +42,17 @@ module.exports = {
     },
   },
   "arbitrum": {
+    "methodology": "Counts ETH held by the Arbitrum One Bridge and every ERC-20 held by the L1 gateway escrows registered in the L1GatewayRouter: the standard ERC20 gateway, the generic custom gateway, and the token-specific custom-gateway escrows (Sky, Lido wstETH, Graph, Livepeer). Token lists are auto-discovered per escrow.",
+    "start": "2021-05-28",
     "ethereum": {
       "owners": [
         "0xa3A7B6F88361F48403514059F1F16C8E78d60EeC",
         "0x8315177aB297bA92A06054cE80a67Ed4DBd7ed3a",
         "0xcEe284F754E854890e311e3280b767F80797180d",
-        "0xA10c7CE4b876998858b1a9E12b10092229539400"
+        "0xA10c7CE4b876998858b1a9E12b10092229539400", // Sky L1 escrow (DAI + USDS/sUSDS gateways)
+        "0x0F25c1DC2a9922304f2eac71DCa9B07E310e8E5a", // Lido wstETH L1 gateway (self-custodies)
+        "0x36aFF7001294daE4C2ED4fDEfC478a00De77F090", // Graph GRT escrow (L1GraphTokenGateway.escrow())
+        "0x6A23F4940BD5BA117Da261f98aae51A8BFfa210A"  // Livepeer LPT escrow (L1LPTGateway.l1LPTEscrow())
       ],
       "fetchCoValentTokens": true,
       "permitFailure": true
@@ -68,10 +73,13 @@ module.exports = {
     },
   },
   "base": {
+    "methodology": "Counts assets escrowed on Ethereum for Base's canonical bridge: ETH in the OptimismPortal, ERC-20s in the L1StandardBridge, and the custom Lido wstETH and Sky USDS/sUSDS escrows.",
     "ethereum": {
       "owners": [
         "0x3154Cf16ccdb4C6d922629664174b904d80F2C35",
-        "0x49048044D57e1C92A77f79988d21Fa8fAF74E97e"
+        "0x49048044D57e1C92A77f79988d21Fa8fAF74E97e",
+        "0x9de443AdC5A411E83F1878Ef24C3F52C61571e72", // Lido wstETH L1 bridge/escrow for Base
+        "0x7F311a4D48377030bD810395f4CCfC03bdbe9Ef3"  // Sky SkyLink BASE_ESCROW (USDS, sUSDS)
       ],
       "fetchCoValentTokens": true
     },
