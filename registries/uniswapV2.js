@@ -3195,6 +3195,19 @@ const uniV2Configs = {
     },
     start: '2026-07-10',
   },
+  'arctide-dex': {
+    start: '2026-09-16',
+    methodology: 'Value of the tokens locked in the liquidity pools. LP fees are paid in native USDC outside the reserves and are not counted. Staking is the TIDE deposited in Hardstake, priced against USDC in its Arctide pool.',
+    arc: {
+      factory: '0x6AFd30Cb35D8B70Cfd84C9AcA92ddc2Dda2879Cb',
+      staking: {
+        owner: '0x5bd527c326Ab26d2969C40EF83D7Bbd2Ac454588', // Hardstake
+        tokens: ['0x92395d0cD51BB504a39E53105CB6862948aF1B8E'], // TIDE
+        lps: ['0x8E61d497784779C31936Fdfc223B7D53fB2664B7'], // TIDE/USDC
+        useDefaultCoreAssets: true,
+      },
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
