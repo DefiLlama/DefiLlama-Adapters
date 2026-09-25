@@ -55,6 +55,8 @@ async function ethereumTvl(api) {
 
 async function monadTvl(api) {
   await api.erc4626Sum2({ calls: [VAULT.coreAusd] });
+  // The Core USDC strategy Safe (same address on Monad) held Core AUSD shares until ~Apr 2026.
+  await subtractSharesHeldBy(api, VAULT.coreAusd, [SAFE.coreUsdc]);
   return api.getBalances();
 }
 
