@@ -43,6 +43,6 @@ async function tvl(api) {
 module.exports = {
   methodology: 'TVL is the USDG and Stock Tokens held for depositors by the TickerSpring V7 vaults on Robinhood Chain, read on-chain from each vault\'s inventory(): unreserved idle balances plus the Uniswap position valued at the pool price. Protocol fee reserves and uncollected LP fees are excluded. The positions sit in Uniswap pools, so this TVL is also counted by the Uniswap adapter.',
   doublecounted: true,
-  start: '2026-09-11',
+  start: '2026-09-12', // all V7 vaults were deployed 2026-09-11 19:51-20:35 UTC
   robinhood: { tvl },
 }
