@@ -1,7 +1,7 @@
 const registryTokensByChain = require("./registryTokens.js");
 const registryTokensWithUnderlyingAddressesByChain = require("./registryTokensWithUnderlyingAddresses.js");
 const ADDRESSES = require("../helper/coreAssets.json");
-const { sumTokensExport: sumSolanaTokensExport } = require("../helper/solana.js");
+const { sumTokens2: sumSolanaTokens } = require("../helper/solana.js");
 const { sumTokensExport } = require("../helper/sumTokens.js");
 
 const SHARED_OWNERS = [
@@ -32,6 +32,24 @@ const tvl = async (api) => {
   return api.sumTokens({ owners, tokens: [ADDRESSES.null] });
 };
 
+// Every token account of the vaults (incl. Token-2022 and non-associated ones); if the RPC can't serve
+// that query, fall back to the associated accounts of registry tokens.
+const solanaTvl = async (api) => {
+  try {
+    return await sumSolanaTokens({ api, balances: {}, owners: SOLANA_VAULTS, solOwners: SOLANA_VAULTS });
+  } catch (e) {
+    return sumSolanaTokens({
+      api,
+      balances: {},
+      owners: SOLANA_VAULTS,
+      tokens: registryTokensByChain.solana,
+      solOwners: SOLANA_VAULTS,
+      computeTokenAccount: true,
+      allowError: true,
+    });
+  }
+};
+
 module.exports = {
   ethereum: { tvl },
   base: { tvl },
@@ -42,5 +60,5 @@ module.exports = {
   robinhood: { tvl },
   arc: { tvl },
   tron: { tvl: sumTokensExport({ owners: TRON_VAULTS, tokens: [ADDRESSES.null, ...registryTokensByChain.tron] }) },
-  solana: { tvl: sumSolanaTokensExport({ owners: SOLANA_VAULTS, tokens: registryTokensByChain.solana, solOwners: SOLANA_VAULTS, computeTokenAccount: true, allowError: true }) },
+  solana: { tvl: solanaTvl },
 };
