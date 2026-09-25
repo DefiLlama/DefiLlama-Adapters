@@ -1028,4 +1028,14 @@ module.exports = {
       ]
     },
   },
+  "arctide-launchpad": {
+    "methodology": "TVL is the USDC raised on Arctide bonding curves that have not graduated yet, held by the launch factory as Arc's native USDC until the sale reaches its goal and the raise is moved into its Arctide pool.",
+    "start": "2026-09-16",
+    "arc": {
+      "owner": "0xF7a20a20e18Fa7d4B6c68EE58dA16799382AbCe8", // ArctideLaunchFactory
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
 }
