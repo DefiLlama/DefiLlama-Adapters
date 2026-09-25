@@ -61,12 +61,6 @@ async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } 
  * instead of being returned. `skipLayout` drops the layout blob (~3.5x the json payload); only safe when the
  * caller reads plain fields, since Option/TypeName/UID/ID/String rewrapping needs the layout.
  */
-/**
- * All dynamic fields of `parent`. `limit` is the page size (max 50), as it always was in this helper.
- * `items` / `addedIds` can be passed to accumulate across calls; with `onPage` items are handed over per page
- * instead of being returned. `skipLayout` drops the layout blob (~3.5x the json payload); only safe when the
- * caller reads plain fields, since Option/TypeName/UID/ID/String rewrapping needs the layout.
- */
 async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep, skipLayout = false, onPage }) {
   const filter = (i) => !addedIds.has(i.objectId) && idFilter(i)
   const res = await sui.getDynamicFieldObjects({ chain: 'sui', parent, cursor, pageSize: limit, idFilter: filter, skipLayout, sleep, onPage })
