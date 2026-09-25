@@ -54,6 +54,7 @@ module.exports = {
   ethereum: { tvl },
   base: { tvl },
   arbitrum: { tvl },
+  optimism: { tvl },
   polygon: { tvl },
   bsc: { tvl },
   tempo: { tvl },
