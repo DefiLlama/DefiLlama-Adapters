@@ -5,19 +5,17 @@ const methodologies = require('../helper/methodologies')
 // Mainnet Market contract (see the protocol's published deployments).
 const MARKET = 'CBP76I2FRMUKYKIYYBKN3DH7TSWMFAJF2WTDC7Q2OHQFBIVWP7CAAI5Q'
 
-// [{ pool, token }] for every pool registered in the market.
+// [{ token, total_borrowed }] for every pool currently registered in the market.
+// Discovered fresh on every call so newly added pools are always included and a
+// transient RPC failure simply propagates and retries on the next collection.
 // get_all_pools() -> Vec<Address>; get_pool(pool) -> Pool { token_address, total_borrowed, ... }
-let _pools
 async function getPools() {
-  if (!_pools) _pools = (async () => {
-    const out = []
-    for (const pool of await callSoroban(MARKET, 'get_all_pools')) {
-      const { token_address } = await callSoroban(MARKET, 'get_pool', [pool])
-      out.push({ pool, token: token_address })
-    }
-    return out
-  })()
-  return _pools
+  const out = []
+  for (const pool of await callSoroban(MARKET, 'get_all_pools')) {
+    const { token_address, total_borrowed } = await callSoroban(MARKET, 'get_pool', [pool])
+    out.push({ token: token_address, total_borrowed })
+  }
+  return out
 }
 
 // tvl: underlying tokens actually held by the market contract (available liquidity +
@@ -35,8 +33,7 @@ async function tvl(api) {
 // borrowed: outstanding debt per pool. total_borrowed is already denominated in
 // underlying token units (raw i128), so no share-rate conversion is needed.
 async function borrowed(api) {
-  for (const { pool, token } of await getPools()) {
-    const { total_borrowed } = await callSoroban(MARKET, 'get_pool', [pool])
+  for (const { token, total_borrowed } of await getPools()) {
     api.add(token, total_borrowed.toString())
   }
 }
