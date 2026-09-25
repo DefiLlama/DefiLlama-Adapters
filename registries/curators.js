@@ -1712,18 +1712,6 @@ const configs = {
       }
     },
   },
-  "zharta-finance": {
-    config: {
-      methodology: "Counts the settled USDC NAV reported on-chain by the Zharta RWA Prime USDC Lagoon vault on Ethereum.",
-      blockchains: {
-        ethereum: {
-          erc4626: [
-            '0xB4a4C9a736f91E2694c6b921445eeF3E3585a591', // Lagoon: Zharta RWA Prime USDC (zrwaUSDC)
-          ],
-        },
-      },
-    },
-  },
   "dirac-classic-curation": {
     config:{
       methodology: "Counts assets deposited in the Morpho Vault V2 vaults curated by Dirac, discovered on-chain via the DefiLlama curators registry by their deployer/owner address (morphoVaultOwners). One of Dirac Finance's two curation modes; the other is delta-neutral DiracVault strategies (dirac-delta-neutral-curation)",
