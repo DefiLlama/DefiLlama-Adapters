@@ -45,10 +45,10 @@ module.exports = {
         // 'hydradx': '/hydradx/api.js',  // moved to main runner (HTTP substrate reads)
         // 'zest-v2': '/zest-v2/api.js',
       },
-      {
-        'manta-atlantic-stake': '/manta-atlantic-stake/api',
-        'mantadex': '/mantadex/api',
-      },
+      // { // dead
+      //   'manta-atlantic-stake': '/manta-atlantic-stake/api',
+      //   'mantadex': '/mantadex/api',
+      // },
       {
         // moved to main runner (HTTP substrate reads)
         // 'acala-staking': '/acala-staking/api',
