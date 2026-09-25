@@ -32,11 +32,14 @@ async function tvl(api) {
     logs.forEach(i => collections.add(i.collection.toLowerCase()))
   }
 
-  // FWAIR launches hold supporter ETH and the artist's NFTs until each batch is listed in the main pool
+  // FWAIR launches hold supporter ETH and the artist's NFTs until each batch is listed in the main pool.
+  // A launch's collection is only whitelisted once it is fully backed, so it is read from the launch itself.
   if (block >= DEPLOY_BLOCKS[LAUNCH_MANAGER]) {
     const count = await api.call({ abi: 'uint256:nextLaunchId', target: LAUNCH_MANAGER })
-    const launches = await api.multiCall({ abi: 'function launches(uint256) view returns (address)', target: LAUNCH_MANAGER, calls: Array.from({ length: +count }, (_, i) => i) })
-    launches.filter(i => i !== NULL_ADDRESS).forEach(i => owners.push(i))
+    const launches = (await api.multiCall({ abi: 'function launches(uint256) view returns (address)', target: LAUNCH_MANAGER, calls: Array.from({ length: +count }, (_, i) => i) })).filter(i => i !== NULL_ADDRESS)
+    const launchCollections = await api.multiCall({ abi: 'address:collection', calls: launches })
+    launches.forEach(i => owners.push(i))
+    launchCollections.forEach(i => collections.add(i.toLowerCase()))
   }
 
   // Custom pools from the factory accept any collection, so theirs are read from their listing events
