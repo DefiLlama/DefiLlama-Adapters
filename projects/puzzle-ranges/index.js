@@ -18,7 +18,7 @@ const config = {
 
 const abis = {
   getPools: 'function getPools() view returns (address[])',
-  getPoolTokenInfo: 'function getPoolTokenInfo(address pool) view returns (address[] tokens, (address token, uint8 tokenType, address rateProvider, bool paysYieldFees)[] tokenInfo, uint256[] balancesRaw, uint256[] lastLiveBalances)',
+  getPoolTokenInfo: 'function getPoolTokenInfo(address pool) view returns (address[] tokens, (uint8 tokenType, address rateProvider, bool paysYieldFees)[] tokenInfo, uint256[] balancesRaw, uint256[] lastBalancesLiveScaled18)',
 }
 
 async function tvl(api) {
@@ -30,19 +30,9 @@ async function tvl(api) {
     target: vault,
     abi: abis.getPoolTokenInfo,
     calls: pools.map(pool => ({ params: [pool] })),
-    // the factory keeps minting pools, so this list grows between runs; a single pool that
-    // starts reverting should cost its own balances, not the whole chain's tvl
-    permitFailure: true,
   })
 
-  // ...but a dead RPC must not pass for an empty protocol: reporting 0 overwrites the chart,
-  // while throwing only skips this run. An empty `pools` stays a legitimate 0 — that is a
-  // chain where no pool has been created yet.
-  const read = poolTokenInfo.filter(Boolean)
-  if (pools.length && !read.length)
-    throw new Error(`puzzle-ranges: all ${pools.length} getPoolTokenInfo calls failed on ${api.chain}`)
-
-  read.forEach(({ tokens, balancesRaw }) => {
+  poolTokenInfo.forEach(({ tokens, balancesRaw }) => {
     tokens.forEach((token, i) => {
       // a few range pools hold other range pools' BPTs; the child pool's own balances are
       // already counted above, so counting the BPT too would double count it
