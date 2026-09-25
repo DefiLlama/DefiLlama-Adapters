@@ -2,24 +2,25 @@ const ADDRESSES = require('./coreAssets.json')
 const http = require('./http')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
 const { getUniqueAddresses } = require('./tokenMapping')
-const { Connection, PublicKey, Keypair, StakeProgram, } = require("@solana/web3.js")
+const { Connection, PublicKey, Keypair, } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 const { queryAllium } = require('./allium');
 
 const sdk = require('@defillama/sdk');
+const { svm, rpc: sdkRpc } = sdk.chains
 const { endpointMap, endpoint } = require('./svmChainConfig.js')
 // const { addRaydiumPositions } = require('../krystal/solana.js')
 
 /** Address of the SPL Token program */
-const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+const TOKEN_PROGRAM_ID = new PublicKey(svm.TOKEN_PROGRAM_ID)
 
 /** Address of the SPL Token 2022 program */
-const TOKEN_2022_PROGRAM_ID = new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb')
+const TOKEN_2022_PROGRAM_ID = new PublicKey(svm.TOKEN_2022_PROGRAM_ID)
 
 /** Address of the SPL Associated Token Account program */
-const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL')
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(svm.ASSOCIATED_TOKEN_PROGRAM_ID)
 
 const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
@@ -37,7 +38,7 @@ const blacklistedTokens_default = [
 const whitelistedTokens = {
   solana: [
     ...(Object.values(ADDRESSES.solana)),
-    '72puLt71H93Z9CzHuBRTwFpL4TG3WZUhnoCC7p8gxigu', // USDGO 
+    '72puLt71H93Z9CzHuBRTwFpL4TG3WZUhnoCC7p8gxigu', // USDGO
   ]
 }
 
@@ -93,95 +94,69 @@ function getProvider(chain = 'solana') {
   return provider[chain]
 }
 
+// PublicKey | string -> base58 string
+const toAddress = (i) => typeof i === 'string' ? i : i.toString()
+
+// sdk `getAccounts` (base64 payload) -> web3.js AccountInfo shape so `decodeAccount(layout, info)` and
+// `info.data.readBigUInt64LE(...)` callers keep working
+function toWeb3AccountInfo(info) {
+  if (!info) return null
+  let data = info.data
+  if (Array.isArray(data)) data = data[1] === 'base58' ? Buffer.from(svm.base58Decode(data[0])) : Buffer.from(data[0], 'base64')
+  else if (typeof data === 'string') data = Buffer.from(data, 'base64')
+  return {
+    data,
+    owner: new PublicKey(info.owner),
+    lamports: info.lamports,
+    executable: info.executable,
+    rentEpoch: info.rentEpoch,
+    space: info.space ?? data?.length,
+  }
+}
 
 function getAssociatedTokenAddress(mint, owner, programId = TOKEN_PROGRAM_ID, associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID) {
-  if (typeof programId === 'string') programId = new PublicKey(programId)
-  if (typeof mint === 'string') mint = new PublicKey(mint)
-  if (typeof owner === 'string') owner = new PublicKey(owner)
-  if (typeof associatedTokenProgramId === 'string') associatedTokenProgramId = new PublicKey(associatedTokenProgramId)
-  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), programId.toBuffer(), mint.toBuffer()], associatedTokenProgramId);
-  return associatedTokenAddress.toString()
+  return svm.getAssociatedTokenAddress({
+    mint: toAddress(mint),
+    owner: toAddress(owner),
+    programId: toAddress(programId),
+    associatedTokenProgramId: toAddress(associatedTokenProgramId),
+  })
 }
 
 
 async function getTokenSupplies(tokens, { api } = {}) {
-  // const sleepTime = tokens.length > 2000 ? 2000 : 200
   const sleepTime = 200
-  const connection = getConnection()
-  tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
-  const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
+  tokens = tokens.map(toAddress)
+  const supplies = await svm.getTokenSupplies({ chain: 'solana', tokens, chunkSize: 99, concurrency: 1, sleepTime, allowError: true })
   const response = {}
-  res.forEach((data, idx) => {
+  supplies.forEach((data, idx) => {
     if (!data) {
       sdk.log(`Invalid account: ${tokens[idx]}`)
       return;
     }
-    try {
-      data = decodeAccount('mint', data)
-      response[tokens[idx].toString()] = data.supply.toString()
-      if (api) api.add(tokens[idx].toString(), data.supply.toString())
-    } catch (e) {
-      sdk.log(`Error decoding account: ${tokens[idx]}`)
-    }
+    response[tokens[idx]] = data.amount
+    if (api) api.add(tokens[idx], data.amount)
   })
   return response
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
-  // const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
   const sleepTime = 200
   log('total token accounts: ', tokenAccounts.length, 'sleepTime: ', sleepTime)
-  tokenAccounts.forEach((val, i) => {
-    if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
-  })
-  const connection = getConnection(chain)
-  const balancesIndividual = []
+  tokenAccounts = tokenAccounts.map(toAddress)
+  const res = await svm.getTokenAccountBalances({ chain, tokenAccounts, individual, allowError, chunkSize: 99, concurrency: 1, sleepTime })
+  if (individual) return res.map(({ mint, amount }) => ({ mint, amount }))
   const balances = {}
-  const debugData = []
-  const res = await runInChunks(tokenAccounts, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
-  res.forEach((data, idx) => {
-
-    if (!data) {
-      sdk.log(`Invalid account: ${tokenAccounts[idx]}`)
-      if (allowError) return;
-      else throw new Error(`Invalid account: ${tokenAccounts[idx]}`)
-    }
-
-    try {
-
-      data = decodeAccount('tokenAccount', data)
-      const mint = data.mint.toString()
-      const amount = data.amount.toString()
-      debugData.push({ account: tokenAccounts[idx].toString(), mint, amount })
-      if (individual)
-        balancesIndividual.push({ mint, amount })
-      else
-        sdk.util.sumSingleBalance(balances, mint, amount)
-
-    } catch (e) {
-      if (individual)
-        balancesIndividual.push({ mint: 'error', amount: 0 })
-
-      sdk.log(`Error decoding account: ${tokenAccounts[idx]}`)
-      if (allowError) return;
-      else throw new Error(`Error decoding account: ${tokenAccounts[idx]}`)
-    }
-
-  })
-
-  // console.log('debugData:', JSON.stringify(debugData))
-
-  return individual ? balancesIndividual : balances
+  Object.entries(res).forEach(([mint, amount]) => sdk.util.sumSingleBalance(balances, mint, amount))
+  return balances
 }
 
 async function getMultipleAccounts(accountsArray, { api } = {}) {
   const chain = api?.chain ?? 'solana'
-  const connection = getConnection(chain)
   if (!accountsArray.length) return []
-  accountsArray.forEach((val, i) => {
-    if (typeof val === 'string') accountsArray[i] = new PublicKey(val)
-  })
-  return runInChunks(accountsArray, chunk => connection.getMultipleAccountsInfo(chunk))
+  const accounts = accountsArray.map(toAddress)
+  const infos = await svm.getAccounts({ chain, accounts, chunkSize: 99, concurrency: 1 })
+  return infos.map(toWeb3AccountInfo)
 }
 
 function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { coreTokens } = {}) {
@@ -290,7 +265,7 @@ async function sumTokens2({
     }
   }
 
-  const endpoint = getEndpoint(chain)
+  const endpoints = svm.getEndpoints({ chain })
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
@@ -318,7 +293,7 @@ async function sumTokens2({
   }
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
-  // 
+  //
 
   if (computeTokenAccount) {
     const computedTokenAccounts = computeTokenAccounts(tokensAndOwners)
@@ -327,7 +302,7 @@ async function sumTokens2({
     tokensAndOwners = getUnique(tokensAndOwners)
     log('total balance queries: ', tokensAndOwners.length)
     await runInChunks(tokensAndOwners, async (chunk) => {
-      const tokenBalances = await getTokenBalances(chunk, chain)
+      const tokenBalances = await getTokenBalances(chunk)
       transformBalances({ tokenBalances, balances, chain, })
     }, { sleepTime: 400 })
   }
@@ -340,7 +315,7 @@ async function sumTokens2({
   }
 
   if (solOwners.length) {
-    const solBalance = await getSolBalances(solOwners, { chain })
+    const solBalance = await getSolBalances(solOwners)
     sdk.util.sumSingleBalance(balances, `${chain}:` + ADDRESSES.solana.SOL, solBalance)
   }
 
@@ -356,70 +331,52 @@ async function sumTokens2({
     return [...set].map(i => i.split('$'))
   }
 
+  // one JSON-RPC batch per chunk of owners, both the Token and Token-2022 programs are queried
+  // (USDTb and other newer tokens use Token-2022)
   async function getOwnerAllAccounts(owners) {
     sdk.log('fetching sol token balances for', owners.length, 'owners', chain,)
     return runInChunks(owners, async (chunk) => {
-      // Query both Token Program and Token-2022 (Token Extensions) - USDTb and other newer tokens use Token-2022
-      const body = chunk.flatMap(owner => [
-        formOwnerBalanceQuery(owner, TOKEN_PROGRAM_ID),
-        formOwnerBalanceQuery(owner, TOKEN_2022_PROGRAM_ID),
+      const calls = chunk.flatMap(owner => [
+        formOwnerBalanceQuery(owner, svm.TOKEN_PROGRAM_ID),
+        formOwnerBalanceQuery(owner, svm.TOKEN_2022_PROGRAM_ID),
       ])
-      const tokenBalances = await http.post(endpoint, body)
-      return tokenBalances.map(i => i.result?.value ?? []).flat().map(i => ({
+      const results = await sdkRpc.jsonRpcBatch(calls, { chain, endpoints, permitFailure: true })
+      return results.map(i => i?.value ?? []).flat().map(i => ({
         account: i.pubkey,
         mint: i.account.data.parsed.info.mint,
         amount: i.account.data.parsed.info.tokenAmount.amount,
         uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
         decimals: i.account.data.parsed.info.tokenAmount.decimals,
       }))
-
     })
   }
 
-  function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
+  function formOwnerBalanceQuery(owner, programId) {
     return {
-      jsonrpc: "2.0",
-      id: 1,
       method: "getTokenAccountsByOwner",
       params: [
-        owner,
+        toAddress(owner),
         { programId: String(programId) },
         { encoding: "jsonParsed", },
       ],
     }
   }
 
-  async function getSolBalances(accounts, { chain } = {}) {
-    const connection = getConnection(chain)
-
-    const balances = await runInChunks(accounts, async (chunk) => {
-      chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
-      const accountInfos = await connection.getMultipleAccountsInfo(chunk)
-      return accountInfos.map(account => account?.lamports ?? 0)
-    })
-    return balances.reduce((a, b) => a + +b, 0)
+  async function getSolBalances(accounts) {
+    const lamports = await svm.getBalances({ chain, accounts: accounts.map(toAddress) })
+    return lamports.reduce((a, b) => a + +b, 0)
   }
 
   function computeTokenAccounts(tokensAndOwners) {
-    tokensAndOwners.forEach(([token, account], i) => {
-      if (typeof token === 'string') tokensAndOwners[i][0] = new PublicKey(token)
-      if (typeof account === 'string') tokensAndOwners[i][1] = new PublicKey(account)
-    })
-    const programBuffer = TOKEN_PROGRAM_ID.toBuffer()
-    return tokensAndOwners.map(([mint, owner]) => {
-      return PublicKey.findProgramAddressSync(
-        [owner.toBuffer(), programBuffer, mint.toBuffer(),],
-        ASSOCIATED_TOKEN_PROGRAM_ID
-      )[0]
-    })
+    return tokensAndOwners.map(([mint, owner]) => getAssociatedTokenAddress(mint, owner))
   }
 
-  async function getTokenBalances(tokensAndAccounts, chain) {
-    const endpoint = getEndpoint(chain)
-    const body = tokensAndAccounts.map(([token, account], i) => formTokenBalanceQuery(token, account, i))
-    const tokenBalances = await http.post(endpoint, body);
+  async function getTokenBalances(tokensAndAccounts) {
+    const calls = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
+    const results = await sdkRpc.jsonRpcBatch(calls, { chain, endpoints, permitFailure: true })
     const balances = {}
-    tokenBalances.forEach(({ result: { value } = {} } = {}) => {
+    results.forEach((res) => {
+      const value = res?.value
       if (!value) return;
       value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
         sdk.util.sumSingleBalance(balances, mint, amount)
@@ -427,14 +384,12 @@ async function sumTokens2({
     })
     return balances
 
-    function formTokenBalanceQuery(token, account, id = 1) {
+    function formTokenBalanceQuery(token, account) {
       return {
-        jsonrpc: "2.0",
-        id,
         method: "getTokenAccountsByOwner",
         params: [
-          account,
-          { mint: token, },
+          toAddress(account),
+          { mint: toAddress(token), },
           { encoding: "jsonParsed", },
         ],
       }
@@ -494,17 +449,7 @@ async function sumTokens2_historical({
 
   // Resolve computeTokenAccount → derive token accounts
   if (computeTokenAccount && tokensAndOwners.length) {
-    tokensAndOwners.forEach(([token, account], i) => {
-      if (typeof token === 'string') tokensAndOwners[i][0] = new PublicKey(token);
-      if (typeof account === 'string') tokensAndOwners[i][1] = new PublicKey(account);
-    });
-    const programBuffer = TOKEN_PROGRAM_ID.toBuffer();
-    const computedAccounts = tokensAndOwners.map(([mint, ownerKey]) => {
-      return PublicKey.findProgramAddressSync(
-        [ownerKey.toBuffer(), programBuffer, mint.toBuffer()],
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-      )[0].toString();
-    });
+    const computedAccounts = tokensAndOwners.map(([mint, ownerKey]) => getAssociatedTokenAddress(mint, ownerKey));
     tokenAccounts.push(...computedAccounts);
     tokensAndOwners = [];
   }
@@ -540,7 +485,7 @@ async function sumTokens2_historical({
   let sql = '';
   if (addressList.length || tokenAccountList.length) {
     const dateCondition = `date = '${escapeSqlString(date)}'`;
-    
+
     if (addressList.length && tokenAccountList.length) {
       // Both address (for SOL + SPL) and token_account (for SPL only)
       sql = `
@@ -664,24 +609,11 @@ function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
 }
 
 function readBigUInt64LE(buffer, offset) {
-  const first = buffer[offset];
-  const last = buffer[offset + 7];
-  if (first === undefined || last === undefined) {
-    throw new Error();
-  }
-  const lo = first + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + buffer[++offset] * 2 ** 24;
-  const hi = buffer[++offset] + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + last * 2 ** 24;
-  return BigInt(lo) + (BigInt(hi) << BigInt(32));
+  return svm.readBigUInt64LE(buffer, offset)
 }
 
 async function getStakedSol(solAddress, api) {
-  const stakeAccounts = await getConnection().getProgramAccounts(StakeProgram.programId, {
-    filters: [{
-      memcmp: { bytes: solAddress, offset: 4 + 8 }
-    }],
-    dataSlice: { offset: 0, length: 1 } // we dont care about the data, just the lamports
-  })
-  const totalStakedSol = stakeAccounts.reduce((tvl, { account }) => { return tvl + account.lamports }, 0)
+  const totalStakedSol = await svm.getStakedSol({ chain: 'solana', address: toAddress(solAddress) })
   if (api) {
     api.add(ADDRESSES.solana.SOL, totalStakedSol)
     return api
@@ -690,37 +622,18 @@ async function getStakedSol(solAddress, api) {
 }
 
 async function getSolBalanceFromStakePool(address, api) {
-  const connection = getConnection()
-  if (typeof address === 'string') address = new PublicKey(address)
-  const accountInfo = await connection.getAccountInfo(address);
-  const deserializedAccountInfo = decodeAccount('stakePool', accountInfo)
-  return api.add(ADDRESSES.solana.SOL, +deserializedAccountInfo.totalLamports)
+  const totalLamports = await svm.getSolBalanceFromStakePool({ chain: 'solana', address: toAddress(address) })
+  return api.add(ADDRESSES.solana.SOL, +totalLamports)
 }
 
+// sequential chunked runner; results of every chunk are concatenated and flattened one level
 async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
-  const chunks = sliceIntoChunks(inputs, chunkSize)
-  const results = []
-  for (const chunk of chunks) {
-    results.push(...(await fn(chunk) ?? []))
-    if (sleepTime) await sleep(sleepTime)
-  }
-
+  const results = await sdkRpc.runInChunks(inputs, async (chunk) => (await fn(chunk)) ?? [], { chunkSize, concurrency: 1, sleepTime })
   return results.flat()
 }
 
 function i80f48ToNumber(i80f48) {
-  if (i80f48.value) i80f48 = i80f48.value
-  // Create a mask with the lower 48 bits set to 1
-  const mask = BigInt((1n << 48n) - 1n)
-
-  // Shift right by 48 bits to get the integer part
-  const integerPart = BigInt(i80f48) >> BigInt(48)
-
-  // Use bitwise AND to get the fractional part
-  const fractionalPart = BigInt(i80f48) & mask
-
-  // Convert to regular numbers and add together
-  return Number(integerPart) + Number(fractionalPart) / Number(1n << 48n)
+  return svm.i80f48ToNumber(i80f48)
 }
 
 module.exports = {
