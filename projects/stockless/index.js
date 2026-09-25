@@ -46,10 +46,11 @@ function amounts(liq, sqrtP, lo, hi) {
 const poolId = (k) => ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
   ['address', 'address', 'uint24', 'int24', 'address'], [k.currency0, k.currency1, k.fee, k.tickSpacing, k.hooks]))
 
-const deployed = (api, list) => list.filter(c => !api.block || api.block >= c.block).map(c => c.address)
+const deployed = (block, list) => list.filter(c => block >= c.block).map(c => c.address)
 
 async function positions(api) {
-  const harvests = deployed(api, HARVESTS), adapters = deployed(api, ADAPTERS)
+  const block = await api.getBlock()   // resolves the block from the timestamp on historical runs
+  const harvests = deployed(block, HARVESTS), adapters = deployed(block, ADAPTERS)
   // every Harvest version keeps its own stock rotation; older adapters can still hold positions for any of them
   const lists = await Promise.all(harvests.map(target => api.fetchList({ lengthAbi: abi.stockCount, itemAbi: abi.stocks, target })))
   const stocks = [...new Set(lists.flat().map(s => s.toLowerCase()))]
