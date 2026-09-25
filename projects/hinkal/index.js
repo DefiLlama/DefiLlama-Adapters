@@ -27,6 +27,8 @@ const tvl = async (api) => {
   });
 
   // Native balance for the shielded pool; returns the full accumulated set.
+  // Arc's native USDC is the same balance as the ERC20 at 0x3600..., which is already counted above.
+  if (chain === "arc") return api.getBalances();
   return api.sumTokens({ owners, tokens: [ADDRESSES.null] });
 };
 
