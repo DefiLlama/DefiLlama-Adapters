@@ -3,6 +3,11 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'bbbfi-swap-v3': {
+    methodology: 'Token balances in BBBFi-owned V3 pools on XDC and BSC, discovered from factory PoolCreated events. Tokens retain their original chain and address for DefiLlama pricing. Staked position NFTs are not counted a second time; reward budgets and bridge reserves are excluded.',
+    xdc: { factory: '0x5037e5B64B677311Ed5332eee7b8C766fFe24088', fromBlock: 106991944 },
+    bsc: { factory: '0x33c27c73003666C61136B8b5c0C4e91939Ec95E3', fromBlock: 120709856, logRpc: 'https://rpc.sentio.xyz/bsc' },
+  },
   'noxa-fi-v3': {
     megaeth: { factory: '0x1201EB5081eabc99b23DD952C1BFA5ea090d8779', fromBlock: 249856 },
     monad: { factory: '0x35af92183701E54f751f8b0376da7F9b151bf5A5', fromBlock: 42804409 },
