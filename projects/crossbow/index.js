@@ -30,17 +30,12 @@ const coder = ethers.AbiCoder.defaultAbiCoder()
 const rangeId = (poolKey, tickLower, tickUpper) =>
   ethers.keccak256(coder.encode(['bytes32', 'int24', 'int24'], [poolKey, tickLower, tickUpper]))
 
-// Idle balances held by vaults between rotations
-const IDLE_TOKENS = [
+// Settlement assets a vault can hold without any position open against them.
+// Everything else the vaults deal in is discovered from their own positions
+// rather than hardcoded, so a new listing needs no change here.
+const BASE_TOKENS = [
   '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', // USDG
   '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', // WETH
-  '0x57C0E45cB534413D1C20A4240955d6bB250BB4F1', // UP
-  '0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9', // AAPL
-  '0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC', // NVDA
-  '0x322F0929c4625eD5bAd873c95208D54E1c003b2d', // TSLA
-  '0x117cc2133c37B721F49dE2A7a74833232B3B4C0C', // SPY
-  '0x12f190a9F9d7D37a250758b26824B97CE941bF54', // AMZN
-  '0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35', // META
 ]
 
 async function tvl(api) {
@@ -49,6 +44,7 @@ async function tvl(api) {
   })
   const vaults = [...new Set(logs.map(l => l.core))]
 
+  const tokens = new Set(BASE_TOKENS)
   const positionSets = await api.multiCall({ abi: abi.getPositions, calls: vaults })
   const items = []
   positionSets.forEach((ids, i) => ids.forEach(id => items.push({ vault: vaults[i], id })))
@@ -60,24 +56,27 @@ async function tvl(api) {
     ])
     items.forEach((p, i) => { p.family = +families[i]; p.nfpm = nfpms[i] })
 
-    await addSlipstreamPositions(api, items.filter(p => p.nfpm.toLowerCase() === SLIPSTREAM_NFPM.toLowerCase()))
-    await addHookPositions(api, items.filter(p => p.nfpm.toLowerCase() !== SLIPSTREAM_NFPM.toLowerCase()))
+    const [slipTokens, hookTokens] = [
+      await addSlipstreamPositions(api, items.filter(p => p.nfpm.toLowerCase() === SLIPSTREAM_NFPM.toLowerCase())),
+      await addHookPositions(api, items.filter(p => p.nfpm.toLowerCase() !== SLIPSTREAM_NFPM.toLowerCase())),
+    ]
+    slipTokens.concat(hookTokens).forEach(t => tokens.add(t))
   }
 
   // Vaults with no open positions can still hold idle balances, so this runs
   // regardless of whether any positions were found.
-  await sumTokens2({ api, owners: vaults, tokens: IDLE_TOKENS })
+  await sumTokens2({ api, owners: vaults, tokens: [...tokens] })
 }
 
 // up. concentrated liquidity, held as NFTs and read by token id so that
 // gauge-staked positions still count.
 async function addSlipstreamPositions(api, items) {
-  if (!items.length) return
+  if (!items.length) return []
   const positions = await api.multiCall({
     abi: abi.slipPositions, target: SLIPSTREAM_NFPM, calls: items.map(p => p.id),
   })
   const live = positions.filter(p => p.liquidity !== '0')
-  if (!live.length) return
+  if (!live.length) return []
 
   const clFactory = await api.call({ abi: 'address:factory', target: SLIPSTREAM_NFPM })
   const pools = await api.multiCall({
@@ -92,13 +91,14 @@ async function addSlipstreamPositions(api, items) {
       tickLower: +p.tickLower, tickUpper: +p.tickUpper, tick: +slot0s[i].tick,
     })
   })
+  return live.flatMap(p => [p.token0, p.token1])
 }
 
 // Uniswap v4 hook pools. Each position carries an encoded reference that the
 // family's lens resolves into a pool key and tick range; the vault's share of
 // that range is an ERC-6909 balance on the hook, plus whatever it has staked.
 async function addHookPositions(api, items) {
-  if (!items.length) return
+  if (!items.length) return []
   // The lens registry is per-vault state, so it has to be read against the
   // vault that holds the position rather than against any one of them.
   const lenses = await api.multiCall({
@@ -109,7 +109,7 @@ async function addHookPositions(api, items) {
   // A family without a registered lens has no way to resolve its encoded
   // reference, so those positions are skipped rather than guessed at.
   const withLens = items.filter(p => p.lens !== ethers.ZeroAddress)
-  if (!withLens.length) return
+  if (!withLens.length) return []
 
   const refs = await api.multiCall({
     abi: abi.alienRefOf, calls: withLens.map(p => ({ target: p.vault, params: [p.id] })),
@@ -135,11 +135,12 @@ async function addHookPositions(api, items) {
       tickLower: +p.d.tickLower, tickUpper: +p.d.tickUpper, tick: +slot0s[i].tick,
     })
   })
+  return resolved.flatMap(p => [p.d.currency0, p.d.currency1])
 }
 
 module.exports = {
   methodology:
-    'Vaults are enumerated from the ManifoldFactoryRH VaultDeployed event. Each vault reports its open positions; up. concentrated-liquidity positions are valued from the position manager by token id, and Uniswap v4 hook positions are resolved through the per-family lens into a pool key and tick range, with the vault\'s liquidity read as its ERC-6909 balance plus staked amount on the hook. Idle token balances held by the vaults are added. Doublecounted against the underlying DEXs.',
+    'Vaults are enumerated from the ManifoldFactoryRH VaultDeployed event. Each vault reports its open positions; up. concentrated-liquidity positions are valued from the position manager by token id, and Uniswap v4 hook positions are resolved through the per-family lens into a pool key and tick range, with the vault\'s liquidity read as its ERC-6909 balance plus staked amount on the hook. Idle balances held by the vaults are added for every token their own positions reference, plus the chain's settlement assets. Doublecounted against the underlying DEXs.',
   doublecounted: true,
   robinhood: { tvl },
 }
