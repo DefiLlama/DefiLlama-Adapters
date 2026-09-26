@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // DeFiLlama TVL adapter for XAX V2 (XAUSD ERC-4626 vault), Ethereum mainnet.
 //
 // Count actual USDT in the vault,
@@ -10,7 +11,7 @@
 // repo. Update them here if the vault is redeployed.
 
 const VAULT = '0xd3dCB074C007DeB82b511E263d15966A05E6ef92'
-const USDT = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+const USDT = ADDRESSES.ethereum.USDT
 
 function rawAmount(value) {
   if ((typeof value !== 'string' && typeof value !== 'bigint') || !/^\d+$/.test(value)) {

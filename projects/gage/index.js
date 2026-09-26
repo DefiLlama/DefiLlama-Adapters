@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // DefiLlama TVL adapter for gage. Every address comes from ./universe.json, generated from gage's deployment manifest;
 // each one is published with its role at https://docs.gage.cash/protocol/addresses.
 const { unwrapUniswapV3NFT, unwrapUniswapV4NFTs } = require('../helper/unwrapLPs')
@@ -7,7 +8,7 @@ const KIND = { ERC20: 0, UNIV4_POSITION: 1, UNIV3_POSITION: 2 }
 const DEAL = { NONE: 0, LISTED: 1, FUNDED: 2, RECLAIMED: 3, CLAIMED: 4, CANCELLED: 5 }
 const LOAN = { NONE: 0, FUNDING: 1, ACTIVE: 2, REPAID: 3, DEFAULTED: 4, CANCELLED: 5 }
 const UNITS = 4n
-const ZERO = '0x0000000000000000000000000000000000000000'
+const ZERO = ADDRESSES.null
 const excluded = new Set(U.excludedTokens)
 const lower = (a) => String(a).toLowerCase()
 const isExcluded = (token) => excluded.has(lower(token))

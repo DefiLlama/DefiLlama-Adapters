@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 // Sui GraphQL / BCS plumbing lives in @defillama/sdk (`sdk.chains.sui`); this file keeps the historical
 // export names and shapes plus the TVL helpers (dexExport, sumTokens).
 const sdk = require('@defillama/sdk')

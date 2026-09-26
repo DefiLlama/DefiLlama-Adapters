@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const LAUNCH_CREATED_EVENT =
@@ -8,14 +9,14 @@ const GET_CURVE_ABI =
 // Launch curves are quoted in the chain's launch quote asset (WETH on Robinhood Chain, USDC on Arc).
 const CONFIG = {
   robinhood: {
-    quote: '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', // WETH
+    quote: ADDRESSES.robinhood.WETH, // WETH
     launchpads: [
       { address: '0xFc645480c1F40c03DeaBD9fD54E6BC42d0b3863E', fromBlock: 26854539, key: 'launchpad-v1' },
       { address: '0x3D26D96BC9d1C3FcAE0D156E830c723051364847', fromBlock: 26936269, key: 'launchpad-v2' },
     ],
   },
   arc: {
-    quote: '0x3600000000000000000000000000000000000000', // USDC
+    quote: ADDRESSES.arc.USDC, // USDC
     launchpads: [
       { address: '0x18D33De5eefB2F91B09385f35f6a1317659cc1F9', fromBlock: 13716990, key: 'launchpad' },
     ],
