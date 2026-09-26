@@ -30,6 +30,19 @@ const FACTORIES = [
 
 const LAUNCHED = 'event Launched(address indexed token, address indexed curve, address indexed creator, string name, string symbol, uint256 creatorTaxBps)'
 
+/**
+ * TVL of Packed on Robinhood Chain: the quote asset held by every bonding curve that has not
+ * graduated yet.
+ *
+ * Curves are listed from the Launched events of every Packed factory. The quote asset of each
+ * curve is read from `quoteToken()`, except for the first factory's curves, which predate it and
+ * only ever held native ETH. Graduated curves are skipped, since their reserve now sits in a
+ * Uniswap V4 pool.
+ *
+ * @param {object} api - DefiLlama SDK ChainApi for the chain and block being measured.
+ * @returns {Promise<object|undefined>} The balances summed by `api.sumTokens`, or nothing when no
+ *   curve has been launched yet.
+ */
 async function tvl(api) {
   const curves = []
   const ethOnly = []
