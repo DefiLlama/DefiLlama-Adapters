@@ -21,8 +21,14 @@ const PROTOCOL_OWNED_BALANCES = new Set([
 
 // AQUA held in the ICE-lock claimable balances, split into user-origin and
 // protocol-owned. Amounts are in whole AQUA.
+//
+// Anyone can create an AQUA claimable balance that names ICE_LOCKER as a
+// claimant, so the claimant filter alone does not prove a balance is an ICE
+// lock. Sponsorship needs the sponsor's signature, so filtering on
+// sponsor=ICE_LOCKER keeps only balances the locker created, and the lock
+// shape check skips any that could be claimed by someone else.
 async function lockedAqua() {
-  let url = `https://horizon.stellar.org/claimable_balances?claimant=${ICE_LOCKER}&asset=${AQUA_CLASSIC}&limit=200`
+  let url = `https://horizon.stellar.org/claimable_balances?sponsor=${ICE_LOCKER}&claimant=${ICE_LOCKER}&asset=${AQUA_CLASSIC}&limit=200`
   let user = 0
   let protocol = 0
   const seen = new Set()
