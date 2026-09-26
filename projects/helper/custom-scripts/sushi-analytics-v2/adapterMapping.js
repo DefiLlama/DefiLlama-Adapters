@@ -2,21 +2,22 @@ module.exports = {
   hourlyRun: [
     [
       {
-        'fxdao': '/fxdao/api.js',
+        // 'fxdao': '/fxdao/api.js',
         'harvest': '/harvest.js',
-        'astar-dapps-staking': '/astar-dapps-staking/api',
+        // 'astar-dapps-staking': '/astar-dapps-staking/api',  // moved to main runner (HTTP substrate reads)
         'injective-orderbook': '/injective-orderbook/api',
-        'lisa': '/lisa/api',
-        'zest': '/zest/api',
-        'hermetica-hbtc': '/hermetica-hbtc/api',
+        // 'lisa': '/lisa/api',
+        // 'zest': '/zest/api',
+        // 'hermetica-hbtc': '/hermetica-hbtc/api',
       },
       {
-        'hermetica': '/hermetica/api',
-        'bifrost-staking': '/bifrost-staking/api',
-        'sora': '/sora/api',
-        'bifrost-dex': '/bifrost-dex/api',
-        'bifrost-liquid-crowdloan': '/bifrost-liquid-crowdloan/api',
-        'hatom-tao-bridge': '/hatom-tao-bridge/api',
+        // 'hermetica': '/hermetica/api',
+        // moved to main runner (HTTP substrate reads)
+        // 'bifrost-staking': '/bifrost-staking/api',
+        // 'sora': '/sora/api',
+        // 'bifrost-dex': '/bifrost-dex/api',
+        // 'bifrost-liquid-crowdloan': '/bifrost-liquid-crowdloan/api',
+        // 'hatom-tao-bridge': '/hatom-tao-bridge/api',
       },
       // {
         // 'blend-pools': '/blend-pools/api.js',  // moved to rpc proxy
@@ -33,57 +34,59 @@ module.exports = {
         // 'parallel-stream': '/parallel-stream/api',
         // 'polkadex': '/polkadex/api', // dead/paused ??
       // },
+      // {  // interlay chain is shutdown
+      //   'interlay-btc': '/interlay-btc/api',
+      //   'interlay-staking': '/interlay-staking/api',
+      //   'interlay-collateral': '/interlay-collateral/api',
+      //   'interlay-dex': '/interlay-dex/api',
+      //   'interlay-lending': '/interlay-lending/api',
+      // },
       {
-        'interlay-btc': '/interlay-btc/api',
-        'interlay-staking': '/interlay-staking/api',
-        'interlay-collateral': '/interlay-collateral/api',
-        'interlay-dex': '/interlay-dex/api',
-        'interlay-lending': '/interlay-lending/api',
+        // 'hydradx': '/hydradx/api.js',  // moved to main runner (HTTP substrate reads)
+        // 'zest-v2': '/zest-v2/api.js',
+      },
+      // { // dead
+      //   'manta-atlantic-stake': '/manta-atlantic-stake/api',
+      //   'mantadex': '/mantadex/api',
+      // },
+      {
+        // moved to main runner (HTTP substrate reads)
+        // 'acala-staking': '/acala-staking/api',
+        // 'acala-lcdot': '/acala-lcdot/api',
+        // 'tapio': '/tapio/api',
+        // 'acala-lending': '/acala-lending/api',
+        // 'acala-dex': '/acala-dex/api',
       },
       {
-        'hydradx': '/hydradx/api.js',
-        'zest-v2': '/zest-v2/api.js',
+        // moved to main runner (HTTP substrate reads)
+        // 'karura-lending': '/karura-lending/api',
+        // 'karura-staking': '/karura-staking/api',
+        // 'taiga': '/taiga/api',
+        // 'karura-dex': '/karura-dex/api',
       },
       {
-        'manta-atlantic-stake': '/manta-atlantic-stake/api',
-        'mantadex': '/mantadex/api',
-      },
-      {
-        'acala-staking': '/acala-staking/api',
-        'acala-lcdot': '/acala-lcdot/api',
-        'tapio': '/tapio/api',
-        'acala-lending': '/acala-lending/api',
-        'acala-dex': '/acala-dex/api',
-      },
-      {
-        'karura-lending': '/karura-lending/api',
-        'karura-staking': '/karura-staking/api',
-        'taiga': '/taiga/api',
-        'karura-dex': '/karura-dex/api',
-      },
-      {
-        'kintsugi': '/kintsugi/api',
-        'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
-        'jewelswap-nft': '/jewelswap-nft/index',
+        // 'kintsugi': '/kintsugi/api',   // kintsugi chain is shutdown
+        // 'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
+        // 'jewelswap-nft': '/jewelswap-nft/index',
 
       },
       {
         // 'newbitcoin': '/newbitcoin/index', // is dead
         'nemoswap': '/nemoswap/index',
-        'stackingdao': '/stackingdao/api',
-        'stacks': '/stacks/api',
+        // 'stackingdao': '/stackingdao/api',
+        // 'stacks': '/stacks/api',
       },
     ],
   ],
   bulky: [
     [{
       // 'quantumx-network': '/quantumx-network/index',
-      'polkadot': '/treasury/polkadot-api',
+      // 'polkadot': '/treasury/polkadot-api',  // moved to main runner (HTTP substrate reads)
       'pcs-v2': '/pancake-swap/pcs-v2-onchain',
-      'stackswap': '/stackswap/api',
-      'velar-amm': '/velar-amm/api',
-      'alexlab': '/alexlab/api',
-      'satoshi-dex': '/satoshi-dex/api',
+      // 'stackswap': '/stackswap/api',
+      // 'velar-amm': '/velar-amm/api',
+      // 'alexlab': '/alexlab/api',
+      // 'satoshi-dex': '/satoshi-dex/api',
       'raydium': '/raydium/index',
       // 'vitcswap': '/vitcswap/api',
       'defichain-loans': '/defichain-loans',
@@ -92,27 +95,20 @@ module.exports = {
       'izumi': '/izumi/api',
       // 'summer-fi': '/summer-fi/index',
       'sunswap-v2': '/sunswap-v2/api',
-      unicrypt: '/unicrypt/apiCache',
-      deeplock: '/deeplock/apiCache',
-      pinksale: '/pinksale/index',
-      'team-finance': '/team-finance/apiCache',
+      // unicrypt: '/unicrypt/apiCache',
+      // deeplock: '/deeplock/apiCache',
+      // pinksale: '/pinksale/index',
+      // 'team-finance': '/team-finance/api',
       // synthetix: '/synthetix/apiCache',
-      dxsale: '/dxsale/apiCache',
+      // dxsale: '/dxsale/apiCache',
       blum: '/blum/api',
-      'yodeswap': '/yodeswap/api',
-      'dogeswap-org': '/dogeswap-org/api',
+      // 'yodeswap': '/yodeswap/api',  // dogechain is dead
+      // 'dogeswap-org': '/dogeswap-org/api',  // dogechain is dead
       'o2': '/o2/api',
 
       // breaks often
       // 'equilibrium': '/equilibrium/api',
       // 'hydradex': '/hydradex.js',
-
-      // chain down?
-      // 'parallel-staking': '/parallel-staking/api',
-      // 'parallel-crowdloan': '/parallel-crowdloan/api',
-      // 'parallelamm': '/parallelamm/api',
-      // 'parallel-lending': '/parallel-lending/api',
-      // 'parallel-stream': '/parallel-stream/api',
     }],
   ],
 }

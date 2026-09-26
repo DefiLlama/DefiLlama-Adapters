@@ -266,6 +266,16 @@ const bscContractData = [
 ]
 
 
+const robinhoodContractData = [
+  { // Uniswap v2
+    chain: 'robinhood',
+    contract: '0xB560307e7e02a58dBB03562aaB32700255140E37',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    factory: '0x8bcEaA40B9AcdfAedF85AdF4FF01F5Ad6517937f'
+  },
+]
+
 const polygonContractData = [
   { // Quickswap
     chain: config.quickswap.chain,
@@ -375,6 +385,7 @@ module.exports = {
   gnosisContractData,
   arbitrumContractData,
   optimismContractData,
+  robinhoodContractData,
   governanceTokens,
   stakingContracts,
   protocolPairs,

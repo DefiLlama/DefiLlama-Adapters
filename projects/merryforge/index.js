@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, unwrapUniswapLPs } = require('../helper/unwrapLPs')
 
 const LAUNCH_FACTORY = '0x3b5e8FE8d61B00b35e021275c96F754424b1B9A8'
 const GRADUATION_ROUTER = '0x2a8F21ACa57873479CB0E73cd7D0dB22274B51A8'
@@ -34,7 +34,11 @@ async function tvl(api) {
 
   await sumTokens2({ api, owners, tokens: QUOTES })
 
-  if (pools.length) await sumTokens2({ api, owner: LIQUIDITY_LOCKER, tokens: pools, resolveLP: true })
+  if (pools.length) {
+    const lpBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools.map((p) => ({ target: p, params: [LIQUIDITY_LOCKER] })) })
+    const lpPositions = pools.map((token, i) => ({ token, balance: lpBalances[i] }))
+    await unwrapUniswapLPs(api.getBalances(), lpPositions, api.block, api.chain, null, tokens)
+  }
 }
 
 module.exports = {

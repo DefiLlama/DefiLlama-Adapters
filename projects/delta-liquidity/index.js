@@ -5,6 +5,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 // Delta v3 (live stack)
 const VAULT_FACTORY = '0x68EDc4948F60D21c4a7Dcbb8Ed4500cE6D0b153c'
 const LADDER_MANAGER = '0x64680254BF644BBdDe394b95129895c13317FeD4'
+const LADDER_MANAGER_V2 = '0xC5941433114BB47a9733CB31a0A3A3dBfF45B418'
+const LADDER_MANAGERS = [LADDER_MANAGER, LADDER_MANAGER_V2]
 const ROUTER_V3 = '0x46dFEa430d1F069C129E26445319562e29f39C47'
 
 // Delta v2 (legacy stack, still active)
@@ -34,27 +36,31 @@ async function getOwnersAndTokens(api) {
     })
 
     const lpTokens = farmsV2.length ? await api.multiCall({ abi: 'address:stakingToken', calls: farmsV2 }) : []
-    const owners = [LADDER_MANAGER, ROUTER_V3, ROUTER_V2, ...vaults, ...farmsV2]
+    const owners = [...LADDER_MANAGERS, ROUTER_V3, ROUTER_V2, ...vaults, ...farmsV2]
 
-    // Uniswap v4 positions managed by the ladder manager.
-    // No v4 subgraph on this chain, so position ids are enumerated from the
-    // manager's own events, minus closed positions.
-    const openedV4 = await getLogs2({
-        api,
-        target: LADDER_MANAGER,
-        eventAbi: 'event ManagedOpenV4(address indexed owner, bytes32 indexed poolId, uint256[] tokenIds)',
-        fromBlock: LADDER_DEPLOY_BLOCK,
-        extraKey: 'managed-open-v4',
+    // Uniswap v4 positions managed by the ladder managers.
+    // No v4 subgraph on this chain, so position ids are enumerated from each
+    // manager's own events, then filtered to those the manager still holds.
+    let candidateIds = []
+    for (const target of LADDER_MANAGERS) {
+        const opened = await getLogs2({
+            api,
+            target,
+            eventAbi: 'event ManagedOpenV4(address indexed owner, bytes32 indexed poolId, uint256[] tokenIds)',
+            fromBlock: LADDER_DEPLOY_BLOCK,
+            extraKey: 'managed-open-v4',
+        })
+        candidateIds.push(...opened.flatMap(i => i.tokenIds.map(j => j.toString())))
+    }
+    candidateIds = [...new Set(candidateIds)]
+
+    const positionOwners = await api.multiCall({
+        abi: 'function ownerOf(uint256) view returns (address)',
+        calls: candidateIds.map(i => ({ target: V4_POSM, params: [i] })),
+        permitFailure: true, // closed positions are burned and revert
     })
-    const closed = await getLogs2({
-        api,
-        target: LADDER_MANAGER,
-        eventAbi: 'event PositionClosed(address indexed owner, uint8 version, uint256 tokenId, uint256 principal0, uint256 principal1)',
-        fromBlock: LADDER_DEPLOY_BLOCK,
-        extraKey: 'position-closed',
-    })
-    const closedV4 = new Set(closed.filter(i => Number(i.version) === 4).map(i => i.tokenId.toString()))
-    const positionIds = openedV4.flatMap(i => i.tokenIds.map(j => j.toString())).filter(id => !closedV4.has(id))
+    const managerSet = new Set(LADDER_MANAGERS.map(i => i.toLowerCase()))
+    const positionIds = candidateIds.filter((_, i) => positionOwners[i] && managerSet.has(positionOwners[i].toLowerCase()))
 
     return { owners, lpTokens, positionIds }
 }
@@ -66,7 +72,7 @@ async function tvl(api) {
   await sumTokens2({
     api,
     owners,
-    tokens: [ADDRESSES.null, ADDRESSES.robinhood.WETH, ...lpTokens],
+    tokens: [ADDRESSES.null, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.USDe, ...lpTokens],
     resolveUniV3: true,
     resolveLP: true,
     blacklistedTokens: [DELTA],
@@ -108,7 +114,7 @@ async function staking(api) {
 
 module.exports = {
   methodology:
-    'TVL counts assets custodied by Delta contracts on Robinhood Chain: Uniswap v3 and v4 position NFTs held by Delta vaults and the ladder manager (unwrapped to underlying token amounts; v4 positions enumerated from the manager\'s open/close events since the chain has no v4 subgraph), liquidity-depth budgets (WETH and paired tokens) held by the liquidity routers, and Uniswap v2 LP tokens staked in legacy Delta farms (unwrapped to underlying reserves). Vault share tokens and farm receipt tokens are excluded to avoid double counting. User-custodied positions are not counted.',
+    'TVL counts assets custodied by Delta contracts on Robinhood Chain: Uniswap v3 and v4 position NFTs held by Delta vaults and the ladder managers (unwrapped to underlying token amounts; v4 positions enumerated from the managers\' open events since the chain has no v4 subgraph, then filtered to those still custodied), liquidity-depth budgets (WETH and paired tokens) held by the liquidity routers, and Uniswap v2 LP tokens staked in legacy Delta farms (unwrapped to underlying reserves). Vault share tokens and farm receipt tokens are excluded to avoid double counting. User-custodied positions are not counted.',
   doublecounted: true, // liquidity sits inside Uniswap pools, which DefiLlama counts under Uniswap
   robinhood: { tvl, staking },
 }

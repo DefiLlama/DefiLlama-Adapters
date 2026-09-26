@@ -31,6 +31,10 @@ const CONFIG = {
     factory: '0x9DD987CBbF591D5bd7c2f5083d9D81be3359122B',
     start: 1783382400, // 2026-07-07
   },
+  arc: {
+    factory: '0x3ca7c79263101e7512ce5dd4bc7daf0f52cb24f5',
+    start: 1789948800, // 2026-09-21
+  },
 };
 
 const GDEX_TOKEN = "0x53Cb59D32a8d08fC6D3f81454f150946A028A44d";
@@ -158,6 +162,7 @@ module.exports = {
     ['2026-01-29', "Launch on Ethereum"],
     ['2026-02-17', "Launch on Arbitrum"],
     ['2026-07-07', "Launch on Robinhood"],
+    ['2026-09-21', "Launch on Arc"],
   ],
   sonic:    { tvl },
   avax:     { tvl },
@@ -186,4 +191,5 @@ module.exports = {
   },
   arbitrum: { tvl },
   robinhood: { tvl },
+  arc: { tvl },
 };

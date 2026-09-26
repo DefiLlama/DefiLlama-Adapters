@@ -20,7 +20,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   stablePoolSymbol = 'sAMM',
   permitFailure = false,
   skipUnknownTokens = false,
-  memoryOptimization = false,
+  memoryOptimization = false, // for factories with 100k+ pairs: sums core-asset reserves per batch at the latest block, needs queryBatched and timetravel: false on the adapter
   blacklistedPools = [],
 }) {
   const blacklistedPoolsSet = new Set(blacklistedPools.map(i => i.toLowerCase()))
@@ -33,6 +33,19 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     let chain = api?.chain
     if (!chain)
       chain = _chain
+
+    if (memoryOptimization) {
+      if (!queryBatched)
+        throw new Error("memoryOptimization requires queryBatched: reserves are summed per batch instead of being kept in memory")
+      const sixHoursAgo = (Date.now() / 1e3) - 6 * 3600
+      if (api.timestamp < sixHoursAgo)
+        throw new Error("memoryOptimization mode only supports current TVL, historical refills are not supported (set timetravel: false on the adapter)")
+      // always read the latest block: the sdk calls getBlock before every call once the timestamp is over 2h old,
+      // and this run can take longer than that, so instead of resolving a block the timestamp is moved to now
+      api.block = undefined
+      api.getBlock = async () => { api.timestamp = Math.floor(Date.now() / 1e3) }
+    }
+
     // console.log(await api.call({ target: factory, abi: 'address:factory' }))
     factory = normalizeAddress(factory, chain)
     blacklist = (blacklistedTokens || blacklist).map(i => normalizeAddress(i, chain))

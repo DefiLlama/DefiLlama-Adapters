@@ -1,25 +1,34 @@
 const { callSoroban } = require('../helper/chain/stellar')
+const { lockedAqua } = require('./iceLocks')
 
 const STAKING_CONTRACT = 'CC72BEVVKHQ57PB5FCKAZYRXCSR6DOQSTN46QR7RZMMM64YWNRPDS24S'
-const BLUB_TOKEN = 'CBMFDIRY5OKI4JJURXC4SMEQPWB4UUADIADJK4NA6CYBNOYK4W4TMLLF'
 const AQUA_TOKEN = 'CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK'
-const POOL_0_SHARE_TOKEN = 'CDMRHKJCYYHZTRQVR7NY43PR7ISMRBYC2O57IMVAQ7B7P2I2XGIZLI5E'
 const AQUARIUS_POOL_0 = 'CAMXZXXBD7DFBLYLHUW24U4MY37X7SU5XXT5ZVVUBXRXWLAIM7INI7G2'
 
-// TVL: AQUA locked by stakers
+// TVL: AQUA locked for Aquarius ICE governance, read from the claimable
+// balances that hold it.
+//
+// WhaleHub is a liquid staking protocol on Stellar: users deposit AQUA and
+// receive BLUB, and the AQUA is committed to Aquarius ICE governance on their
+// behalf. It does not sit in the staking contract, so the contract's own
+// counters cannot be used:
+//
+//   - total_locked is a transient counter that rises on deposit and unwinds as
+//     deposits move on to ICE. It reads 0, which is why the listing showed $0.
+//   - total_blub_supply is not a mint counter: lock() adds the minted amount
+//     but stake() also adds the deposited amount and unstake() subtracts it, so
+//     a user who locks AQUA and then stakes the resulting BLUB is counted twice.
+//   - Summing get_ice_lock_authorization ids gives gross cumulative AQUA ever
+//     sent out to be locked. That log is append-only — nothing decrements it —
+//     so it can only rise, and it would keep counting balances that unlock from
+//     2029 onward.
+//
+// The claimable balances are the actual position: verifiable by anyone, no
+// contract state involved, and they fall away as locks are claimed.
+// Protocol-owned locks are excluded here and reported in treasury/whalehub.js.
 async function tvl(api) {
-  const state = await callSoroban(STAKING_CONTRACT, 'get_global_state')
-  if (state && state.total_locked != null) {
-    api.add(AQUA_TOKEN, state.total_locked)
-  }
-}
-
-// Staking: BLUB staked in the contract (priced as AQUA)
-async function staking(api) {
-  const blubBalance = await callSoroban(BLUB_TOKEN, 'balance', [STAKING_CONTRACT])
-  if (blubBalance > 0n) {
-    api.add(AQUA_TOKEN, blubBalance)
-  }
+  const { user } = await lockedAqua()
+  if (user > 0) api.add(AQUA_TOKEN, Math.round(user * 1e7))
 }
 
 // Pool2: vault user LP deposits in the Aquarius BLUB-AQUA pool (excludes POL)
@@ -45,6 +54,7 @@ async function pool2(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: 'TVL counts AQUA locked in staking. Staking counts BLUB staked by users. Pool2 counts vault user LP deposits in the Aquarius BLUB-AQUA pool. BLUB is priced as AQUA since it lacks a separate price feed. Protocol-owned liquidity is tracked separately in treasury.',
-  stellar: { tvl, staking, pool2 },
+  methodology:
+    'WhaleHub is a liquid staking protocol on Stellar: users deposit AQUA and receive BLUB, while the AQUA is committed to Aquarius ICE governance on their behalf. TVL is the AQUA held in the Stellar claimable balances that back those ICE locks, read from Horizon; AQUA the protocol locked from its own funds is excluded and reported as treasury. Pool2 counts vault user LP deposits in the Aquarius BLUB-AQUA pool, valued in AQUA since BLUB has no separate price feed; protocol-owned liquidity is excluded from pool2.',
+  stellar: { tvl, pool2 },
 }

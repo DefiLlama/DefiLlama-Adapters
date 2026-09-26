@@ -45,11 +45,17 @@ const uniV3Configs = {
   'basex': {
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
+  'bdex-v3': {
+    bot: {
+      factory: '0x1C51c173323ec11BB4e3C4fD2314c225Dc4b5419',
+      fromBlock: 143372,
+    },
+  },
   'betterswap-v3': {
     vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
   },
   'mute-cl': {
-    era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523 },
+    era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523, permitFailure: true },
   },
   'solidly-v3': {
     hallmarks: [['2023-09-03', 'Solidly V3 launch']],
@@ -62,6 +68,8 @@ const uniV3Configs = {
   },
   'prism-dex': {
     start: 7845865,
+    deadFrom: '2026-09-09',
+    hallmarks: [['2026-09-09', 'Prism DEX shut down']],
     megaeth: { factory: '0x1adb8f973373505bb206e0e5d87af8fb1f5514ef', fromBlock: 7845865 },
   },
   'superswap-v3': {
@@ -435,6 +443,7 @@ const uniV3Configs = {
     era: {
       factory: '0x52a1865eb6903bc777a02ae93159105015ca1517',
       fromBlock: 7790768,
+      permitFailure: true,
     },
     base: {
       factory: '0xeddef4273518b137cdbcb3a7fa1c6a688303dfe2',
@@ -595,6 +604,8 @@ const uniV3Configs = {
     },
   },
   'glyph-v4': {
+    deadFrom: '2026-09-11',
+    hallmarks: [['2026-09-11', 'Glyph Core DEX no longer maintained']],
     core: {
       factory: '0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597',
       fromBlock: 15770796,
@@ -683,6 +694,11 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0x2dC0Ec0F0db8bAF250eCccF268D7dFbF59346E5E',
       fromBlock: 6523521,
+      permitFailure: true,
+    },
+    robinhood: {
+      factory: '0xCeFc5Da47d766Fb6b48Da92D75d66b3264593d0f', 
+      fromBlock: 58245132
     },
   },
   'hydrex': {
@@ -709,6 +725,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0x1Cd8363DfAdA19911f745BA984fce02b42c943bF',
       fromBlock: 20255136,
+      permitFailure: true, // pools with hyperliquid pseudo-token addresses (0x333..., 0xccc...) revert balanceOf
     },
   },
   'icecreamswap-v3': {
@@ -780,12 +797,24 @@ const uniV3Configs = {
       blacklistedTokens: [],
     },
   },
+  'kittypunch-kona-v3': {
+    abstract: {
+      factory: '0xfeD3612D6865ca46F080f19fc34AA8Cac0C92cF6',
+      fromBlock: 64955000,
+    },
+  },
   'kodiak-v3': {
     berachain: {
       factory: '0xD84CBf0B02636E7f53dB9E5e45A616E05d710990',
       fromBlock: 12314,
       permitFailure: true,
       blacklistedOwners: ['0x24619368bad314d1635a54027c5231b9b83c4a7e', '0xe9703de93406cc31441a57ce5d08272ed545d32b'],
+    },
+  },
+  'krown-dex': {
+    krown: {
+      factory: '0x10ba7a9b45267caf016028cd398e68a19632bed2',
+      fromBlock: 50555,
     },
   },
   'kuraswap-cl': {
@@ -799,6 +828,13 @@ const uniV3Configs = {
       factory: '0x40059A6F242C3de0E639693973004921B04D96AD',
       fromBlock: 592235,
       blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'],
+    },
+  },
+  'liberty-swap': {
+    start: '2026-05-25',
+    pulse: {
+      factory: '0x796fcbDC956b85797EFe21145Aa97599B7FB36a6',
+      fromBlock: 26620000,
     },
   },
   'linehub-v3': {
@@ -926,6 +962,15 @@ const uniV3Configs = {
     tomochain: {
       factory: '0xD1A76A4F4ff2AD3f899438Ea0e919049fC0a21BF',
       fromBlock: 74340484,
+    },
+  },
+  'morpheus': {
+    start: '2026-08-13',
+    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain.',
+    robinhood: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 35371149,
+      isAlgebra: true,
     },
   },
   'naka-dex': {
@@ -1114,11 +1159,7 @@ const uniV3Configs = {
       fromBlock: 277686,
       isAlgebra: true,
     },
-    soneium: {
-      factory: '0x8Ff309F68F6Caf77a78E9C20d2Af7Ed4bE2D7093',
-      fromBlock: 1681559,
-      isAlgebra: true,
-    },
+    soneium: { tvl: () => ({}) },
   },
   'rabbitswap-v3': {
     tomochain: {
@@ -1163,11 +1204,6 @@ const uniV3Configs = {
     redstone: {
       factory: '0xece75613Aa9b1680f0421E5B2eF376DF68aa83Bb',
       fromBlock: 1,
-    },
-    ink: {
-      factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424',
-      fromBlock: 1,
-      blacklistedTokens: [ADDRESSES.ethereum.WETH],
     },
   },
   'retro': {
@@ -1474,14 +1510,6 @@ const uniV3Configs = {
       fromBlock: 197972,
     },
   },
-  'thena-integral': {
-    bsc: {
-      factory: '0x30055F87716d3DFD0E5198C27024481099fB4A98',
-      fromBlock: 44121855,
-      isAlgebra: true,
-      blacklistedTokens: ['0x39e3ca118ddfea3edc426b306b87f43da3251b4a'],
-    },
-  },
   'thena-v3': {
     bsc: {
       factory: '0x306F06C147f064A010530292A1EB6737c3e378e4',
@@ -1489,7 +1517,7 @@ const uniV3Configs = {
       isAlgebra: true,
       blacklistedTokens: [
         '0x39e3ca118ddfea3edc426b306b87f43da3251b4a',
-        '0xe80772eaf6e2e18b651f160bc9158b2a5cafca65',
+        ADDRESSES.arbitrum.USDplus,
         '0x5335e87930b410b8c5bb4d43c3360aca15ec0c8c',
       ],
     },
@@ -1739,7 +1767,7 @@ const uniV3Configs = {
     rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
   },
   'hyperlynx-v3': {
-    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735, permitFailure: true }
   },
   'machima': {
     base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
@@ -1779,6 +1807,68 @@ const uniV3Configs = {
       factory: '0x10253594A832f967994b44f33411940533302ACb',
       fromBlock: 4904397,
       isAlgebra: true,
+    },
+  },
+  'helios-v3': {
+    start: '2026-05-31',
+    rise: { factory: '0xbF30bD8567628Dc4E120b7536d051EaFaA3fD0fa', fromBlock: 12557099 },
+  },
+  'phera-dex': {
+    start: '2026-08-25',
+    methodology: 'Value of the tokens locked in PheraDEX concentrated liquidity pools.',
+    // Generation-2 PheraCLFactory. The retired generation-1 factory (0xA7e3cBf3A9F12da335531e1dd986B616b6d6ed7c) never created a pool.
+    robinhood: { factory: '0x185f43b9E3e956798b7b9CF0a4FE00463aEe064B', fromBlock: 45979598 },
+  },
+  'raphael-cl': {
+    robinhood: {
+      factory: '0x5481864ddd46a2D798Df0925C23B7846e776E5E3',
+      fromBlock: 56766250,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
+  },
+  'nami-v4': {
+    start: '2026-09-13',
+    methodology: 'Value of the tokens locked in nami V4 CLMM concentrated liquidity pools.',
+    ethereum: {
+      factory: '0xD1Bf4A24DC17Da21410a7b047471E191eA538d43',
+      fromBlock: 25965060,
+      isAlgebra: true,
+    },
+    base: {
+      factory: '0xf4502A98A15e82D66d28D2381E2F3A407ea45b83',
+      fromBlock: 51235349,
+      isAlgebra: true,
+    },
+    robinhood: {
+      factory: '0xDeDB80903df19f9dB9b393eb66E07511CB9ABdA2',
+      fromBlock: 61554171,
+      isAlgebra: true,
+    },
+  },
+  'lunya-dex': {
+    start: '2026-09-16',
+    methodology: 'Counts the tokens held by every pool created by the Lunya factory. Balances are read from the pools directly rather than derived from liquidity, so the stable pools, whose reserves are not on the constant-product curve, are valued correctly.',
+    arc: {
+      factory: '0x711492DF23F320745de6fD7f0ab9564FDBfeA016',
+      fromBlock: 21067506,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint8 indexed poolType, int24 tickSpacing, uint24 fee, address pool)',
+      topics: ['0x3871766f55926cc6499881a4481d190672266d76354ee598765dea432553fac7'],
+    },
+  },
+  'trenchdex-v3': {
+    start: '2026-06-01',
+    pulse: {
+      factory: '0xCAeF0a906F3323595A8faA14DF7eDee6F59220af',
+      fromBlock: 26817525,
+      // zero-liquidity pool whose token0 is another V3 pool contract, not an ERC20
+      blacklistedOwners: ['0xa9d452042d4740dfce99ec54dda138d32cde742f'],
+    },
+  },
+  'buglefamily': {
+    arc: {
+      factory: '0xB09f790A1907a1db006e88F14C4f0168fBee9598',
+      fromBlock: 21118790,
     },
   }
 }

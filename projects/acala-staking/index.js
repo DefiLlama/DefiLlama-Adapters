@@ -1,6 +1,6 @@
-const {getExports} = require('../helper/heroku-api')
+const { staking } = require('../helper/acala/liquidStaking')
 
 module.exports = {
-    timetravel: false,
-    ...getExports("acala-staking", ['acala'])
+  timetravel: false,
+  acala: { tvl: () => staking('acala') },
 }

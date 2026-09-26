@@ -105,6 +105,29 @@ const aaveConfigs = {
     bsc: '0x7c8E7536c5044E1B3693eB564C6dE3a3CE58bbDa',
     base: '0x5C93B799D31d3d6a7C977f75FDB88d069565A55b',
   },
+  'avalon-finance-usdalend': {
+    methodology,
+    iotex: { dataHelpers: ['0xDB52DD393e3a5e95d3B7C7e1C42cC06bb807A369'], v3: true },
+    taiko: { dataHelpers: ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], v3: true },
+    zircuit: { dataHelpers: ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], v3: true },
+    corn: { dataHelpers: ['0xa15c0c3D6Ad3FeE623BEd68391923c9Ff79a50c3'], v3: true },
+    sei: { dataHelpers: ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], v3: true },
+    sonic: { dataHelpers: ['0x1C6E9510055B71429022B997E6602FbaEEb0481F'], v3: true },
+  },
+  'vicuna-lending': {
+    sonic: {
+      dataHelpers: [
+        '0xc67850eCd0EC9dB4c0fD65C1Ad43a53025e6d54D', // Main market
+        // '0xe78536507675de30D375C6d2B5dA1a99819Ea9fa', // Paused market
+        // '0x94e8122dF227B34998Ba7523ad88c943191cF4F1', // Paused market
+        '0x08Dd992108ef0a82E8aDC633bcB3A20092e17E0B', // Stream market (xUSD)
+        '0x14DF199Dc8406D1C2F87499743F3e88d17976628', // StableJack market (YT-scUSD)
+        '0x7c0F1fdB80Ff25d9E5AdfA86b5Dad8c4EF93Ef90', // Brunch market (sbUSD)
+      ],
+      v3: true,
+      isInsolvent: true,
+    },
+  },
   'aave-arc': {
     ethereum: {
       addressesProviderRegistry: '0x6FdfafB66d39cD72CFE7984D3Bbcc76632faAb00',
@@ -183,6 +206,7 @@ const aaveConfigs = {
     },
   },
   'spark-fi': {
+    methodology,
     ethereum: {
       addressesProviderRegistry: '0x03cFa0C4622FF84E50E75062683F44c9587e6Cc1',
       dataHelpers: ['0xFc21d6d146E6086B8359705C8b28512a983db0cb'],
@@ -190,7 +214,7 @@ const aaveConfigs = {
       staking: ['0xc6132FAF04627c8d05d6E759FAbB331Ef2D8F8fD', '0xc20059e0317DE91738d13af027DfC4a50781b066'],
     },
     xdai: {
-      addressesProviderRegistry: '0xA98DaCB3fC964A6A0d2ce3B77294241585EAbA6d',
+      addressesProviderRegistry: '0x49d24798d3b84965F0d1fc8684EF6565115e70c1',
       dataHelpers: ['0x2a002054A06546bB5a264D57A81347e23Af91D18'],
       v3: true,
     },
@@ -467,7 +491,11 @@ const aaveConfigs = {
     },
   },
   'lore': {
-    scroll: '0xBc6DE4458b7D6fbf82240ce8cC0CA6a2f4986eb5',
+    scroll: {
+      addressesProviderRegistry: '0xBc6DE4458b7D6fbf82240ce8cC0CA6a2f4986eb5',
+      isInsolvent: true,
+      deadFrom: "2025-03-24"
+    },
   },
   'iolend': {
     methodology,
@@ -540,6 +568,39 @@ const aaveConfigs = {
       abis: {
         getAllATokens: "function getAllOTokens() view returns (tuple(string symbol, address tokenAddress)[])",
       },
+    },
+  },
+  'primefi-xyz': {
+    methodology: "PRFI/wrapped-native LP staked in PrimeFi staking contracts on each chain.",
+    base: {
+      addressesProviderRegistry: '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07',
+      isInsolvent: true,
+      staking: ['0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80', '0x7BBCf1B600565AE023a1806ef637Af4739dE3255'],
+      pool2: { __sumTokens: { owner: '0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80', tokens: ['0x87B417AF600312df37F551a05ae14bCC3d55bC36'], resolveLP: true } },
+    },
+    hyperliquid: {
+      addressesProviderRegistry: '0x69A3c30A85aA1E22791466a08819c1080f0Aab7f',
+      isInsolvent: true,
+      staking: ['0x33cd734739c6DeD500fD080d476D93135cB813Ef', '0x7BBCf1B600565AE023a1806ef637Af4739dE3255'],
+      pool2: { __sumTokens: { owner: '0x33cd734739c6DeD500fD080d476D93135cB813Ef', tokens: ['0x981F145a71Da6DF4A7cBe892807782c9CC9a5515'], resolveLP: true } },
+    },
+    xdc: {
+      addressesProviderRegistry: '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07',
+      isInsolvent: true,
+      staking: ['0x01E7cd81D3d7A4907815877e0C937a77dE537e99', '0x81B244d0be055EF3BEF1b09B7826Cc2b108B2cBD'],
+      pool2: { __sumTokens: { owner: '0x01E7cd81D3d7A4907815877e0C937a77dE537e99', tokens: ['0xffA04F091128fb89D3B1eCd0149DC677dfAe1C69'], resolveLP: true } },
+    },
+  },
+  'colend': {
+    methodology,
+    core: {
+      // addressesProviderRegistry is ignored when dataHelpers are given; one market per helper
+      dataHelpers: [
+        '0x567AF83d912C85c7a66d093e41D92676fA9076E3', // Main
+        '0x8E43DF2503c69b090D385E36032814c73b746e3d', // LstBTC
+      ],
+      isInsolvent: true,
+      v3: true,
     },
   },
   'blend-finance': {

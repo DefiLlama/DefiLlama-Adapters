@@ -3,8 +3,8 @@ const sdk = require('@defillama/sdk')
 
 const binanceNetworkMapping = {
   // Major chains (10+ tokens)
-  // ETH: 'ethereum',
-  // BSC: 'bsc',
+  ETH: 'ethereum',
+  BSC: 'bsc',
   SOL: 'solana',
   BASE: 'base',
   ARBITRUM: 'arbitrum',
@@ -164,7 +164,32 @@ async function _getChainMappings() {
     })
   })
 
-  return mappings
+  // merge with previously accumulated tokens instead of replacing - a token
+  // delisted from binance (or a bad/partial API response) would otherwise
+  // silently drop out of every CEX adapter's whitelist
+  const accumulatedKey = 'binance-cex-tokens/accumulated'
+  let accumulated = {}
+  try {
+    accumulated = (await sdk.cache.readCache(accumulatedKey, { readFromR2Cache: true })) ?? {}
+    if (typeof accumulated !== 'object' || Array.isArray(accumulated)) accumulated = {}
+  } catch (e) { accumulated = {} }
+
+  let hasNewTokens = false
+  Object.entries(mappings).forEach(([chain, tokens]) => {
+    if (!accumulated[chain]) accumulated[chain] = []
+    const known = new Set(accumulated[chain].map(t => t.toLowerCase()))
+    tokens.forEach(t => {
+      if (known.has(t.toLowerCase())) return
+      known.add(t.toLowerCase())
+      accumulated[chain].push(t)
+      hasNewTokens = true
+    })
+  })
+
+  if (hasNewTokens)
+    await sdk.cache.writeCache(accumulatedKey, accumulated).catch(e => sdk.log('failed to write accumulated binance token cache', e))
+
+  return accumulated
 }
 
 async function getCEXTokensOnBinance() {

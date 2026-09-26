@@ -21,8 +21,8 @@ module.exports = {
       const { data } = await client.get(`/stellar/blend-get-backstop/${backstopId}`)
       return data
     },
-    blendPoolInfo: async (backstopId) => {
-      const { data } = await client.get(`/stellar/blend-get-pool-data/${backstopId}`)
+    blendPoolInfo: async (backstopId, pools = []) => {
+      const { data } = await client.get(`/stellar/blend-get-pool-data/${backstopId}`, { params: { pools: pools.join(',') } })
       return data
     },
   },

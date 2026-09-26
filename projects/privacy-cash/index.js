@@ -49,8 +49,11 @@ module.exports = {
   },
   robinhood: {
     tvl: evmSumTokensExport({
-      owners: ['0xEC5266c9e44631e1ba22FD6377C38130c1F3B738'],
-      tokens: [ADDRESSES.null],
+      owners: [
+        '0xEC5266c9e44631e1ba22FD6377C38130c1F3B738',
+        '0xBB0C7F576B7bdAa8f2a119cb295076aCD0C9013f'
+      ],
+      tokens: [ADDRESSES.null, ADDRESSES.robinhood.USDG],
     })
   },
 }

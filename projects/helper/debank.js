@@ -104,4 +104,5 @@ async function sumTokensDebank(api, owners, { blacklistedTokens = [], blackliste
 
 module.exports = {
   sumTokensDebank,
+  getLlamaChain,
 }

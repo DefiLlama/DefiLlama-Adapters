@@ -55,6 +55,9 @@ const COMPOUND_POOLS = {
     'KPK USDC Prime Core': '0x1a1985F50352b58090eb36425AfdFacbaC7806F4',
     'Yearn USDC': '0x68Aea7b82Df6CcdF76235D46445Ed83f85F845A3',
     'KPK ETH Yield V2': '0x5dbf760b4fd0cDdDe0366b33aEb338b2A6d77725',
+    'KPK USDC Prime': '0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6',
+    'Api3 dCOMP USDC': '0x36cfe1568461E499391ef0A555300F1ae2da2439',
+    'Hyperithm USDC Apex': '0x777791C4d6DC2CE140D00D2828a7C93503c67777',
   };
 
   // Fluid (Ethereum mainnet)
@@ -83,6 +86,7 @@ const COMPOUND_POOLS = {
   const EULER_POOLS = {
     'Euler Earn USDC': '0x3B4802FDb0E5d74aA37d58FD77d63e93d4f9A4AF',
     'Euler Prime WETH': '0xD8b27CF359b7D15710a5BE299AF6e7Bf904984C2',
+    'K3 Capital Prime USDC': '0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9',
   };
   
   // Wasabi Protocol (Ethereum mainnet)

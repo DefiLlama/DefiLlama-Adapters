@@ -99,7 +99,7 @@ async function getInsuranceFundValueOp(api, INSURANCE_FUND) {
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 
 const insuranceTokensBase = {
-  AERO: '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
+  AERO: ADDRESSES.base.AERO,
 }
 
 const VE_AERO_NFT = "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4";

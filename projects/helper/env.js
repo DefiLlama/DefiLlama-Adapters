@@ -11,15 +11,16 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   SEI_BLOCK_LOW: "150023881",
-  STARKNET_RPC: 'https://rpc.starknet.lava.build/',
+  STARKNET_RPC: 'https://api.zan.top/public/starknet-mainnet',
   STARKNET_MULTICALL: '0x01a33330996310a1e3fa1df5b16c1e07f0491fdd20c441126e02613b948f0225',
+  ACALA_RPC: 'https://acala-rpc.aca-api.network',
+  KARURA_RPC: 'https://karura-rpc.aca-api.network',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
   SOON_RPC: "https://rpc.mainnet.soo.network/rpc",
   SOON_BASE_RPC: "https://rpc.soonbase.soo.network/rpc",
   SOON_BSC_RPC: "https://rpc.svmbnbmainnet.soo.network/rpc",
-  ASTAR_RPC: "https://astar.blockscout.com/api/eth-rpc",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://sui-rpc.publicnode.com',
@@ -33,28 +34,55 @@ const DEFAULTS = {
   COOKIECHAIN_RPC: 'https://rpc.cookiescan.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
+  TRON_WALLET_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
-  KASPLEX_RPC: "https://evmrpc.kasplex.org",
-  IGRA_RPC: "https://rpc.igralabs.com:8545",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
+  SHIDO_RPC: 'https://shidoscan.net/api/eth-rpc',
+  BITKUB_RPC: 'https://www.kubscan.com/api/eth-rpc',
+  REI_RPC: 'https://scan.rei.network/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
-  SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
-  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
+  // dwellir throttles queryStorageAt bursts across both bifrost endpoints (same key) which stalled bifrost-dex; polkadot side moved to liebi
+  // bifrost adapters read storage over HTTP JSON-RPC via helper/chain/substrate.js (the wss entries are kept for anything still on @polkadot/api)
+  BIFROST_P_RPC: "wss://eu.bifrost-polkadot-rpc.liebi.com/ws",
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
+  BIFROST_POLKADOT_RPC: "https://eu.bifrost-polkadot-rpc.liebi.com",
+  BIFROST_KUSAMA_RPC: "https://api-bifrost-kusama.n.dwellir.com/" + _yek,
+  // substrate chains read over HTTP JSON-RPC (helper/chain/substrate.js), comma separated fallbacks
+  BITTENSOR_RPC: 'https://entrypoint-finney.opentensor.ai',
+  POLYMESH_RPC: 'https://mainnet-rpc.polymesh.network',
+  ASTAR_SUBSTRATE_RPC: 'https://astar.api.onfinality.io/public,https://rpc.astar.network,https://astar-rpc.dwellir.com',
+  SORA_RPC: 'https://mof2.sora.org',
+  POLKADOT_RELAY_RPC: 'https://rpc.polkadot.io,https://polkadot-rpc.publicnode.com,https://dot-rpc.stakeworld.io',
+  POLKADOT_ASSETHUB_RPC: 'https://polkadot-asset-hub-rpc.polkadot.io,https://statemint.api.onfinality.io/public',
+  HYDRATION_RPC: 'https://rpc.hydradx.cloud',
   BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
-  VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
-  WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
-  BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
-  ROBINHOOD_RPC: 'https://robinhoodchain.blockscout.com/api/eth-rpc',
-  ETHEREUMCLASSIC_RPC: 'https://etc.blockscout.com/api/eth-rpc',
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
+  PROM_RPC: 'https://promscan.io/api/eth-rpc,https://prom-rpc.eu-north-2.gateway.fm',
+  PROM_RPC_MULTICALL: '0xfF785aF3De8C2cb5727A8665984E741c16679131',
+  NIBIRU_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
+  // PAST block is served only by drpc: blockdaemon answers "state at block N is pruned" and
+  // rpc.mainnet.arc.io 429s every archival read, even a single batch of 50 after sitting idle.
+  // drpc therefore leads, and is also the fastest of the three at the latest block.
+  ARC_RPC: 'https://rpc.drpc.mainnet.arc.io,https://rpc.mainnet.arc.io,https://rpc.blockdaemon.mainnet.arc.io',
+  ARC_RPC_CHAIN_ID: '5042',
+  // explorer.arc.io/api/eth-rpc answers every programmatic request with HTTP 403.
+  ARC_ARCHIVAL_RPC: 'https://rpc.arc-scan.org,https://rpc.blockdaemon.mainnet.arc.io,https://rpc.nodeflare.app/arc/public', // public archive fallbacks; use <=100k-block log ranges
+  // Arc is not in the SDK Multicall3 deployment map; canonical Multicall3 is deployed there.
+  ARC_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  ARC_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  ARC_MULTICALL_CHUNK_SIZE: '50',
+  RLS_ARCHIVAL_RPC: 'https://mainnet-archive.rayls.com',
+  // chains with no provider in the SDK providers list (chainid.network RPCs)
+  AREA_RPC: 'https://mainnet-rpc.areum.network,https://mainnet-rpc2.areum.network', // Areum Network, chainId 463
+  BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
 }
 
 const ENV_KEYS = [
@@ -78,6 +106,7 @@ const ENV_KEYS = [
   'SMARDEX_SUBGRAPH_API_KEY',
   'ALLIUM_API_KEY',
   'DUNE_API_KEYS',
+  'NEAR_RPC',
   'TON_API_KEY',
   'FLOW_NON_EVM_RPC',
   'PROXY_AUTH',
@@ -87,6 +116,7 @@ const ENV_KEYS = [
   'TATUM_PUBLIC_API_KEY',
   'TATUM_API_KEY',
   'TEAM_WEBHOOK',
+  'HIRO_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

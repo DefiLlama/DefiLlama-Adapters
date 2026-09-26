@@ -5,7 +5,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const WETH  = ADDRESSES.optimism.WETH_1
 const USDM  = ADDRESSES.megaeth.USDm
 const MEGA  = ADDRESSES.megaeth.MEGA
-const BTC_B = '0xB0F70C0bD6FD87dbEb7C10dC692a2a6106817072'
+const BTC_B = ADDRESSES.ethereum.BTC_b
 const USDT0 = ADDRESSES.corn.USDT0
 
 // MAOB (orderbook) contracts hold all resting liquidity

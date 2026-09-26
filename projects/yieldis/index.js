@@ -72,7 +72,7 @@ Object.keys(config).forEach(chain => {
       const tokensAndOwners = sharesTokens.map((v, i) => [v, newPools[i]])
       tokens.forEach((v, i) => tokensAndOwners.push([v, pools[i]]))
       assets.forEach((v, i) => tokensAndOwners.push([v, joins[i]]))
-      return sumTokens2({ api, tokensAndOwners, blacklistedTokens })
+      return sumTokens2({ api, tokensAndOwners, blacklistedTokens, permitFailure: true }) // protocol wound down, several joins/tokens revert
     }
   }
 })

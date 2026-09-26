@@ -91,6 +91,67 @@ async function sumTokens({ owner, owners = [], tokens = [], balances = {}, black
   return transformBalances(chain, balances)
 }
 
+// Query a contract and decode the response using types from its ABI json, without @multiversx/sdk-core.
+// outputType: the endpoint's output type (e.g. 'CommonSettings' or 'List<FarmContext>')
+// abiTypes: the "types" object from the contract's ABI json
+async function queryContractWithAbi({ target, funcName, args = [], outputType, abiTypes = {} }) {
+  const data = await post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress: target, funcName, args })
+  const buffer = Buffer.from(data.returnData[0] || '', 'base64')
+  return decodeTopLevel(buffer, outputType, abiTypes)
+}
+
+// codec reference: https://docs.multiversx.com/developers/data/serialization-overview
+function decodeTopLevel(buffer, type, types) {
+  const reader = makeReader(buffer)
+  if (type.startsWith('List<')) { // top-level lists have no item count, items are concatenated
+    const inner = type.slice(5, -1)
+    const out = []
+    while (!reader.eof()) out.push(decodeNested(reader, inner, types))
+    return out
+  }
+  return decodeNested(reader, type, types) // structs encode identically top-level and nested
+}
+
+function decodeNested(reader, type, types) {
+  if (types[type]?.type === 'struct') {
+    const out = {}
+    for (const field of types[type].fields) out[field.name] = decodeNested(reader, field.type, types)
+    return out
+  }
+  if (type.startsWith('List<')) {
+    const inner = type.slice(5, -1)
+    const count = reader.u32()
+    return Array.from({ length: count }, () => decodeNested(reader, inner, types))
+  }
+  switch (type) {
+    case 'u32': return reader.u32()
+    case 'u64': return reader.u64()
+    case 'bool': return reader.bool()
+    case 'Address': return reader.hex(32)
+    case 'BigUint': return reader.bigUint()
+    case 'TokenIdentifier':
+    case 'EgldOrEsdtTokenIdentifier': return reader.string()
+    default: throw new Error('Unknown/unsupported ABI type: ' + type)
+  }
+}
+
+function makeReader(buffer) {
+  let offset = 0
+  const take = (n) => { const v = buffer.subarray(offset, offset + n); offset += n; return v }
+  return {
+    eof: () => offset >= buffer.length,
+    u32: () => take(4).readUInt32BE(0),
+    u64: () => take(8).readBigUInt64BE(0).toString(),
+    bool: () => take(1)[0] === 1,
+    hex: (n) => take(n).toString('hex'),
+    string() { return take(this.u32()).toString('utf8') },
+    bigUint() {
+      const bytes = take(this.u32())
+      return bytes.length ? BigInt('0x' + bytes.toString('hex')).toString() : '0'
+    },
+  }
+}
+
 async function getNFTs(address) {
   const res = await get(`${getEnv('MULTIVERSX_RPC')}/accounts/${address}/nfts?size=1000`)
   return res
@@ -108,6 +169,7 @@ function sumTokensExport(...args) {
 module.exports = {
   sumTokens,
   call,
+  queryContractWithAbi,
   getNFTs,
   getTokenData,
   sumTokensExport,

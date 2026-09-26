@@ -340,7 +340,7 @@ async function sumTokens2({
   }
 
   if (solOwners.length) {
-    const solBalance = await getSolBalances(solOwners)
+    const solBalance = await getSolBalances(solOwners, { chain })
     sdk.util.sumSingleBalance(balances, `${chain}:` + ADDRESSES.solana.SOL, solBalance)
   }
 

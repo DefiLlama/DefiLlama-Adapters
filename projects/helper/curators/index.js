@@ -347,6 +347,8 @@ async function getCuratorTvlErc4626(api, vaults) {
     v1Groups.get(key).v2Vaults.push({ ...v2, depositor })
   }
 
+  const v2VaultSet = new Set(v2Vaults.map(v => v.vault))
+
   // Process each unique V1 vault once, summing all V2 contributions
   for (const { v1, v2Vaults: v2List } of v1Groups.values()) {
     let totalV2Assets = 0n
@@ -381,7 +383,10 @@ async function getCuratorTvlErc4626(api, vaults) {
 
     // Unique TVL = V1 + sum(V2) - sum(v2_deposits_in_v1)
     // Count V1 totalAssets only ONCE regardless of how many V2 vaults wrap it
-    const uniqueTvl = v1.totalAssets + totalV2Assets - totalV2DepositsInV1
+    // a "V1" that is itself a curated V2 vault already books its totalAssets in its own v2 iteration
+    const v1IsV2 = v2VaultSet.has(v1.vault.toLowerCase())
+    let uniqueTvl = (v1IsV2 ? 0n : v1.totalAssets) + totalV2Assets - totalV2DepositsInV1
+    if (uniqueTvl < 0n) uniqueTvl = 0n
     api.add(v1.asset, uniqueTvl)
   }
 }
@@ -512,10 +517,15 @@ async function getNested4626Vaults(api, vaults) {
   const vaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
   const nestedVaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaultAsset, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
+  const convertedAssets = await api.multiCall({
+    abi: ABI.ERC4626.convertToAssets,
+    calls: vaultAsset.map((target, i) => ({ target, params: [totalAssets[i]] })),
+    permitFailure: true,
+  })
   for (let i = 0; i < vaults.length; i++) {
-    const resolvedAsset = nestedVaultAsset[i] || vaultAsset[i]
-    if (!resolvedAsset) continue
-    api.add(resolvedAsset, totalAssets[i])
+    const asset = nestedVaultAsset[i] || vaultAsset[i]
+    const amount = nestedVaultAsset[i] ? convertedAssets[i] : totalAssets[i]
+    if (asset && amount) api.add(asset, amount)
   }
 }
 

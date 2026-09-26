@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const WISE_ETH_PAIR_ADDR = '0x21b8065d10f73EE2e260e5B47D3344d3Ced7596E';
-const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
-const WETH_ADDR = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+const ZERO_ADDR = ADDRESSES.null;
+const WETH_ADDR = ADDRESSES.ethereum.WETH;
 
 async function tvl(api) {
   const [unownedUniLP, totalUniLP, reserves] = await Promise.all([
@@ -21,6 +22,6 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
-  methodology: 'TVL = ownerless (unclaimed) share of ETH in the WISE/ETH Uniswap LP',
+  methodology: 'TVL = ownerless (LP tokens burned) share of ETH in the WISE/ETH Uniswap LP',
   ethereum: { tvl }
 };

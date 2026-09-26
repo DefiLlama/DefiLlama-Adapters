@@ -1,6 +1,7 @@
 const axios = require('axios')
 const sdk = require('@defillama/sdk')
 const { getConfig } = require('../projects/helper/cache')
+const { address: tonAddress } = require('../projects/helper/utils/ton')
 
 // We pull the owner set from Bybit's monthly PoR CSV, one row per "<COIN>-<Chain>":
 // Coin,Height,Amount,Address  (the Address column is space-separated: <Address1> <Address2> ...)
@@ -32,16 +33,27 @@ async function fetchLatestCsv() {
   throw new Error('bybit: no PoR CSV found in the last 3 months')
 }
 
-// Bybit's CSV occasionally contains invalid EVM addresses, e.g. odd length hex
-function isValidAddress(a) {
+// Bybit's CSV occasionally contains invalid addresses, e.g. odd length hex or a truncated TON address
+// (one bad TON address makes toncenter reject the whole batched accountStates request with a 422)
+function isValidAddress(a, slug) {
+  if (slug === 'ton') {
+    try { tonAddress(a); return true } catch (e) { return false }
+  }
   if (!a.startsWith('0x')) return true
   const hex = a.slice(2)
   return hex.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(hex)
 }
 
+// the CSV lists some TON wallets in both bounceable (EQ..) and non-bounceable (UQ..) form, normalize so they dedupe
+function normalizeAddress(a, slug) {
+  if (slug === 'ton') return tonAddress(a).toString()
+  return a
+}
+
 function parseOwnersByChain(csv) {
   const byChain = {}
   const unmapped = new Set()
+  const invalid = []
   const lines = csv.trim().split(/\r?\n/)
   for (let i = 1; i < lines.length; i++) { // skip header
     const parts = lines[i].split(',')
@@ -53,9 +65,14 @@ function parseOwnersByChain(csv) {
     const slug = CHAIN_MAP[coin.split('-').pop()] // chain is the suffix after the last '-'
     if (!slug) { unmapped.add(coin.split('-').pop()); continue }
     const set = byChain[slug] || (byChain[slug] = new Set())
-    for (const a of addrs.split(/\s+/)) if (a && isValidAddress(a)) set.add(a)
+    for (const a of addrs.split(/\s+/)) {
+      if (!a) continue
+      if (!isValidAddress(a, slug)) { invalid.push(`${coin}: ${a}`); continue }
+      set.add(normalizeAddress(a, slug))
+    }
   }
   if (unmapped.size) sdk.log('bybit: skipped unmapped PoR chains:', [...unmapped].join(', '))
+  if (invalid.length) sdk.log('bybit: skipped invalid PoR addresses:', invalid.join(', '))
   return Object.fromEntries(Object.entries(byChain).map(([slug, set]) => [slug, [...set]]))
 }
 
