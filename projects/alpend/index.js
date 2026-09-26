@@ -21,43 +21,40 @@ function validateFeed(feed, caller) {
     throw new Error(`alpend: CCTools feed is stale (${caller}), age=${ageSeconds}s`)
 }
 
-async function tvl(api) {
+async function getPools(caller) {
   const feed = await get(TVL_URL, FETCH_OPTS)
-  validateFeed(feed, 'tvl')
-
-  for (const pool of feed.pools) {
+  validateFeed(feed, caller)
+  for (const pool of feed.pools)
     if (!pool.coingeckoId)
       throw new Error(`alpend: no coingecko id for ${pool.asset}`)
+  return feed.pools
+}
 
-    // Amounts are already decimal-adjusted; do not scale them again.
-    // null/'' convert to 0 under Number(), which would silently report unavailable data as a
-    // real zero balance — reject them explicitly rather than relying on the NaN check alone.
-    if (pool.totalSupplied === null || pool.totalSupplied === '')
-      throw new Error(`alpend: missing totalSupplied amount for ${pool.asset}`)
-    const totalSupplied = Number(pool.totalSupplied)
-    if (!Number.isFinite(totalSupplied) || totalSupplied < 0)
-      throw new Error(`alpend: invalid totalSupplied amount for ${pool.asset}`)
+// Amounts are already decimal-adjusted; do not scale them again.
+// null/'' convert to 0 under Number(), which would silently report unavailable data as a
+// real zero balance — reject them explicitly rather than relying on the NaN check alone.
+function getAmount(pool, field) {
+  if (pool[field] === null || pool[field] === undefined || pool[field] === '')
+    throw new Error(`alpend: missing ${field} amount for ${pool.asset}`)
+  const amount = Number(pool[field])
+  if (!Number.isFinite(amount) || amount < 0)
+    throw new Error(`alpend: invalid ${field} amount for ${pool.asset}`)
+  return amount
+}
 
-    api.addCGToken(pool.coingeckoId, totalSupplied)
+async function tvl(api) {
+  for (const pool of await getPools('tvl')) {
+    // Supplied assets that are lent out leave the pool and are reported under borrowed.
+    const available = getAmount(pool, 'totalSupplied') - getAmount(pool, 'totalBorrowed')
+    if (available < 0)
+      throw new Error(`alpend: borrowed exceeds supplied for ${pool.asset}`)
+    api.addCGToken(pool.coingeckoId, available)
   }
 }
 
 async function borrowed(api) {
-  const feed = await get(TVL_URL, FETCH_OPTS)
-  validateFeed(feed, 'borrowed')
-
-  for (const pool of feed.pools) {
-    if (!pool.coingeckoId)
-      throw new Error(`alpend: no coingecko id for ${pool.asset}`)
-
-    if (pool.totalBorrowed === null || pool.totalBorrowed === '')
-      throw new Error(`alpend: missing totalBorrowed amount for ${pool.asset}`)
-    const totalBorrowed = Number(pool.totalBorrowed)
-    if (!Number.isFinite(totalBorrowed) || totalBorrowed < 0)
-      throw new Error(`alpend: invalid totalBorrowed amount for ${pool.asset}`)
-
-    api.addCGToken(pool.coingeckoId, totalBorrowed)
-  }
+  for (const pool of await getPools('borrowed'))
+    api.addCGToken(pool.coingeckoId, getAmount(pool, 'totalBorrowed'))
 }
 
 module.exports = {
@@ -65,7 +62,8 @@ module.exports = {
   methodology:
     'Alpend is a lending protocol on the Canton Network. Users supply CC, USDCx, and CBTC as collateral to earn yield, ' +
     'and borrow against that collateral; interest accrues on-chain via reserve indices. ' +
-    'TVL is the gross amount of each asset supplied to Alpend\'s lending pools; the borrowed tab is the gross amount currently borrowed out of those pools. ' +
+    'TVL is the amount of each asset supplied to Alpend\'s lending pools minus the amount borrowed out of them, i.e. the assets held by the pool operator party; ' +
+    'the borrowed tab is the gross amount currently borrowed out of those pools. ' +
     'Balances are read from the CCTools API, a third-party Canton data aggregator that normalizes per-asset balances with canonical Canton instrument and CoinGecko IDs.',
   canton: { tvl, borrowed },
 }
