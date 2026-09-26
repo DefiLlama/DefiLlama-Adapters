@@ -33,7 +33,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  start: 1751923200,  // July 1, 2025 (putted random here)
+  start: '2025-07-07',  // July 1, 2025 (putted random here)
   hallmarks: [['2025-07-08', "Launch of Raga Finance"]],
   methodology: "TVL is calculated from LP tokens",
   berachain: {

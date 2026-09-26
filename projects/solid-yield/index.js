@@ -55,7 +55,7 @@ const boringVaultsV0Fuse = [
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  start: 1749279179,
+  start: '2025-06-07',
   doublecounted: true,
   ["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsEthereum) },
   ["fuse"]: { tvl: (api) => chainTvl(api, boringVaultsV0Fuse) },

@@ -23,7 +23,7 @@ async function tvl(api) {
 module.exports = {
 	doublecounted: true,
 	timetravel: true,
-	start: 1704067200,
+	start: '2024-01-01',
 	methodology:
 		'Volume is calculated by summing the total USD value of deposited funds in Lulo across all tokens',
 	solana: { tvl },

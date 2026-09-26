@@ -1,55 +1,40 @@
 // documentation: https://developer.algorand.org/docs/get-details/indexer/?from_query=curl#sdk-client-instantiations
+//
+// Indexer transport (rate limited, uint64 safe json parsing) and the address codec live in @defillama/sdk
+// (`sdk.chains.algorand`); this file keeps the TVL helpers (sumTokens, tinyman / algofi LP resolution, token ids).
 
-const axios = require('axios')
-const { getApplicationAddress } = require('./algorandUtils/address')
-const { RateLimiter } = require("limiter");
 const coreAssets = require('../coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
+const algorand = sdk.chains.algorand
+const { getApplicationAddress } = algorand
 const stateCache = {}
-const accountCache = {}
 const assetCache = {}
 
 const geckoMapping = Object.values(coreAssets.algorand)
-const axiosObj = axios.create({
-  baseURL: "https://mainnet-idx.algonode.cloud",
-  timeout: 300000,
-});
 
-const indexerLimiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
-
+// indexer responses keep the historical `{ application }` / `{ account }` wrapper shapes
 async function lookupApplications(appId) {
-  return (await axiosObj.get(`/v2/applications/${appId}`)).data
+  const application = await algorand.lookupApplication({ appId })
+  return { application }
 }
 
 async function lookupAccountByID(accountId) {
-  return (await axiosObj.get(`/v2/accounts/${accountId}`)).data
+  const account = await algorand.lookupAccount({ address: accountId })
+  if (!account) throw new Error(`algorand: account not found ${accountId}`)
+  return { account }
 }
 
 async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams, }) {
-  const response = (await axiosObj.get('/v2/accounts', {
-    params: {
-      ...searchParams,
-      'application-id': appId,
-      limit,
-      next: nexttoken,
-    }
-  }))
-  return response.data
+  return algorand.searchAccounts({ appId, limit, nextToken: nexttoken, params: searchParams })
 }
 
 async function lookupApplicationsCreatedByAccount(accountId) {
-  return (await axiosObj.get(`/v2/accounts/${accountId}/created-applications`)).data
+  return algorand.lookupApplicationsCreatedByAccount({ address: accountId })
 }
 
 async function searchAccountsAll({ appId, limit = 1000, searchParams = {}, sumTokens = false, api }) {
-  const accounts = []
-  let nexttoken
-  do {
-    const res = await searchAccounts({ appId, limit, nexttoken, searchParams, })
-    nexttoken = res['next-token']
-    accounts.push(...res.accounts)
-  } while (nexttoken)
+  const accounts = await algorand.searchAccountsAll({ appId, limit, params: searchParams })
   if (sumTokens && api) {
     sdk.log('sumTokens', accounts.length)
     for (const account of accounts) {
@@ -62,11 +47,6 @@ async function searchAccountsAll({ appId, limit = 1000, searchParams = {}, sumTo
   return accounts
 }
 
-const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
-  await indexerLimiter.removeTokens(tokensToRemove);
-  return fn(...args);
-}
-
 async function sumTokens({ owner, owners = [], tokens = [], token, balances, api, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
   if (!balances) {
     balances = api ? api.getBalances() : {}
@@ -74,7 +54,7 @@ async function sumTokens({ owner, owners = [], tokens = [], token, balances, api
   if (owner) owners = [owner]
   if (token) tokens = [token]
   if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
-  const accounts = await Promise.all(owners.map(limitedGetAccountInfo))
+  const accounts = await Promise.all(owners.map(getAccountInfo))
   accounts.forEach(({ assets }, i) => {
     if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
@@ -94,9 +74,9 @@ async function getAssetInfo(assetId) {
   return assetCache[assetId]
 
   async function _getAssetInfo() {
-    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
-    const reserveInfo = await limitedGetAccountInfo(asset.params.reserve)
-    const assetObj = { ...asset.params, ...asset, reserveInfo, }
+    const asset = await algorand.getAssetInfo({ assetId })
+    const reserveInfo = await getAccountInfo(asset.reserve)
+    const assetObj = { ...asset, reserveInfo, }
     assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
     assetObj.assets = { ...reserveInfo.assetMapping }
     delete assetObj.assets[assetId]
@@ -105,14 +85,8 @@ async function getAssetInfo(assetId) {
 }
 
 async function getAssetInfoWithoutReserve(assetId) {
-  if (!assetCache[assetId]) assetCache[assetId] = _getAssetInfo()
+  if (!assetCache[assetId]) assetCache[assetId] = algorand.getAssetInfo({ assetId })
   return assetCache[assetId]
-
-  async function _getAssetInfo() {
-    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
-    const assetObj = { ...asset.params, ...asset, }
-    return assetObj
-  }
 }
 
 async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedTokens, }) {
@@ -139,24 +113,9 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
   return balances
 }
 
+// account with `assets` (asset ids as strings, ALGO under the pseudo id '1') and `assetMapping`; numeric ids are application ids
 async function getAccountInfo(accountId) {
-  if (typeof accountId === 'number') { // it is an application id
-    accountId = getApplicationAddress(accountId)
-  }
-  if (!accountCache[accountId]) accountCache[accountId] = _getAccountInfo()
-  return accountCache[accountId]
-
-  async function _getAccountInfo() {
-    const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`)
-    if (!account.assets) account.assets = []
-    if (account.amount) account.assets.push({ amount: account.amount, 'asset-id': '1', })
-    account.assetMapping = {}
-    account.assets.forEach(i => {
-      i['asset-id'] = '' + i['asset-id']
-      account.assetMapping[i['asset-id']] = i
-    })
-    return account
-  }
+  return algorand.getAccountInfo({ address: accountId })
 }
 
 const tokens = {
@@ -181,6 +140,7 @@ const tokens = {
 // store all asset ids as string
 Object.keys(tokens).forEach(t => tokens[t] = '' + tokens[t])
 
+// global state keyed by the latin1 decoded key; uints as numbers, bytes latin1 decoded (historical shape)
 async function getAppGlobalState(marketId) {
   if (!stateCache[marketId]) stateCache[marketId] = _getAppGlobalState()
   return stateCache[marketId]
@@ -190,7 +150,7 @@ async function getAppGlobalState(marketId) {
     let results = {}
     response.application.params["global-state"].forEach(x => {
       let decodedKey = Buffer.from(x.key, "base64").toString("binary")
-      results[decodedKey] = x.value.uint
+      results[decodedKey] = typeof x.value.uint === 'string' ? Number(x.value.uint) : x.value.uint
       if (x.value.type === 1) results[decodedKey] = Buffer.from(x.value.bytes, "base64").toString("binary")
     })
 
@@ -218,36 +178,28 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
 }
 
 async function lookupTransactionsByID(searchParams = {}) {
-  const urlParams = new URLSearchParams(searchParams).toString();
-  return (await axiosObj.get(`/v2/transactions?${urlParams}`)).data
+  return algorand.lookupTransactions({ params: searchParams })
 }
 
-const limitedGetAccountInfo = withLimiter(getAccountInfo)
-
 async function getApplicationBoxes({ appId, limit = 1000, nexttoken, }) {
-  const response = (await axiosObj.get(`/v2/applications/${appId}/boxes`, {
-    params: {
-      limit,
-      next: nexttoken,
-    }
-  }))
-  return response.data.boxes
+  const res = await algorand.getApplicationBoxes({ appId, limit, nextToken: nexttoken })
+  return res.boxes
 }
 
 module.exports = {
   tokens,
-  getAssetInfo: withLimiter(getAssetInfo),
-  getAssetInfoWithoutReserve: withLimiter(getAssetInfoWithoutReserve),
+  getAssetInfo,
+  getAssetInfoWithoutReserve,
   searchAccountsAll,
-  getAccountInfo: limitedGetAccountInfo,
+  getAccountInfo,
   sumTokens,
   getApplicationAddress,
-  lookupApplications: withLimiter(lookupApplications),
-  lookupAccountByID: withLimiter(lookupAccountByID),
-  lookupTransactionsByID: withLimiter(lookupTransactionsByID),
-  searchAccounts: withLimiter(searchAccounts),
-  getAppGlobalState: getAppGlobalState,
+  lookupApplications,
+  lookupAccountByID,
+  lookupTransactionsByID,
+  searchAccounts,
+  getAppGlobalState,
   getPriceFromAlgoFiLP,
-  lookupApplicationsCreatedByAccount: withLimiter(lookupApplicationsCreatedByAccount),
+  lookupApplicationsCreatedByAccount,
   getApplicationBoxes,
 }

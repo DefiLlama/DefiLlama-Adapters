@@ -11,7 +11,7 @@ async function tvl(api){
 
 module.exports = {
   timetravel: false,
-  start: 1746374400,
+  start: '2025-05-04',
   methodology: "Telegram USD is a stablecoin on TON. The TVL is the collateral amount of USDT in the tgUSD contract.",
   ton: {
     tvl: tvl

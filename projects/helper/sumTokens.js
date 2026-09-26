@@ -1,14 +1,10 @@
 const { ibcChains, getUniqueAddresses } = require('./tokenMapping')
-const { get, post, } = require('./http')
+const { get, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const { svmChains, svmChainsSet, } = require('./svmChainConfig')
 const sdk = require('@defillama/sdk')
-const { RateLimiter } = require("limiter");
 
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const { xrpl } = sdk.chains
 
 const helpers = {
   "eos": require("./chain/eos"),
@@ -51,6 +47,7 @@ const helpers = {
   "qubic": require("./chain/qubic"),
   "constellation": require("./chain/constellation"),
   "supra": require("./chain/supra"),
+  "icp": require("./chain/icp"),
 }
 
 svmChains.forEach(chain => {
@@ -173,73 +170,27 @@ async function sumTokens(options) {
   }
 }
 
-// limit it to 3 calls every 5 seconds
-const rippleApiLimiter = new RateLimiter({ tokensPerInterval: 3, interval: 5_000 });
-const rippleApiWithLimiter = (fn, tokensToRemove = 1) => async (...args) => {
-  await rippleApiLimiter.removeTokens(tokensToRemove);
-  return fn(...args);
-}
-
-const getRippleBalance = rippleApiWithLimiter(_getRippleBalance)
-
-// public XRPL JSON-RPC nodes that answer bursts without throttling (xrpl.ws / xrpl.link 429 after a few calls).
-// each call starts from a random node and rotates on failure ("tooBusy", "slowDown", 429) so load is spread
-const rippleEndpoints = ['https://s1.ripple.com:51234', 'https://s2.ripple.com:51234', 'https://xrplcluster.com']
-
-async function ripplePost(body, { retries = rippleEndpoints.length * 2 } = {}) {
-  let lastError
-  const start = Math.floor(Math.random() * rippleEndpoints.length)
-  for (let attempt = 0; attempt < retries; attempt++) {
-    const url = rippleEndpoints[(start + attempt) % rippleEndpoints.length]
-    try {
-      const res = await post(url, body)
-      const error = res?.result?.error
-      if (!res?.result || (error && !['actNotFound', 'actMalformed'].includes(error))) {
-        throw new Error(`xrpl ${url} returned ${error ?? 'no result'}: ${res?.result?.error_message ?? ''}`)
-      }
-      return res
-    } catch (e) {
-      lastError = e
-      await sleep(1000 * (attempt + 1))
-    }
-  }
-  throw lastError
-}
-
-async function _getRippleBalance(account) {
-  const body = { "method": "account_info", "params": [{ account, ledger_index: 'validated' }] }
-  await sleep(500);
-  const res = await ripplePost(body)
-  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return 0
-  return res.result.account_data.Balance / 1e6
+// XRP balance in whole XRP (0 for unfunded accounts); the sdk rotates public XRPL nodes and retries
+// "tooBusy" / "slowDown" / 429 answers (XRPL_RPC overrides the node list)
+async function getRippleBalance(account) {
+  const drops = await xrpl.getXrpBalance({ account, ledgerIndex: 'validated' })
+  return Number(drops) / 1e6
 }
 
 async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
 
   if (Array.isArray(whitelistedTokens) && whitelistedTokens.length)
     whitelistedTokens = new Set(whitelistedTokens.map(i => i.toLowerCase()))
-  const body = {
-    "method": "account_lines",
-    "params": [{
-      account,
-      ledger_index: "validated"
-    }]
-  }
-  await sleep(500);
-  const res = await ripplePost(body)
-  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return {}
-
+  const lines = await xrpl.getAccountLines({ account, ledgerIndex: 'validated' }) // [] for unfunded accounts
 
   // Add token balances
-  if (res.result.lines) {
-    res.result.lines.forEach(line => {
-      const tokenKey = `${line.currency}.${line.account}`
-      if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
-      // account_lines amounts are human-readable; scale tokens whose coins-server entry expects raw units
-      const decimals = rippleTokenDecimals[tokenKey.toLowerCase()] ?? 0
-      api.add(tokenKey, parseFloat(line.balance) * 10 ** decimals)
-    })
-  }
+  lines.forEach(line => {
+    const tokenKey = `${line.currency}.${line.account}`
+    if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
+    // account_lines amounts are human-readable; scale tokens whose coins-server entry expects raw units
+    const decimals = rippleTokenDecimals[tokenKey.toLowerCase()] ?? 0
+    api.add(tokenKey, parseFloat(line.balance) * 10 ** decimals)
+  })
 
   return api.getBalances()
 }

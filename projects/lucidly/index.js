@@ -58,7 +58,7 @@ async function legacyTvl(api) {
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
-    start: 1710745200,
+    start: '2024-03-18',
     doublecounted: true,
     ["ethereum"]: {
         tvl: sdk.util.sumChainTvls([

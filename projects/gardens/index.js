@@ -81,7 +81,7 @@ async function tvl(api) {
 }
 const v2 = {
   methodology: 'Uses ethers.getLogs with chunking to read CommunityCreated events from proxy factories.',
-  start: 1640995200,
+  start: '2022-01-01',
   xdai: { tvl },
   arbitrum: { tvl },
   base: { tvl },

@@ -53,7 +53,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Tracks Adrastea operator's proportional share of delegated assets in Jito Restaking vaults based on VaultOperatorDelegation accounts",
-  start: 1738281600, // Jan 31, 2025 - when Adrastea joined according to Jito interface
+  start: '2025-01-31', // Jan 31, 2025 - when Adrastea joined according to Jito interface
   timetravel: false,
   solana: {
     tvl,

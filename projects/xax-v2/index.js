@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // DeFiLlama TVL adapter for XAX V2 (XAUSD ERC-4626 vault), Ethereum mainnet.
 //
 // Count actual USDT in the vault,
@@ -10,7 +11,7 @@
 // repo. Update them here if the vault is redeployed.
 
 const VAULT = '0xd3dCB074C007DeB82b511E263d15966A05E6ef92'
-const USDT = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+const USDT = ADDRESSES.ethereum.USDT
 
 function rawAmount(value) {
   if ((typeof value !== 'string' && typeof value !== 'bigint') || !/^\d+$/.test(value)) {
@@ -35,6 +36,6 @@ module.exports = {
     'Counts onchain USDT held by the XAUSD vault contract, ' +
     'less pending treasury fees. Queued redemptions remain included until paid. ' +
     'All strategy balances, including MPC adapter reserves and external custody, are excluded.',
-  start: 1787306267, // V2 mainnet deploy block 25802758, 2026-08-21T09:57:47Z
+  start: '2026-08-21', // V2 mainnet deploy block 25802758, 2026-08-21T09:57:47Z
   ethereum: { tvl },
 }

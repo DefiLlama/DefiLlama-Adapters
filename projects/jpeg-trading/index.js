@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport } = require('../helper/curators')
 
 // Euler's maintained product labels associate these EVK vaults with JPEG Trading:
@@ -15,7 +16,7 @@ const evk = {
 
 const earn = '0x018b86A893F57a632F90c4A8308353Ac938adc01' // JPEG Trading x Tenbin RWAs
 const nestedUsdcVault = evk.ethereum[1]
-const underlyingUsdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+const underlyingUsdc = ADDRESSES.ethereum.USDC
 
 const curator = getCuratorExport({
   methodology: 'Counts the underlying assets supplied to JPEG Trading Euler EVK vaults on Ethereum and Base, plus Euler Earn assets outside its own USDC EVK vault. The Earn-to-EVK position is subtracted to avoid counting the same deposit twice. These Euler deposits overlap Euler V2 TVL.',

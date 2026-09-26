@@ -1,20 +1,16 @@
-const { get } = require('../http')
-const { sleep } = require('../utils')
+const { utxo } = require('@defillama/sdk').chains
 
-// blockchair free tier: ~30 req/min per IP, so requests are sequential with a small pause
-const url = addr => 'https://api.blockchair.com/zcash/dashboards/address/' + addr + '?limit=0'
+const CHAIN = 'zcash'
 
+// ZEC balance in zatoshi (8 decimals); blockchair's free tier is paced inside the sdk
 async function getBalance(addr) {
-  const { data } = await get(url(addr))
-  if (!data?.[addr]?.address) throw new Error('zcash: no balance data for ' + addr)
-  return Number(data[addr].address.balance) // zatoshi (8 decimals)
+  return Number(await utxo.getBalance({ chain: CHAIN, address: addr }))
 }
 
 async function sumTokens({ api, owners = [] }) {
   for (const owner of owners) {
     const balance = await getBalance(owner)
     api.addCGToken('zcash', balance / 1e8)
-    await sleep(5000)
   }
   return api.getBalances()
 }
