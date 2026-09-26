@@ -36,6 +36,6 @@ module.exports = {
     'Counts onchain USDT held by the XAUSD vault contract, ' +
     'less pending treasury fees. Queued redemptions remain included until paid. ' +
     'All strategy balances, including MPC adapter reserves and external custody, are excluded.',
-  start: 1787306267, // V2 mainnet deploy block 25802758, 2026-08-21T09:57:47Z
+  start: '2026-08-21', // V2 mainnet deploy block 25802758, 2026-08-21T09:57:47Z
   ethereum: { tvl },
 }

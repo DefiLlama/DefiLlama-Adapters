@@ -42,7 +42,7 @@ module.exports = {
   methodology:
     "Gloop TVL consists of two parts: (1) GMI Index TVL from totalControlledValue(true) which tracks the total USD value of GM tokens in the index, and (2) GM Lending TVL from totalUnderlying() for each supported token (GM BTC, GM ETH, GM SOL, USDC) in the lending pools.",
   // A little after Lending Pool contract was deployed
-  start: 1744340400,
+  start: '2025-04-11',
   arbitrum: {
     tvl,
     borrowed,

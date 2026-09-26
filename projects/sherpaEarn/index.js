@@ -23,7 +23,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is calculated as the sum of totalStaked (USDC earning yield) and totalPending (USDC awaiting next round) in the SherpaVault contracts across all chains.',
-  start: 1732276800, // November 22, 2024 - deployment date
+  start: '2024-11-22', // November 22, 2024 - deployment date
   ethereum: { tvl },
   base: { tvl },
   monad: { tvl },

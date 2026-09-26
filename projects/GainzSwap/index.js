@@ -76,5 +76,5 @@ module.exports = {
   occ: {
     tvl,
   },
-  start: 1736707071,
+  start: '2025-01-12',
 };

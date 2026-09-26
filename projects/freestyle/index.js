@@ -7,13 +7,13 @@ const { request, } = require("graphql-request");
 const freestyleConfig = {
   base: {
       token: ADDRESSES.base.USDC,
-      start: 1700006400,
+      start: '2023-11-15',
       graphUrl: "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
       accountSource: '0x6D63921D8203044f6AbaD8F346d3AEa9A2719dDD'
   },
   mode: {
       token: ADDRESSES.mode.USDC,
-      start: 1700006400,
+      start: '2023-11-15',
       graphUrl: null,
       accountSource: '0xC0ff4B56f62f20bA45f4229CC6BAaD986FA2a904'
   }

@@ -48,7 +48,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is total quantity of USDC held in the predictions token accounts',
-  start: 1753365600,
+  start: '2025-07-24',
   solana: {
     tvl,
   }

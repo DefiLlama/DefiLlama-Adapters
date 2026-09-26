@@ -14,7 +14,7 @@ const factories = [
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
-  start: 1617148800, // March 2021
+  start: '2021-03-31', // March 2021
   methodology:
     "TVL includes all legacy Quipuswap FA1.2 and FA2 pools using token_to_exchange big_map entries from 7 verified factories deployed between March–June 2021.",
   tezos: {

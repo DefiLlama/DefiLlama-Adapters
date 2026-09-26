@@ -58,6 +58,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "ETH held by the StockRip core contract, plus the tokenized equities backing every basket it custodies. Ownership is checked per token id, so a basket only counts while the core actually holds it. Each basket keeps its stock in an ERC-6551 account, so the underlying is read from that account as a real balance, with assets taken from the basket's own manifest rather than a fixed list. Baskets held by users, the RIP token and the VRF operating reserves are excluded.",
-  start: 1785159701,
+  start: '2026-07-27',
   robinhood: { tvl },
 }

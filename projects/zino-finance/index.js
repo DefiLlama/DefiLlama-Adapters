@@ -6,7 +6,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1741132619,
+  start: '2025-03-05',
   arbitrum: {
     tvl
   }
