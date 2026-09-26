@@ -52,17 +52,20 @@ async function tvl(api) {
   const positionSets = await api.multiCall({ abi: abi.getPositions, calls: vaults })
   const items = []
   positionSets.forEach((ids, i) => ids.forEach(id => items.push({ vault: vaults[i], id })))
-  if (!items.length) return
 
-  const [families, nfpms] = await Promise.all([
-    api.multiCall({ abi: abi.positionFamily, calls: items.map(p => ({ target: p.vault, params: [p.id] })) }),
-    api.multiCall({ abi: abi.positionNfpm, calls: items.map(p => ({ target: p.vault, params: [p.id] })) }),
-  ])
-  items.forEach((p, i) => { p.family = +families[i]; p.nfpm = nfpms[i] })
+  if (items.length) {
+    const [families, nfpms] = await Promise.all([
+      api.multiCall({ abi: abi.positionFamily, calls: items.map(p => ({ target: p.vault, params: [p.id] })) }),
+      api.multiCall({ abi: abi.positionNfpm, calls: items.map(p => ({ target: p.vault, params: [p.id] })) }),
+    ])
+    items.forEach((p, i) => { p.family = +families[i]; p.nfpm = nfpms[i] })
 
-  await addSlipstreamPositions(api, items.filter(p => p.nfpm.toLowerCase() === SLIPSTREAM_NFPM.toLowerCase()))
-  await addHookPositions(api, items.filter(p => p.nfpm.toLowerCase() !== SLIPSTREAM_NFPM.toLowerCase()))
+    await addSlipstreamPositions(api, items.filter(p => p.nfpm.toLowerCase() === SLIPSTREAM_NFPM.toLowerCase()))
+    await addHookPositions(api, items.filter(p => p.nfpm.toLowerCase() !== SLIPSTREAM_NFPM.toLowerCase()))
+  }
 
+  // Vaults with no open positions can still hold idle balances, so this runs
+  // regardless of whether any positions were found.
   await sumTokens2({ api, owners: vaults, tokens: IDLE_TOKENS })
 }
 
