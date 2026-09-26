@@ -47,6 +47,7 @@ const helpers = {
   "qubic": require("./chain/qubic"),
   "constellation": require("./chain/constellation"),
   "supra": require("./chain/supra"),
+  "icp": require("./chain/icp"),
 }
 
 svmChains.forEach(chain => {
