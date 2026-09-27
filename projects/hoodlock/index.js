@@ -47,9 +47,12 @@ async function tvl(api) {
     api.call({ abi: abi.totalSchedules, target: VESTING }),
   ])
 
+  /* Ids 1..n all exist, so a failed record read is an infrastructure problem,
+   * not an expected revert. Let it throw instead of dropping the record: a
+   * short list would understate TVL with nothing visible to say so. */
   const [locks, schedules] = await Promise.all([
-    api.multiCall({ abi: abi.locks, calls: idCalls(LOCKER, lockCount), permitFailure: true }),
-    api.multiCall({ abi: abi.getSchedule, calls: idCalls(VESTING, scheduleCount), permitFailure: true }),
+    api.multiCall({ abi: abi.locks, calls: idCalls(LOCKER, lockCount) }),
+    api.multiCall({ abi: abi.getSchedule, calls: idCalls(VESTING, scheduleCount) }),
   ])
 
   const owners = [
@@ -68,8 +71,10 @@ async function tvl(api) {
     tokens.forEach((token, i) => {
       const id = ids[token]
       const balance = balances[i]
+      const dec = decimals[i]
       if (!id || !balance || balance === '0') return   // no price source: contributes nothing
-      api.addCGToken(id, Number(balance) / 10 ** Number(decimals[i] ?? 18))
+      if (dec == null) return   // unknown decimals cannot be scaled, and assuming 18 would misreport the amount
+      api.addCGToken(id, Number(balance) / 10 ** Number(dec))
     })
   }
 }
