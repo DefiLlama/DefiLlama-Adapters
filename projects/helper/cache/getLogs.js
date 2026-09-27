@@ -10,7 +10,7 @@ const problematicChainSet = new Set(['rbn',])
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer, logRpc }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -82,18 +82,7 @@ async function getLogs({ target,
 
     let logs
 
-    if (logRpc) {
-      // Some public RPC sets cannot serve factory history. Scope the override to
-      // this log request: balances and other adapters keep their SDK providers.
-      const provider = new ethers.JsonRpcProvider(logRpc, api.getChainId(), { batchMaxCount: 1 })
-      try {
-        logs = (await sdk.api.util.getLogs({
-          chain, target, topic, keys, topics, fromBlock, toBlock, provider,
-        })).output
-      } finally {
-        provider.destroy()
-      }
-    } else if (!useIndexer) {
+    if (!useIndexer) {
 
       logs = (await sdk.api.util.getLogs({
         chain, target, topic, keys, topics, fromBlock, toBlock,
