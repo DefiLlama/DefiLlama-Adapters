@@ -75,7 +75,7 @@ const config = {
 async function tvl(api) {
   const tokensAndOwners = []
   for (const { address, version, fromBlock } of config[api.chain]) {
-    const logs = await getLogs({ api, target: address, eventAbi: DEPOSIT_ABI[version], onlyArgs: true, fromBlock })
+    const logs = await getLogs({ api, target: address, eventAbi: DEPOSIT_ABI[version], onlyArgs: true, fromBlock, useIndexer: true })
     const tokens = new Set(logs.map(log => log.token.toLowerCase()))
     tokens.forEach(token => tokensAndOwners.push([token, address]))
   }
