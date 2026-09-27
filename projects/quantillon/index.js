@@ -3,6 +3,16 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const VAULT = '0x833E5Ba510a241b21F1C60c987D1c49eB52E4a07';
 const FACTORY = '0x0382B0b9FB6Ff737209C3B31D727BB9d2E2bcb53';
 
+/**
+ * Adds Quantillon's idle USDC collateral and each distinct external adapter's
+ * current underlying USDC value to the balances at the requested Base block.
+ * Includes external yield and losses, verifies discovery against tracked
+ * principal, and excludes receipt tokens and separately held fee reserves.
+ *
+ * @param {import('@defillama/sdk').ChainApi} api - Block-aware chain reader and balance accumulator.
+ * @returns {Promise<void>} Resolves after adding raw USDC amounts to api balances.
+ * @throws {Error} If discovered principal differs from the vault total or a contract read fails.
+ */
 async function tvl(api) {
   const [held, externalPrincipal, vaultIds] = await Promise.all([
     api.call({ target: VAULT, abi: 'uint256:totalUsdcHeld' }),
