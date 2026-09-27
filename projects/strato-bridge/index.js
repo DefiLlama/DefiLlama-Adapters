@@ -58,7 +58,7 @@ async function getTokens(chainId) {
 module.exports = {
   methodology:
     'Inbound: assets escrowed in the Mercata bridge custody address on each source chain (Ethereum, Base, Linea, Robinhood Chain), each backing a 1:1 wrapped *ST token minted on STRATO. Custody addresses and the asset list per chain are read from the MercataBridge assets/chains registry on STRATO mainnet (only entries flagged enabled are counted). Outbound: STRATO-native assets (STRATO, USDST, GOLDST, SILVST) locked in the StratoNativeBridge custody vault while represented on other chains; locked $STRATO is priced against the Ethereum STRATO ERC-20 because it has no price feed on the STRATO chain.',
-  start: 1775151906,
+  start: '2026-04-02',
   strato: {
     tvl: async (api) => {
       const vault = await api.call({ target: STRATO_NATIVE_BRIDGE, abi: 'function custodyVault() view returns (address)' })

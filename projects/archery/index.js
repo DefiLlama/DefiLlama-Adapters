@@ -41,7 +41,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the value of the on-chain reserves in Archery V2 pools plus the ERC-20 balances held by Archery concentrated-liquidity pools on Arc. Pools are discovered from Archery factories. Gauge balances are not counted separately because the underlying assets remain in the pool contracts, avoiding double-counting.',
-  start: 1790217438,
+  start: '2026-09-24',
   arc: { tvl },
 }
 

@@ -22,7 +22,7 @@ module.exports = {
   timetravel: true,
   methodology:
     "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts such as artBTC wrapper, priced as BTCB since artBTC price is not indexed.",
-  start: 1719292800, // 2024-06-25
+  start: '2024-06-25', // 2024-06-25
   sonic: {
     tvl: async (api) => {
       const tokensAndOwners = [

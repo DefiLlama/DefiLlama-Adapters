@@ -149,11 +149,11 @@ const uniV2Configs = {
     misrepresentedTokens: true,
     etica: {
       factory: '0xfc8dE5A5087c8825AA54E2C57B3FFe0e23784bc3',
-      coreAssets: ['0x34c61EA91bAcdA647269d4e310A86b875c09946f'], // ETI; ETX is priced through the ETI/ETX pair
+      coreAssets: [ADDRESSES.etica.ETI], // ETI; ETX is priced through the ETI/ETX pair
       blacklistedTokens: [
         '0x75d81d03a98CD9195593b8963aF17E13fAa70334', // stETX, its ETX is counted under staking
       ],
-      staking: { owner: '0x75d81d03a98CD9195593b8963aF17E13fAa70334', tokens: ['0xa5A1Bc6307b0b87989B8456D4b35F88a68650044'], lps: ['0x88f179117BE4402a71ca3e9094E7942D03Db84b3'], coreAssets: ['0x34c61EA91bAcdA647269d4e310A86b875c09946f'] },
+      staking: { owner: '0x75d81d03a98CD9195593b8963aF17E13fAa70334', tokens: ['0xa5A1Bc6307b0b87989B8456D4b35F88a68650044'], lps: ['0x88f179117BE4402a71ca3e9094E7942D03Db84b3'], coreAssets: [ADDRESSES.etica.ETI] },
     },
   },
   'asteroneo': {

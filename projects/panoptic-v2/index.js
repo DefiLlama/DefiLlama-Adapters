@@ -99,11 +99,11 @@ module.exports = {
   ethereum: {
     tvl,
     methodology,
-    start: 1780965215,
+    start: '2026-06-09',
   },
   robinhood: {
     tvl,
     methodology,
-    start: 1789398441,
+    start: '2026-09-14',
   },
 }
