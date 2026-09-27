@@ -85,16 +85,16 @@ module.exports = {
   ethereum: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1738292183,
+    start: '2025-01-31',
   },
   base: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1745308193,
+    start: '2025-04-22',
   },
   unichain: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1748379902,
+    start: '2025-05-27',
   },
 }

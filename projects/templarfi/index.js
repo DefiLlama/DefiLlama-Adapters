@@ -435,7 +435,7 @@ const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'so
 
 module.exports = {
   methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Flare, Bitcoin).',
-  start: 1754902109,
+  start: '2025-08-11',
 }
 
 SUPPORTED_CHAINS.forEach(chain => {

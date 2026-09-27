@@ -5,35 +5,35 @@ const { sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../help
 const CONFIG = {
   sonic: {
     factory: "0x095d35c49d2d0ea2eba3e2f9e377966db35af7e2",
-    start: 1744384400, // 2025-04-12
+    start: '2025-04-11', // 2025-04-12
   },
   avax: {
     factory: "0x5764dad2fd4b6918949c6ae86081819ca8c19749",
-    start: 1754952400, // 2025-08-12
+    start: '2025-08-12', // 2025-08-12
   },
   bsc: {
     factory: "0xc9dc65aed28bdb016726d32d0f8c2cd5c9461961",
-    start: 1759405200, // 2025-10-03
+    start: '2025-10-02', // 2025-10-03
   },
   ethereum: {
     factory: "0x4c1a8a04577286ce58d0723b1a90160f380e550a",
-    start: 1769636000, // 2026-01-29
+    start: '2026-01-28', // 2026-01-29
   },
   base: {
     factory: "0xcb34f261a5284554bb9fea8aa12a0578c4ba3fc6",
-    start: 1744386400, // 2025-04-12
+    start: '2025-04-11', // 2025-04-12
   },
   arbitrum: {
     factory: "0x061f8132b344cb2a32d3895eb3ebc2ff87455f79",
-    start: 1771250400, // 2026-02-17
+    start: '2026-02-16', // 2026-02-17
   },
   robinhood: {
     factory: '0x9DD987CBbF591D5bd7c2f5083d9D81be3359122B',
-    start: 1783382400, // 2026-07-07
+    start: '2026-07-07', // 2026-07-07
   },
   arc: {
     factory: '0x3ca7c79263101e7512ce5dd4bc7daf0f52cb24f5',
-    start: 1789948800, // 2026-09-21
+    start: '2026-09-21', // 2026-09-21
   },
 };
 

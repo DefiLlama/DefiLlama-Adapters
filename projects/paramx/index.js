@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 
 // ParamX Exchange<USDC> object on Sui mainnet (created in tx BNuLE1p5Tydq1ohFeacypkJ81Ho9SuPjefqUoZ5uXRfD).
@@ -8,7 +9,7 @@ const EXCHANGE =
 
 // Circle native USDC on Sui (6 decimals). Matches the Exchange's type argument.
 const USDC =
-  "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC";
+  ADDRESSES.sui.USDC_CIRCLE;
 
 async function tvl(api) {
   const exchange = await sui.getObject(EXCHANGE);

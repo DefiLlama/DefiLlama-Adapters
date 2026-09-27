@@ -74,7 +74,7 @@ const abis = {
 
 module.exports = {
   methodology: "Assets deployed on periphery chains. For EVM chains, we track the token balances in the pools. For SVM chains, we track the token balances owned by the pool addresses.",
-  start: 1742169600, // '2025-03-17 GMT+0'
+  start: '2025-03-17', // '2025-03-17 GMT+0'
   timetravel: false,
 }
 

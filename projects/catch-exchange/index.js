@@ -24,6 +24,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the value of external underlying assets held in Catch family reserve vaults and redeemable by active cAsset holders. Uniswap V4 liquidity, unreleased cAsset inventory, fee-routing balances, and the CATCH-backed cCATCH family are excluded.',
-  start: 1788536290, // First Catch family launch (Robinhood block 54377703)
+  start: '2026-09-04', // First Catch family launch (Robinhood block 54377703)
   robinhood: { tvl },
 }

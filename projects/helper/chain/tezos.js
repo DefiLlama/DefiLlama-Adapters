@@ -1,9 +1,12 @@
+// TzKT transport lives in @defillama/sdk (`sdk.chains.tezos`, `TEZOS_TZKT` overrides the indexer url);
+// this file keeps the TVL helpers (token blacklist, address transform, sumTokens, LP resolution).
 const ADDRESSES = require('../coreAssets.json')
-const http = require('../http')
 const sdk = require('@defillama/sdk')
 const { PromisePool } = require('@supercharge/promise-pool')
 
-const RPC_ENDPOINT = 'https://api.mainnet.tzkt.io'
+const tezos = sdk.chains.tezos
+
+const RPC_ENDPOINT = tezos.getTzktEndpoint()
 
 const usdtAddressTezos = ADDRESSES.tezos.USDt
 const transformAddressDefault = t => t == "tezos" ? "coingecko:tezos" : 'tezos:' + t
@@ -25,10 +28,10 @@ const tokenBlacklist = [
 ]
 
 async function getTokenBalances(account, includeTezosBalance = true, { balances = {}, transformAddress = transformAddressDefault } = {}) {
-  const response = await http.get(`${RPC_ENDPOINT}/v1/tokens/balances?account=${account}&sort.desc=balance&offset=0&limit=40&select=balance,token.id%20as%20id,token.contract%20as%20contract,token.tokenId%20as%20token_id`)
+  const response = await tezos.getTokenBalances({ address: account })
   response.forEach((item) => {
-    let token = item.contract.address
-    if (item.token_id !== '0') token += '-' + item.token_id
+    let token = item.contract
+    if (item.tokenId !== '0') token += '-' + item.tokenId
 
     if (!tokenBlacklist.includes(token))
       sdk.util.sumSingleBalance(balances, transformAddress(token), item.balance)
@@ -40,26 +43,23 @@ async function getTokenBalances(account, includeTezosBalance = true, { balances 
   return balances
 }
 
+// tez balance as a Number (whole tez)
 async function getTezosBalance(account) {
-  const balance = await http.get(`${RPC_ENDPOINT}/v1/accounts/${account}/balance`)
+  const balance = await tezos.getBalance({ address: account })
   return +balance / 10 ** 6
 }
 
 async function getStorage(account) {
-  return http.get(`${RPC_ENDPOINT}/v1/contracts/${account}/storage`)
+  return tezos.getContractStorage({ contract: account })
 }
 
+// one page of big map keys -> { key: value } (object keys are indexed by their hash)
 async function getBigMapById(id, limit = 1000, offset = 0, key, value) {
-  const response = await http.get(
-    `${RPC_ENDPOINT}/v1/bigmaps/${id}/keys?limit=${limit}&offset=${offset}` + (key ? `&key=${key}` : '') + (value ? `&value=${value}` : '')
-  );
-  let map_entry;
-  const mapping = {};
-  for (map_entry of response) {
-    if (typeof map_entry.key === 'object' && map_entry.hash) map_entry.key = map_entry.hash;
-    mapping[map_entry.key] = map_entry.value;
-  }
-  return mapping;
+  const params = { limit, offset }
+  if (key) params.key = key
+  if (value) params.value = value
+  const response = await tezos.tzkt({ path: `/v1/bigmaps/${id}/keys`, params })
+  return tezos.bigMapKeysToObject(response)
 }
 
 async function addDexPosition({ balances = {}, account, transformAddress }) {

@@ -60,7 +60,7 @@ const PAGE_SIZE = 500
 const PORTAL_8 = '0xeed7559B8A6ABf64427dc41Cb5cc6400109C5D93'
 const PORTAL_8_PARTS_FACTORY = '0xD969062076F75fbC4fd0195561501dC13eF87C72'
 const PORTAL_8_LAUNCH_ABI = 'function launches(address token) view returns (address hook, address escrow, address locker, uint256 positionId, int24 tickStart, int24 tickBond, bool tokenIsToken0)'
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NULL_ADDRESS = ADDRESSES.null
 
 // Deployment block of every Portal. The Portals were deployed over three weeks, so a run at a past
 // block skips the ones that did not exist yet instead of calling them.

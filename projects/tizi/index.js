@@ -31,7 +31,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is derived from netAsset (total assets under management), normalized to USDC.',
-  start: 1773972900,
+  start: '2026-03-20',
   base: {
     tvl,
   }

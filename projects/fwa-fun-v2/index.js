@@ -13,7 +13,7 @@ const DEPLOY_BLOCKS = {
   [POOL_FACTORY]: 26023011,
 }
 
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NULL_ADDRESS = ADDRESSES.null
 
 const events = {
   whitelist: 'event CollectionWhitelistSet(address indexed collection, bool allowed)',
