@@ -64,17 +64,19 @@ async function tvl(api) {
 
   for (const [owner, tokens] of owners) {
     if (!tokens.length) continue
+    /* No permitFailure here either. Skipping a funded token whose balanceOf or
+     * decimals cannot be read is the same silent understatement as dropping a
+     * record: the total comes out low and nothing says so. Throwing means a
+     * token that genuinely lacks decimals() gets noticed and handled. */
     const [balances, decimals] = await Promise.all([
-      api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(t => ({ target: t, params: owner })), permitFailure: true }),
-      api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true }),
+      api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(t => ({ target: t, params: owner })) }),
+      api.multiCall({ abi: 'erc20:decimals', calls: tokens }),
     ])
     tokens.forEach((token, i) => {
       const id = ids[token]
       const balance = balances[i]
-      const dec = decimals[i]
       if (!id || !balance || balance === '0') return   // no price source: contributes nothing
-      if (dec == null) return   // unknown decimals cannot be scaled, and assuming 18 would misreport the amount
-      api.addCGToken(id, Number(balance) / 10 ** Number(dec))
+      api.addCGToken(id, Number(balance) / 10 ** Number(decimals[i]))
     })
   }
 }
