@@ -2633,6 +2633,14 @@ const configs = {
       tokens: [nullAddress]
     },
   },
+  'treasury/outbidfun': {
+    robinhood: {
+      // Treasury (operations), RevenueRouter (fees awaiting their 80/20 split) and
+      // OutbidBuyback (the vault collecting for the $OUTBID buyback).
+      owners: ['0xE693C039cc91F8dbe64586245565388e2e44C0A4', '0xeEc171B409788644acBf1c50B825Cc6d9682D9b7', '0x9FBb9614bA47F2FD7ECFaa16880B535034a4eEF5'],
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG],
+    },
+  },
   'treasury/hoodpump': {
     robinhood: {
       owners: ['0xdAD1d6a2AfF8f9285Fd9C552491538aEcb518888', '0x453D956057036bd9871D25B965795b883047481D'],
