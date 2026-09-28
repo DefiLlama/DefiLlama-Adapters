@@ -3,6 +3,11 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'bbbfi-swap-v3': {
+    methodology: 'Token balances in BBBFi-owned V3 pools on XDC and BSC, discovered from factory PoolCreated events. Tokens retain their original chain and address for DefiLlama pricing. Staked position NFTs are not counted a second time; reward budgets and bridge reserves are excluded.',
+    xdc: { factory: '0x5037e5B64B677311Ed5332eee7b8C766fFe24088', fromBlock: 106991944 },
+    bsc: { factory: '0x33c27c73003666C61136B8b5c0C4e91939Ec95E3', fromBlock: 120709856 },
+  },
   'noxa-fi-v3': {
     megaeth: { factory: '0x1201EB5081eabc99b23DD952C1BFA5ea090d8779', fromBlock: 249856 },
     monad: { factory: '0x35af92183701E54f751f8b0376da7F9b151bf5A5', fromBlock: 42804409 },
@@ -1159,11 +1164,7 @@ const uniV3Configs = {
       fromBlock: 277686,
       isAlgebra: true,
     },
-    soneium: {
-      factory: '0x8Ff309F68F6Caf77a78E9C20d2Af7Ed4bE2D7093',
-      fromBlock: 1681559,
-      isAlgebra: true,
-    },
+    soneium: { tvl: () => ({}) },
   },
   'rabbitswap-v3': {
     tomochain: {
@@ -1850,6 +1851,31 @@ const uniV3Configs = {
       isAlgebra: true,
     },
   },
+  'lunya-dex': {
+    start: '2026-09-16',
+    methodology: 'Counts the tokens held by every pool created by the Lunya factory. Balances are read from the pools directly rather than derived from liquidity, so the stable pools, whose reserves are not on the constant-product curve, are valued correctly.',
+    arc: {
+      factory: '0x711492DF23F320745de6fD7f0ab9564FDBfeA016',
+      fromBlock: 21067506,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint8 indexed poolType, int24 tickSpacing, uint24 fee, address pool)',
+      topics: ['0x3871766f55926cc6499881a4481d190672266d76354ee598765dea432553fac7'],
+    },
+  },
+  'trenchdex-v3': {
+    start: '2026-06-01',
+    pulse: {
+      factory: '0xCAeF0a906F3323595A8faA14DF7eDee6F59220af',
+      fromBlock: 26817525,
+      // zero-liquidity pool whose token0 is another V3 pool contract, not an ERC20
+      blacklistedOwners: ['0xa9d452042d4740dfce99ec54dda138d32cde742f'],
+    },
+  },
+  'buglefamily': {
+    arc: {
+      factory: '0xB09f790A1907a1db006e88F14C4f0168fBee9598',
+      fromBlock: 21118790,
+    },
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)

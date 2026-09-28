@@ -1,4 +1,7 @@
 packages: []
+allowBuilds:
+  bufferutil: false
+  utf-8-validate: false
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
   - '@defillama/sdk'

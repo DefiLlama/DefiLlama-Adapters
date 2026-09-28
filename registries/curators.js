@@ -84,17 +84,21 @@ const configs = {
   },
   "sharpbyte-capital": {
     config: {
-      methodology: 'Counts assets deposited in the SharpByte USDT Prime Morpho V2 vault.',
+      methodology: 'Count assets in Morpho V1 and V2 vaults created by SharpByte\'s verified initial deployment owner, plus the SharpByte curated Upshift RWA and Nerona Dollar vaults.',
       start: '2026-07-03',
       blockchains: {
         ethereum: {
-          morpho: [
-            '0x65a6334c0e2b5f7640c2A6b9ce615e162b1E909B',
+          morphoVaultOwners: [
+            '0x07A1eC352EF67BB5b8b75A7fF9540b27f9a53d71',
           ],
+          upshiftV2: ['0x5776B576474ad2513E550190C5855613859F3A26'], // RWA Ecosystem
+        },
+        fluent: {
+          upshiftV2: ['0xeaB765200189909c806FD6e20eBb4E57D6703C82'], // Nerona Dollar Yield Strategy
         },
       }
     },
-  },
+  }, 
   "Greenhouse-Finance": {
     config: {
       methodology: 'Count all assets deposited in Greenhouse curated vaults.',
@@ -119,6 +123,11 @@ const configs = {
         ethereum: {
           morphoVaultOwners: [
             '0xEB4Af6fA3AFA08B10d593EC8fF87efB03BC04645',
+          ],
+        },
+        hyperliquid: {
+          morphoVaultOwners: [
+            '0x36bb55C8f2fb92317767254bF8eDCef0E2Fe61e1', // Alpha USDT Prime V2
           ],
         },
       }
@@ -394,6 +403,7 @@ const configs = {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
+            '0x40DdCcAC38E4F6f2cB802c09F0a08f39d3dCb48F', // Morpho V2 Noon Ecosystem Vault: owner at creation
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
@@ -412,6 +422,9 @@ const configs = {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
+          ],
+          eulerVaultOwners: [
+            '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
           ],
           erc4626: [
             '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
@@ -601,6 +614,20 @@ const configs = {
       methodology: 'Counts all assets that are deposited in all vaults curated by Feather.',
     },
   },
+  "felix-vaults": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho V1 and V2 vaults created through the verified Felix deployment owners on HyperEVM.',
+      blockchains: {
+        hyperliquid: {
+          morphoVaultOwners: [
+            '0x2157f54f7a745c772e686AA691Fa590B49171eC9',
+            '0xcc8f1bDE0d42017c0e52321e69325F9B26F7c2D6',
+            '0xDd00059904ddF45e30b4131345957f76F26b8f6c',
+          ],
+        },
+      },
+    },
+  },
   "fence": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Fence.',
@@ -726,6 +753,18 @@ const configs = {
       }
     },
   },
+  "hub-capital": {
+    config: {
+      methodology: 'Counts the assets deposited in the Lagoon USDC vault curated by Hub Capital.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xca790385506b790554571cbc9da73f0130cdcfd5', // Lagoon: Hub Capital USDC
+          ],
+        },
+      },
+    },
+  },
   "invariant-group": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Invariant Group.',
@@ -745,18 +784,6 @@ const configs = {
             '0x614eb485de3c6c49701b40806ac1b985ad6f0a2f', '0xD172B64AA13d892bb5EB35f3482058eAE0BC5B2a',
           ]
         }
-      }
-    },
-  },
-  "jpeg-trading": {
-    config: {
-      methodology: 'Counts assets deposited in the Euler Earn vault curated by JPEG Trading.',
-      blockchains: {
-        ethereum: {
-          erc4626: [
-            '0x018b86A893F57a632F90c4A8308353Ac938adc01', // Euler Earn: JPEG Trading x Tenbin RWAs
-          ],
-        },
       }
     },
   },
@@ -813,18 +840,6 @@ const configs = {
       }
     },
   },
-  "meridian-perps": {
-    config: {
-      methodology: 'Count all assets deposited in the Meridian perps LP vault.',
-      blockchains: {
-        robinhood: {
-          accountableVaults: [
-            '0x24b84023c8e4Da635be228C380C09bfE5271BF9d', // Meridian LP vault
-          ],
-        },
-      },
-    },
-  },
   "monarq": {
     config: {
       methodology: 'Count FXRP managed by the Monarq XRP Yield Vault through its on-chain getTotalAssets value.',
@@ -859,6 +874,32 @@ const configs = {
           ],
         },
       }
+    },
+  },
+  "nova-nlp": {
+    config: {
+      methodology: "Counts the settled USDC NAV reported on-chain by the Nova NLP Lagoon vault on HyperEVM.",
+      blockchains: {
+        hyperliquid: {
+          erc4626: [
+            '0xEeEd7BB939d65938Fe8f40dd898Cd5942E32f09E', // Lagoon: Nova NLP (sNLP)
+          ],
+        },
+      },
+    },
+  },
+  "odyssey-digital-am": {
+    config: {
+      methodology: 'Count settled assets in Odyssey Digital AM funds on Lagoon',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xa00f63e85b3d242568a9edecb48f5e2cf879b07b', // USDC
+            '0x2f945864126c6ba1dcadcb97ad114c9ef94f1379', // BTC
+            '0x08d7eef35f3e317001fe12c19a32f93307b008b4', // ETH
+          ],
+        },
+      },
     },
   },
   "ouroboros": {
@@ -1243,6 +1284,7 @@ const configs = {
             '0xBeEF00283d2b26a55F56B9f8c283b25e9a22E95b', // Steakhouse Morpho V2
             '0xBEEff02DE231f8B08c627C769edC73e7AcE47264', // Steakhouse Morpho V2
             '0xBEEFFFe68dFc2D3BD1ABdAd37c70634973b16478', // USDC Turbo
+            '0xBeEfF0be997Cca5B1c13A7433c2004637975739e', // Ethena x Steakhouse USDC (deployed via a factory wrapper, missed by the owner filter)
           ],
         },
         corn: {
@@ -1281,6 +1323,10 @@ const configs = {
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
             '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
             '0x96632d28Ac99A3edAb5F7B223a88d8fAf9004178', // Ethena x Steakhouse mUSD
+          ],
+          morpho: [
+            '0xBEEF0C61DA39F7EA2bFa7B0f9d6338A3a2DD2fF0', // Steakhouse USDC
+            '0xBEEF067C9D2591aCCAB7d1C336a41ca3bd45b8f5', // Steakhouse mUSD
           ],
         },
         polygon: {

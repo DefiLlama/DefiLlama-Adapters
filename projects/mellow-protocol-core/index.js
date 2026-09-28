@@ -143,7 +143,7 @@ const tvl = async (api) => {
     api.add(asset, totalAssets.toFixed(0))
   }
 }
-const chains = ['ethereum', 'monad', 'mezo', 'rsk']
+const chains = ['ethereum', 'monad', 'mezo', 'rsk', 'robinhood']
 module.exports.doublecounted = true
 chains.forEach((chain) => {
   module.exports[chain] = { tvl }

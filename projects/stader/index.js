@@ -40,7 +40,7 @@ module.exports = {
   //  ethereum: { tvl: maticTvl },
   fantom: { tvl: () => ({}) },
   terra2: { tvl: () => ({}) },
-  bsc: { tvl: bscTvl },
+  bsc: { tvl: () => ({}), },
   near: { tvl: () => ({}) },
   ethereum: {
     tvl: async (api) => {

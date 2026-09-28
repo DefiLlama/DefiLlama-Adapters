@@ -326,6 +326,17 @@ const configs = {
   'protectorate': {
     ethereum: ['0xaF53431488E871D103baA0280b6360998F0F9926'],
   },
+  'the-722-capital': {
+  doublecounted: true,
+  methodology: 'TVL is the sum of asset()-denominated totalAssets() reported on-chain by the two public 722 Capital Lagoon vaults on Base.',
+  base: [
+    '0xfce2064b4221c54651b21c868064a23695e78f09', // 722Capital-ETH
+    '0xb09f761cb13baca8ec087ac476647361b6314f98', // 722Capital-USDC
+  ],
+  hyperliquid: [
+    '0x7dD73A986F6188da1bAaf68541FD6EBd455ABd1D', // 722 Capital Hype
+  ]
+},
   'hlp0': {
     methodology: "TVL is calculated by summing the total assets of the HLP0 vault on Arbitrum. The HLP0 token is a LayerZero OFT, but the underlying assets are held in the Arbitrum vault.",
     arbitrum: ['0x3D75F2BB8aBcDBd1e27443cB5CBCE8A668046C81'],
@@ -388,6 +399,7 @@ const configs = {
     doublecounted: true,
     ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'], // eY10K - also in rockawayx EMBER_VAULTS
     sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'], // PYUSD0 - also in rockawayx sei.morpho
+    monad: ['0xA2fa4CeD4E2d448D084f5a15011b3564922119d6'], // AUSD
   },
   'apyee': {
     methodology: "Sum of totalAssets() reported by each Apyee VaultV2 across supported chains — includes idle USDC plus assets currently deployed into whitelisted DeFi lending strategies (Aave V3, Compound V3, Morpho MetaMorpho, Fluid, Venus, Spark).",
@@ -398,6 +410,7 @@ const configs = {
   },
   'ammalgam-vaults': {
     methodology: 'Counts the reported total assets of the Ammalgam USDC and WETH ERC-4626 vaults.',
+    doublecounted: true,
     ethereum: [
       '0x8417430a31851ae0a36a854394227c5d86be8fc9', // USDC
       '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH

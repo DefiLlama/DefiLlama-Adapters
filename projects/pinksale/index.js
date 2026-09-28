@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk")
 const abi = {
   getTotalLockCount: "uint256:getTotalLockCount",
   getLock: "function getLock(uint256 index) view returns (tuple(uint256 id, address token, address owner, uint256 amount, uint256 lockDate, uint256 unlockDate))",
@@ -76,60 +75,35 @@ const { vestingHelper, } = require("../helper/unknownTokens")
 
 const project = 'bulky/pinksale'
 
-module.exports = {}
-
-async function runInBatches(items, batchSize, fn) {
-  for (let i = 0; i < items.length; i += batchSize) {
-    await Promise.all(items.slice(i, i + batchSize).map(fn))
-  }
-}
-
 const tvl = async (api) => {
-  const balances = {}
-  const cache = await getCache(project, api.chain || { vaults: {} })
+  const cache = (await getCache(project, api.chain)) || {}
+  if (!cache.vaults) cache.vaults = {}
   const { vaults, blacklist, log_coreAssetPrices, log_minTokenValue, } = config[api.chain]
 
-  await Promise.all(
-    vaults.map(async (vault, idx) => {
-      if (!cache.vaults) cache.vaults = {}
-      if (!cache.vaults[vault]) cache.vaults[vault] = { lastTotalId: 0, tokens: [] }
-      const cCache = cache.vaults[vault]
-
-      const size = await api.call({ target: vault, abi: abi.getTotalLockCount })
-      const isLastVault = idx === vaults.length - 1
-      const lockAbi = isLastVault ? abi.getLockAt : abi.getLock
-
-      const calls = Array.from({ length: +size - cCache.lastTotalId }, (_, i) => ({ target: vault, params: i + cCache.lastTotalId }))
-      cCache.lastTotalId = +size
-
-      const tokens = await api.multiCall({ abi: lockAbi, calls, permitFailure: true })
-      tokens.forEach(lock => { if (lock?.token) cCache.tokens.push(lock.token) })
-      cCache.tokens = getUniqueAddresses(cCache.tokens.filter(i => i))
-    })
-  )
-
-  await runInBatches(vaults, 5, async (vault) => {
+  for (const [idx, vault] of vaults.entries()) {
+    if (!cache.vaults[vault]) cache.vaults[vault] = { lastTotalId: 0, tokens: [] }
     const cCache = cache.vaults[vault]
 
-    const balance = await vestingHelper({
-      cache,
-      useDefaultCoreAssets: true,
-      blacklist,
-      owner: vault,
-      tokens: cCache.tokens,
-      block: api.block,
-      chain: api.chain,
-      log_coreAssetPrices,
-      log_minTokenValue,
-    })
+    // the second vault on each chain is the newer locker with the getLockAt() shape
+    const lockAbi = idx === vaults.length - 1 ? abi.getLockAt : abi.getLock
 
-    Object.entries(balance).forEach(([token, bal]) =>
-      sdk.util.sumSingleBalance(balances, token, bal)
-    )
-  })
+    // only pull lock indices added since last run
+    const size = +await api.call({ target: vault, abi: abi.getTotalLockCount })
+    const calls = Array.from({ length: Math.max(0, size - cCache.lastTotalId) }, (_, i) => ({ target: vault, params: i + cCache.lastTotalId }))
+    cCache.lastTotalId = size
+
+    const locks = await api.multiCall({ abi: lockAbi, calls, permitFailure: true })
+    cCache.tokens = getUniqueAddresses([...cCache.tokens, ...locks.map(lock => lock?.token).filter(Boolean)])
+
+    await vestingHelper({ api, cache, useDefaultCoreAssets: true, blacklist, owner: vault, tokens: cCache.tokens, log_coreAssetPrices, log_minTokenValue, })
+  }
 
   await setCache(project, api.chain, cache)
-  return balances
+}
+
+module.exports = {
+  isHeavyProtocol: true,
+  misrepresentedTokens: true,
 }
 
 Object.keys(config).forEach(chain => {

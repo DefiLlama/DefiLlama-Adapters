@@ -50,7 +50,7 @@ async function tvl(api) {
     tokenAccounts.push(ataFor(stablecoinMint, pool.protectedVault).toString());
   });
 
-  return sumTokens2({ api, tokenAccounts });
+  return sumTokens2({ api, tokenAccounts, allowError: true, });
 }
 
 module.exports = {

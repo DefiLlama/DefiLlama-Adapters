@@ -5,7 +5,7 @@ const PRICE_DISCOUNT = 0.098;
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 1727914080, // Protocol launch: October 3, 2024 UTC
+  start: '2024-10-03', // Protocol launch: October 3, 2024 UTC
 
   sei: {
     tvl: async (api) => {

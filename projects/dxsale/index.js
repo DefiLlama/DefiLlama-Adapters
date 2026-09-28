@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const config = require("./config");
 const {
   getStorageLPLockDataV33,
@@ -8,102 +7,84 @@ const {
   getLockerLPDataV3,
   getStorageLockCountV33,
 } = require("./abis");
-const { sumUnknownTokens, vestingHelper, } = require("../helper/unknownTokens");
-const { createIncrementArray, } = require("../helper/utils");
+const { getUniqueAddresses } = require('../helper/utils')
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper, sumUnknownTokens, } = require("../helper/unknownTokens")
+
+const project = 'bulky/dxsale'
+
+// [from, to) as { target, params: i } calls
+const rangeCalls = (target, from, to) => Array.from({ length: Math.max(0, to - from) }, (_, i) => ({ target, params: from + i }))
 
 function getTVLTotal(args) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    let balances = {};
-    const chain = args.chain;
-    const block = chainBlocks[chain];
-
-    const tokensAndOwners = []
+  return async (api) => {
+    const cache = (await getCache(project, api.chain)) || {}
+    if (!cache.v3LPData) cache.v3LPData = []
+    if (!cache.v3Contracts) cache.v3Contracts = {}
+    if (!cache.lockContracts) cache.lockContracts = {}
 
     await addV3Lps()
 
-    //Get Locks from Archives
+    // Locks from archive contracts
     for (const lock of args.locks)
-      await addlockLPs(lock)
+      await addLockLPs(lock)
 
-    return balances;
+    await setCache(project, api.chain, cache)
 
-    async function addlockLPs(lockContract) {
-      const walletIdSet = new Set()
-      //Get Amount of Locks on Contract
-      const { output: totalLocks } = await sdk.api.abi.call({
-        target: lockContract,
-        abi: getLockCountPerContractV3,
-        chain,
-        block,
-      });
-      const walletIdCalls = createIncrementArray(totalLocks).map(i => ({ params: [i] }))
-      const { output: walletIdsAll } = await sdk.api.abi.multiCall({
-        target: lockContract,
-        abi: getLockerWalletWithIdV3,
-        calls: walletIdCalls,
-        chain, block,
+    async function addLockLPs(lockContract) {
+      if (!cache.lockContracts[lockContract]) cache.lockContracts[lockContract] = { lastTotalLocks: 0, walletIds: [], tokens: [], walletConfig: {} }
+      const cCache = cache.lockContracts[lockContract]
+
+      // new locker ids -> wallets
+      const totalLocks = +await api.call({ target: lockContract, abi: getLockCountPerContractV3 })
+      const newWallets = await api.multiCall({ abi: getLockerWalletWithIdV3, calls: rangeCalls(lockContract, cCache.lastTotalLocks || 0, totalLocks) })
+      cCache.lastTotalLocks = totalLocks
+      cCache.walletIds = getUniqueAddresses([...cCache.walletIds, ...newWallets])
+
+      // per wallet, only the lock indices added since last run
+      const counts = await api.multiCall({ abi: getLockerPerWalletV3, calls: cCache.walletIds.map(wallet => ({ target: lockContract, params: wallet })) })
+      const calls = []
+      cCache.walletIds.forEach((wallet, i) => {
+        if (!cCache.walletConfig[wallet]) cCache.walletConfig[wallet] = { lastCount: 0 }
+        const wCache = cCache.walletConfig[wallet]
+        for (let j = wCache.lastCount; j < +counts[i]; j++) calls.push({ target: lockContract, params: [wallet, j] })
+        wCache.lastCount = +counts[i]
       })
 
-      walletIdsAll.forEach(({ output }) => walletIdSet.add(output))
+      const locks = await api.multiCall({ abi: getLockerLPDataV3, calls, permitFailure: true })
+      cCache.tokens = getUniqueAddresses([...cCache.tokens, ...locks.map(i => i?.lpAddress).filter(Boolean)])
 
-      const walletIds = [...walletIdSet]
-      const walletLockCountCalls = walletIds.map(i => ({ params: i }))
-      const { output: countRes } = await sdk.api.abi.multiCall({
-        target: lockContract,
-        abi: getLockerPerWalletV3,
-        calls: walletLockCountCalls,
-        chain, block,
-      })
-
-      const calls = walletIds.map((wallet, i) => {
-        return createIncrementArray(countRes[i].output).map(j => ({ params: [wallet, j] }))
-      }).flat()
-
-      const { output: returnFromDataStruct } = await sdk.api.abi.multiCall({
-        target: lockContract,
-        abi: getLockerLPDataV3,
-        calls, chain, block,
-      })
-
-      const tokenSet = new Set()
-
-      returnFromDataStruct.forEach(({ output, success }) => {
-        if (!success || !output.lpAddress) return;
-        tokenSet.add(output.lpAddress)
-      })
-
-      const tempBalances = await vestingHelper({ useDefaultCoreAssets: true, owner: lockContract, tokens: [...tokenSet], chain, block, })
-
-      Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
+      await vestingHelper({ api, cache, useDefaultCoreAssets: true, owner: lockContract, tokens: cCache.tokens, })
     }
 
     async function addV3Lps() {
-      //Get Liquidity Locks new from storage
-      for (let i = 0; i < args.storageLiquidityLocks.length; i++) {
-        //Get Amount of Locks on Contract
-        const { output: totalLocks } = await sdk.api.abi.call({
-          target: args.storageLiquidityLocks[i],
-          abi: getStorageLockCountV33,
-          chain,
-          block,
-        })
+      for (const contract of args.storageLiquidityLocks) {
+        if (!cache.v3Contracts[contract]) cache.v3Contracts[contract] = { lastTotalLocks: 0 }
+        const cCache = cache.v3Contracts[contract]
 
-        const calls = createIncrementArray(totalLocks).map(i => ({ params: [i] }))
-        const { output: lpData } = await sdk.api.abi.multiCall({
-          target: args.storageLiquidityLocks[i],
-          abi: getStorageLPLockDataV33,
-          calls,
-          chain, block,
-        })
-
-        lpData.forEach(({ output: { lockedLPTokens, lpLockContract } }) => tokensAndOwners.push([lockedLPTokens, lpLockContract]))
+        const totalLocks = +await api.call({ target: contract, abi: getStorageLockCountV33 })
+        const lpData = await api.multiCall({ abi: getStorageLPLockDataV33, calls: rangeCalls(contract, cCache.lastTotalLocks || 0, totalLocks) })
+        cCache.lastTotalLocks = totalLocks
+        lpData.forEach(({ lockedLPTokens, lpLockContract }) => cache.v3LPData.push([lockedLPTokens, lpLockContract]))
       }
 
-      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners, useDefaultCoreAssets: true, })
+      // dedupe token/owner pairs so a cache reset can't double count
+      const seen = new Set()
+      cache.v3LPData = cache.v3LPData.filter(([token, owner]) => {
+        const key = `${token}|${owner}`.toLowerCase()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
 
-      Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
+      await sumUnknownTokens({ api, tokensAndOwners: cache.v3LPData, useDefaultCoreAssets: true, cache, })
     }
   };
+}
+
+module.exports = {
+  isHeavyProtocol: true,
+  misrepresentedTokens: true,
 }
 
 Object.keys(config).forEach(chain => {

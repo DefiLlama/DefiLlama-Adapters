@@ -90,6 +90,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
+  if (chain === 'etica' && symbol === 'ETICA-V2') return true // EticaSwap LP
   if (chain === 'shibarium' && ['SSLP', 'ChewyLP'].includes(symbol)) return true
   if (chain === 'omax' && ['OSWAP-V2'].includes(symbol)) return true
   if (chain === 'sonic' && symbol.endsWith(' spLP')) return true

@@ -13,7 +13,7 @@ const RIPE_REGISTRY_IDS = {
 
 const config = {
   base: {
-    start: 1754006400,
+    start: '2025-08-01',
     fromBlock: 32_085_883,
     // Underscore vault shares held as Ripe collateral: ERC-4626 wrappers with no price feed,
     // unwrapped to their underlying instead of being silently dropped by sumTokens2.
@@ -38,7 +38,7 @@ const config = {
     govVault: '0xe42b3dC546527EB70D741B185Dc57226cA01839D',
   },
   robinhood: {
-    start: 1785871180,
+    start: '2026-08-04',
     fromBlock: 27_870_288,
     erc4626Wrappers: [],
     unbackedWrappers: [

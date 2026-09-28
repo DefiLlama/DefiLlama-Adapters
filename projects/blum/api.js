@@ -4,6 +4,7 @@ const { sumTokens } = require("../helper/chain/ton")
 const { getConfig } = require("../helper/cache")
 
 async function fetchTvl(api) {
+  throw new Error('There is a bug')
   const res = await getConfig('blum', 'https://tonfunstats-eqnd7.ondigitalocean.app/api/v1/getServiceTokens?service=blum')
   await sumTokens({ api, tokens: [ADDRESSES.ton.TON], owners: res, onlyWhitelistedTokens: true, })
 }

@@ -73,22 +73,28 @@ const tvl = async (api) => {
   })
   const vaultAssets = await api.multiCall({ abi: 'address:asset', calls: morphoVaults, permitFailure: true })
 
+  // vault share tokens (MetaMorpho / Vault V2) are already counted via their underlying assets, exclude them everywhere
+  const vaultSet = new Set(morphoVaults.map(v => v.toLowerCase()))
+  const blacklistedTokens = [...blackList, ...morphoVaults]
+
   const vaultTaO = vaultAssets
     .map((asset, i) => asset ? [asset, morphoVaults[i]] : null)
     .filter(Boolean)
-  await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens: blackList, permitFailure: true })
+  await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens, permitFailure: true })
 
 
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
-  const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
+  const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress && !vaultSet.has(addr)))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
   const collateralWQLMap = new Map(collCalls.map((addr, i) => [addr, withdrawQueueLengths[i]]));
-  const filterMarkets = marketInfos.filter(m => {
-    const wql = collateralWQLMap.get(m.collateralToken.toLowerCase());
-    return wql == null || wql > 30 || wql < 0;
-  });
-  const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
+  const isVaultToken = (addr) => {
+    addr = addr.toLowerCase()
+    if (vaultSet.has(addr)) return true
+    const wql = collateralWQLMap.get(addr)
+    return wql != null && wql >= 0 && wql <= 30
+  }
+  const tokens = [...new Set(marketInfos.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken]).filter(t => !isVaultToken(t)))]
 
   if (ethenaBlacklist[api.chain]) {
     const { wallets = [], vaults = [] } = ethenaBlacklist[api.chain]
@@ -104,8 +110,8 @@ const tvl = async (api) => {
   }
 
   if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
-    blackList.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
-  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
+    blacklistedTokens.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
+  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true })
 }
 
 const borrowed = async (api) => {

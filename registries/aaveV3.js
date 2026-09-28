@@ -93,7 +93,10 @@ const configs = {
   'zona': {
     pharos: {
       poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
-    }
+    },
+    robinhood: {
+      poolDatas: ['0x3e477EE4B379d212B0833Af7441763355D4A1724']
+    },
   },
   'kaskad': {
     igra: {
@@ -102,6 +105,16 @@ const configs = {
   },
   'velkonix': { megaeth: { poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'], }, },
   'oter-fi': { robinhood: { poolDatas: ['0xD95D42BAd744821af78da755C6fC012f10ad1824'], }, },
+  'neverland': {
+    methodology: "TVL includes Aave V3 lending pools. Staking tracks DUST locked in veDUST for governance and incentives. Borrowed amounts track debt across all lending markets.",
+    monad: {
+      poolDatas: [
+        '0xfd0b6b6F736376F7B99ee989c749007c7757fDba', // canonical market (multi-reserve)
+        '0xeEb78818C026A3c1b82804627d101e27Ce5E60CB', // isolated market (AUSD + PT-AUSD tokens)
+      ],
+      staking: ['0xBB4738D05AD1b3Da57a4881baE62Ce9bb1eEeD6C', '0xAD96C3dffCD6374294e2573A7fBBA96097CC8d7c'], // dustLock, DUST
+    },
+  },
 }
 
 module.exports = buildProtocolExports(configs, aaveV3ExportFn)

@@ -1,8 +1,5 @@
 const axios = require("axios");
-const basex = require("base-x");
-
-const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-const bs58 = basex.default(ALPHABET);
+const bs58 = require("bs58").default || require("bs58");
 
 const EXPLORER_API_HOST = "https://backend.mainnet.alephium.org";
 const NODE_API_HOST = "https://node.mainnet.alephium.org";

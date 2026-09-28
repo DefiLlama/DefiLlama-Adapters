@@ -12,14 +12,17 @@ module.exports = {
     "bsc": {
       "tvl": { "owners": ["0x3EedB0d9C95263778a62081F2A62FC77a392116d"], "tokens": [ADDRESSES.bsc.USDT] },
     },
+    "arc": {
+      "tvl": { "owners": ["0xc64e528c6439a204da1b519e78aa43f9e4b32f00"], "tokens": [ADDRESSES.arc.USDC] },
+    },
     "edgex": {
       "tvl": { "owners": ["0xc8B4cF96bBC915f11C4f8B6F7654eF46C7af3783"], "tokens": [ADDRESSES.edgex.USDC] },
     },
   },
   "gblin": {
-    "methodology": "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V6 Vault contract on Base.",
+    "methodology": "TVL is the WETH, cbBTC and USDC held by the GBLIN vault on Base, plus the balance still held by the previous index contract until its holders migrate.",
     "base": {
-      "tvl": { "owner": "0x36C81d7E1966310F305eA637e761Cf77F90852f0", "tokens": [ADDRESSES.optimism.WETH_1,ADDRESSES.ethereum.cbBTC,ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0xc2181d975c05c8c724b334bcED0764c0b86B1D53", "0x36C81d7E1966310F305eA637e761Cf77F90852f0"], "tokens": [ADDRESSES.optimism.WETH_1,ADDRESSES.ethereum.cbBTC,ADDRESSES.base.USDC] },
     },
   },
   "risq": {
@@ -959,5 +962,80 @@ module.exports = {
       uniV3WhitelistedTokens: [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH],
       uniV3ExtraConfig: { nftAddress: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3' },
     }
-  }
+  },
+  "ark-launch": {
+    "doublecounted": true, // gen2 positions sit in official Uniswap V3 pools, already counted as dex tvl
+    "methodology": 'Each launch on ARK seeds a Uniswap V3 USDC pool whose LP position is locked in the FeeLocker contract with no withdrawal function. TVL is the USDC in the positions held by the gen1 and gen2 FeeLockers. The launched tokens themselves are not counted.',
+    "start": '2026-09-16',
+    "arc": {
+      uniV3nftsAndOwners: [
+        ['0xF14cCC0f35ACA278B57722C2BAF48aCc0221c432', '0x4f260E5E9B475c36eE296E23b1818692408D9F4b'], // gen1 position manager, gen1 FeeLocker
+        ['0x39654A85A4C05127f5Fd6ED22CAeC077A0fB1377', '0x4982E02eF7a31a7a0cdD3a9935f3c856EffA5190'], // gen2 position manager, gen2 FeeLocker
+      ],
+      uniV3WhitelistedTokens: [ADDRESSES.arc.USDC],
+    }
+  },
+  "arclotls": {
+    "methodology": "Unpaid rent rewards held as USDC in the RentVault. Includes rewards not immediately claimable. These are NFT-holder rewards rather than refundable deposits. Excludes buyback funds, spent USDC, treasury and genesis reserves, liquidity pools, LOTL and NFT valuations.",
+    "start": "2026-09-17",
+    "arc": {
+      "owner": "0x18B156cc2aB7cF8173Ee837AcFe41D8A9943Aa2e",
+      "tokens": [
+        ADDRESSES.arc.USDC
+      ]
+    }
+  },
+  "pare": {
+    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain. Each vault holds the stock backing one series of principal (pToken) and yield (yToken) tokens until maturity.",
+    "start": "2026-09-02",
+    "robinhood": {
+      "tokensAndOwners": [
+        // audited build, 2026-09-18, maturity 2027-12-31
+        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
+        ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0xa0f77015E46e45c1A12B73466A08711a28Dac1A7"], // SPY-DEC27
+        ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0xAb8e536C9E7c76C1045EDEb6096e9B37B26B4372"], // QQQ-DEC27
+        ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x1aC9599B91973A3d5d75F7594a47382223FEC0F5"], // PFE-DEC27
+        ["0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5", "0x1d44BB0E2D09C35Cc116270E45F8782E7B51fF52"], // SGOV-DEC27
+        // launch build, 2026-09-02..04, still redeemable
+        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
+        ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0x38EAE2c04F65861cD17914100125826de2b735c7"], // SPY-MAR27
+        ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0x16daFbB03C4EF20967043185255532A8cadf79Ba"], // QQQ-MAR27
+        ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x0Fd9c2DCABf7780D051a519c654eb13Afec5a975"], // PFE-MAR28
+        ["0xd63ABB2C13d7a8421a8017a712802053568e3C1D", "0x3a6A3621C42A68fcA176AB907AB25896484EcCD8"], // SCHD-MAR27
+      ],
+    }
+  },
+  "antseed": {
+    "methodology": "TVL is the USDC deposited by buyers for inference payments plus the legacy USDC stake that remains locked by sellers during Antseed's staking migration. Protocol-owned funds and ANTS token staking are excluded.",
+    "base": {
+      "owners": [
+        "0x0F7a3a8f4Da01637d1202bb5443fcF7F88F99fD2", // AntseedDeposits: buyer prepaid credits
+        "0x3652E6B22919bd322A25723B94BB207602E5c8e6", // AntseedStaking: legacy seller stake
+      ],
+      "tokens": [
+        ADDRESSES.base.USDC
+      ]
+    }
+  },
+  "charity-billionaire": {
+    "methodology": "TVL is the CharityPrizeVault's aBasUSDC balance on Base — every USDC deposited by users, supplied to Aave v3 to earn interest. Deposits are never spent: only the interest is distributed each week (90% to one depositor drawn by Chainlink VRF, 5% to a rotating charity, 5% to operations), and depositors can withdraw their full principal at any time. Because the underlying position is supplied into Aave v3, this TVL is also counted by Aave and should be treated as double counted.",
+    "start": "2026-06-24",
+    "doublecounted": true,
+    "base": {
+      "owner": "0x3993bD557E0d4a1E5A8Ec09a005E7Eee3E032f70",
+      "tokens": [
+        "0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB"
+      ]
+    },
+  },
+  "arctide-launchpad": {
+    "methodology": "TVL is the USDC raised on Arctide bonding curves that have not graduated yet, held by the launch factory as Arc's native USDC until the sale reaches its goal and the raise is moved into its Arctide pool.",
+    "start": "2026-09-16",
+    "arc": {
+      "owner": "0xF7a20a20e18Fa7d4B6c68EE58dA16799382AbCe8", // ArctideLaunchFactory
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
 }

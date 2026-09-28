@@ -24,6 +24,9 @@ const config = {
   base: [
     '0x7De099A8BdABcE2680160aF2c2bF11336f99c3F1', // official (compound)
   ],
+  ethereum: [
+    '0x1d5630534d3Eb7504fb936e141c5E2BE468FAa9e', // official (compound)
+  ],
 };
 
 async function tvl(api) {
@@ -52,4 +55,5 @@ module.exports = {
   arbitrum: { tvl },
   robinhood: { tvl },
   base: { tvl },
+  ethereum: { tvl },
 };
