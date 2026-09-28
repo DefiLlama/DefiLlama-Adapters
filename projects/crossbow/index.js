@@ -140,7 +140,7 @@ async function addHookPositions(api, items) {
 
 module.exports = {
   methodology:
-    'Vaults are enumerated from the ManifoldFactoryRH VaultDeployed event. Each vault reports its open positions; up. concentrated-liquidity positions are valued from the position manager by token id, and Uniswap v4 hook positions are resolved through the per-family lens into a pool key and tick range, with the vault\'s liquidity read as its ERC-6909 balance plus staked amount on the hook. Idle balances held by the vaults are added for every token their own positions reference, plus the chain's settlement assets. Doublecounted against the underlying DEXs.',
+    'Vaults are enumerated from the ManifoldFactoryRH VaultDeployed event. Each vault reports its open positions; up. concentrated-liquidity positions are valued from the position manager by token id, and Uniswap v4 hook positions are resolved through the per-family lens into a pool key and tick range, with the vault\'s liquidity read as its ERC-6909 balance plus staked amount on the hook. Idle balances held by the vaults are added for every token their own positions reference, plus the chain\'s settlement assets. Doublecounted against the underlying DEXs.',
   doublecounted: true,
   robinhood: { tvl },
 }
