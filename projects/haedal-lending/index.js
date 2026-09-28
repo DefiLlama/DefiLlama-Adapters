@@ -33,22 +33,24 @@ const assetTypeFromPool = (type) => {
 }
 
 const allocationEntries = (allocations) => {
-  const contents = allocations?.fields?.contents || allocations?.contents || []
-  return Array.isArray(contents) ? contents : []
+  const contents = allocations?.fields?.contents || allocations?.contents
+  if (!Array.isArray(contents)) throw new Error('haedal-lending: unexpected allocations layout')
+  return contents
 }
 
 const allocationAccounted = (entry) => {
   const value = entry?.fields?.value?.fields || entry?.fields?.value || entry?.value || {}
-  const balance = BigInt(value.current_balance || 0)
+  if (value.current_balance === undefined) throw new Error('haedal-lending: allocation missing current_balance')
+  const balance = BigInt(value.current_balance)
   const dust = BigInt(value.dust_recorded_value || 0)
   return balance + dust
 }
 
 async function suiTVL(api) {
   const vaults = await sui.getObjects(VAULT_IDS)
-  for (const vault of vaults) {
+  for (const [i, vault] of vaults.entries()) {
     const assetType = assetTypeFromPool(vault?.type)
-    if (!assetType) continue
+    if (!assetType) throw new Error(`haedal-lending: unexpected vault ${VAULT_IDS[i]} type ${vault?.type}`)
     const total = allocationEntries(vault?.fields?.allocations).reduce(
       (sum, entry) => sum + allocationAccounted(entry),
       0n,
@@ -58,8 +60,9 @@ async function suiTVL(api) {
 }
 
 module.exports = {
+  timetravel: false,
   doublecounted: true,
-  methodology: 'TVL is the sum of current_balance and dust_recorded_value across every allocation on each Haedal Lending VaultPool, denominated in that vault\'s asset. Assets deployed into other Sui lending protocols are included and marked double-counted.',
+  methodology: 'TVL is the sum of current_balance and dust_recorded_value across every allocation on each Haedal Lending VaultPool, denominated in that vault\'s asset. Assets deployed into other Sui lending protocols and Cetus vaults are included and marked double-counted.',
   sui: {
     tvl: suiTVL,
   },
