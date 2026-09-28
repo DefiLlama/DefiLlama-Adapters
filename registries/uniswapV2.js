@@ -24,6 +24,11 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'bbbfi-swap-v2': {
+    methodology: 'Value of reserves in BBBFi-owned V2 AMM pools on XDC and BSC, discovered from each factory. Uses the standard core-asset reserve valuation helper. Staked LP receipts are not added again; reward budgets and bridge reserves are excluded.',
+    xdc: '0xFe536C6a76487563D4393a3Bd03ef2621546A198',
+    bsc: '0xE9Eb4365b8BBb5D7A68c9aE98BcDbe18db3FCEb7',
+  },
   'zero-swap': {
     robinhood: '0xc802A440559cEE8A66E2023403d34Be9084A720e',
   },
