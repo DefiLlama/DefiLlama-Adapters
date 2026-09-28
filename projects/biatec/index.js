@@ -1,8 +1,8 @@
 const axios = require('axios')
 const sdk = require('@defillama/sdk')
-const { getApplicationAddress } = require('./helper/chain/algorandUtils/address')
-const { getAccountInfo, getAssetInfo } = require('./helper/chain/algorand')
-const { toUSDTBalances } = require('./helper/balances')
+const { getApplicationAddress } = require('../helper/chain/algorandUtils/address')
+const { getAccountInfo, getAssetInfo } = require('../helper/chain/algorand')
+const { toUSDTBalances } = require('../helper/balances')
 
 // Biatec CLAMM pool factory/registry app, mainnet. Every pool registers itself here as a box.
 // Discovery + pricing process documented by the Biatec team at
