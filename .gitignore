@@ -15,6 +15,3 @@ projects/binance/data.csv
 scripts/tvlModules.json
 .claude
 skills/tvl-failure-fixer
-pnpm-lock.yaml
-pnpm-workspace.yaml
-package-lock.json
