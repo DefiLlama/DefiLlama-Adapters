@@ -42,8 +42,10 @@ async function tvl(api) {
           }
       }
   `
+  // the subgraph compares timestamp as BigInt, so `from` must be a unix timestamp string, not a date
+  const fromTimestamp = Math.floor(new Date(start).getTime() / 1000)
   const { dailyHistories } = await request(graphUrl, query, {
-      from: start.toString(),
+      from: fromTimestamp.toString(),
       to: api.timestamp.toString(),
   });
 

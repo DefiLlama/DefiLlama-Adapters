@@ -83,6 +83,8 @@ const DEFAULTS = {
   // chains with no provider in the SDK providers list (chainid.network RPCs)
   AREA_RPC: 'https://mainnet-rpc.areum.network,https://mainnet-rpc2.areum.network', // Areum Network, chainId 463
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
+  // p2p/everstake neon proxies are gone (dns), thirdweb refuses the chain; blockscout's eth-rpc proxy still serves it
+  NEON_EVM_RPC: 'https://neon.blockscout.com/api/eth-rpc',
 }
 
 const ENV_KEYS = [

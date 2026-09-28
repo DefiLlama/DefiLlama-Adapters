@@ -720,6 +720,11 @@ module.exports = {
     "methodology": "TVL is the USDC collateral held in Pascal's vault token account on Solana.",
     "solana": { "tokenAccounts": ["5vRGRcwN4iYaiQdso1vgWbTDFYbS8GQNUDRMMKE2ycZS"] }
   },
+  megapump: {
+    megaeth: { owner: '0xB6bC3988d62D2979b3ab7AABCcf3c9443f7dAbc4', // MegaPump, UUPS proxy: holds the ETH of every active bonding curve
+      token: ADDRESSES.null,      },
+      methodology: "Value of eth on the contract",
+  },
   "n1-exchange-bridge": {
     "methodology": "Counts the USDC held in the N1 Exchange bridge custody wallet on Solana.",
     "solana": {
