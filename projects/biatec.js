@@ -22,13 +22,30 @@ const algod = axios.create({
 
 // Each pool registers a box named "fc" + poolAppId(8) + assetA(8) + assetB(8) + ... (59 bytes).
 // The box name alone carries the pool's asset pair, so no other read is needed to enumerate pools.
+//
+// algod's box listing is paginated: a page's response includes "next-token" whenever more boxes
+// remain, and that value must be echoed back as the "next" param to fetch the following page
+// (https://dev.algorand.co/reference/rest-api/algod/operations/getapplicationboxes/). A single
+// call with only "max" set silently returns just the first page once the provider has enough
+// pools to exceed algod's per-response size limit, so this loops until "next-token" is absent.
+async function getBoxNames(appId, prefix) {
+  const names = []
+  let next
+  do {
+    const { data } = await algod.get(`/v2/applications/${appId}/boxes`, {
+      params: { prefix: `str:${prefix}`, limit: 1000, next },
+    })
+    for (const box of data.boxes ?? []) names.push(Buffer.from(box.name, 'base64'))
+    next = data['next-token']
+  } while (next)
+  return names
+}
+
 async function getPools() {
-  const { data } = await algod.get(`/v2/applications/${POOL_PROVIDER_APP_ID}/boxes`, { params: { max: 10000 } })
+  const boxNames = await getBoxNames(POOL_PROVIDER_APP_ID, 'fc')
   const pools = []
-  for (const box of data.boxes ?? []) {
-    const name = Buffer.from(box.name, 'base64')
+  for (const name of boxNames) {
     if (name.length !== 59) continue
-    if (name.toString('ascii', 0, 2) !== 'fc') continue
     pools.push({
       appId: Number(name.readBigUInt64BE(2)),
       assetA: name.readBigUInt64BE(10),
@@ -48,8 +65,9 @@ function aggregatedPriceBoxName(idLow, idHigh) {
   return name
 }
 
-const priceBoxCache = new Map()
-async function getAggregatedInfo(idLow, idHigh) {
+// Caller-scoped cache (fresh per tvl() run, see below) so a later run always reads current
+// on-chain prices instead of reusing whatever a previous run happened to see.
+async function getAggregatedInfo(priceBoxCache, idLow, idHigh) {
   const cacheKey = `${idLow},${idHigh}`
   if (priceBoxCache.has(cacheKey)) return priceBoxCache.get(cacheKey)
 
@@ -104,10 +122,10 @@ function trailing1DayVwap(info, nowSeconds) {
 
 // Price of 1 unit of `target` expressed in 1 unit of `assetX`. VWAP is always stored as
 // (higher asset id) per (lower asset id); invert when the asset being priced is the higher id.
-async function targetPerUnit(assetX, target) {
+async function targetPerUnit(priceBoxCache, assetX, target) {
   const lo = assetX < target ? assetX : target
   const hi = assetX < target ? target : assetX
-  const info = await getAggregatedInfo(lo, hi)
+  const info = await getAggregatedInfo(priceBoxCache, lo, hi)
   if (!info) return undefined
 
   const nowSeconds = BigInt(Math.floor(Date.now() / 1000))
@@ -121,17 +139,24 @@ async function targetPerUnit(assetX, target) {
 // pool are already normalized to the same 9-decimal base scale inside the contract before the
 // price is computed, so the on-chain VWAP is a true human-unit price ratio - no extra decimals
 // adjustment is needed on the price itself (only on the raw balance being multiplied by it).
-async function getUsdPrice(assetId, usdAssetId = USD_ASSET_ID, bridgeAssetIds = BRIDGE_ASSET_IDS) {
+//
+// `visited` guards against a routing cycle: e.g. if ALGO and VoteCoin are only priced against
+// each other and neither has its own direct USD pair yet, pricing ALGO would otherwise recurse
+// into pricing VoteCoin, which recurses back into pricing ALGO, forever. Each asset can appear
+// at most once per top-level price lookup.
+async function getUsdPrice(priceBoxCache, assetId, usdAssetId = USD_ASSET_ID, bridgeAssetIds = BRIDGE_ASSET_IDS, visited = new Set()) {
   if (assetId === usdAssetId) return 1
+  if (visited.has(assetId)) return undefined
+  visited.add(assetId)
 
-  const direct = await targetPerUnit(assetId, usdAssetId)
+  const direct = await targetPerUnit(priceBoxCache, assetId, usdAssetId)
   if (direct !== undefined) return direct
 
   for (const bridge of bridgeAssetIds) {
-    if (bridge === assetId) continue
-    const assetInBridge = await targetPerUnit(assetId, bridge)
+    if (bridge === assetId || visited.has(bridge)) continue
+    const assetInBridge = await targetPerUnit(priceBoxCache, assetId, bridge)
     if (assetInBridge === undefined) continue
-    const bridgeInUsd = await getUsdPrice(bridge, usdAssetId, bridgeAssetIds)
+    const bridgeInUsd = await getUsdPrice(priceBoxCache, bridge, usdAssetId, bridgeAssetIds, visited)
     if (bridgeInUsd === undefined) continue
     return assetInBridge * bridgeInUsd
   }
@@ -144,6 +169,7 @@ async function getDecimals(assetId) {
 }
 
 async function tvl() {
+  const priceBoxCache = new Map() // scoped to this run only, see getAggregatedInfo
   const pools = await getPools()
 
   // Sum only each pool's own two registered assets - NOT every asset the pool account happens
@@ -169,7 +195,7 @@ async function tvl() {
   const balances = {}
   let tvlUsd = 0
   for (const [assetId, raw] of rawBalances) {
-    const priceUsd = await getUsdPrice(assetId)
+    const priceUsd = await getUsdPrice(priceBoxCache, assetId)
     if (priceUsd === undefined) {
       sdk.util.sumSingleBalance(balances, assetId === 0n ? '1' : assetId.toString(), raw.toString(), 'algorand')
       continue
