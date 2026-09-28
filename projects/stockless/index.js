@@ -1,7 +1,7 @@
 // Stockless — fee-funded liquidity for tokenized stocks on Robinhood Chain.
 // Every cycle a Harvest contract turns collected fees into a $STOCKSS/<stock> Uniswap v4 position held by a
 // LiquidityAdapter contract (the adapter itself is the position owner in the PoolManager, there is no NFT).
-// tvl = the stock side of every adapter position plus stock tokens waiting in the Harvest/adapter contracts.
+// tvl = the stock side of every adapter position plus idle stock tokens in the adapter contracts.
 // The $STOCKSS side of those protocol-held positions is not counted (it is the protocol's own token).
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { ethers } = require('ethers')
@@ -58,7 +58,8 @@ async function positions(api) {
   const res = await api.multiCall({ abi: abi.position, calls })
   const live = res.map((r, i) => BigInt(r.liquidity) > 0n ? { ...r, stock: calls[i].params[0] } : null).filter(Boolean)
   const slot0 = await api.multiCall({ abi: abi.getSlot0, target: STATE_VIEW, calls: live.map(p => poolId(p.key)) })
-  return { stocks, owners: [...harvests, ...adapters], live: live.map((p, i) => ({ ...p, sqrtP: BigInt(slot0[i].sqrtPriceX96) })) }
+  // Harvest stock balances are reserved(stock) payouts owed to $STOCKSS holders, so only adapter balances count
+  return { stocks, owners: adapters, live: live.map((p, i) => ({ ...p, sqrtP: BigInt(slot0[i].sqrtPriceX96) })) }
 }
 
 async function tvl(api) {
@@ -72,7 +73,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Stockless provides liquidity for Robinhood tokenized stocks with trading fees: each cycle a Harvest contract buys a stock and $STOCKSS and adds them as a Uniswap v4 position held by a LiquidityAdapter contract. TVL counts the stock side of every adapter position plus stock tokens held by the Harvest and adapter contracts of every version; the $STOCKSS side is the protocol token and is not counted.',
+  methodology: 'Stockless provides liquidity for Robinhood tokenized stocks with trading fees: each cycle a Harvest contract buys a stock and $STOCKSS and adds them as a Uniswap v4 position held by a LiquidityAdapter contract. TVL counts the stock side of every adapter position plus idle stock tokens held by the adapter contracts of every version; stock held by Harvest contracts is reserved for $STOCKSS holder payouts and is not counted, and the $STOCKSS side is the protocol token and is not counted.',
   start: '2026-09-07',
   doublecounted: true,
   robinhood: { tvl },
