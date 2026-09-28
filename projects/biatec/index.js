@@ -96,7 +96,8 @@ async function fetchAggregatedBox(boxAssetA, boxAssetB) {
       period2PrevVWAP: word(28),
     }
   } catch (e) {
-    return undefined // no box at this key
+    if (e.response?.status === 404) return undefined // no box at this key - genuinely never traded
+    throw e // a real failure (algod error, unexpected box shape) must not be mistaken for "no price route"
   }
 }
 
