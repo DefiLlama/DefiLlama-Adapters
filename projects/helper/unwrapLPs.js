@@ -691,6 +691,7 @@ const gasTokenSet = new Set(gasTokens)
 const nativeTokenAliases = {
   polygon: '0x0000000000000000000000000000000000001010', // POL (MRC20)
   celo: '0x471ece3750da237f93b8e339c536989b8978a438', // CELO (GoldToken)
+  metis: '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000', // METIS
 }
 /*
 tokensAndOwners [
