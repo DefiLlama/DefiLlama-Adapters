@@ -1,5 +1,8 @@
 const { getCuratorExport, getMorphoVaults } = require("../helper/curators");
 
+const ethereumMorphoVaults = [
+  '0xFC8C624B6080a0a780583799f2A862DE936F6E22', // Sentora x Spark RLUSD vault
+]
 const ethereumMorphoVaultOwners = [
   '0x13DE0cEE0B83562CBfD46682e10FfA4E3c5090e1',
   '0x113191222789173F32B4084EF8d31b5A8aE945bB',
@@ -69,6 +72,7 @@ const curatorExport = getCuratorExport({
         '0x5aB5FE7d04CFDeFb9daf61f6f569a58A53D05eE1',
         '0xe78C246ea973389F55BAEADF71e04750D50417d1',
       ],
+      morpho: ethereumMorphoVaults,
       morphoVaultOwners: ethereumMorphoVaultOwners,
       boringVaults: [
         '0x9761ddf8e79930b334f1be1bd93abe3695061cca', // kraken earn vault
@@ -131,7 +135,7 @@ async function customTvl(api) {
 }
 
 async function subtractNestedMorphoShares(api) {
-  const vaults = [...new Set([...await getMorphoVaults(api, ethereumMorphoVaultOwners)].map(v => v.toLowerCase()))]
+  const vaults = [...new Set([...ethereumMorphoVaults, ...await getMorphoVaults(api, ethereumMorphoVaultOwners)].map(v => v.toLowerCase()))]
   const pairs = vaults.flatMap(vault => nestedMorphoHolders.map(holder => ({ vault, holder })))
   const shares = await api.multiCall({ abi: 'erc20:balanceOf', calls: pairs.map(({ vault, holder }) => ({ target: vault, params: [holder] })) })
   const positions = pairs.map((p, i) => ({ ...p, shares: shares[i] })).filter(p => BigInt(p.shares) > 0n)
