@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { getUniTVL } = require('../helper/unknownTokens')
 
 /**
@@ -6,17 +5,9 @@ const { getUniTVL } = require('../helper/unknownTokens')
  * Factory: 0x5fD1138b4C75B953fbC58B154fC6D8806BAEcAaf
  * Wrapped native: WSMN 0x295a170346267e255Ad0265B7Fd1f043Ff825f7a
  *
- * ~7.6k pairs → memoryOptimization + queryBatched.
- * Pin public RPC (SDK providers.json still lists rate-limited monarca/edge hosts).
+ * ~7.6k pairs → memoryOptimization + queryBatched (single multicall exceeds eth_call limits).
+ * Uses SDK RPC list (seleman.monarcaproject.com/rpc first). Do not pin a challenged host.
  */
-const PUBLIC_RPC = 'https://explorer.primevertexlabs.com.mx/rpc'
-try {
-  const { ethers } = require('ethers')
-  sdk.setProvider('seleman', new ethers.JsonRpcProvider(PUBLIC_RPC, 73571))
-} catch (_) {
-  /* SELEMAN_RPC env also works */
-}
-
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
