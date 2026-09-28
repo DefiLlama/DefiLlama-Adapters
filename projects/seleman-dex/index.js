@@ -30,7 +30,7 @@ module.exports = {
       queryBatched: 100,
       memoryOptimization: true,
       permitFailure: true,
-      waitBetweenCalls: 400,
+      waitBetweenCalls: 150,
     }),
   },
 }
