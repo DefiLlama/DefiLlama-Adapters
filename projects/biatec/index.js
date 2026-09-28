@@ -31,13 +31,16 @@ const algod = axios.create({
 async function getBoxNames(appId, prefix) {
   const names = []
   let next
-  do {
+  for (;;) {
     const { data } = await algod.get(`/v2/applications/${appId}/boxes`, {
       params: { prefix: `str:${prefix}`, limit: 1000, next },
     })
     for (const box of data.boxes ?? []) names.push(Buffer.from(box.name, 'base64'))
-    next = data['next-token']
-  } while (next)
+    const nextToken = data['next-token']
+    if (!nextToken) break
+    if (nextToken === next) throw new Error(`algod box pagination cursor did not advance: ${nextToken}`)
+    next = nextToken
+  }
   return names
 }
 
@@ -56,24 +59,23 @@ async function getPools() {
 }
 
 // The pool provider also keeps a per-pair trade-weighted VWAP box (prefix "s"), independent of
-// any specific pool, keyed by the two assets sorted ascending. That's the on-chain price source.
-function aggregatedPriceBoxName(idLow, idHigh) {
+// any specific pool. The box is keyed by whatever assetA/assetB order the FIRST pool for that
+// pair registered with. Newer pools assert assetA < assetB at creation
+// (contracts/BiatecClammPool.algo.ts, bootstrap()) - but only when NEITHER side is ALGO, and
+// some live mainnet pools predate that assert - so the box can be found under either order
+// (confirmed live: e.g. VOTE/ALGO is stored as assetA=VOTE, assetB=ALGO=0, not ascending).
+// Always trust the box's own decoded assetA/assetB fields for direction, never the query order.
+function aggregatedPriceBoxName(boxAssetA, boxAssetB) {
   const name = Buffer.alloc(17)
   name.write('s', 0, 'ascii')
-  name.writeBigUInt64BE(idLow, 1)
-  name.writeBigUInt64BE(idHigh, 9)
+  name.writeBigUInt64BE(boxAssetA, 1)
+  name.writeBigUInt64BE(boxAssetB, 9)
   return name
 }
 
-// Caller-scoped cache (fresh per tvl() run, see below) so a later run always reads current
-// on-chain prices instead of reusing whatever a previous run happened to see.
-async function getAggregatedInfo(priceBoxCache, idLow, idHigh) {
-  const cacheKey = `${idLow},${idHigh}`
-  if (priceBoxCache.has(cacheKey)) return priceBoxCache.get(cacheKey)
-
-  let result
+async function fetchAggregatedBox(boxAssetA, boxAssetB) {
   try {
-    const boxName = aggregatedPriceBoxName(idLow, idHigh)
+    const boxName = aggregatedPriceBoxName(boxAssetA, boxAssetB)
     const { data } = await algod.get(`/v2/applications/${POOL_PROVIDER_APP_ID}/box`, {
       params: { name: `b64:${boxName.toString('base64')}` },
     })
@@ -82,7 +84,9 @@ async function getAggregatedInfo(priceBoxCache, idLow, idHigh) {
     // AppPoolInfo is a flat tuple of 56 uint64 words (contracts/artifacts/BiatecPoolProvider.arc56.json).
     // Only the fields needed for a trailing 1-day VWAP are decoded here.
     const word = (i) => value.readBigUInt64BE(i * 8)
-    result = {
+    return {
+      assetA: word(0),
+      assetB: word(1),
       latestPrice: word(3),
       period2Duration: word(17),
       period2NowVolumeB: word(19),
@@ -92,8 +96,17 @@ async function getAggregatedInfo(priceBoxCache, idLow, idHigh) {
       period2PrevVWAP: word(28),
     }
   } catch (e) {
-    result = undefined // no box -> this pair has never been traded, no price route through it
+    return undefined // no box at this key
   }
+}
+
+// Caller-scoped cache (fresh per tvl() run, see below) so a later run always reads current
+// on-chain prices instead of reusing whatever a previous run happened to see.
+async function getAggregatedInfo(priceBoxCache, idLow, idHigh) {
+  const cacheKey = `${idLow},${idHigh}`
+  if (priceBoxCache.has(cacheKey)) return priceBoxCache.get(cacheKey)
+
+  const result = (await fetchAggregatedBox(idLow, idHigh)) ?? (await fetchAggregatedBox(idHigh, idLow))
   priceBoxCache.set(cacheKey, result)
   return result
 }
@@ -120,8 +133,9 @@ function trailing1DayVwap(info, nowSeconds) {
   return vwap !== 0n ? vwap : info.latestPrice
 }
 
-// Price of 1 unit of `target` expressed in 1 unit of `assetX`. VWAP is always stored as
-// (higher asset id) per (lower asset id); invert when the asset being priced is the higher id.
+// Price of 1 unit of `target` expressed in 1 unit of `assetX`. VWAP is stored as
+// (box's own assetB) per (box's own assetA) - read direction from the box's own decoded fields,
+// never assume it matches the ascending (lo, hi) order used just to build the lookup key.
 async function targetPerUnit(priceBoxCache, assetX, target) {
   const lo = assetX < target ? assetX : target
   const hi = assetX < target ? target : assetX
@@ -131,8 +145,10 @@ async function targetPerUnit(priceBoxCache, assetX, target) {
   const nowSeconds = BigInt(Math.floor(Date.now() / 1000))
   const vwap = trailing1DayVwap(info, nowSeconds)
   if (vwap === 0n) return undefined
-  const hiPerLo = Number(vwap) / Number(PRICE_SCALE)
-  return assetX === lo ? hiPerLo : 1 / hiPerLo
+  const assetBPerAssetA = Number(vwap) / Number(PRICE_SCALE)
+  if (assetX === info.assetA) return assetBPerAssetA
+  if (assetX === info.assetB) return 1 / assetBPerAssetA
+  return undefined // box contents don't match the pair queried - shouldn't happen, safety net
 }
 
 // Tries a direct USD pair first, then routes through ALGO or VoteCoin. Both amounts entering a
