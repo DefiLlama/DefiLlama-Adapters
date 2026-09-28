@@ -25,7 +25,6 @@ const CONFIG = {
   xlayer: {
     sparkVaultUsdc: '0xf90E63079D97a0A1f479b2b168457F420CAFf6ba',
     sparkVaultUsdt: '0xc358c90D32375721Cb3924320Fdc2F8B694347Ca',
-    sparkVaultUsdc: '0xf90E63079D97a0A1f479b2b168457F420CAFf6ba',
   },
   robinhood: {
     sparkVaultUsdg: '0xde770c84FE66E063336b31737cFE9790f18c4087',
