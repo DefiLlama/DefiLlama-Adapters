@@ -5,6 +5,9 @@ const { staking } = require('../helper/staking');
 const sETHFI = '0x86B5780b606940Eb59A062aA85a07959518c0161'
 const EBTC = ADDRESSES.ethereum.EBTC
 const LIQUIDITY_POOL = '0x308861A430be4cce5502d0A12724771Fc6DaF216'
+const LIQUIDITY_POOL_START = 1689004931
+const EARLY_ADOPTER_POOL = '0x7623e9DC0DA6FF821ddb9EbABA794054E078f8c4'
+const EUSD_START = 1725650939
 const TVL_ORACLE_OPTIMISM = '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da'
 const EBTC_START = 1746507563
 
@@ -59,7 +62,8 @@ async function addKarakQueuedWithdrawals(api) {
     if (!pending[i]) return
     request.vaults.forEach((vault, j) => {
       const token = KARAK_VAULT_TOKEN[vault.toLowerCase()]
-      if (token) api.add(token, request.shares[j])
+      if (!token) throw new Error(`unmapped Karak vault ${vault}`)
+      api.add(token, request.shares[j])
     })
   })
 }
@@ -80,9 +84,13 @@ async function ebtcTvl(api) {
 }
 
 async function ethereumTvl(api) {
+  // pre-eETH deposits not yet migrated to the LiquidityPool
+  await api.sumTokens({ owners: [EARLY_ADOPTER_POOL], tokens: [ADDRESSES.null, ADDRESSES.ethereum.RETH, ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.sfrxETH, ADDRESSES.ethereum.cbETH] })
+  if (api.timestamp < LIQUIDITY_POOL_START) return
+
   const pooledEth = BigInt(await api.call({ target: LIQUIDITY_POOL, abi: 'uint256:getTotalPooledEther' }))
 
-  // eETH held inside ether.fi Liquid, removed so that listing counts it instead.
+  // eETH ether.fi attributes to its Liquid vaults (off-chain figure), removed to avoid double counting
   let loopedTvl = 0n
   if (!api.timestamp || api.timestamp > EBTC_START) {
     const optimismApi = new sdk.ChainApi({ timestamp: api.timestamp, chain: 'optimism' })
@@ -90,9 +98,11 @@ async function ethereumTvl(api) {
   }
   api.add(ADDRESSES.null, (pooledEth - loopedTvl).toString())
 
-  // booked as USDC (18 -> 6 decimals); permitFailure: eUSD post-dates the LiquidityPool
-  const eusd = await api.call({ target: ADDRESSES.ethereum.EUSD, abi: 'uint256:totalSupply', permitFailure: true })
-  if (eusd) api.add(ADDRESSES.ethereum.USDC, (BigInt(eusd) / 10n ** 12n).toString())
+  // booked as USDC (18 -> 6 decimals)
+  if (!api.timestamp || api.timestamp > EUSD_START) {
+    const eusd = await api.call({ target: ADDRESSES.ethereum.EUSD, abi: 'uint256:totalSupply' })
+    api.add(ADDRESSES.ethereum.USDC, (BigInt(eusd) / 10n ** 12n).toString())
+  }
 
   await ebtcTvl(api)
 }
@@ -105,8 +115,8 @@ const stakingTvl = (api) => {
 module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
-  start: '2023-07-10',
-  methodology: "Staked ETH is the ETH backing eETH, read from the LiquidityPool contract on Ethereum, minus categoryTVL('liquideth') from ether.fi's TVL oracle on Optimism — an ether.fi-maintained figure for the eETH exposure held inside the ether.fi Liquid vaults, removed here so those deposits are counted once, by the ether.fi Liquid listing. eUSD is counted at its total supply and booked as USDC. eBTC is counted as the WBTC, LBTC and cbBTC backing it on Ethereum, Arbitrum, Base and Berachain, each booked on the chain that holds it; Karak and strategy receipt tokens, and pending Karak withdrawals, are booked as the BTC they represent. Staking is the ETHFI held by the sETHFI vault on Ethereum, Arbitrum, Base, Optimism and Scroll.",
+  start: '2023-02-27',
+  methodology: "Staked ETH is the ETH backing eETH, read from the LiquidityPool contract on Ethereum, plus the ETH and LSTs still held in the Early Adopter Pool, minus the eETH that ether.fi attributes to its Liquid vaults (categoryTVL('liquideth'), an off-chain figure ether.fi posts to Optimism). eUSD is counted at its total supply and booked as USDC. eBTC is counted as the WBTC, LBTC and cbBTC backing it on Ethereum, Arbitrum, Base and Berachain, each booked on the chain that holds it; Karak and strategy receipt tokens, and pending Karak withdrawals, are booked as the BTC they represent. Staking is the ETHFI held by the sETHFI vault on Ethereum, Arbitrum, Base, Optimism and Scroll.",
   ethereum: {
     tvl: ethereumTvl,
     staking: stakingTvl,
