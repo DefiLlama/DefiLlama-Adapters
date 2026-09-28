@@ -1875,7 +1875,13 @@ const uniV3Configs = {
       factory: '0xB09f790A1907a1db006e88F14C4f0168fBee9598',
       fromBlock: 21118790,
     },
-  }
+  },
+  'goo-exchange': {
+    start: '2026-09-26',
+    methodology: 'Counts the tokens held by every pool created by the goo exchange factory on Robinhood Chain, found from its PoolCreated events.',
+    // Uniswap V3 fork; pools are CREATE2'd by a separate pool deployer but PoolCreated is emitted by the factory
+    robinhood: { factory: '0x221A6239E40709792b0d4bdc140fA36158CD41C7', fromBlock: 73266708 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
