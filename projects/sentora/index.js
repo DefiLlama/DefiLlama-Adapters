@@ -45,11 +45,12 @@ const customConfig = {
     etherfi: [
       '0x778aC5d0EE062502fADaa2d300a51dE0869f7995' // EtherFi vault ETH+
     ],
+    // deployment blocks gate historical runs, the vaults revert before they exist
     upshift: [
-      '0x74ad2f789ed583dbd141bbdafc673fe1f033718b', // Upshift vault USD
-      '0x3cc0d33b1aeac3d23ea89214b3ac5b4607032167', // Upshift vault BTC
-      '0xd0271e199f886ff943859579465498b18ecf1e9d', // Upshift vault ETH
-      '0xd000E6BcAd5457E8F4de67eDdeFe50BCC4B3d743', // Upshift Sentora RWA (PYUSD)
+      { vault: '0x74ad2f789ed583dbd141bbdafc673fe1f033718b', deployBlock: 24074876 }, // Upshift vault USD
+      { vault: '0x3cc0d33b1aeac3d23ea89214b3ac5b4607032167', deployBlock: 23682851 }, // Upshift vault BTC
+      { vault: '0xd0271e199f886ff943859579465498b18ecf1e9d', deployBlock: 24241435 }, // Upshift vault ETH
+      { vault: '0xd000E6BcAd5457E8F4de67eDdeFe50BCC4B3d743', deployBlock: 25279501 }, // Upshift Sentora RWA (PYUSD)
     ]
   }
 }
@@ -112,7 +113,10 @@ const handlers = {
   },
 
   async upshift(api, vaults) {
-    await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:getTotalAssets' });
+    const block = await api.getBlock()
+    const calls = vaults.filter(v => block >= v.deployBlock).map(v => v.vault)
+    if (!calls.length) return
+    await api.erc4626Sum({ calls, tokenAbi: 'address:asset', balanceAbi: 'uint256:getTotalAssets' });
   }
 }
 
