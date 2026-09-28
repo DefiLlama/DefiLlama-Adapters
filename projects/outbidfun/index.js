@@ -14,6 +14,10 @@ const FACTORIES = [
 ]
 const MEMECOIN_DEPLOYED = 'event MemeCoinDeployed(address indexed creator, address indexed memecoin, address indexed quoteAsset)'
 
+/**
+ * Sums the reserve asset held by every coin whose bonding curve is still live (`cap()` > 0).
+ * @param {import('@defillama/sdk').ChainApi} api
+ */
 async function tvl(api) {
   const logs = (await Promise.all(
     FACTORIES.map(({ target, fromBlock }) => getLogs2({ api, target, fromBlock, eventAbi: MEMECOIN_DEPLOYED }))
