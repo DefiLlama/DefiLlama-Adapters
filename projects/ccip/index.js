@@ -5,10 +5,12 @@ const { getConnection } = require('../helper/solana')
 const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
 //  Pool types:
-//  1. Holds tokens directly: LockReleaseTokenPool, LockReleaseTokenPoolAndProxy, 
-//   SiloedLockReleaseTokenPool, HybridWithExternalMinterTokenPool
+//  1. Holds tokens directly: legacy LockReleaseTokenPool, LockReleaseTokenPoolAndProxy,
+//   HybridWithExternalMinterTokenPool
 //  2. Holds tokens at child contract:
-//   USDCTokenPoolProxy - getPools().siloedLockReleasePool -> getAllLockboxConfigs().lockbox OR getLockBox(getSupportedChains())
+//   LockReleaseTokenPool 2.0 - address:getLockBox
+//   SiloedLockReleaseTokenPool - getAllLockBoxConfigs().lockBox
+//   USDCTokenPoolProxy - getPools().siloedLockReleasePool -> getAllLockBoxConfigs().lockBox
 //   XERC20LockBoxTokenPool - address:getLockbox
 //  3. Holds tokens directly AND at child:
 //   SiloedWithUnsiloedXERC20GroupTokenPool - address:getLockbox
@@ -78,8 +80,9 @@ async function tvl(api) {
 
   const poolList = entries.map((e) => e.pool)
 
-  const [lockboxes, boxConfigs] = await Promise.all([
+  const [xerc20Lockboxes, ccipLockboxes, boxConfigs] = await Promise.all([
     api.multiCall({ abi: 'function getLockbox() view returns (address)', calls: poolList, permitFailure: true }),
+    api.multiCall({ abi: 'function getLockBox() view returns (address)', calls: poolList, permitFailure: true }),
     api.multiCall({ abi: LOCKBOX_CFG_ABI, calls: poolList, permitFailure: true }),
   ])
 
@@ -103,8 +106,9 @@ async function tvl(api) {
   }
 
   entries.forEach(({ token, pool }, i) => {
-    add(token, pool)                                             
-    add(token, lockboxes[i]) // XERC20Lockbox / hybrid Siloed child pool                                          
+    add(token, pool)
+    add(token, xerc20Lockboxes[i]) // XERC20Lockbox / hybrid Siloed child pool
+    add(token, ccipLockboxes[i]) // CCIP 2.0 LockReleaseTokenPool child lockbox
     if (Array.isArray(boxConfigs[i])) boxConfigs[i].forEach((c) => add(token, c.lockBox)) // siloed-with-lockbox
   })
   validProxies.forEach((p, k) => {
@@ -135,7 +139,7 @@ async function solanaTvl(api) {
 }
 
 module.exports = {
-  methodology: 'Sums tokens locked in CCIP LockRelease TokenPools, pulled from each chain\'s TokenAdminRegistry or LockAndRelease PDAs.',
+  methodology: 'Sums tokens locked in CCIP LockRelease TokenPools and LockBoxes, pulled from each chain\'s TokenAdminRegistry or LockAndRelease PDAs.',
   solana: { tvl: solanaTvl }
 }
 
