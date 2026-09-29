@@ -73,6 +73,6 @@ module.exports = {
     // borrowed,
   },
   hallmarks: [
-      [1733534040, "Referral-only launch"],
+      ['2024-12-07', "Referral-only launch"],
   ]
 };

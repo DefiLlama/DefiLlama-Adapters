@@ -1,15 +1,15 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const hypervisorAbi = require("./abis/hypervisor.json");
 const { staking } = require("../helper/staking");
+const { getUniqueAddresses } = require("../helper/utils");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const config = require("./config");
 const getTotalAmounts =
   "function getTotalAmounts() view returns (uint256 total0, uint256 total1)";
-const { getUniqueAddresses } = require("../helper/utils");
-const config = require("./config");
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const getHyperVisorData = "function getHypervisorData() view returns (tuple(address stakingToken, address rewardToken, address rewardPool, tuple(uint256 floor, uint256 ceiling, uint256 time) rewardScaling, uint256 rewardSharesOutstanding, uint256 totalStake, uint256 totalStakeUnits, uint256 lastUpdate, tuple(uint256 duration, uint256 start, uint256 shares)[] rewardSchedules) hypervisor)"
 
 module.exports = {
   doublecounted: true,
-  start: '2021-03-25', // (Mar-25-2021 01:42:42 PM +UTC)
+  start: '2021-03-25',
 };
 
 Object.keys(config).forEach(chain => {
@@ -18,7 +18,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
 
       if (LIQUIDITY_MINING_POOLS) {
-        const bals = await api.multiCall({ abi: hypervisorAbi.getHyperVisorData, calls: LIQUIDITY_MINING_POOLS, });
+        const bals = await api.multiCall({ abi: getHyperVisorData, calls: LIQUIDITY_MINING_POOLS, });
         bals.forEach(({ stakingToken, totalStake }) => api.add(stakingToken, totalStake));
       }
 
@@ -59,4 +59,4 @@ Object.keys(config).forEach(chain => {
   }
 })
 
-module.exports.ethereum.staking = staking("0x26805021988f1a45dc708b5fb75fc75f21747d8c", "0x6bea7cfef803d1e3d5f7c0103f7ded065644e197",)
+module.exports.ethereum.staking = staking("0x26805021988f1a45dc708b5fb75fc75f21747d8c", "0x6bea7cfef803d1e3d5f7c0103f7ded065644e197",);

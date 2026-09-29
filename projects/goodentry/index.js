@@ -61,7 +61,7 @@ module.exports = {
   methodology:
     "For GoodEntry v1, counts the tokens locked in the Aave lending pool fork. For v2, calls a dedicated getReserves() function on the vault.",
   hallmarks: [
-    [1701376109, "V2 Launch"]
+    ['2023-11-30', "V2 Launch"]
   ],
   arbitrum: { tvl, }
 };

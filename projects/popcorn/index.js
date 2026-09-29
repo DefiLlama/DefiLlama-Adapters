@@ -1,6 +1,32 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
-const { addFraxVaultToTVL } = require("./fraxVault");
+const sdk = require('@defillama/sdk');
+
+const getVaultsAbi = 'address[]:getRegisteredAddresses';
+const getAssetAbi = 'address:asset';
+const getStrategyAbi = 'address:strategy';
+const getTotalSupplyAbi = 'uint256:totalSupply';
+const convertToAssetsAbi = 'function convertToAssets(uint256) view returns (uint256)';
+
+
+async function addFraxVaultToTVL(balances, api) {
+    const vaultAddresses = await api.call({ target: "0x25172C73958064f9ABc757ffc63EB859D7dc2219", abi: getVaultsAbi });
+    const assets = await api.multiCall({ abi: getAssetAbi, calls: vaultAddresses, });
+    const totalSupply = await api.multiCall({ abi: getTotalSupplyAbi, calls: vaultAddresses, });
+    const strategies = await api.multiCall({ abi: getStrategyAbi, calls: vaultAddresses, });
+
+    const totalAssets = [];
+    for (let i = 0; i < vaultAddresses.length; i++) {
+        // if the vault has no strategy: 1 share = 1 asset
+        if (strategies[i] === ADDRESSES.null) {
+            totalAssets.push(totalSupply[i]);
+        } else {
+            const assets = await api.call({ target: strategies[i], abi: convertToAssetsAbi, params: [totalSupply[i]] })
+            totalAssets.push(assets);
+        }
+    }
+    assets.forEach((v, i) => sdk.util.sumSingleBalance(balances, v, totalAssets[i], api.chain))
+}
 const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
@@ -46,7 +72,7 @@ const getArbTvl = async (balances, api, vaults) => {
   const assets = await api.multiCall({ abi: abis.asset, calls: filteredVaults, permitFailure: true });
   const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: filteredVaults, permitFailure: true });
   await addFraxVaultToTVL(balances, api);
-  api.add(assets.map(i => i || '0x0000000000000000000000000000000000000000'), totalAssets.map(i => i || 0))
+  api.add(assets.map(i => i || ADDRESSES.null), totalAssets.map(i => i || 0))
   return balances
 }
 
@@ -62,7 +88,7 @@ const tvl = async (api) => {
 
   const assets = await api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults, permitFailure: true })
-  api.add(assets.map(i => i || '0x0000000000000000000000000000000000000000'), totalAssets.map(i => i || 0))
+  api.add(assets.map(i => i || ADDRESSES.null), totalAssets.map(i => i || 0))
   return sumTokens2({ api, resolveLP: true })
 }
 

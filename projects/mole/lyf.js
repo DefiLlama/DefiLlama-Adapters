@@ -208,7 +208,7 @@ async function unwrapPancakeSwapLps({
     const lp = lps[i.lpType];
     const balance0 = new BigNumber(reserve0).times(lp.amount).div(lp.totalSupply).toFixed(0);
     const balance1 = new BigNumber(reserve1).times(lp.amount).div(lp.totalSupply).toFixed(0);
-    if (isNaN(balance0) && isNaN(balance1)) return
+    if (!isFinite(balance0) || !isFinite(balance1)) return
     if (isCoreAsset0 && isCoreAsset1) {
       api.add( token0, balance0)
       api.add( token1, balance1)
@@ -275,7 +275,7 @@ async function calLyfTvlSui(api) {
       console.error("dex type wrong")
     }
     
-    if (!nftFields) continue;
+    if (!nftFields?.liquidity) continue; // worker without an open position (empty position_nft)
 
     let liquidity, tickLower, tickUpper, poolId
 

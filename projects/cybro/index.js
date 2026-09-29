@@ -78,7 +78,7 @@ async function tvlBlast(api) {
   })
 
   await api.sumTokens({ ownerTokens })
-  return api.erc4626Sum2({ calls: vaultsBlast });
+  return api.erc4626Sum2({ calls: vaultsBlast, permitFailure: true });
 }
 
 async function tvlArbitrum(api) {

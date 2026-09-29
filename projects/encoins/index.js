@@ -12,11 +12,12 @@ async function tvl() {
 }
 
 async function stake() {
-    const RegisteredRelayNodes = await get('https://l2y0u35vje.execute-api.eu-central-1.amazonaws.com/servers');
-    const relayNodeBalances = Object.values(RegisteredRelayNodes).reduce((acc, value) => acc + value, 0);
-    return {
-        [Encoins_Token]: relayNodeBalances
-    }
+    return {} // dead
+    // const RegisteredRelayNodes = await get('https://l2y0u35vje.execute-api.eu-central-1.amazonaws.com/servers');
+    // const relayNodeBalances = Object.values(RegisteredRelayNodes).reduce((acc, value) => acc + value, 0);
+    // return {
+    //     [Encoins_Token]: relayNodeBalances
+    // }
 }
 
 module.exports = {

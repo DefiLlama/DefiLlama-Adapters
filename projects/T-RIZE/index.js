@@ -1,6 +1,5 @@
 const abi = {
   "getOracle": "function getOracle(address token) external view returns (address)",
-  "latestAnswer": "function latestAnswer() external view override returns (int256)"
 }
 
 // TODO: instead of hardcoding the contract addresses, pull the list from the events

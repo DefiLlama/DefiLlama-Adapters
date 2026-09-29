@@ -9,12 +9,12 @@ const factory = "0x32d1F0Dce675902f89D72251DB4AB1d728efa19c";
 module.exports = {
   methodology: `Counts the tokens locked on order book grid`,
   hallmarks: [
-    [1672531200, "GDX Airdrop #1"],
-    [1677628800, "GDX Airdrop #2"],
-    [1678838400, "Maker Rewards Launch"],
-    [1679616000, "GDX Airdrop #3"],
-    [1682294400, "GDX Staking Launch"],
-    [1682550000, "GDX Airdrop #4"],
+    ['2023-01-01', "GDX Airdrop #1"],
+    ['2023-03-01', "GDX Airdrop #2"],
+    ['2023-03-15', "Maker Rewards Launch"],
+    ['2023-03-24', "GDX Airdrop #3"],
+    ['2023-04-24', "GDX Staking Launch"],
+    ['2023-04-26', "GDX Airdrop #4"],
   ],
 };
 

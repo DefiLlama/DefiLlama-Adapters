@@ -1,7 +1,100 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getConfig } = require("../helper/cache");
 
-const lockers = require("./lockers");
+const { SPECIFIC_CASE_LOCKERS} = require('./utils')
+
+async function common(api, res) {
+  const lockers = res.filter((locker) => !SPECIFIC_CASE_LOCKERS.includes(locker.id) && locker.chainId === api.chainId)
+  const calls = lockers.map(l => ({ target: l.modules.veToken, params: l.modules.locker })) 
+  const balances = await api.multiCall({ abi: 'function locked(address arg0) view returns (int128 amount, uint256 end)', calls })
+
+  api.addTokens(lockers.map(l => l.token.address), balances.map(b => b.amount))
+}
+
+async function pendle(api, res) {
+  const locker = res.find(l => l.id === "pendle")
+  const balance = await api.call({
+    abi: 'function positionData(address arg0) view returns (uint128 amount, uint128 end)',
+    target: locker.modules.veToken,
+    params: locker.modules.locker
+  })
+
+  api.add(locker.token.address, balance.amount)
+}
+
+async function yieldnest(api, res) {
+  const locker = res.find(l => l.id === "ynd")
+  const balance = await api.call({
+    abi: 'function getLockedBalance() public view returns (uint256 totalLockedBalance)',
+    target: locker.modules.depositor,
+  })
+  
+  api.add(locker.token.address, balance)
+}
+
+async function maverick(api, res) {
+  const locker = res.find(l => l.id === "mav")
+  const balance = await api.call({
+    abi: 'function lockups(address,uint256) view returns (uint256 amount, uint256 end, uint256 points)',
+    target: locker.modules.veToken,
+    params: [locker.modules.locker, 0]
+  })
+  
+  api.add(locker.token.address, balance.amount)
+}
+
+async function spectra(api, res) {
+  const locker = res.find(l => l.id === "spectra")
+  const balance = await api.call({
+    abi: 'function locked(uint256 _tokenId) view returns (int128 amount, uint256 end, bool isPermanent)',
+    target: locker.modules.veToken,
+    params: 1263
+  })
+  
+  api.add(locker.token.address, balance.amount)
+}
+
+async function zero(api, res) {
+  const locker = res.find(l => l.id === "zero")
+  const balance = await api.call({
+    abi: 'function getLockedNftDetails(address _user) view returns (uint256[] nftIds, tuple(uint256 amount, uint256 end, uint256 start, uint256 power)[] lockedBalance)',
+    target: locker.modules.veToken,
+    params: locker.modules.locker
+  })
+
+  api.add(locker.token.address, balance.lockedBalance[0].amount)
+}
+
+async function frax(api, res) {
+  const locker = res.find(l => l.id === "fxs")
+
+  if (api.chainId === 1) {
+    const balance = await api.call({
+      abi: 'function locked(address arg0) view returns (int128 amount, uint256 end)',
+      target: locker.extensions.sideChains[0].veToken,
+      params: locker.extensions.sideChains[0].locker
+    })
+    
+    api.add(locker.extensions.sideChains[0].token, balance.amount)
+  } else if (api.chainId === 252) {
+    const balance = await api.call({
+      abi: 'function balanceOfLockedFxs(address _addr) public view returns (uint256 _balanceOfLockedFxs)',
+      target: locker.modules.veToken,
+      params: locker.modules.locker
+    })
+
+    api.add(locker.token.address, balance)
+  }
+}
+const lockers = {
+  common,
+  pendle,
+  yieldnest,
+  maverick,
+  spectra,
+  zero,
+  frax
+};
 const { ABI, STRATEGIES_ENDPOINT, LOCKERS_ENDPOINT, LEGACY_VAULTS, LOCKERS, LOCKERS_GATEWAY } = require("./utils");
 
 // ********************************************************************************
@@ -59,7 +152,7 @@ async function handleStrategies(api, holder, underlying, strats, onlyboost, blac
       calls.push({ target: receipt, params: holder });
 
       if (onlyboost) {
-        const receipt = strat[onlyboost.poolKey]?.crvRewards;
+        const receipt = strat[onlyboost.poolKey]?.address;
         const holder = strat.onlyboost?.implementations?.find(
           (os) => os.key === onlyboost.key
         )?.address;
@@ -158,20 +251,21 @@ async function handleLockers(api) {
 // ********************************************************************************
 
 async function ethereum(api) {
-  const blacklist = ["0x98b540fa89690969D111D045afCa575C91519B1A"];
+  const blacklistedTokens = ["0x98b540fa89690969D111D045afCa575C91519B1A", "0x58900d761Ae3765B75DDFc235c1536B527F25d8F"];
   await Promise.all([
     // Lockers
     handleLockers(api),
     // Strategies v1
-    getV1Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }, blacklist),
+    getV1Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }, blacklistedTokens),
     getV1Strategies(api, "balancer"),
     getV1Strategies(api, "pendle"),
-    getV1Strategies(api, "yearn"),
+    getV1Strategies(api, "yearn", undefined, blacklistedTokens),
     // Strategies v2
-    getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }, blacklist),
+    getV2Strategies(api, "curve", { key: "convex", poolKey: "sidecarPool" }, blacklistedTokens),
+    getV2Strategies(api, "balancer", { key: "aura", poolKey: "sidecarPool" }, blacklistedTokens),
   ]);
 
-  return sumTokens2({ api, resolveLP: true });
+  return sumTokens2({ api, resolveLP: true, blacklistedTokens });
 }
 
 async function arbitrum(api) {
@@ -179,7 +273,8 @@ async function arbitrum(api) {
     // Strategies v1
     getV1Strategies(api, "curve"),
     // Strategies v2
-    getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }),
+    getV2Strategies(api, "curve", { key: "convex", poolKey: "sidecarPool" }),
+    getV2Strategies(api, "balancer", { key: "aura", poolKey: "sidecarPool" }),
   ]);
 
   return sumTokens2({ api, resolveLP: true });
@@ -190,7 +285,7 @@ async function fraxtal(api) {
     // Lockers
     handleLockers(api),
     // Strategies v2
-    getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }),
+    getV2Strategies(api, "curve", { key: "convex", poolKey: "sidecarPool" }),
   ]);
 
   return sumTokens2({ api, resolveLP: true });

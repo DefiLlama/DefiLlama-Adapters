@@ -1,4 +1,16 @@
-const abi = require('./abi.json');
+const abi = {
+    "balanceOf": "function balanceOf(address account) view returns (uint256)",
+    "totalSupply": "function totalSupply() view returns (uint256)",
+    "name": "function name() view returns (string)",
+    "symbol": "function symbol() view returns (string)",
+    "decimals": "function decimals() view returns (uint8)",
+    "cap": "function cap() view returns (uint256)",
+    "totalIssued": "function totalIssued() view returns (uint256)",
+    "isPaused": "function isPaused() view returns (bool)",
+    "latestRoundData": "function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
+    "description": "function description() view returns (string)",
+    "priceDecimals": "function decimals() view returns (uint8)"
+  };
 
 // stac token addresses for different chains
 const stacAddresses = {

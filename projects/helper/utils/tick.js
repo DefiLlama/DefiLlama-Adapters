@@ -169,5 +169,6 @@ function i32BitsToNumber(v) {
 
 module.exports = {
   tickToPrice,
+  tickIndexToSqrtPriceX64,
   i32BitsToNumber,
 }

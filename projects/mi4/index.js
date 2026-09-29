@@ -1,4 +1,7 @@
-const abi = require('./abi.json');
+const abi = {
+    "latestRoundData": "function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
+    "priceDecimals": "function decimals() view returns (uint8)"
+  };
 
 const MI4_ADDRESSES = {
   mantle: {

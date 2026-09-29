@@ -22,7 +22,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  doublecouted: true,
+  doublecounted: true,
   base: {
     tvl,
   },

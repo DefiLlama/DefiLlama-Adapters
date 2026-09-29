@@ -1,6 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require('./abi.json');
+const abi = {
+    "currentPriceDAI": "uint256:currentPriceDAI",
+    "totalDelegated": "uint256:totalDelegated"
+  };
 const BigNumber = require("bignumber.js");
 const { sumTokens } = require("../helper/unwrapLPs");
 

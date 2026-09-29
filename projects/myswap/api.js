@@ -25,7 +25,7 @@ async function tvl() {
 }
 
 module.exports = {
-  hallmarks: [[1747094400, 'Sunset of MySwap']],
+  hallmarks: [['2025-05-13', 'Sunset of MySwap']],
   deadFrom: '2025-05-13',
   timetravel: false,
   starknet: { tvl }

@@ -1,4 +1,0 @@
-{
-    "getActiveTokens": "address[]:getActiveTokens",
-    "getInactiveTokens": "address[]:getInactiveTokens"
-}

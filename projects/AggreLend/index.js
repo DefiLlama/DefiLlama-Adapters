@@ -1,6 +1,33 @@
 const { getProvider } = require('../helper/solana')
 const { Program } = require('@project-serum/anchor')
-const idl = require('./idl.json')
+const idl = {
+  "version": "0.1.0",
+  "name": "aggrelend",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "PoolVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "vault", "type": "publicKey"},
+          {"name": "tokenMint", "type": "publicKey"},
+          {"name": "depositTokens", "type": "u64"},
+          {"name": "scaledShares", "type": "u128"},
+          {"name": "lastAccruedTime", "type": "i64"},
+          {"name": "cumulativeYieldIndex", "type": "u128"},
+          {"name": "hasMarket", "type": {"array": ["bool", 45]}},
+          {"name": "rewards", "type": "u64"},
+          {"name": "boost", "type": "bool"},
+          {"name": "bump", "type": "u8"}
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "types": []
+};
 
 const PROGRAM_ID = 'AGGREbma2Gi9unS1mPptAcG4HmkMTLNmqcunYaSSf46b'
 

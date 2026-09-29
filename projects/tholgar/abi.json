@@ -1,8 +1,0 @@
-{
-  "token": "address:token",
-  "getCurrentLockedTokens": "uint256:getCurrentLockedTokens",
-  "lockers": "function lockers(uint256) view returns (address)",
-  "totalAssets": "uint256:totalAssets",
-  "totalSupply": "erc20:totalSupply",
-  "queuedForWithdrawal": "function queuedForWithdrawal(address) view returns (uint256)"
-}

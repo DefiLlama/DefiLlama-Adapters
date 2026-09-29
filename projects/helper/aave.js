@@ -75,17 +75,18 @@ async function getV2Reserves(api, addressesProviderRegistry, dataHelperAddress, 
 
   const aTokenMarketData = await api.multiCall({ calls: validProtocolDataHelpers, abi: abis.getAllATokens || abi["getAllATokens"], })
 
-  let aTokenAddresses = [];
-  aTokenMarketData.map((aTokensData) => {
-    aTokenAddresses = [
-      ...aTokenAddresses,
-      ...aTokensData.map((aToken) => aToken[1]),
-    ];
+  const aTokenAddresses = [];
+  const reserveHelpers = []; // data helper each aToken/reserve belongs to
+  aTokenMarketData.forEach((aTokensData, i) => {
+    aTokensData.forEach((aToken) => {
+      aTokenAddresses.push(aToken[1])
+      reserveHelpers.push(validProtocolDataHelpers[i])
+    })
   });
 
   const underlyingAddressesData = await api.multiCall({ calls: aTokenAddresses, abi: abi["getUnderlying"], })
   const reserveAddresses = underlyingAddressesData
-  return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0]]
+  return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0], undefined, reserveHelpers]
 }
 
 async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress) {
@@ -102,7 +103,7 @@ async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transf
   sdk.util.sumMultiBalanceOf(balances, balanceOfUnderlying, true, transformAddress)
 }
 
-async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3 = false, { borrowedAmounts } = {}) {
+async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3 = false, { borrowedAmounts, reserveHelpers } = {}) {
   if (!transformAddress) transformAddress = id => id
   if (borrowedAmounts) {
     borrowedAmounts.forEach((amount, idx) => {
@@ -111,8 +112,9 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
     return balances
   }
   const reserveData = await sdk.api.abi.multiCall({
-    calls: v2ReserveTokens.map((token) => ({
-      target: dataHelper,
+    // each reserve is queried on the data helper of its own market
+    calls: v2ReserveTokens.map((token, i) => ({
+      target: reserveHelpers?.[i] ?? dataHelper,
       params: [token],
     })),
     abi: v3 ? abi.getTotalDebt : abi.getHelperReserveData,
@@ -131,9 +133,9 @@ function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, da
     const chain = api.chain
     const block = api.block
     const balances = {}
-    const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, } = await getData({ api, oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, v3, })
+    const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, reserveHelpers, } = await getData({ api, oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, v3, })
     if (borrowed) {
-      await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3, { borrowedAmounts, });
+      await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3, { borrowedAmounts, reserveHelpers, });
     } else {
       await getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress);
     }
@@ -149,10 +151,10 @@ function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, da
     return balances
   }
 }
-function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, isInsolvent = false, } = {}) {
   return {
     tvl: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
-    borrowed: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
+    borrowed: isInsolvent ? async () => ({}) : aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
   }
 }
 
@@ -165,6 +167,7 @@ module.exports = {
   getBorrowed,
   aaveV2Export,
   aaveV3Export,
+  aaveV4Export,
 }
 
 async function getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, api, v3 }) {
@@ -174,7 +177,7 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
 
   const transformAddress = transformAddressRaw || getChainTransform(chain)
   const fixBalances = getFixBalances(chain)
-  const [v2Atokens, v2ReserveTokens, dataHelper, borrowedAmounts,] = await getV2Reserves(api, addressesProviderRegistry, dataHelperAddresses, { abis, v3, })
+  const [v2Atokens, v2ReserveTokens, dataHelper, borrowedAmounts, reserveHelpers,] = await getV2Reserves(api, addressesProviderRegistry, dataHelperAddresses, { abis, v3, })
   let updateBalances
 
   if (oracle) {
@@ -199,7 +202,7 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
     }
   }
 
-  return { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, }
+  return { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances, borrowedAmounts, reserveHelpers, }
 }
 
 const oracleAbis = {
@@ -208,7 +211,7 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [], isAaveV3Fork } = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [], isAaveV3Fork, isInsolvent = false } = {}) {
   if (isAaveV3Fork && !abis.getReserveData)
     abis.getReserveData = "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))"
 
@@ -297,7 +300,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
     getReserveData: "function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
   }
 
-  return { tvl, borrowed, }
+  return { tvl, borrowed: isInsolvent ? async () => ({}) : borrowed, }
 }
 
 
@@ -306,6 +309,7 @@ function aaveV3Export(config) {
     getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
     getAllReservesTokens: "function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])",
     getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+    getUserReserveData: "function getUserReserveData(address asset, address user) view returns (uint256 currentATokenBalance, uint256 currentStableDebt, uint256 currentVariableDebt, uint256 principalStableDebt, uint256 scaledVariableDebt, uint256 stableBorrowRate, uint256 liquidityRate, uint40 stableRateLastUpdated, bool usageAsCollateralEnabled)",
   };
 
   const exports = {
@@ -318,9 +322,16 @@ function aaveV3Export(config) {
     let poolDatas
     let abis
 
-    if (typeof chainConfig === 'object') {
+    let blacklistedTokens = []
+    let blacklistLenders = []
+    let isInsolvent = false
+
+    if (typeof chainConfig === 'object' && !Array.isArray(chainConfig)) {
       poolDatas = chainConfig.poolDatas
       abis = chainConfig.abis || {}
+      blacklistedTokens = chainConfig.blacklistedTokens || []
+      blacklistLenders = chainConfig.blacklist_lenders || []
+      isInsolvent = chainConfig.isInsolvent || false
       Object.entries(abis).forEach(([k, v]) => abi[k] = v)
     }
 
@@ -340,8 +351,10 @@ function aaveV3Export(config) {
       });
       const reserveData = await api.multiCall({ abi: isBorrowed ? abi.getReserveData : abi.getReserveTokensAddresses, calls, })
       let tokensAndOwners = []
+      const blacklistSet = new Set(blacklistedTokens.map(t => t.toLowerCase()))
       reserveData.forEach((data, i) => {
         const token = calls[i].params
+        if (blacklistSet.has(token.toLowerCase())) return;
         if (isBorrowed) {
           api.add(token, data.totalVariableDebt)
           api.add(token, data.totalStableDebt)
@@ -350,15 +363,104 @@ function aaveV3Export(config) {
       })
 
       if (isBorrowed) tokensAndOwners = []  // we still do sumTokens to transform the response
-      return sumTokens2({ api, tokensAndOwners })
+      await sumTokens2({ api, tokensAndOwners, blacklistedTokens })
+
+      // Subtract blacklisted lenders' balances from TVL and borrowed
+      if (blacklistLenders.length > 0) {
+        // Build pool->token mapping from existing calls to avoid querying wrong pool
+        const poolTokenMap = {}
+        calls.forEach(c => {
+          if (!poolTokenMap[c.target]) poolTokenMap[c.target] = new Set()
+          poolTokenMap[c.target].add(c.params.toLowerCase())
+        })
+
+        const blCalls = []
+        for (const entry of blacklistLenders) {
+          for (const [pool, tokens] of Object.entries(poolTokenMap)) {
+            const filterTokens = entry.tokens ? entry.tokens.map(t => t.toLowerCase()) : [...tokens]
+            for (const token of filterTokens) {
+              if (tokens.has(token)) {
+                blCalls.push({ target: pool, params: [token, entry.user] })
+              }
+            }
+          }
+        }
+
+        if (blCalls.length > 0) {
+          const userData = await api.multiCall({ abi: abi.getUserReserveData, calls: blCalls })
+          userData.forEach((data, i) => {
+            const token = blCalls[i].params[0]
+            if (isBorrowed) {
+              const debt = +data.currentStableDebt + +data.currentVariableDebt
+              if (debt > 0) api.add(token, -debt)
+            } else {
+              if (+data.currentATokenBalance > 0)
+                api.add(token, -data.currentATokenBalance)
+            }
+          })
+        }
+      }
+
+      return api.getBalances()
     }
 
     exports[chain] = {
       tvl: (api) => fetchReserveData(api, poolDatas),
-      borrowed: (api) => fetchReserveData(api, poolDatas, true),
+      borrowed: isInsolvent ? async () => ({}) : (api) => fetchReserveData(api, poolDatas, true),
     }
   })
 
+
+  return exports
+}
+
+function aaveV4Export(config) {
+  const abi = {
+    getAssetUnderlyingAndDecimals: "function getAssetUnderlyingAndDecimals(uint256) view returns (address, uint8)",
+    getAssetTotalOwed: "function getAssetTotalOwed(uint256) view returns (uint256)",
+    getAssetCount: "uint256:getAssetCount",
+  }
+
+  const exports = {
+    methodology: methodologies.lendingMarket,
+  }
+
+  Object.keys(config).forEach(chain => {
+    let chainConfig = config[chain]
+    let hubs = Array.isArray(chainConfig) ? chainConfig : chainConfig.hubs
+    if (typeof chainConfig === 'string') hubs = [chainConfig]
+    if (!hubs || !hubs.length) throw new Error(`No hubs for ${chain} in aaveV4Export`)
+
+    const isInsolvent = chainConfig.isInsolvent || false
+    const blacklistedTokens = chainConfig.blacklistedTokens || []
+
+    async function getHubAssets(api) {
+      const assetCounts = await api.multiCall({ abi: abi.getAssetCount, calls: hubs })
+      const calls = hubs.flatMap((hub, i) => Array.from({ length: assetCounts[i] }, (_, assetId) => ({ target: hub, params: [assetId] })))
+      const assets = await api.multiCall({ abi: abi.getAssetUnderlyingAndDecimals, calls })
+      return assets.map(([underlying], i) => ({ underlying, hub: calls[i].target, assetId: calls[i].params[0] }))
+    }
+
+    async function tvl(api) {
+      const hubAssets = await getHubAssets(api)
+      return sumTokens2({ api, tokensAndOwners: hubAssets.map(({ underlying, hub }) => [underlying, hub]), blacklistedTokens })
+    }
+
+    async function borrowed(api) {
+      const hubAssets = await getHubAssets(api)
+      const owed = await api.multiCall({
+        abi: abi.getAssetTotalOwed,
+        calls: hubAssets.map(({ hub, assetId }) => ({ target: hub, params: [assetId] })),
+      })
+      owed.forEach((amount, i) => api.add(hubAssets[i].underlying, amount))
+      return sumTokens2({ api, blacklistedTokens })
+    }
+
+    exports[chain] = {
+      tvl,
+      borrowed: isInsolvent ? async () => ({}) : borrowed,
+    }
+  })
 
   return exports
 }

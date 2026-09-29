@@ -20,14 +20,12 @@ async function fetchUSDNData(api) {
   };
 }
 
-const getEthereumTVL = async (api, block, chainBlocks) => {
+const getEthereumTVL = async (api) => {
   const usdnData = await fetchUSDNData(api);
 
   api.add(WSTETH_TOKEN_ADDRESS, Object.values(usdnData))
-  return api.getBalances();
 };
 
 module.exports["ethereum"] = {
-  timetravel: true,
   tvl: getEthereumTVL
 };

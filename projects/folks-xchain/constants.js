@@ -174,7 +174,7 @@ const HubPools = {
     {
       // AERO_base
       poolAddress: '0xb5327c35E083248E3a0f79122FaB3b6018e5584a',
-      tokenAddress: '0x940181a94a35a4569e4529a3cdfb74e38fd98631',
+      tokenAddress: ADDRESSES.base.AERO,
       chainPoolAddress: '0x7Ace2Bc1C79954B56C65C7B326035C4468ac12BB',
     },
     {

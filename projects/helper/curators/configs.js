@@ -1,4 +1,4 @@
-const { allAbi, abi, assets } = require("./vesu")
+const { allAbi, abi, assets, allAbiV2, abiV2, assetsV2 } = require("./vesu")
 
 const ABI = {
   owner: 'address:owner',
@@ -10,8 +10,12 @@ const ABI = {
     balanceOf: 'function balanceOf(address account) view returns (uint256)',
     convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
   },
+  accountable : {
+    vault: 'address:vault',
+  },
   morphoV2: {
     liquidityAdapter: 'address:liquidityAdapter',
+    adapters: 'function adapters(uint256) view returns (address)',
   },
   morphoAdapter: {
     morphoVaultV1: 'address:morphoVaultV1',
@@ -23,6 +27,7 @@ const ABI = {
   },
   morpho: {
     CreateMetaMorphoEvent: 'event CreateMetaMorpho(address indexed metaMorpho, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)',
+    CreateVaultV2Event: 'event CreateVaultV2(address indexed owner, address indexed asset, bytes32 salt, address indexed newVaultV2)',
   },
   euler: {
     getProxyListLength: 'uint256:getProxyListLength',
@@ -56,6 +61,20 @@ const MorphoConfigs = {
         fromBlock: 21439510,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xA1D94F746dEfa1928926b84fB2596c06926C0405',
+        fromBlock: 23375073,
+      },
+    ],
+  },
+  arc: {
+    vaultFactoriesV2: [
+      {
+        address: '0x3b0eefaBfa22ec7CF2c73877ac16e78D76749f12',
+        fromBlock: 1946500,
+      },
+    ],
   },
   base: {
     vaultFactories: [
@@ -68,12 +87,24 @@ const MorphoConfigs = {
         fromBlock: 23928808,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0x4501125508079A99ebBebCE205DeC9593C2b5857',
+        fromBlock: 35615206,
+      },
+    ],
   },
   polygon: {
     vaultFactories: [
       {
         address: '0xa9c87daB340631C34BB738625C70499e29ddDC98',
         fromBlock: 66931118,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0xC11a53eE9B1eCc7a068D8e40F8F17926584F97Cf',
+        fromBlock: 77371907,
       },
     ],
   },
@@ -83,6 +114,12 @@ const MorphoConfigs = {
         address: '0x33f20973275B2F574488b18929cd7DCBf1AbF275',
         fromBlock: 32320327
       },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x8B2F922162FBb60A6a072cC784A2E4168fB0bb0c',
+        fromBlock: 32321811
+      }
     ]
   },
   wc: {
@@ -90,6 +127,12 @@ const MorphoConfigs = {
       {
         address: '0x4DBB3a642a2146d5413750Cca3647086D9ba5F12',
         fromBlock: 9025733,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6846EA318B6B987Ee6b28eBFd87c3409F1d13108',
+        fromBlock: 20253005,
       },
     ],
   },
@@ -108,12 +151,24 @@ const MorphoConfigs = {
         fromBlock: 9316789,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xC9b34c108014B44e5a189A830e7e04c56704a0c9',
+        fromBlock: 29092109,
+      },
+    ],
   },
   hyperliquid: {
     vaultFactories: [
       {
         address: '0xec051b19d654C48c357dC974376DeB6272f24e53',
         fromBlock: 1988677,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0xD7217E5687FF1071356C780b5fe4803D9D967da7',
+        fromBlock: 14188393,
       },
     ],
   },
@@ -124,12 +179,24 @@ const MorphoConfigs = {
         fromBlock: 2741420,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xFcb8b57E56787bB29e130Fca67f3c5a1232975D1',
+        fromBlock: 13096629,
+      },
+    ],
   },
   plume_mainnet: {
     vaultFactories: [
       {
         address: '0x2525D453D9BA13921D5aB5D8c12F9202b0e19456',
         fromBlock: 1912478,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x4f0a370bb367843CFd914c4d9972523aD2f8FCc9',
+        fromBlock: 765994,
       },
     ],
   },
@@ -140,6 +207,26 @@ const MorphoConfigs = {
         fromBlock: 296447195,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6b46fa3cc9EBF8aB230aBAc664E37F2966Bf7971',
+        fromBlock: 387016724,
+      },
+    ],
+  },
+  optimism: {
+    vaultFactories: [
+      {
+        address: '0x3Bb6A6A0Bc85b367EFE0A5bAc81c5E52C892839a',
+        fromBlock: 130770189,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6128b680b277Bf4Df80DFE9D8c55A498660870ef',
+        fromBlock: 142122059,
+      },
+    ],
   },
   hemi: {
     vaultFactories: [
@@ -147,6 +234,12 @@ const MorphoConfigs = {
         address: '0x8e52179BeB18E882040b01632440d8Ca0f01da82',
         fromBlock: 1188885,
       }
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x3c75C433e7902193497617EaFCc8385A3D031836',
+        fromBlock: 1188872,
+      },
     ]
   },
   sei: {
@@ -155,8 +248,92 @@ const MorphoConfigs = {
         address: '0x8Dea49ec5bd5AeAc8bcf96B3E187F59354118291',
         fromBlock: 168896078,
       }
+    ],
+  },
+  celo: {
+    vaultFactories: [
+      {
+        address: '0x6870aa9f66c1e5efe8dbe8730e86e9e91f688275',
+        fromBlock: 40259931,
+      }
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0xB237fdB403992f4AAe0963F5304799242035E22d',
+        fromBlock: 40249329,
+      },
     ]
-  }
+  },
+  klaytn: {
+    vaultFactoriesV2: [
+      {
+        address: '0xf2Aecd4a4d4C21d08770e34F392C4C271aBD9144',
+        fromBlock: 213463014,
+      }
+    ]
+  },
+  tempo: {
+    vaultFactoriesV2: [
+      {
+        address: '0x3DE400E3F79113194fa5AF6Ae5C474947E0C82Db',
+        fromBlock: 12653218,
+      }
+    ]
+  },
+  stable: {
+    vaultFactoriesV2: [
+      {
+        address: '0x7fc35488803D49D00a94b206A223f7661898BE3a',
+        fromBlock: 1506183,
+      }
+    ],
+    vaultFactories: [
+      {
+        address: '0xb4ae5673c48621189E2bEfBA96F31912032DD1AE',
+        fromBlock: 1504774,
+      },
+    ],
+  },
+  robinhood: {
+    vaultFactoriesV2: [
+      {
+        address: '0x0FBad98595b0186dA120E41f77C102beb49f803c',
+        fromBlock: 286,
+      }
+    ]
+  },
+  pharos: {
+    vaultFactoriesV2: [
+      {
+        address: '0x8e01ed1e1a41029b3137fce9aa880c0a54827498',
+        fromBlock: 4240410,
+      }
+    ]
+  },
+  megaeth: {
+    vaultFactoriesV2: [
+      {
+        address: '0xf133FA5A78C398B31Cc4a180E6Ae84111D6DCF5B',
+        fromBlock: 16409067,
+      }
+    ]
+  },
+  morph: {
+    vaultFactoriesV2: [
+      {
+        address: '0x7D8BF8B276f967F7539c9e91E1a85a33fefE612B',
+        fromBlock: 23180183,
+      }
+    ]
+  },
+  flare: {
+    vaultFactoriesV2: [
+      {
+        address: '0x6FC83ECc0e8142635D77200e5052be8A0a9D2f42',
+        fromBlock: 52378788,
+      },
+    ],
+  },
 }
 
 const EulerConfigs = {
@@ -225,6 +402,16 @@ const EulerConfigs = {
       '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
     ],
   },
+  monad: {
+    vaultFactories: [
+      '0xba4dd672062de8feedb665dd4410658864483f1e',
+    ],
+  },
+  hyperliquid: {
+    vaultFactories: [
+      '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A',
+    ],
+  },
 }
 
 const SiloConfigs = {
@@ -239,6 +426,17 @@ const SiloConfigs = {
         fromBlock: 32865457,
       }
     ],
+    blacklistedVaults: [
+      '0xcca902f2d3d265151f123d8ce8fdac38ba9745ed',
+      '0x2bc6f1406d736cc09631676c992abbf2ced789e7',
+      '0xf75ae954d30217b4ee70dbfb33f04162aa3cf260',
+      '0xb47cb414aab743c977dfd1fdb758f971907e810e',
+      '0xf6f87073cf8929c206a77b0694619dc776f89885',
+      '0x391b3f70e254d582588b27e97e48d1cfcdf0be7e',
+      '0x9a1bf5365edbb99c2c61ca6d9ffad0b705acfc6f',
+      '0xb6a23cb29e512df41876b28d7a848bd831f9c5ba',
+      '0xf6bc16b79c469b94cdd25f3e2334dd4fee47a581',
+    ]
   },
   ethereum: {
     vaultFactories: [
@@ -246,6 +444,9 @@ const SiloConfigs = {
         address: '0xe7Ed54e4e432Cf85024f8D4434cB3756338469B0',
         fromBlock: 22666249,
       }
+    ],
+    blacklistedVaults: [
+      '0x8399c8fc273bd165c346af74a02e65f10e4fd78f',
     ]
   },
   arbitrum: {
@@ -254,6 +455,11 @@ const SiloConfigs = {
         address: '0x451b35b2dF223a7Ef71c4ecb451C1C15019e28A5',
         fromBlock: 345527587,
       }
+    ],
+    blacklistedVaults: [
+      '0x7c1c43df1b08a7de4e25e7a8f5867efdcc812b95',
+      '0x2ba39e5388ac6c702cb29aea78d52aa66832f1ee',
+      '0xac69cfe6bb269cebf8ab4764d7e678c3658b99f2',
     ]
   },
   avax: {
@@ -262,6 +468,13 @@ const SiloConfigs = {
         address: '0x77cbCB96fFFe44d344c54A5868C49ad1C5AaAC6A',
         fromBlock: 64052773,
       }
+    ],
+    blacklistedVaults: [
+      '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8',
+      '0x1f8e769b5b6010b2c2bbcd68629ea1a0a0eda7e3',
+      '0x6c09bfdc1df45d6c4ff78dc9f1c13af29eb335d4',
+      '0x3d7b0c3997e48fa3fc96cd057d1fb4e5f891835b',
+      '0x36e2aa296e798ca6262dc5fad5f5660e638d5402',
     ]
   }
 }
@@ -270,7 +483,11 @@ const VesuConfigs = {
   allAbi,
   abi,
   assets,
+  allAbiV2,
+  abiV2,
+  assetsV2,
   singleton: '0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160',
+  poolFactory: '0x03760f903a37948f97302736f89ce30290e45f441559325026842b7a6fb388c0',
 }
 
 module.exports = { 

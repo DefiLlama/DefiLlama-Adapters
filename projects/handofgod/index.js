@@ -10,7 +10,7 @@ const hogOsGauge = "0x4331Cb6903D9c6C0723721A77435a610E1e933Cf"
 const ghogOsGauge = "0x5342E272769e797e4bF34698437Eb28bF49c315d"
 
 const genesisTokens = [
-  "0xb1e25689d55734fd3fffc939c4c3eb52dff8a794",  // OS 19% 
+  ADDRESSES.sonic.OS,  // OS 19% 
   "0x79bbf4508b1391af3a0f4b30bb5fc4aa9ab0e07c",  // Anon 10% 
   "0x44e23b1f3f4511b3a7e81077fd9f2858df1b7579",  // Mclb 9% 
   "0xa04bc7140c26fc9bb1f36b1a604c7a5a88fb0e70",  // SWPx 11% 

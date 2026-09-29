@@ -136,6 +136,7 @@ module.exports = {
   sonic: { tvl: tvl2 },
   hemi: { tvl: getUniTVL({ factory: '0x9B3336186a38E1b6c21955d112dbb0343Ee061eE', useDefaultCoreAssets: true, }), },
   katana: { tvl: getUniTVL({ factory: '0x72D111b4d6f31B38919ae39779f570b747d6Acd9', useDefaultCoreAssets: true, }) },
+  arc: { tvl: getUniTVL({ factory: '0x0e867974275Cd31C25015C2753C9d75F9f355379', useDefaultCoreAssets: true, }) },
 }
 
 // module.exports.polygon.tvl = getChainTVL('polygon')

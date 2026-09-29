@@ -8,7 +8,7 @@ const thorusMaster_avax = "0x871d68cFa4994170403D9C1c7b3D3E037c76437d";
 const THO_avax = "0xAE4AA155D2987B454C29450ef4f862CF00907B61";
 
 const thorusMaster_moonbeam = "0xEeB84a24e10502D8A5c97B11df381D1550B25b9d";
-const THO_moonbeam = ADDRESSES.shiden.JPYC;
+const THO_moonbeam = "0x735abe48e8782948a37c7765ecb76b98cde97b0f";
 
 
 module.exports = {

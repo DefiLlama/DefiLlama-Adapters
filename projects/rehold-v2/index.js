@@ -34,7 +34,7 @@ module.exports = {
       "0xB0D502E938ed5f4df2E681fE6E419ff29631d62b", // stg
       "0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402", // dot
       ADDRESSES.bsc.WBNB, // wbnb
-      "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82", // cake
+      ADDRESSES.bsc.CAKE, // cake
       ADDRESSES.bsc.DAI, // dai
       "0x715D400F88C167884bbCc41C5FeA407ed4D2f8A0", // axs
       "0x031b41e504677879370e9DBcF937283A8691Fa7f", // fet
@@ -50,9 +50,9 @@ module.exports = {
   manta: { tvl: sumTokensExport({ ...config, fetchCoValentTokens: false, tokens: Object.values(ADDRESSES.manta) }) },
 
   hallmarks: [
-    [1688688480, "ReHold V2 Launch"],
-    [1689743327, "Ethereum Deployment"],
-    [1690898169, "Limit Orders Launch"],
-    [1698624000, "ReHold Swaps Launch"],
+    ['2023-07-07', "ReHold V2 Launch"],
+    ['2023-07-19', "Ethereum Deployment"],
+    ['2023-08-01', "Limit Orders Launch"],
+    ['2023-10-30', "ReHold Swaps Launch"],
   ],
 };

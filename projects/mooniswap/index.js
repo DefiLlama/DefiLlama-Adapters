@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+  "getPool": "function allPools(uint256) view returns (address)",
+  "getAllPools": "address[]:getAllPools",
+  "getTokens": "address[]:getTokens"
+};
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const factoryContract = "0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303";
@@ -8,7 +12,7 @@ const ethTvl = async (api) => {
   const pools = await api.call({ abi: abi.getAllPools, target: factoryContract, })
   const res = await api.multiCall({ abi: abi.getTokens, calls: pools, })
   const ownerTokens = res.map((r, i) => [r, pools[i]])
-  return sumTokens2({ ownerTokens, api })
+  return sumTokens2({ ownerTokens, api, permitFailure: true }) // paused tokens (BTC++ etc.) revert balanceOf
 };
 
 module.exports = {

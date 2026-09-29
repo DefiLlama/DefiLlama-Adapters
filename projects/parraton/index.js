@@ -1,13 +1,13 @@
 const { get } = require('../helper/http')
-const ADDRESSES = require("../helper/coreAssets.json");
 
 async function tvl(api) {
   const vaults = await get('https://api.parraton.com/v1/vaults')
   const tvl =vaults.reduce((acc, vault) => {
+    if (vault.tvlUsd > 1e6) return acc // skip vaults with TVL > $1M as they are likely outliers or errors
     acc += Number(vault.tvlUsd)
     return acc
   }, 0)
-  api.add(ADDRESSES.ton.USDT, tvl * 1e6)
+  api.addUSDValue(tvl)
 }
 
 module.exports = {

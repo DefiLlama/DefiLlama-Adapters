@@ -35,7 +35,7 @@ module.exports = {
     pool2: fetchBeefyTVL
   },
   hallmarks: [
-    [1709828986, "BCT administrative control transferred to KlimaDAO"],
-    [1732153403, "Autocompounder launched"],
+    ['2024-03-07', "BCT administrative control transferred to KlimaDAO"],
+    ['2024-11-21', "Autocompounder launched"],
   ]
 };

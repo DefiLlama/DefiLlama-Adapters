@@ -1,7 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const readerAbi = require("./reader.json");
-const mvlpManagerAbi = require("./mvlpManager.json");
+const readerAbi = {
+    "getTokenBalancesWithSupplies": "function getTokenBalancesWithSupplies(address _account, address[] _tokens) view returns (uint256[])"
+  };
+const mvlpManagerAbi = {
+    "getAums": "uint256[]:getAums"
+  };
 const { staking } = require("../helper/staking");
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
@@ -29,10 +33,11 @@ const ADDRESS_ZERO = ADDRESSES.null;
 
 async function polygon(api) {
   // Metavault DAO MVLP Holdings
+  const metavaultDaoMvlpHoldings = await api.call({ abi: 'erc20:balanceOf', target: MVLP_TRACKER_CONTRACT, params: MVD_DAO_MULTI_SIG_WALLET, })
+  if (+metavaultDaoMvlpHoldings === 0) return // nothing to price; getAums() on the MVLP manager reverts these days
   const aums = await api.call({ target: MVLP_MANAGER_CONTRACT, abi: mvlpManagerAbi.getAums, })
   const supplies = await api.call({ target: READER_CONTRACT, params: [ADDRESS_ZERO, [MVLP_ADDRESS]], abi: readerAbi.getTokenBalancesWithSupplies, })
-  const metavaultDaoMvlpHoldings = await api.call({ abi: 'erc20:balanceOf', target: MVLP_TRACKER_CONTRACT, params: MVD_DAO_MULTI_SIG_WALLET, })
-  
+
   const mvlpSupply = supplies[1];
   const averageAums = (+aums[0] + +aums[1]) / 2
   const mvlpPrice = averageAums / mvlpSupply
@@ -42,7 +47,7 @@ async function polygon(api) {
 
 module.exports = {
   hallmarks: [
-    [1676592000, "Launch on Arbitrum"]
+    ['2023-02-17', "Launch on Arbitrum"]
   ],
   misrepresentedTokens: true,
   arbitrum: {

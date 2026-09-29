@@ -51,7 +51,7 @@ module.exports = {
   methodology: "Total ETH streamed on the platform",
   doublecounted: true,
   base: { tvl },
-  hallmarks: [[1734000000, "Alfafrens V2 Launch"]],
+  hallmarks: [['2024-12-12', "Alfafrens V2 Launch"]],
 };
 
 /**

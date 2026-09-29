@@ -1,6 +1,0 @@
-{
-    "nonce":"uint256:nonce",
-    "market":"address:market",
-    "baseToken":"address:baseToken",
-    "quoteToken":"address:quoteToken"
-}

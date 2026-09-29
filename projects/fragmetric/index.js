@@ -33,6 +33,14 @@ async function tvl() {
       "B5eYu4dKBS8bTvLdeZungomcaQx52rDprdKEcyHzgbBD",
       "9fvyDGfUJta9ShCagSHZirWTX4TxU4aTQVc9ndUbSoCz",
       "C14KEN37y1jei1RFxcKLP46AQkgpUokEmp45GvX8Ch9P",
+      // Solv BTC Vault
+      "EtMM32UpABx58LRbJVqmQ2ND6mUnf4sHdfjikrt3x6nJ",
+      "65dAqMRdNdtbwkdqw1X1W9QBoMCtpErmoUjdpwBJ6xLC",
+      "49pAfbiBydoeB3z8jiRb6esBj3iAf9uJPrrJKHhWCM6p",
+      // SolvBTC.jup
+      "EiYza9zB18gPrB9Jm6W1Jh5SbCrHSRQKPyp6yBD6nGRY",
+      "FFgMUCRaJwTezQdgM8W4u8hyVuYZVeshJBouveNCwBmd",
+      "7vxX8kiFBmzyRw18u1dyoZGj9TX1As2tFWbhbQonE6RT",
     ],
     solOwners: [
       "3H22A3T3CMyoGzAURZ4szV5Hmt64Dooo5g9Ns8h1kYy7",

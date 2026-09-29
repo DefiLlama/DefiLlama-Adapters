@@ -85,8 +85,7 @@ const configV2 = {
 
 async function tvl(api) {
   // Handle V2 silos
-  let toaV2 = [];
-  const blacklistedTokens = configV2[api.chain]?.blacklistedTokens || [];
+  let toaV2 = []; const blacklistedTokens = configV2[api.chain]?.blacklistedTokens || [];
   if (configV2[api.chain]) {
     const siloArrayV2 = await getSilosV2(api);
     const assetsV2 = await api.multiCall({
@@ -100,6 +99,10 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
+  if (api.chain === "sonic") 
+    return {}  // full of bad debt, unlikely to be repaid
+  
+
   if (configV2[api.chain]) {
     // Handle V2 silos
     const siloArrayV2 = await getSilosV2(api);
@@ -169,7 +172,7 @@ module.exports = {
   ethereum: { tvl, borrowed, },
   // optimism: { tvl, borrowed, },
   // base: { tvl, borrowed, },
-  sonic: { tvl, borrowed, staking},
+  sonic: { tvl, borrowed, staking },
   avax: { tvl, borrowed, },
   hallmarks: []
 }

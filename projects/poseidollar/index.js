@@ -35,8 +35,8 @@ const getPool = async (listPoolFlowX, poolRegistry) => {
     let pool = poolList[i];
     let totalStaked = pool.fields.value.fields.total_token_staked;
     let poolId = pool.fields.value.fields.id.id;
-    let poolInfo = await sui.call("suix_getDynamicFields", [poolId, null, 100000]);
-    let { coinXType, coinYType, lpType } = extractFarmTokensTypeLP(poolInfo[0].objectType);
+    let poolInfo = await sui.getDynamicFieldObjects({ parent: poolId });
+    let { coinXType, coinYType, lpType } = extractFarmTokensTypeLP(poolInfo[0].type);
 
     let coinXStaked = 0;
     let coinYStaked = 0;

@@ -27,7 +27,7 @@ const config = {
 module.exports = {
   doublecounted: true,
   hallmarks: [
-    [1674475200,"$oLIT Rewards Start"]
+    ['2023-01-23',"$oLIT Rewards Start"]
   ],
 };
 

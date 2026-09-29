@@ -55,6 +55,8 @@ function onChainTvl(
     tokens.push(...preLogTokens);
     const pools = logs.map((i) => i.poolAddress);
     blacklistedTokens = [...blacklistedTokens, ...pools];
+    if (permitFailure === undefined && tokens.length > 10) 
+      permitFailure = true 
 
     return sumTokens2({
       api,
@@ -138,7 +140,7 @@ function v3Tvl(
   };
 }
 
-  function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
+  function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [], permitFailure = false } = {}) {
     return async (api) => {
       let poolLogs = await getLogs({
         target: bPoolFactory,
@@ -160,6 +162,7 @@ function v3Tvl(
         api,
         ownerTokens,
         blacklistedTokens: [...blacklistedTokens, ...pools],
+        permitFailure,
       });
     };
   }

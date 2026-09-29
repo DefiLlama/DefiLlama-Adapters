@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 // --- CONSTANTS ---
-const AERO_TOKEN = '0x940181a94A35A4569E4529A3CDfB74e38FD98631';
+const AERO_TOKEN = ADDRESSES.base.AERO;
 const iAERO_TOKEN = '0x81034fb34009115f215f5d5f564aac9ffa46a1dc';
 const VE_AERO_CONTRACT = '0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4'; // Aerodrome Voting Escrow
 

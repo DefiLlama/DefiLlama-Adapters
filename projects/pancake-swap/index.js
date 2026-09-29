@@ -1,10 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const axios = require('axios');
 const { getLogs } = require('../helper/cache/getLogs')
 const { request, } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
 const { stakings } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens')
-const { dexExport } = require('../helper/chain/aptos')
+const { dexExport } = require('../helper/chain/aptos');
+const { getExports } = require('../helper/heroku-api');
 
 
 const graphEndpoint = 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange'
@@ -95,7 +97,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.finance/info as the source. Staking accounts for the CAKE locked in MasterChef (0x73feaa1eE314F8c655E354234017bE2193C9E24E)',
   bsc: {
-    tvl: tvlPancakeExplorer,
+    tvl: getExports('pcs-v2', ['bsc']).bsc.tvl,
   },
   ethereum: {
     tvl: getUniTVL({ factory: '0x1097053Fd2ea711dad45caCcc45EfF7548fCB362', useDefaultCoreAssets: true, })
@@ -115,6 +117,7 @@ module.exports = {
   arbitrum: { ...defaultExport },
   base: defaultExport,
   monad: defaultExport,
+  robinhood: defaultExport,
 }
 
 // https://developer.pancakeswap.finance/contracts/syrup-pools
@@ -125,7 +128,7 @@ const config = {
     '0x927158Be21Fe3D4da7E96931bb27Fd5059A8CbC2',
     '0x29115Bf4863648BB01a9cEc43d8306EC51800642',
 
-  ], CAKE: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', fromBlock: 7151302, pools: [bscCakePool, bscVeCake], },
+  ], CAKE: ADDRESSES.bsc.CAKE, fromBlock: 7151302, pools: [bscCakePool, bscVeCake], },
   ethereum: { factory: ['0x4e742608c39eafd8525b03d39121ea00ccf3c727'], CAKE: '0x152649eA73beAb28c5b49B26eb48f7EAD6d4c898', fromBlock: 17077652, },
   era: { factory: ['0x99599dd26501fb329062d1e90cc9b9fc64c2d4c2'], CAKE: '0x3A287a06c66f9E95a56327185cA2BDF5f031cEcD', fromBlock: 12527309, },
   arbitrum: { factory: ['0xD621A46e8d8D077ceFfd080c6bD4Be60a1783D6c'], CAKE: '0x1b896893dfc86bb67Cf57767298b9073D2c1bA2c', fromBlock: 121169985, },

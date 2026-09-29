@@ -1,5 +1,11 @@
 const { yieldHelper } = require('../helper/yieldHelper')
-const abi = require("./abi.json");
+const abi = {
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address want, address strat)",
+    "wantLockedTotal": "uint256:wantLockedTotal",
+    "token0": "address:token0",
+    "token1": "address:token1"
+  };
 const vaultchef = "0xBdA1f897E851c7EF22CD490D2Cf2DAce4645A904";
 const fish = "0x3a3df212b7aa91aa0402b9035b098891d276572b";
 

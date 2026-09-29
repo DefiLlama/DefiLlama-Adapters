@@ -116,8 +116,18 @@ const fetchAssetAddresses = async (api, chain) => {
 }
 
 
+const mapWrappedAssetBalance = (chain, address, availableBalance) => {
+    const wWTGXX = capConfig.ethereum.tokens.wWTGXX;
+    const WTGXX = capConfig.ethereum.tokens.WTGXX;
+    if (chain === 'ethereum' && address.toLowerCase() === wWTGXX.address.toLowerCase()) {
+        return [WTGXX.address, availableBalance /* same decimals, nothing to do */];
+    }
+    return [address, availableBalance];
+}
+
 module.exports = {
     fetchAgentConfigs,
     fetchAssetAddresses,
+    mapWrappedAssetBalance,
 }
 

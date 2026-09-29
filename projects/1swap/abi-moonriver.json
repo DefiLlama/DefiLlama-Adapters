@@ -1,4 +1,0 @@
-{
-  "getTokenBalances": "uint256[]:getTokenBalances",
-  "getTokens": "address[]:getTokens"
-}

@@ -1,4 +1,4 @@
-const abi = require("./abi.json");
+const abi = require('../helper/abis/uniV3.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs, getLogs2 } = require('../helper/cache/getLogs')
 

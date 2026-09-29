@@ -1,4 +1,9 @@
-const abi = require("./abi.json");
+const abi = {
+    "totalUnderlying": "uint256:totalUnderlying",
+    "getUnderlying": "address:getUnderlying",
+    "poolsCount": "uint256:poolsCount",
+    "getPoolAtIndex": "function getPoolAtIndex(uint256 index) view returns (address)"
+  };
 
 const addressProviders = [
   '0x139c15e21b0f6e43fc397face5de5b7d5ae6874a',

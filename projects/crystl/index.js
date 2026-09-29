@@ -39,7 +39,7 @@ async function tvl(api) {
 
 module.exports = {
   hallmarks: [
-    [1656590400, "Protocol End"] // https://crystlfinance.medium.com/wrapping-up-crystl-finance-4743287a6bf
+    ['2022-06-30', "Protocol End"] // https://crystlfinance.medium.com/wrapping-up-crystl-finance-4743287a6bf
   ],
   polygon: {
     tvl,

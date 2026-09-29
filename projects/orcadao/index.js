@@ -62,11 +62,12 @@ async function treasury(api) {
 
 module.exports = {
   avax: {
+    deadFrom: '2026-01-01',
     methodology: "Tokens locked in as collateral is counted as TVL",
     tvl,
     borrowed,
     pool2: pool2(podLeader, pool2LPs, "avax", addr => `avax:${addr}`),
-    treasury,
+    // treasury,
     staking: staking(podLeader, orca)
   }
 }

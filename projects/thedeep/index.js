@@ -21,14 +21,27 @@ const config = {
       { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, }, // Uniswap 
     ]
   },
+  bsc: {
+    vaultConfigs: [
+      { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 30131926, }, // Pancakeswap
+    ]
+  },
+  btnx: {
+    vaultConfigs: [
+      { factory: '0x53511764DE94CdA43CbBadFFCca3F29D2EFAB0F8', fromBlock: 1785696, }, // Bitzy
+    ]
+  },
   celo: {
     vaultConfigs: [
+      { factory: '0x8D05f6870106707BaeCFCf5C0570DB7a583eb92A', fromBlock: 27821113, }, // Ubeswap
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 24256269, }, // Uniswap
       { factory: '0xB3bf88Cb919a222A6F9c90ca8a9ac261CBD3e5bF', fromBlock: 38293141, }, // Velodrome Legacy
       { factory: '0x82DcA62C4B5Dd28Cc85CE8Ae3B170Ce020e33870', fromBlock: 38293141, }, // Velodrome
     ],
   },
   flow: {
     vaultConfigs: [
+      { factory: '0x6992bB9dDbf44166e3739c8A3147e7e70a082cEb', fromBlock: 43561997, }, // FlowSwap
       { factory: '0x3bE78614342C7763d87520b2502085761Aa4e5f8', fromBlock: 39081014, }, // KittyPunch
     ],
   },
@@ -47,6 +60,11 @@ const config = {
   hemi: {
     vaultConfigs:[
       { factory: '0x5541Bcd3d163326CF12267D1cF6207dbde788348', fromBlock: 2624151, }, // Sushi
+    ]
+  },
+  polygon: {
+    vaultConfigs: [
+      { factory: '0xF39A4c7C87310116Ad915833769d301c599b0298', fromBlock: 79497352, }, // Uniswap
     ]
   },
 }

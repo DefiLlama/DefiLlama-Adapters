@@ -35,8 +35,6 @@ async function tvl(api) {
     if(coinType === UPUSD || coinType === "0x49f123d62df1db5a735463f3817dcd53aa084173cbe4593db6b30647b9801cb8::unihouse::FeeTag, 0x49f123d62df1db5a735463f3817dcd53aa084173cbe4593db6b30647b9801cb8::unihouse::HouseFeeConfig"){
       continue;
     }else {
-      console.log(`${coinType}`,houseTvl + _tvl);
-
       api.add(coinType, houseTvl+_tvl);
     }
     
@@ -47,10 +45,7 @@ async function tvl(api) {
 
   const buck_tvl = upusd_factory?.fields?.underlying_balance;
   
-  console.log(`${BUCK}`,buck_tvl);
-
   api.add(BUCK, buck_tvl);
-
 }
 
 module.exports = {

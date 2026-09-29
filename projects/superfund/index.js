@@ -1,5 +1,9 @@
 const sdk = require("@defillama/sdk");
-const config = require("./config");
+const ADDRESSES = require('../helper/coreAssets.json')
+const config = {
+    "SUPERFUND_VAULT": "0x10076ed296571ce4fde5b1fdf0eb9014a880e47b",
+    "USDC": ADDRESSES.base.USDC
+};
 
 async function tvl(api) {
     const balances = {};

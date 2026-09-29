@@ -3,16 +3,27 @@ const { defaultTokens } = require('../helper/cex');
 
 // Gnosis Safe multisigs
 const treasuryMultisigs = [
-    '0x5b38d8094e896FF29DB9889516bf053f5Cf59f60', // Outbound payments
-    '0xB6301976f04E6A58D6E57Ff04144A31D911D3a25', // Inbound payments
-    '0x58A916AD66584811C939AA844025036e5078E811', // DeFi Farming
-    '0x3F3Ac8C6e85c8659e0af4f4B6ed50f51A1A8e0B1', // Main Ethereum
-    '0x184BF40166092A213FA3fEee0ac91dAcd554E2E0', // Old Ethereum
-    '0xc033B96f8A66787420b780fF2C6af75E89F4464b', // Old Avalanche and Mantle
-    '0x1feE198A3D28B2419bf0Ab4BBbd6cC8f75368216', // Old Linea
-    '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', // Old Mode
-    '0x0EFeE436D77258217956Ea3fA0E639e306D74992', // Old Base
-    '0xa00991F9Aa65a54dBDE368385771C5613A024693', // Old Blast
+    // Old
+    '0x5b38d8094e896FF29DB9889516bf053f5Cf59f60',
+    '0xB6301976f04E6A58D6E57Ff04144A31D911D3a25',
+    '0x58A916AD66584811C939AA844025036e5078E811',
+    '0x3F3Ac8C6e85c8659e0af4f4B6ed50f51A1A8e0B1',
+    '0x184BF40166092A213FA3fEee0ac91dAcd554E2E0',
+    '0xc033B96f8A66787420b780fF2C6af75E89F4464b',
+    '0x1feE198A3D28B2419bf0Ab4BBbd6cC8f75368216',
+    '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94',
+    '0x0EFeE436D77258217956Ea3fA0E639e306D74992',
+    '0xa00991F9Aa65a54dBDE368385771C5613A024693',
+	// New
+	"0xe0427Ec184AB3D11E697EF0bE5E5e0D4D989E008",
+	"0xfbAF843a62AA5B756f72689de20409780c8a5a97",
+	"0xfB86AE869D7488875C92B3424C307b813448A7D8",
+	"0x285e39643CDe291d3d8b447C74eFbe13D8A44378",
+	"0x014C2b6C66bdC59B20478E6407D3B436479406a8",
+	"0x958bEFE78bbFe0946F55777F177062af7Fe7C913",
+	"0x64ad064cD778396E20C57B4FF40A1884E32d4276",
+	"0x280085d7cB14CCc0B6e8867826F19c898d2bFDbb",
+	"0xa9f673B47bcc213624e23A55FC57Ca53ccDBA96f",
 ];
 
 const tokens = {
@@ -54,7 +65,7 @@ const tokens = {
         USDC: ADDRESSES.arbitrum.USDC,
         USDT: ADDRESSES.arbitrum.USDT,
         WETH: ADDRESSES.arbitrum.WETH,
-        RAM: '0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418',
+        RAM: ADDRESSES.arbitrum.RAM,
         Silo: '0x0341C0C0ec423328621788d4854119B97f44E391',
         SYO: '0x577Fd586c9E6BA7f2E85E025D5824DBE19896656',
         WBTC: ADDRESSES.arbitrum.WBTC,
@@ -113,7 +124,7 @@ const tokens = {
     base: {
         WETH: ADDRESSES.base.WETH,
         USDC: ADDRESSES.base.USDC,
-        AERO: '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
+        AERO: ADDRESSES.base.AERO,
         USDT: ADDRESSES.base.USDT,
         SKYA: '0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9',
         ETH: ADDRESSES.null,
@@ -154,19 +165,20 @@ const tokenMappingERC20 = {
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
         // { token: tokens.ethereum.tsSwellRswETH, use: ADDRESSES.null },
-        { token: tokens.ethereum.eUSDC_2, use: tokens.ethereum.USDC },
     ],
     linea: [
-        { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
         { token: tokens.linea.xREX, coingeckoId: "etherex", decimals: 18 },
-        // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
     ],
     swellchain: [
         // { token: tokens.swellchain.tsSwellETH, use: ADDRESSES.null }, // TODO not priced properly
+    ],
+};
+
+const TURTLE = '0x66fd8de541c0594b4dccdfc13bf3a390e50d3afd';
+
+const ownTokens = {
+    ethereum: [
+        TURTLE,
     ],
 };
 
@@ -235,6 +247,7 @@ module.exports = {
     treasuryMultisigs,
     tokenMapping,
     tokenMappingERC20,
+    ownTokens,
     treasuryNFTs,
     turtleVaults,
 };

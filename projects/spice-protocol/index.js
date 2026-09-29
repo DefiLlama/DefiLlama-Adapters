@@ -1,4 +1,6 @@
-const {CONFIG} = require("./constants.js")
+const CONFIG = {
+  plume_mainnet: ['0x6A64f470293630e08d24455ec0B73960aB7dbb23'],
+}
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 Object.keys(CONFIG).forEach((chain) => {

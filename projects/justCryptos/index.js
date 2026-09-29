@@ -17,7 +17,7 @@ function getItemByName (projectName, listArr) {
 const tvl = async (api) => {
   const pools = await get(url);
   let item = getItemByName('Just Cryptos', pools.projects)
-  return api.addUSDValue(Math.round(item.locked))
+  return api.addUSDValue(item.locked)
 }
 
 module.exports = {

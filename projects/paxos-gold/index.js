@@ -11,5 +11,5 @@ module.exports = {
 }
 
 module.exports.hallmarks = [
-  [1724371200, "Transfer fee was set to 0"],
+  ['2024-08-23', "Transfer fee was set to 0"],
 ]

@@ -39,12 +39,15 @@ Object.keys(config).forEach(chain => {
       })
       api.getBalancesV2().removeNegativeBalances()
     }, 
-    borrowed: async (api) => {
-      const data = await getData()
-      data.forEach((token) => {
-        api.add(token.id, token.totalBorrowedAmount);
-      })
-    },
+    // NOTE: borrowed function zeroed out due to bad debt
+    // Original implementation commented out below:
+    // borrowed: async (api) => {
+    //   const data = await getData()
+    //   data.forEach((token) => {
+    //     api.add(token.id, token.totalBorrowedAmount);
+    //   })
+    // },
+    borrowed: () => ({}),
   }
 })
 

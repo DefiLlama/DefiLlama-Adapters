@@ -33,7 +33,8 @@ const tvl = async (api) => {
   const { factory, usdplus } = config[api.chain]
   if (usdplus) api.add(usdplus, await api.call({ target: usdplus, abi: 'erc20:totalSupply'}))
   if (!factory) return
-  const [tokens] = await api.call({ target: factory, abi })
+  const [tokens] = (await api.call({ target: factory, abi, permitFailure: true})) ?? []
+  if (!tokens) return;
   const balances = await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' })
   api.add(tokens, balances)
 }

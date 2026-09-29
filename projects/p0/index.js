@@ -1,92 +1,45 @@
-const { Program } = require("@project-serum/anchor");
-const { getProvider } = require("../helper/solana");
-const idl = require('./idl');
+const axios = require('axios');
 
-// MarginFi program ID
-const MARGINFI_PROGRAM_ID = 'MFv2hWf31Z9kbCa1snEPYctwafyhdvnV7FZnsebVacA';
+// P0 public API (p0-monitor). Override the host via P0_PUBLIC_API_BASE if needed.
+const BASE_URL = process.env.P0_PUBLIC_API_BASE || 'https://api.0.xyz';
+const METRICS_ENDPOINT = `${BASE_URL}/v0/bankMetrics`;
+
+async function fetchMetrics() {
+  const { data } = await axios.get(METRICS_ENDPOINT, { timeout: 30000 });
+  if (!data || !Array.isArray(data.banks)) {
+    throw new Error('p0 adapter: unexpected /v0/bankMetrics response shape');
+  }
+  return data;
+}
+
+function addSide(api, banks, nativeField) {
+  for (const b of banks) {
+    if (!b.priced || !b.mint) continue;
+    // Whole base units only; skip anything that isn't a clean integer string.
+    const baseUnits = String(b[nativeField] ?? '').split('.')[0];
+    if (/^\d+$/.test(baseUnits) && baseUnits !== '0') api.add(b.mint, baseUnits);
+  }
+}
 
 async function tvl(api) {
-  const provider = getProvider();
-  const program = new Program(idl, MARGINFI_PROGRAM_ID, provider);
-  
-  // Get all bank accounts from the MarginFi program
-  const allBanks = await program.account.bank.all();
-
-  // Calculate available liquidity for each bank and aggregate by mint
-  // Use BigInt for all calculations to preserve precision
-  const availableLiquidityByMint = {};
-
-  for (const { account: bank } of allBanks) {
-    const mint = bank.mint.toString();
-    
-    // Calculate total deposits
-    const assetShareValueRaw = BigInt(bank.assetShareValue.value.toString());
-    const totalAssetSharesRaw = BigInt(bank.totalAssetShares.value.toString());
-    const totalDeposits = (assetShareValueRaw * totalAssetSharesRaw) / (2n ** 96n);
-    
-    // Calculate total borrows
-    const liabilityShareValueRaw = BigInt(bank.liabilityShareValue.value.toString());
-    const totalLiabilitySharesRaw = BigInt(bank.totalLiabilityShares.value.toString());
-    const totalBorrows = (liabilityShareValueRaw * totalLiabilitySharesRaw) / (2n ** 96n);
-    
-    // Available liquidity = deposits - borrows
-    const availableLiquidity = totalDeposits > totalBorrows ? totalDeposits - totalBorrows : 0n;
-    
-    if (availableLiquidity > 0n) {
-      if (!availableLiquidityByMint[mint]) {
-        availableLiquidityByMint[mint] = 0n;
-      }
-      availableLiquidityByMint[mint] = availableLiquidityByMint[mint] + availableLiquidity;
-    }
-  }
-
-  for (const [mint, amountBigInt] of Object.entries(availableLiquidityByMint)) {
-    if (amountBigInt > 0n) {
-      api.add(mint, amountBigInt.toString());
-    }
-  }
-
-  return api.getBalances();
+  const { banks } = await fetchMetrics();
+  addSide(api, banks, 'totalDepositsNative');
 }
 
 async function borrowed(api) {
-  const provider = getProvider();
-  const program = new Program(idl, MARGINFI_PROGRAM_ID, provider);
-  
-  // Get all bank accounts from the MarginFi program
-  const allBanks = await program.account.bank.all();
-
-  const borrowedByMint = {};
-
-  for (const { account: bank } of allBanks) {
-
-    const liabilityShareValueRaw = BigInt(bank.liabilityShareValue.value.toString());
-    const totalLiabilitySharesRaw = BigInt(bank.totalLiabilityShares.value.toString());
-    
-    const totalBorrows = (liabilityShareValueRaw * totalLiabilitySharesRaw) / (2n ** 96n);
-    
-    if (totalBorrows > 0n) {
-      const mint = bank.mint.toString();
-      if (!borrowedByMint[mint]) {
-        borrowedByMint[mint] = 0n;
-      }
-      borrowedByMint[mint] = borrowedByMint[mint] + totalBorrows;
-    }
-  }
-
-  for (const [mint, amountBigInt] of Object.entries(borrowedByMint)) {
-    if (amountBigInt > 0n) {
-      api.add(mint, amountBigInt.toString());
-    }
-  }
-
-  return api.getBalances();
+  const { banks } = await fetchMetrics();
+  addSide(api, banks, 'totalBorrowsNative');
 }
 
 module.exports = {
-  solana: { 
+  doublecounted: true,
+  // /v0/bankMetrics returns current state only (no historical param), so opt out
+  // of DefiLlama's historical backfill instead of stamping today's TVL onto the past.
+  timetravel: false,
+  methodology:
+    'TVL is the sum of all deposited funds across every P0 bank. Active Loans is the sum of all outstanding borrows. All banks are reported per underlying mint; data comes from the P0 public API (/v0/bankMetrics).',
+  solana: {
     tvl,
-    borrowed 
+    borrowed,
   },
-  methodology: "TVL is calculated as available liquidity across all banks in the P0 program."
 };

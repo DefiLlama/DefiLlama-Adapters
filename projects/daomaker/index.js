@@ -3,7 +3,18 @@ const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
-const contracts = require("./contracts.json");
+const contracts = {
+    "chains": [
+      "ethereum",
+      "bsc",
+      "polygon",
+      "fantom",
+      "step",
+      "celo"
+    ],
+    "stakingContractEth": "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847",
+    "stakingTokenEth": "0x0f51bb10119727a7e5eA3538074fb341F56B09Ad"
+  };
 
 const chainIds = {
   "ethereum": "1",

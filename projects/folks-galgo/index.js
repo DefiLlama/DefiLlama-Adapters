@@ -17,14 +17,14 @@ module.exports = {
 };
 
 module.exports.hallmarks = [
-  [1664553600, "Algorand Governance Recommitment"], //5
-  [1672502400, "Algo Gov"], //6
-  [1680278400, "Algo Gov"], //7
-  [1688140800, "Algo Gov"], //8
-  [1696089600, "Algo Gov"], //9
-  [1704038400, "Algo Gov"], //10
-  [1711900800, "Algo Gov"], //11
-  [1719763200, "Algo Gov"], //12
-  [1727712000, "Algo Gov"], //13
-  [1735660800, "Algo Gov"], //14
+  ['2022-09-30', "Algorand Governance Recommitment"], //5
+  ['2022-12-31', "Algo Gov"], //6
+  ['2023-03-31', "Algo Gov"], //7
+  ['2023-06-30', "Algo Gov"], //8
+  ['2023-09-30', "Algo Gov"], //9
+  ['2023-12-31', "Algo Gov"], //10
+  ['2024-03-31', "Algo Gov"], //11
+  ['2024-06-30', "Algo Gov"], //12
+  ['2024-09-30', "Algo Gov"], //13
+  ['2024-12-31', "Algo Gov"], //14
 ]

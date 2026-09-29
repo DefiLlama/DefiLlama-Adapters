@@ -1,7 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
-const abi = require("./abi.json");
+const abi = {
+  "totalLoansOutstanding": "uint256:totalLoansOutstanding",
+  "pools": "function pools(address) view returns (uint256 totalMinted, uint256 totalPrincipalRedeemed, bool created)",
+  "assets": "uint256:assets"
+};
 const BigNumber = require("bignumber.js");
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -22,6 +26,7 @@ const getTranchedPoolAddresses = async (api) => {
       api,
       fromBlock: V2_START,
       topic: "PoolCreated(address,address)",
+      onlyUseExistingCache: true,
     });
     return logs.map((l) => "0x" + l.topics[1].substr(26));
   }
@@ -33,7 +38,7 @@ const getTranchedPoolAddresses = async (api) => {
  */
 const tvl = async (api) => {
   const tranchedPoolAddresses = await getTranchedPoolAddresses(api);
-  return api.sumTokens({ tokens: [USDC], owners: [seniorPoolAddress, ...tranchedPoolAddresses]})
+  return api.sumTokens({ tokens: [USDC], owners: [seniorPoolAddress, ...tranchedPoolAddresses] })
 };
 
 /**
@@ -50,6 +55,12 @@ const tvl = async (api) => {
  * `SeniorPool.assets()`).
  */
 const borrowed = async (api) => {
+
+  if (api.timestamp * 1000 > new Date('2026-06-01')) {
+    // protocol is insolvant/ winding down: https://gov.goldfinch.finance/t/gip-87-maintenance-mode-of-goldfinch-operations-and-wind-down-goldfinch-prime/2202
+    return {}
+  }
+
   const ethBlock = api.block
   const _seniorPoolUsdcBalances = {};
   await sumTokens(
@@ -125,7 +136,7 @@ const borrowed = async (api) => {
 };
 
 module.exports = {
-    misrepresentedTokens: true,
+  misrepresentedTokens: true,
   ethereum: {
     tvl,
     borrowed,

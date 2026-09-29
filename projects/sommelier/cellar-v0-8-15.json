@@ -1,7 +1,0 @@
-{
-  "asset": "address:asset",
-  "totalAssets": "uint256:totalAssets",
-  "totalHoldings": "uint256:totalHoldings",
-  "totalLocked": "uint256:totalLocked",
-  "maxLocked": "uint256:maxLocked"
-}

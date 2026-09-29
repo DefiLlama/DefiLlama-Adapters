@@ -1,6 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
-const ABI = require('./abi.json');
+const ABI = {
+    "underlyingBalance": "function getUnderlyingBalances() public view returns (uint256 amount0Current, uint256 amount1Current)",
+    "getBalanceInCollateralToken": "function getBalanceInCollateralToken() external view returns (uint256 amount)"
+  };
 const config ={
   ethereum: [
     { factory: '0xf1e70677fb1f49471604c012e8B42BA11226336b', fromBlock: 17266660 }, // uniswap
@@ -55,7 +58,10 @@ module.exports = {
 };
 
 // vaults that were deployed through factory but are uninitialized and unused
-const ignoreList  = {mantle : ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"]}
+const ignoreList  = {
+  mantle: ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"],
+  ethereum: ["0xF9ab542616A0C8fA94e41c968622C3b2367F5ad1"], // deprecated vault, reverts token0
+}
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {

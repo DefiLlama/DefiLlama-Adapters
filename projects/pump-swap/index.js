@@ -92,8 +92,13 @@ async function tvl(api) {
     `
 
   const data = await queryAllium(query)
+  const blacklistedTokens = new Set([
+    'Dsx5h4jk8vyQjd8B9JF9cydNTz87KgPqUG2QCGH9PjCh'
+  ])
 
   for (const item of data) {
+    if (blacklistedTokens.has(item.mint_address)) continue;
+
     api.add(item.mint_address, item.total_raw_balance)
   }
 }

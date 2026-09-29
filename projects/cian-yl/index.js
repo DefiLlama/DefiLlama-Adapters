@@ -18,13 +18,13 @@ const config = {
       "0xD34f59E172cF3915f56C96A3037Ac554A7399D77", // PYUSD Optimized Long-Short (variant 1)
 
       // sei
-      "0x7fF67093231CE8DBC70c0A65b629ed080e66a7F0", // pumpbtc
+      // "0x7fF67093231CE8DBC70c0A65b629ed080e66a7F0", // pumpbtc
       "0xe5DfcE87E75e92C61aeD31329716Cf3D85Cd9C8c" // ylBTCLST
 
     ],
     preVaults: [
       "0x6dD1736E15857eE65889927f40CE3cbde3c59Cb2", // rseth
-      "0x83B5ab43b246F7afDf465103eb1034c8dfAf36f2", // pumpbtc
+      // "0x83B5ab43b246F7afDf465103eb1034c8dfAf36f2", // pumpbtc  - more tokens are in this vault atm compared to total supply of pumpBTC
       "0xf7cb66145c5Fbc198cD4E43413b61786fb12dF95", // unibtc
       "0xC8C3ABB76905caD1771448B5520F052FE83e8B0E", // wbeth
       "0xEFe4c96820F24c4BC6b2D621fD5FEb2B46adC1Df", // usda

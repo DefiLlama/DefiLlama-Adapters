@@ -31,6 +31,12 @@ module.exports = {
       zBNB: "0x9a39f4AB3f52026432835dEe6D3DB721D95f3D28",
       zUSD: "0xC26b7Cbe7e695a0d11a8cB96140D1Cd502945A2C",
       USDV: "0xC897a2Ae2E45f0D7ba8cbE397208C3e9f8914A9f",
+      CUSD: "0x4dFa92842d05a790252A7f374323b9C86D7b7E12",
+      LINA: "0x84a14A10E7258C68413168c98E905483f9183D7a",
+      StandalonePool: "0x6569DDC1Cc2648c89BC8025046A7dd65EB8940F3",
+      StandalonePool2: "0xfcd11c01c14e4c12C3F9835CD5192fE774038d46",
+      StandalonePool3: "0xaded24B510a137b05a8eD958a029DACD6a59efDc",
+      volatilePool: "0x5b573F2E034e37Cc883F2a614BDdC77b07081B6f",
     },
   },
   arbitrum: {
@@ -54,6 +60,10 @@ module.exports = {
       crossChainPool: "0xe78876C360716f2225F55A6726B32324FE1B1145",
       USDV: "0xa6eF6C45EbFDBc13f6D032fbDFeC9b389C1603E5",
       sFRAX: "0xaBF19eAdb08693278FdbAD35Cb4E3c1D6484c8Bb",
+      fraxUSDV: "0x3cc8c886575968642Cab9F430261c81C5b044d4b",
+      StandalonePool: "0xD64816Fbdf50a1C4AEa456A4006ad21A928305f3",
+      ePendle: "0x3257EaA9C919fe01EF628fe9031BA2Cd8927A3b1",
+      volatilePool: "0x39a2f59875bC636b7eFEcAc30b6E97066a850B1e",
     },
   },
   ethereum: {
@@ -67,6 +77,9 @@ module.exports = {
       ETHx: "0x647CC8816C2d60A5fF4d1ffeF27a5b3637d5ac81",
       crossChainPool: "0xA45C0ABeef67C363364E0e73832df9986aBa3800",
       USDV: "0x05A33c0eaf81367Ce953d2dCd4ea1BE8758f4D32",
+      volatilePool: "0x89B88A45E23978b38A14695b63F475d4e4CcaF95",
+      mWOM: "0xcf2e56E086fcD21eaB3614A5A78c8Ae27c2F0536",
+      wmxWOM: "0xe43c1695df76CcA4D6079061924D7150Fd553c21",
     },
   },
   // does not have wom yet
@@ -75,6 +88,7 @@ module.exports = {
     veWom: "",
     pools: {
       crossChainPool: "0x80f088ae72DB6d1AC337340cd6Aa0EB1F67337CE",
+      volatilePool: "0x15dcC2da1a73194C9c5BB83ecdA86251F0b1a17F",
     },
   },
   avax: {
@@ -85,6 +99,10 @@ module.exports = {
       sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
       USDV: "0x108c990c93Fa8E3cD88DDb13594D39f09D9B3C02",
       ggAVAX: "0xBbA43749efC1bC29eA434d88ebaf8A97DC7aEB77",
+      triPool: "0xc12c0Ced34b115655234E8a4dB87EBc8F6F362d0",
+      AUSD: "0x911a98f54da5355EAba1c8D57933ae5493c4223b",
+      Axon: "0x74163B79733AEA2d9C4cED777dc49D591Db739E9",
+      volatilePool: "0x89B88A45E23978b38A14695b63F475d4e4CcaF95",
     },
   },
   base: {
@@ -104,10 +122,32 @@ module.exports = {
       frax: "0x6BB82A9b0b9b9716B885baeEfDBE47b685a0F919",
       dola: "0x489818F2eeAef737105887710F7C5b9323Ad3d01",
       frxETH: "0xB86BA65b75D34402bf377cF83b184554a18Fcafa",
+      StandalonePool: "0x7B1f9C537efCa25501d15a77Bdc1d23287839623",
+    },
+  },
+  polygon: {
+    wom: "",
+    veWom: "",
+    pools: {
+      crossChainPool: "0x4705b477d35112f7B7cA2Bc5059eD9b78bb46134",
+    },
+  },
+  monad: {
+    wom: "",
+    veWom: "",
+    pools: {
+      mainPool: "0x25FAa3176efa09658E65853F077810bb2CCa82a4",
+    },
+  },
+  hyperliquid: {
+    wom: "",
+    veWom: "",
+    pools: {
+      mainPool: "0xeF420C965d80fb24A211155a6B489C0D62b7e07a",
     },
   },
   hallmarks: [
-    [1662417125, "Liquidity Mining Start"],
-    [1680674400, "Arbitrum Launching"],
+    ['2022-09-05', "Liquidity Mining Start"],
+    ['2023-04-05', "Arbitrum Launch"],
   ],
 };

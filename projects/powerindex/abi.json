@@ -1,8 +1,0 @@
-{
-  "getCurrentTokens": "address[]:getCurrentTokens",
-  "underlying": "address:underlying",
-  "getPricePerFullShare": "uint256:getPricePerFullShare",
-  "token": "address:token",
-  "get_virtual_price": "uint256:get_virtual_price",
-  "pricePerShare": "uint256:pricePerShare"
-}

@@ -1,4 +1,0 @@
-{
-  "getStatFields": "function getStatFields() view returns (tuple(uint72 totalStakedAmount, uint72 sharesTotalSupply, uint72 _gap, uint40 lastStakeId))",
-  "balanceOf": "function balanceOf(address account) view returns (uint256)"
-}

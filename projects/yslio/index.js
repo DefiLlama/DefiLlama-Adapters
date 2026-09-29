@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accsYSLPerShare, address strat, bool isActive)",
+    "poolLength": "uint256:poolLength",
+    "symbol": "string:symbol"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const masterChefContract = "0xEE7Bc7727436D839634845766f567fa354ba8C56";

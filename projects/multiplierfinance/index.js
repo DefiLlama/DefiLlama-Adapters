@@ -1,5 +1,11 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "getReserves": "address[]:getReserves",
+    "getReserveData": "function getReserveData(address _reserve) view returns (uint256 totalLiquidity, uint256 availableLiquidity, uint256 totalBorrowsStable, uint256 totalBorrowsVariable, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 utilizationRate, uint256 liquidityIndex, uint256 variableBorrowIndex, address mTokenAddress, uint40 lastUpdateTimestamp)",
+    "totalSupply": "uint256:totalSupply",
+    "getNoOfErc20s": "uint256:getNoOfErc20s",
+    "erc20List": "function erc20List(uint256) view returns (address)"
+  };
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const YieldContract = "0xE4Baf69B887843aB6A0e82E8BAeA49010fF619af";

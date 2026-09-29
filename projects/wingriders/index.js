@@ -33,6 +33,6 @@ module.exports = {
     staking,
   },
   hallmarks: [
-    [1659312000,"Nomad Bridge Hack"]
+    ['2022-08-01',"Nomad Bridge Hack"]
   ],
 };

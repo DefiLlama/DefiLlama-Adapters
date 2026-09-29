@@ -28,8 +28,8 @@ module.exports = {
     }
   },
   hallmarks: [
-    [1643053740, "Crab v1 launch"],
-    [1659055140, "Crab v2 launch"],
-    [1671221995, "Zen Bull launch"]
+    ['2022-01-24', "Crab v1 launch"],
+    ['2022-07-29', "Crab v2 launch"],
+    ['2022-12-16', "Zen Bull launch"]
   ]
 };

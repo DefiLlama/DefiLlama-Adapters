@@ -1,5 +1,4 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { sumERC4626Vaults } = require("../helper/erc4626");
 
 const ADMIN_ADDRESSES = {
   arbitrum: "0x4928c8F8c20A1E3C295DddBe05095A9aBBdB3d14",
@@ -18,18 +17,22 @@ const erc4626Vaults = {
   ]
 }
 
+async function getVaults (api, vaults) {
+  const assets = await api.multiCall({ calls: vaults, abi: 'address:asset' })
+  return sumTokens2({ api, tokens: assets, owners: vaults })
+}
+
 async function tvl(api) {
   const adminContract = ADMIN_ADDRESSES[api.chain];
   const vaults = erc4626Vaults[api.chain] ?? []
   const collAddresses = await api.call({ abi: "address[]:getValidCollateral", target: adminContract, });
   const activePool = await api.call({ abi: "address:activePool", target: adminContract, });
   await sumTokens2({ api, tokens: collAddresses, owner: activePool, });
-  await sumERC4626Vaults({ api, calls: vaults, isOG4626: true,});
+  await getVaults(api, vaults)
 }
 
 module.exports = {
-  methodology:
-    "Adds up the total value locked as collateral on the Gravita platform",
+  methodology: "Adds up the total value locked as collateral on the Gravita platform",
   start: '2023-05-16', // Tuesday, May 15, 2023 17:00 GMT
 };
 

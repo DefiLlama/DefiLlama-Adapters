@@ -1,4 +1,10 @@
-const abi = require("./abi.json");
+const abi = {
+    "allPools": "function allPools(uint256) view returns (address)",
+    "allPoolsLength": "uint256:allPoolsLength",
+    "aToken": "address:aToken",
+    "poolTokensInfo": "function poolTokensInfo() view returns (address longToken, address shortToken, address sponsorToken)",
+    "status": "function status() view returns (bool isShortLastRoundWinner, bool isFirstUser, bool isFirstRound, uint256 gameRound, uint256 durationOfGame, uint256 durationOfBidding, uint256 lastUpdateTimestamp, int256 initialPrice, int256 endPrice, uint8 currState)"
+  };
 const { pool2 } = require("../helper/pool2");
 
 const entropyV1Factory = "0xeff87121ab94457789495918eef5a5904eb04419";

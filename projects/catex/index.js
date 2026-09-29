@@ -1,9 +1,9 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 const STRATEGIES_URL = 'https://raw.githubusercontent.com/Lynexfi/lynex-lists/main/strategies/main.json'
 
 async function getCatexPools(chainId) {
-  const data = await get(STRATEGIES_URL)
+  const data = await getConfig('catex', STRATEGIES_URL)
   const strategies = data[chainId] || []
   return strategies
     .filter(strategy => strategy.variant === 'uniV4')
@@ -35,6 +35,6 @@ module.exports = {
   polygon: { tvl: (api) => tvlForChain(api, '137') },
   unichain: { tvl: (api) => tvlForChain(api, '130') },
   hallmarks: [
-    [1748451600, "Catex migrated from Polygon to Unichain"],
+    ['2025-05-28', "Catex migrated from Polygon to Unichain"],
   ],
 } 

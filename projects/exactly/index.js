@@ -14,7 +14,11 @@ const config = {
   optimism: {
     auditor: "0xaEb62e6F27BC103702E7BC879AE98bceA56f027E",
     start: 78_310_663,
-  }
+  },
+  base: {
+    auditor: "0x0Aeb0BCB919858C0a4dceC3EeD879985034A597c",
+    start: 38_135_747,
+  },
 };
 
 Object.entries(config).forEach(([chain, { auditor, start }]) => {

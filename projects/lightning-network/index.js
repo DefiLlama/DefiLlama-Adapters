@@ -1,15 +1,27 @@
 const { get } = require("../helper/http");
 
-const dayHistory = {};
-
 async function GetDailyHistory() {
   let data = await get('https://bitcoinvisuals.com/static/data/data_daily.csv');
   data = parseCSV(data);
 
+  const dayHistory = {};
   data.forEach((row) => {
     if (!row.capacity_total) return;
-    dayHistory[row.day] = row.capacity_total;
+    dayHistory[row.day] = +row.capacity_total;
   });
+  return dayHistory;
+}
+
+async function GetDailyHistory1() {
+  let data = await get('https://mempool.space/api/v1/lightning/statistics/all');
+
+  const dayHistory = {};
+  data.forEach((row) => {
+    if (!row.total_capacity) return;
+    const day = new Date(row.added * 1000).toISOString().slice(0, 10);
+    dayHistory[day] = row.total_capacity / 1e8
+  });
+  return dayHistory;
 }
 
 async function get1MLCapacity() {
@@ -27,20 +39,27 @@ async function getFromTxStat() {
   return data.results[0].series[0].values.pop()[1]
 }
 
-async function getChannelCapacity(timestamp) {
-  const day = new Date(timestamp * 1000).toISOString().slice(0, 10)
-  return dayHistory[day]
+function getChannelCapacity(dayHistory, timestamp) {
+  // walk back a few days so a lagging source still yields its freshest value
+  for (let i = 0; i < 5; i++) {
+    const day = new Date((timestamp - i * 86400) * 1000).toISOString().slice(0, 10)
+    if (dayHistory[day] != null) return dayHistory[day]
+  }
 }
 
 async function tvl({ timestamp }) {
-  const getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
+  let getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
   let channelCapacity
+  getCurrentTVL = false // temporarily disable live scrape due to 1ML issues
 
   if (getCurrentTVL) {
     channelCapacity = await get1MLCapacity()
   } else {
-    await GetDailyHistory();
-    channelCapacity = await getChannelCapacity(timestamp)
+    // bitcoinvisuals first so mempool.space wins on overlapping days; tolerate one source being down
+    const sources = await Promise.allSettled([GetDailyHistory(), GetDailyHistory1()]);
+    sources.filter(s => s.status === 'rejected').forEach(s => console.error(s.reason));
+    const dayHistory = Object.assign({}, ...sources.map(s => s.value ?? {}));
+    channelCapacity = getChannelCapacity(dayHistory, timestamp - 86400)
   }
 
   // if none of our scrape targets worked then throw an error

@@ -3,13 +3,13 @@ const { sumTokens } = require('../helper/unwrapLPs')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const { createIncrementArray } = require('../helper/utils')
 const masterChefABI = require('../helper/abis/masterchef.json')
-const abi = require('./abi')
-const sdk = require('@defillama/sdk')
+const abi = {
+  lpToken: "function lpToken(uint256) view returns (address)",
+}
 
-const chain = 'astar'
 const MASTER_CHEF = '0xfa1Cfa75bFae8303A9Fe8aF711AacD59015eE6d4'
 const USDC = ADDRESSES.moonbeam.USDC
-const ibUSDC = ADDRESSES.astar.lUSDC
+const ibUSDC = '0xc404e12d3466accb625c67dbab2e1a8a457def3c'
 const ORU = '0xCdB32eEd99AA19D39e5d6EC45ba74dC4afeC549F'
 const STAKE_ADDRESS = '0x243e038685209B9B68e0521bD5838C6C937d666A'
 const BANK_SAFE = '0xd89dEa2daC8Fb73F4107C2cbeA5Eb36dab511F64'

@@ -3,6 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
 const jpegd = "0xE80C0cd204D654CEbe8dd64A4857cAb6Be8345a3";
+const jpgd = "0xce722f60f35c37ab295adc4e6ba45bcc7ca89dd6";
 
 // Owners
 const multisig = "0x51C2cEF9efa48e08557A361B52DB34061c025a1B";
@@ -37,7 +38,7 @@ const treasuryTvl = treasuryExports({
       "0xdB06a76733528761Eda47d356647297bC35a98BD", // JPEGWETH SLP
     ],
     owners: [multisig, donationEvent, usdcVault, usdtVault, pethVault],
-    ownTokens: [jpegd],
+    ownTokens: [jpegd, jpgd],
     resolveUniV3: true,
   },
 });

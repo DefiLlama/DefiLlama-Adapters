@@ -20,8 +20,8 @@ async function suiTvl(api) {
 
 module.exports = {
   hallmarks: [
-    [1731974400, "Spot Launch"],
-    [1733875200, "BLUE Token"]
+    ['2024-11-19', "Spot Launch"],
+    ['2024-12-11', "BLUE Token"]
   ],
   sui: {
     tvl: suiTvl

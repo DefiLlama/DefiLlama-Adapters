@@ -1,9 +1,10 @@
-// Сurator adapter that computes TVL for five vault types:
+// Сurator adapter that computes TVL for six vault types:
 // 1) ERC-4626 (totalAssets())
-// 2) MidasIssuance (supply)
-// 3) Boring (rate × supply via hook → accountant)
-// 4) Pre-deposit (same as MidasIssuance)
-// 5) Edge Capital Euler vaults (via curator)
+// 2) Morpho V1/V2 (via curator, with nested-vault de-duplication)
+// 3) MidasIssuance (supply)
+// 4) Boring (rate × supply via hook → accountant)
+// 5) Pre-deposit (same as MidasIssuance)
+// 6) Edge Capital Euler vaults (via curator)
 
 const { CONFIG } = require('./tvl.addresses.js');
 const { getCuratorTvl } = require("../helper/curators");
@@ -30,16 +31,11 @@ const ABI = {
 async function getErc4626TVL(api, vaults) {
     if (!vaults?.length) return
 
-    const calls = vaults.map(v => v.toLowerCase());
-
     const [assets, amounts] = await Promise.all([
-        api.multiCall({abi: 'function asset() view returns (address)', calls: calls}),
-        api.multiCall({abi: 'function totalAssets() view returns (uint256)', calls: calls})
+        api.multiCall({ abi: 'function asset() view returns (address)', calls: vaults }),
+        api.multiCall({ abi: 'function totalAssets() view returns (uint256)', calls: vaults })
     ])
-
-    assets.forEach((asset, i) => {
-        if (asset && amounts[i]) api.add(asset, amounts[i])
-    })
+    api.add(assets, amounts)
 }
 
 // --------------- TVL: Issuance-like via USD oracle (and Pre-deposit) --------
@@ -47,16 +43,8 @@ async function getErc4626TVL(api, vaults) {
 async function getIssuanceTokensTVL(api, items) {
     if (!items?.length) return
 
-    const supplies = await api.multiCall({
-        abi: ABI.ERC20.totalSupply,
-        calls: items,
-    })
-
-    items.forEach((tokenAddress, i) => {
-        if (supplies[i] != null) {
-            api.add(tokenAddress.toLowerCase(), supplies[i])
-        }
-    })
+    const supplies = await api.multiCall({ abi: ABI.ERC20.totalSupply, calls: items, })
+    api.add(items, supplies)
 }
 
 // ----------------------------- TVL: Boring ----------------------------------
@@ -77,15 +65,15 @@ async function getBoringTVL(api, vaults) {
         const vaultLc = vault.toLowerCase()
         let accountant = EXTERNAL_ACCOUNTANTS[vaultLc]
         if (!accountant) {
-            const hook = await api.call({target: vault, abi: 'function hook() view returns (address)'})
-            accountant = await api.call({target: hook, abi: 'function accountant() view returns (address)'})
+            const hook = await api.call({ target: vault, abi: 'function hook() view returns (address)' })
+            accountant = await api.call({ target: hook, abi: 'function accountant() view returns (address)' })
         }
 
         const [asset, rate, supply, decimals] = await Promise.all([
-            api.call({target: accountant, abi: 'function base() view returns (address)'}),
-            api.call({target: accountant, abi: 'function getRateSafe() view returns (uint256)'}),
-            api.call({target: vault, abi: 'erc20:totalSupply'}),
-            api.call({target: accountant, abi: 'erc20:decimals'})
+            api.call({ target: accountant, abi: 'function base() view returns (address)' }),
+            api.call({ target: accountant, abi: 'function getRateSafe() view returns (uint256)' }),
+            api.call({ target: vault, abi: 'erc20:totalSupply' }),
+            api.call({ target: accountant, abi: 'erc20:decimals' })
         ])
 
         if (asset && rate && supply) {
@@ -96,7 +84,8 @@ async function getBoringTVL(api, vaults) {
 }
 
 // ------------------------------ Orchestrator --------------------------------
-async function getTvl(api, chain) {
+async function tvl(api) {
+    const chain = api.chain;
     const config = CONFIG[chain] || {}
 
     const promises = [
@@ -105,6 +94,14 @@ async function getTvl(api, chain) {
         getIssuanceTokensTVL(api, config.predeposit),
         getBoringTVL(api, config.boring)
     ]
+
+    // Morpho V1/V2 vaults are processed together to avoid nested-vault double counting.
+    if (config.morpho || config.morphoVaultOwners) {
+        promises.push(getCuratorTvl(api, {
+            morpho: config.morpho,
+            morphoVaultOwners: config.morphoVaultOwners,
+        }))
+    }
 
     // Handle curator functionality for Euler vaults
     if (config.eulerVaultOwners) {
@@ -117,18 +114,13 @@ async function getTvl(api, chain) {
 // ------------------------------- Export -------------------------------------
 
 const adapters = {
-    timetravel: true,
     doublecounted: true,
-    start: 0,
-    methodology: 'TVL = sum of underlying balances: ERC-4626 via totalAssets(); Issuance/Pre-deposit via share totalSupply; Boring via accountant.getRate × vault.totalSupply; Edge Capital Euler vaults via curator.',
+    methodology: 'TVL = sum of underlying balances: ERC-4626 via totalAssets(); Morpho V1/V2 and Euler via the curator helper; Issuance/Pre-deposit via share totalSupply; Boring via accountant.getRate × vault.totalSupply.',
 }
 
 Object.keys(CONFIG).forEach((chain) => {
     adapters[chain] = {
-        tvl: async (api) => {
-            await getTvl(api, chain)
-            return api.getBalances()
-        }
+        tvl
     }
 })
 

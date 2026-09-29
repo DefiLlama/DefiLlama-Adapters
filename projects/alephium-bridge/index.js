@@ -8,6 +8,7 @@ const bscTokenBridgeAddress = '0x2971F580C34d3D584e0342741c6a622f69424dD8'
 const bscBridgedAlphAddress = '0x8683BA2F8b0f69b2105f26f488bADe1d3AB4dec8'
 
 async function tvl(api) {
+  return {}  // it is hacked
   const ethApi = new sdk.ChainApi({ chain: 'ethereum', timestamp: api.timestamp })
   const bscApi = new sdk.ChainApi({ chain: 'bsc', timestamp: api.timestamp })
   await ethApi.getBlock()

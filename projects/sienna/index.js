@@ -28,27 +28,22 @@ async function getExchanges(factory, data) {
         if (!address) address = contract.address
         const { pair_info } = await queryContract({ contract: address, data: "pair_info" })
         data.push({
-          token0: transformToken(pair_info.pair.token_0, pair_info),
+          token0: transformToken(pair_info.pair.token_0),
           token0Bal: pair_info.amount_0,
-          token1: transformToken(pair_info.pair.token_1, pair_info),
+          token1: transformToken(pair_info.pair.token_1),
           token1Bal: pair_info.amount_1,
         })
         await sleep(1000)
       })
 
-    console.log(errors, errors.length, factory, exchanges.length, pools.length, hasMore)
-    // if (errors && errors.length)
-    //   throw errors[0]
+    if (errors && errors.length)
+      throw errors[0]
 
   } while (hasMore)
 }
 
-function transformToken(addr, poolData) {
-  if (!addr?.custom_token) {
-    // console.log(JSON.stringify(addr, null, 2))
-    // console.log(JSON.stringify(poolData, null, 2))
-    throw new Error("No custom token")
-  }
+function transformToken(addr) {
+  if (!addr?.custom_token) throw new Error("No custom token")
   return addr.custom_token.contract_addr
 }
 

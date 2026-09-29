@@ -14,8 +14,8 @@ module.exports = {
   methodology:
     "Counts TVL that's on all the Pools through G-UNI Factory Contract",
   hallmarks:[
-      [1632253540, "GUNI-DAIUSDC Added to Maker"],
-      [1643056020, "Maker GUNI Cap to 500M"],
+      ['2021-09-21', "GUNI-DAIUSDC Added to Maker"],
+      ['2022-01-24', "Maker GUNI Cap to 500M"],
   ],
 };
 
@@ -27,8 +27,9 @@ Object.keys(config).forEach(chain => {
      const pools = (await api.multiCall({  abi: abi.getPools, calls: deployers, target: G_UNI_Factory})).flat()
      const token0s = await api.multiCall({  abi: "address:token0", calls: pools })
      const token1s = await api.multiCall({  abi: "address:token1", calls: pools })
-     const bals = await api.multiCall({  abi: abi.getUnderlyingBalances, calls: pools })
+     const bals = await api.multiCall({  abi: abi.getUnderlyingBalances, calls: pools, permitFailure: true })
      bals.forEach((bal, i) => {
+      if (!bal) return;
       api.add(token0s[i], bal.amount0Current)
       api.add(token1s[i], bal.amount1Current)
      })

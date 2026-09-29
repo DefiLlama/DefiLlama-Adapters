@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { eulerTokens } = require('../helper/tokenMapping')
 const { getLogs } = require('../helper/cache/getLogs')
 const BigNumber = require("bignumber.js");
 
@@ -45,13 +44,10 @@ const contracts = {
       "0xF87ec7e1Ee467d7d78862089B92dd40497cBa5B8", // MATIC
       "0xDcE26B2c78609b983cF91cCcD43E238353653b0E", // IdleCDO_clearpool_DAI
       "0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC",
-      "0x1f5A97fB665e295303D2F7215bA2160cc5313c8E", // 
+      "0x1f5A97fB665e295303D2F7215bA2160cc5313c8E", //
       "0x8E0A8A5c1e5B3ac0670Ea5a613bB15724D51Fc37", // Instadapp stETH
-      "0xf6223C567F21E33e859ED7A045773526E9E3c2D5", // Fasanara Yield vault
     ],
-    credits: [
-      "0xf6223C567F21E33e859ED7A045773526E9E3c2D5", // Fasanara Yield vault
-    ]
+    credits: []
   },
   polygon: {
     v1: [
@@ -59,12 +55,8 @@ const contracts = {
       "0x1ee6470CD75D5686d0b2b90C0305Fa46fb0C89A1", // idleUSDCYield
       "0xfdA25D931258Df948ffecb66b5518299Df6527C4" // idleWETHYield
     ],
-    cdos: [
-      '0xF9E2AE779a7d25cDe46FccC41a27B8A4381d4e52' // Bastion CV
-    ],
-    credits: [
-      '0xF9E2AE779a7d25cDe46FccC41a27B8A4381d4e52' // Bastion CV
-    ]
+    cdos: [],
+    credits: []
   },
   polygon_zkevm: {
     cdos: [
@@ -72,22 +64,21 @@ const contracts = {
     ]
   },
   optimism: {
-    cdos: [
-      "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B", // FalconX
-    ],
-    credits: [
-      "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B", // FalconX
-    ]
+    cdos: [],
+    credits: []
   },
   arbitrum: {
-    cdos: [
-      "0x3919396Cd445b03E6Bb62995A7a4CB2AC544245D" // Bastion Credit Vault
-    ],
-    credits: [
-      "0x3919396Cd445b03E6Bb62995A7a4CB2AC544245D" // Bastion Credit Vault
-    ]
+    cdos: [],
+    credits: []
   }
 }
+
+// Pareto credit vaults (app.pareto.credit) are IdleCDO contracts and some are deployed through
+// the same tranche factory, but they are tracked by projects/pareto — skip them here so the
+// same getContractValue isn't counted under both protocols.
+const paretoCreditVaults = new Set([
+  '0x14b8e918848349d1e71e806a52c13d4e0d3246e0', // Adaptive Frontier
+])
 
 const trancheConfig = {
   ethereum: {
@@ -105,7 +96,8 @@ const trancheConfig = {
 }
 
 async function tvl(api) {
-  const { v1 = [], v3 = [], safe = [], cdos = [], wrap4626 = [], credits = [] } = contracts[api.chain]
+  const { v1 = [], v3 = [], safe = [], cdos: cdosFromConfig = [], wrap4626 = [], credits = [] } = contracts[api.chain]
+  const cdos = [...cdosFromConfig]
   const balances = {}
   const ownerTokens = []
 
@@ -121,18 +113,18 @@ async function tvl(api) {
     tokenSafe,
   ] = await Promise.all([
     api.multiCall({ abi: 'uint256:totalSupply', calls: v1 }),
-    api.multiCall({ abi: 'uint256:totalSupply', calls: v3 }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: v3, permitFailure: true }),
     api.multiCall({ abi: 'uint256:totalSupply', calls: safe }),
     api.multiCall({ abi: 'uint256:tokenPrice', calls: v1 }),
-    api.multiCall({ abi: 'uint256:tokenPrice', calls: v3 }),
+    api.multiCall({ abi: 'uint256:tokenPrice', calls: v3, permitFailure: true }),
     api.multiCall({ abi: 'uint256:tokenPrice', calls: safe }),
     api.multiCall({ abi: 'address:token', calls: v1 }),
-    api.multiCall({ abi: 'address:token', calls: v3 }),
+    api.multiCall({ abi: 'address:token', calls: v3, permitFailure: true }),
     api.multiCall({ abi: 'address:token', calls: safe }),
   ])
 
   // Load tokens decimals
-  const callsDecimals = [...tokenV1, ...tokenV3, ...tokenSafe].map( t => ({ target: t, params: [] }) )
+  const callsDecimals = [...tokenV1, ...tokenV3, ...tokenSafe].filter(t => t != null).map( t => ({ target: t, params: [] }) )
   const decimalsResults = await api.multiCall({abi: 'erc20:decimals', calls: callsDecimals})
   const tokensDecimals = decimalsResults.reduce( (tokensDecimals, decimals, i) => {
     const call = callsDecimals[i]
@@ -150,6 +142,7 @@ async function tvl(api) {
   totalSupplyV3.map( (supply, i) => {
     const token = tokenV3[i]
     const tokenPrice = tokenPriceV3[i]
+    if (supply == null || tokenPrice == null || token == null) return
     const vaultTVL = BigNumber(supply).times(tokenPrice).div(1e18).toFixed(0)
     sdk.util.sumSingleBalance(balances, token, vaultTVL, api.chain)
   })
@@ -162,7 +155,7 @@ async function tvl(api) {
   })
 
   const trancheTokensMapping = {}
-  const blacklistedTokens = [...eulerTokens]
+  const blacklistedTokens = []
 
   const { factory, fromBlock } = trancheConfig[api.chain] ?? {}
   if (factory) {
@@ -174,7 +167,7 @@ async function tvl(api) {
       onlyArgs: true,
       fromBlock,
     })
-    cdos.push(...logs.map(i => i.proxy))
+    cdos.push(...logs.map(i => i.proxy).filter(proxy => !paretoCreditVaults.has(proxy.toLowerCase())))
   }
 
   const [wrap4626Supplies, wrap4626Tokens] = await Promise.all(['uint256:totalSupply', 'address:token'].map( abi => api.multiCall({ abi, calls: wrap4626 }) ))

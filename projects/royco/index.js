@@ -1,6 +1,6 @@
 const { request, gql } = require("graphql-request");
 const { sumUnknownTokens } = require("../helper/unknownTokens");
-const { sliceIntoChunks } = require("../helper/utils");
+const { sumBoringTvl } = require("../helper/boringVault");
 
 const slug = {
   1: {
@@ -163,98 +163,6 @@ const addToken = async ({ api, rows }) => {
   });
 };
 
-// Helper function sourced from projects/veda
-async function deduplicateAndAdd({ vaults, assets, bals, api, ownersToDedupe = [], type, lensAddresses }) {
-  if (!vaults.length || !ownersToDedupe.length) {
-    assets.forEach((a, i) => api.add(a, bals[i]));
-    return;
-  }
-
-  // Prepare all calls at once
-  const [sharesToIgnore, totalShares] = await Promise.all([
-    // Get all shares to ignore in one batch
-    type === 'Boring' 
-      ? api.multiCall({
-          calls: vaults.flatMap((target, idx) => 
-            ownersToDedupe.map(owner => ({
-              target: lensAddresses[idx],
-              params: [owner.id, target],
-            }))
-          ),
-          abi: "function balanceOf(address account, address vault) view returns (uint256)",
-        })
-      : api.multiCall({
-          calls: vaults.flatMap(target => 
-            ownersToDedupe.map(owner => ({
-              target,
-              params: [owner.id],
-            }))
-          ),
-          abi: "erc20:balanceOf",
-        }),
-    // Get all total supplies in one batch
-    api.multiCall({
-      calls: vaults.map(vault => ({
-        target: vault,
-      })),
-      abi: "uint256:totalSupply",
-    })
-  ]);
-
-  // Process shares to ignore
-  const chunkedShares = sliceIntoChunks(sharesToIgnore, ownersToDedupe.length);
-  const summedShares = chunkedShares.map(shares => 
-    shares.reduce((sum, share) => sum + Number(share), 0)
-  );
-
-  // Calculate ratios
-  const ratios = totalShares.map((share, i) => {
-    return 1 - summedShares[i] / share;
-  });
-
-  //console.log(`\n${type} Vault Deduplication Details:`);
-  vaults.forEach((vault, i) => {
-    const originalValue = bals[i];
-    const deducted = bals[i] * (summedShares[i] / totalShares[i]);
-    const finalValue = bals[i] * ratios[i];
-    //console.log(`Vault ${vault}:
-    //Original Value: ${originalValue}
-    //Deducted Amount: ${deducted}
-    //Final Value: ${finalValue}
-    //Deduplication Ratio: ${ratios[i] * 100}%`);
-  });
-  
-  assets.forEach((a, i) => api.add(a, bals[i] * ratios[i]));
-}
-
-// Helper function sourced from projects/veda
-async function sumBoringTvl({ vaults, api, ownersToDedupe = [] }) {
-  const boringCalls = vaults.map((vault) => ({
-    target: vault.lens,
-    params: [vault.id, vault.accountant],
-  }));
-
-  const boringBalances = await api.multiCall({
-    abi: "function totalAssets(address boringVault, address accountant) view returns (address asset, uint256 assets)",
-    calls: boringCalls,
-  });
-
-  const assets = boringBalances.map(b => b.asset);
-  const bals = boringBalances.map(b => b.assets);
-  const vaultAddresses = vaults.map(v => v.id);
-  const lensAddresses = vaults.map(v => v.lens);
-
-  await deduplicateAndAdd({ 
-    vaults: vaultAddresses, 
-    assets, 
-    bals, 
-    api, 
-    ownersToDedupe, 
-    type: 'Boring',
-    lensAddresses 
-  });
-}
-
 const calculateTvl = async ({ api, chain }) => {
   if (chain === slug[80094].defillama) {
     const subgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-ccdm-destination-boyco-berachain-mainnet/2.0.2/gn`;
@@ -269,9 +177,8 @@ const calculateTvl = async ({ api, chain }) => {
     const tags = config[chain].tags;
 
     if (tags.includes("recipe")) {
-      const recipeSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-recipe-${
-        slug[config[chain].chainId].royco
-      }/2.0.31/gn`;
+      const recipeSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-recipe-${slug[config[chain].chainId].royco
+        }/2.0.31/gn`;
 
       const recipeRows = await fetchAllTokenBalanceSubgraphRows({
         subgraphUrl: recipeSubgraphUrl,
@@ -282,9 +189,8 @@ const calculateTvl = async ({ api, chain }) => {
     }
 
     if (tags.includes("vault")) {
-      const vaultSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-vault-${
-        slug[config[chain].chainId].royco
-      }/2.0.18/gn`;
+      const vaultSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-vault-${slug[config[chain].chainId].royco
+        }/2.0.18/gn`;
 
       const vaultRows = await fetchAllTokenBalanceSubgraphRows({
         subgraphUrl: vaultSubgraphUrl,
@@ -298,13 +204,11 @@ const calculateTvl = async ({ api, chain }) => {
   if (boringVaults[chain]) {
     const { vaults } = boringVaults[chain];
 
-    for (const vault of vaults) {
-      await sumBoringTvl({
-        api,
-        vaults: [vault],
-        ownersToDedupe: [],
-      });
-    }
+    await sumBoringTvl({
+      api,
+      vaults,
+      ownersToDedupe: [],
+    });
   }
 };
 

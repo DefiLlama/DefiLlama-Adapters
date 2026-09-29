@@ -41,6 +41,6 @@ module.exports = {
   },
   
   hallmarks: [
-    [1731283200, "Mainnet Launch"],
+    ['2024-11-11', "Mainnet Launch"],
   ],
 };

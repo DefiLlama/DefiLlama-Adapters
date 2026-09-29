@@ -1,4 +1,0 @@
-{
-  "asset": "address:asset",
-  "totalAssets": "uint256:totalAssets"
-}

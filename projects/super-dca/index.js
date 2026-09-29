@@ -55,7 +55,7 @@ const CONFIG = {
     WHITELISTED_TOKENS: [
       ADDRESSES.unichain.USDC, // USDC
       ADDRESSES.null, // WETH
-      '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', // Layer Zero Wrapped Bitcoin (WBTC)
+      ADDRESSES.bsc.WBTC, // Layer Zero Wrapped Bitcoin (WBTC)
     ],
     POOL_IDS: [
       // List of pools with the Super DCA Hook: 0x8E89b081498095669007DA306dCd7Ce7cab43A80
