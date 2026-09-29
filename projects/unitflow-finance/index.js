@@ -48,5 +48,4 @@ module.exports = {
 }
 
 
-module.exports = ComputeTVL(configUnitFlowV3) 
-// mergeExports([ComputeTVL(configUnitFlowV3) , ComputeTVL(configUnitFlowV25)])
+module.exports = mergeExports([ComputeTVL(configUnitFlowV3) , ComputeTVL(configUnitFlowV25)])
