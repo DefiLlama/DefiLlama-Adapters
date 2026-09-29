@@ -44,7 +44,7 @@ function ComputeTVL(config) {
 }
 
 module.exports = {
-  methodology: "Calculate the total TVL is USD held in every UnitFlow pool, v2.5 and v3, discovered from their respective factory's PoolCreated and PairCreated events.",
+  methodology: "Calculate the total TVL in USD held in every UnitFlow pool, v2.5 and v3, discovered from their respective factory's PoolCreated and PairCreated events.",
 }
 
 
