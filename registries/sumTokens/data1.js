@@ -767,4 +767,15 @@ module.exports = {
       "uniV3WhitelistedTokens": [ADDRESSES.arc.USDC],
     }
   },
+  "popdex-bridge": {
+    "methodology": "TVL is the USDT held by the PopDEX cross-chain bridge contracts on Arbitrum and Morph",
+    "arbitrum": {
+      "owners": ["0x0B15D6cF5e843C88034f64664D7fE66E5F79C5f2"],
+      "tokens": [ADDRESSES.arbitrum.USDT]
+    },
+    "morph": {
+      "owners": ["0x71FB3a05d02B48d358E4DEB55D0D461Dcb7cF71d"],
+      "tokens": [ADDRESSES.morph.USDT0]
+    }
+  },
 }
