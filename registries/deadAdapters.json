@@ -1122,19 +1122,6 @@
       "tvl": "_f"
     }
   },
-  "blueberry": {
-    "methodology": "TVL is calculated from deposits in the vault and on Hyperliquid.",
-    "ethereum": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "deadFrom": "1753057413",
-    "timetravel": false,
-    "hyperliquid": {
-      "tvl": "_f"
-    },
-    "misrepresentedTokens": true
-  },
   "bluebit": {
     "methodology": "The vaults on https://bluebit.fi are included in TVL.",
     "aurora": {
