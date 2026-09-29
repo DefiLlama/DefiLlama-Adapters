@@ -1,5 +1,5 @@
 const { getUniqueAddresses } = require('../helper/utils')
-const { getCache } = require('../helper/http')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 /* HoodLock, a token locker and vesting protocol on Robinhood Chain.
  *
@@ -8,11 +8,7 @@ const { getCache } = require('../helper/http')
  * would keep counting tokens that already left. The records are read only to
  * discover WHICH tokens each contract holds.
  *
- * Prices come from CoinGecko ids rather than chain addresses. Robinhood Chain
- * tokens are listed on CoinGecko under the `robinhood` platform, but most are
- * not resolvable from their contract address on DefiLlama's side, so pricing
- * by address silently drops them. The id map is fetched at run time so newly
- * locked tokens are picked up without editing this file.
+ * HoodLock's own token, LOCK, is reported under staking rather than tvl.
  *
  * Burns are excluded on purpose: burned supply sits at the dead address and is
  * no longer held by any HoodLock contract, so it is not TVL.
@@ -20,6 +16,7 @@ const { getCache } = require('../helper/http')
 
 const LOCKER = '0xd0f7d8c6e9f6d80c297bebe4f7fd1b9c8125c32f'
 const VESTING = '0x910e19bcC4bce46999994Ed7297E0Fc4431ec72E'
+const LOCK_TOKEN = '0xd5bf43f29bf7aa5bb42ae9e217b84b86eb7a4b94'
 
 const abi = {
   totalLocks: 'uint256:totalLocks',
@@ -30,16 +27,6 @@ const abi = {
 
 /** Ids run 1..n inclusive: both contracts pre-increment their counter. */
 const idCalls = (target, n) => Array.from({ length: Number(n) }, (_, i) => ({ target, params: i + 1 }))
-
-async function coingeckoIds() {
-  const list = await getCache('https://api.coingecko.com/api/v3/coins/list?include_platform=true')
-  const map = {}
-  for (const coin of list) {
-    const address = coin.platforms && coin.platforms.robinhood
-    if (address) map[address.toLowerCase()] = coin.id
-  }
-  return map
-}
 
 async function tvl(api) {
   const [lockCount, scheduleCount] = await Promise.all([
@@ -55,38 +42,22 @@ async function tvl(api) {
     api.multiCall({ abi: abi.getSchedule, calls: idCalls(VESTING, scheduleCount) }),
   ])
 
-  const owners = [
-    [LOCKER, getUniqueAddresses(locks.filter(l => l && !l.withdrawn && l.amount > 0).map(l => l.token))],
-    [VESTING, getUniqueAddresses(schedules.filter(s => s && s.total > s.claimed).map(s => s.token))],
+  const notLock = t => t !== LOCK_TOKEN
+  const ownerTokens = [
+    [getUniqueAddresses(locks.filter(l => !l.withdrawn && l.amount > 0).map(l => l.token)).filter(notLock), LOCKER],
+    [getUniqueAddresses(schedules.filter(s => s.total > s.claimed).map(s => s.token)).filter(notLock), VESTING],
   ]
-
-  const ids = await coingeckoIds()
-
-  for (const [owner, tokens] of owners) {
-    if (!tokens.length) continue
-    /* No permitFailure here either. Skipping a funded token whose balanceOf or
-     * decimals cannot be read is the same silent understatement as dropping a
-     * record: the total comes out low and nothing says so. Throwing means a
-     * token that genuinely lacks decimals() gets noticed and handled. */
-    const [balances, decimals] = await Promise.all([
-      api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(t => ({ target: t, params: owner })) }),
-      api.multiCall({ abi: 'erc20:decimals', calls: tokens }),
-    ])
-    tokens.forEach((token, i) => {
-      const id = ids[token]
-      const balance = balances[i]
-      if (!id || !balance || balance === '0') return   // no price source: contributes nothing
-      api.addCGToken(id, Number(balance) / 10 ** Number(decimals[i]))
-    })
-  }
+  return sumTokens2({ api, ownerTokens })
 }
+
+const staking = (api) => sumTokens2({ api, owners: [LOCKER, VESTING], tokens: [LOCK_TOKEN] })
 
 module.exports = {
   methodology:
     'Counts the ERC-20 balances held by the HoodLock locker and vesting contracts on Robinhood Chain. ' +
     'Lock and vesting records are read on chain to find which tokens each contract holds, then every ' +
     'balance is read with balanceOf, so withdrawn locks and fully claimed vesting stop counting ' +
-    'automatically. Tokens are priced by their CoinGecko id. Burned supply is excluded because it is ' +
-    'sent to the dead address and is no longer held by any HoodLock contract.',
-  robinhood: { tvl },
+    'automatically. HoodLock\'s own LOCK token held by the contracts is reported as staking. Burned supply ' +
+    'is excluded because it is sent to the dead address and is no longer held by any HoodLock contract.',
+  robinhood: { tvl, staking },
 }
