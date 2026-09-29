@@ -1,13 +1,7 @@
 const sdk = require("@defillama/sdk");
-const ADDRESSES = require("../helper/coreAssets.json");
 const { nullAddress } = require("../helper/tokenMapping");
 
-const DEFII_OWNER = "0x1B23418E688D2BB8EB9249D567Ec4bf4aA427CaC"; // KYC factory defii owner
-const KYC_FACTORY = "0xf978187e7142D857D713503b3C3decD5778F2ACC"; // Ethereum KYC Factory
-const USDC_USD_FEED = "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6"; // Chainlink USDC/USD
-const USDC = ADDRESSES.ethereum.USDC;
 const NAV_DECIMALS = 18n;
-const USDC_DECIMALS = 6n;
 const PRINCIPAL_CONTAINER_TYPE = 1;
 
 const abi = {
@@ -18,9 +12,6 @@ const abi = {
   getStrategiesNav: "uint256:getStrategiesNav",
   getPreReshufflingSnapshot: "uint256:getPreReshufflingSnapshot",
   notion: "address:notion",
-  tvl: "function tvl(address account) view returns (uint256 total)",
-  latestRoundData:
-    "function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
   decimals: "uint8:decimals",
 };
 
@@ -95,22 +86,6 @@ async function tvl(api) {
         tokenAmount
       );
     })
-  );
-
-  if (api.chain !== "ethereum") return;
-
-  const [kycTvl, round, oracleDecimals] = await Promise.all([
-    api.call({ target: KYC_FACTORY, abi: abi.tvl, params: [DEFII_OWNER] }),
-    api.call({ target: USDC_USD_FEED, abi: abi.latestRoundData }),
-    api.call({ target: USDC_USD_FEED, abi: abi.decimals }),
-  ]);
-  const usdcPrice = BigInt(round.answer ?? round[1]);
-  if (usdcPrice <= 0n) throw new Error("Invalid USDC/USD price");
-
-  api.add(
-    USDC,
-    (BigInt(kycTvl) * 10n ** USDC_DECIMALS * 10n ** BigInt(oracleDecimals)) /
-      (usdcPrice * 10n ** NAV_DECIMALS)
   );
 }
 
