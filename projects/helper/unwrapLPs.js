@@ -686,6 +686,13 @@ const gasTokens = [nullAddress, ADDRESSES.GAS_TOKEN_2, '0xbbbbbbbbbbbbbbbbbbbbbb
   '0x000000000000000000000000000000000000800a', // zksync era gas token
 ]
 const gasTokenSet = new Set(gasTokens)
+// ERC-20 views of the native coin: balanceOf returns the same number as eth_getBalance, so they are
+// read as the native balance and deduped per owner, otherwise listing both counts the coin twice
+const nativeTokenAliases = {
+  polygon: '0x0000000000000000000000000000000000001010', // POL (MRC20)
+  celo: '0x471ece3750da237f93b8e339c536989b8978a438', // CELO (GoldToken)
+  metis: '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000', // METIS
+}
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -700,7 +707,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   tokensAndOwners = tokensAndOwners.filter(i => {
     if (i[1] === nullAddress) return false  // ignore nullAddress owners, as they are usually used to burn tokens
     const token = normalizeAddress(i[0], chain)
-    if (token !== nullAddress && !gasTokens.includes(token))
+    if (token !== nullAddress && !gasTokens.includes(token) && token !== nativeTokenAliases[chain])
       return true
     ethBalanceInputs.push(i[1])
     return false
