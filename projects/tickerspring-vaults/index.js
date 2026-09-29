@@ -22,26 +22,71 @@ const vaults = [
   '0x78814fdC1AfD07ae859409F44B5D57DeA6798eF6', // TSLA
 ]
 
+const { ethers } = require('ethers')
+const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
+
+const V3_NPM = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3'
+const V4_STATE_VIEW = '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b'
+
 const abi = {
-  // Depositor assets: unreserved idle tokens plus the LP position (loose tokens and liquidity at the pool price).
-  // Excludes protocol/buyback fee reserves and uncollected LP fees.
-  inventory: 'function inventory() view returns (uint256 a, uint256 b)',
+  // Vault balances minus protocol/buyback fee reserves and quarantined tokens
+  idle: 'function idle() view returns (uint256 a, uint256 b)',
+  // V4 venues expose a V3-style positions() over a PoolManager position they own, salted with the tokenId
+  key: 'function key() view returns (address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks)',
+  positions: 'function positions(uint256) view returns (uint96 nonce, address operator, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256, uint256, uint128, uint128)',
+  getSlot0: 'function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)',
+  getPositionInfo: 'function getPositionInfo(bytes32 poolId, address owner, int24 tickLower, int24 tickUpper, bytes32 salt) view returns (uint128 liquidity, uint256, uint256)',
 }
 
 async function tvl(api) {
-  const [token0s, token1s, inventories] = await Promise.all([
+  const [token0s, token1s, idles, positions] = await Promise.all([
     api.multiCall({ abi: 'address:token0', calls: vaults }),
     api.multiCall({ abi: 'address:token1', calls: vaults }),
-    api.multiCall({ abi: abi.inventory, calls: vaults }),
+    api.multiCall({ abi: abi.idle, calls: vaults }),
+    api.multiCall({ abi: 'address:position', calls: vaults }),
   ])
-  inventories.forEach(({ a, b }, i) => {
+  idles.forEach(({ a, b }, i) => {
     api.add(token0s[i], a)
     api.add(token1s[i], b)
   })
+
+  const [pools, managers] = await Promise.all([
+    api.multiCall({ abi: 'address:pool', calls: positions }),
+    api.multiCall({ abi: 'address:manager', calls: positions }),
+  ])
+  const v3Owners = []
+  const v4 = []
+  positions.forEach((position, i) => {
+    if (managers[i] === V3_NPM) v3Owners.push(position)
+    else if (managers[i] === pools[i]) v4.push({ position, venue: pools[i] })
+    else throw new Error(`Unknown position manager ${managers[i]} for vault ${vaults[i]}`)
+  })
+
+  const [keys, tokenIds] = await Promise.all([
+    api.multiCall({ abi: abi.key, calls: v4.map(v => v.venue) }),
+    api.multiCall({ abi: 'uint256:tokenId', calls: v4.map(v => v.position) }),
+  ])
+  const ranges = await api.multiCall({ abi: abi.positions, calls: v4.map((v, i) => ({ target: v.venue, params: [tokenIds[i]] })) })
+  const poolIds = keys.map(k => ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
+    ['address', 'address', 'uint24', 'int24', 'address'], [k.currency0, k.currency1, k.fee, k.tickSpacing, k.hooks])))
+  const [slot0s, infos] = await Promise.all([
+    api.multiCall({ abi: abi.getSlot0, target: V4_STATE_VIEW, calls: poolIds }),
+    api.multiCall({
+      abi: abi.getPositionInfo, target: V4_STATE_VIEW, calls: v4.map(({ venue }, i) => ({
+        params: [poolIds[i], venue, ranges[i].tickLower, ranges[i].tickUpper, ethers.zeroPadValue(ethers.toBeHex(tokenIds[i]), 32)],
+      })),
+    }),
+  ])
+  v4.forEach((_, i) => addUniV3LikePosition({
+    api, token0: keys[i].currency0, token1: keys[i].currency1, liquidity: Number(infos[i].liquidity),
+    tickLower: Number(ranges[i].tickLower), tickUpper: Number(ranges[i].tickUpper), tick: Number(slot0s[i].tick),
+  }))
+
+  return sumTokens2({ api, uniV3nftsAndOwners: v3Owners.map(owner => [V3_NPM, owner]) })
 }
 
 module.exports = {
-  methodology: 'TVL is the USDG and Stock Tokens held for depositors by the TickerSpring V7 vaults on Robinhood Chain, read on-chain from each vault\'s inventory(): unreserved idle balances plus the Uniswap position valued at the pool price. Protocol fee reserves and uncollected LP fees are excluded. The positions sit in Uniswap pools, so this TVL is also counted by the Uniswap adapter.',
+  methodology: 'TVL is the USDG and Stock Tokens held for depositors by the TickerSpring V7 vaults on Robinhood Chain: each vault\'s idle balances net of protocol fee reserves, plus the liquidity of its Uniswap V3 NFT or Uniswap V4 PoolManager position, valued at the pool price. Uncollected LP fees are excluded. The positions sit in Uniswap pools, so this TVL is also counted by the Uniswap adapters.',
   doublecounted: true,
   start: '2026-09-12', // all V7 vaults were deployed 2026-09-11 19:51-20:35 UTC
   robinhood: { tvl },
