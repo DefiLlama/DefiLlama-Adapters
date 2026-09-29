@@ -1760,6 +1760,30 @@ const uniV3Configs = {
       fromBlock: 98756164,
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    robinhood: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 60744015,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    base: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 51196358,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    ethereum: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 25958738,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    arc: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 21098115,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
     }
   },
   'turbo': {
