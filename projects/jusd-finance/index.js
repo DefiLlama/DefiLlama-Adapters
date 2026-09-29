@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-// JUSD is one fixed-rate USDC credit strategy issued through two vaults:
+// JUSD deploys USDC into curated credit strategies, issued through two vaults:
 // Accountable on Ethereum and Venzo on Arbitrum. Both are USDC vault share
 // tokens with the symbol JUSD. TVL values each vault's full share supply in USDC
 // with convertToAssets(), which includes capital lent to the strategy borrower or
