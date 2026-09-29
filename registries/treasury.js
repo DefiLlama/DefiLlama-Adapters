@@ -5281,6 +5281,12 @@ const configs = {
       ],
       owners: ['0x8210c4a20dfA79F555560F77dc72BD7A846a3eF1'],
     },
+    solana: {
+      owners: [
+        'BLUg8cuP292HdFomNvc5xY4vJVVY45W5ozo5ThQMArBP', // PDA owning the treasury program's USDC vault (program W9uUoBaUe87NGD2CPqRQCsGwL7ruW4QgWD7bWMShiny)
+        '93X5tgk9654EGff1R5qDyJM3HXun1w8k39XtGzJFQKJT', // Squads vault: treasury admin and destination of balance skimmed above the vault target
+      ],
+    },
   },
   'treasury/silent-protocol': {
     ethereum: { owners: ['0x305a2694dD75ecb7D6ACbf0Efcd55278c992eEB9'] },
