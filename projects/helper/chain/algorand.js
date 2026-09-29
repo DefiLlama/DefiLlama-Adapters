@@ -183,8 +183,13 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
 // above. Docs: https://github.com/scholtz/BiatecCLAMM/blob/main/docusaurus/docs/onchain-tvl-discovery.md
 const BIATEC_POOL_PROVIDER_APP_ID = 3074197785
 const BIATEC_PRICE_SCALE = 1_000_000_000n // contracts/BiatecPoolProvider.algo.ts SCALE
-// Bridge assets tried, in order, when a token has no pair directly against an already-trusted
-// (coreAssets) asset: ALGO, then Biatec's own VoteCoin (mainnet asset id).
+// Assets DefiLlama is known to price reliably on its own - a resolved route must bottom out at
+// one of these, never at an arbitrary coreAssets.json entry (that file is a curated reference
+// list for a different purpose elsewhere in this module, not a guarantee of live price coverage).
+const BIATEC_TRUSTED_ASSET_IDS = [0n, 31566704n] // ALGO, USDC
+// Bridge assets tried, in order, when a token has no pair directly against a trusted asset:
+// ALGO, then Biatec's own VoteCoin (mainnet asset id) - VoteCoin is only ever an intermediate
+// hop here, never itself a valid destination, since DefiLlama has no price for it.
 const BIATEC_BRIDGE_ASSET_IDS = [0n, 452399768n]
 
 function biatecAggregatedPriceBoxName(boxAssetA, boxAssetB) {
@@ -274,12 +279,12 @@ async function biatecTargetPerUnit(assetX, target) {
 
 const toGeckoAssetKey = (realAssetId) => (realAssetId === 0n ? '1' : realAssetId.toString())
 
-// Human-unit price of 1 unit of `assetId` denominated in 1 unit of the first already-trusted
-// (coreAssets) asset reachable via the bridge chain. `visited` prevents a routing cycle: if two
-// bridge assets are only priced against each other and neither has its own trusted route,
-// resolving either one would otherwise recurse forever.
+// Human-unit price of 1 unit of `assetId` denominated in 1 unit of the first BIATEC_TRUSTED_ASSET_IDS
+// entry reachable via the bridge chain. `visited` prevents a routing cycle: if two bridge assets
+// are only priced against each other and neither has its own trusted route, resolving either one
+// would otherwise recurse forever.
 async function getBiatecPriceViaTrustedBridge(assetId, visited = new Set()) {
-  if (geckoMapping.includes(toGeckoAssetKey(assetId))) return { humanPrice: 1, trustedAssetId: assetId }
+  if (BIATEC_TRUSTED_ASSET_IDS.includes(assetId)) return { humanPrice: 1, trustedAssetId: assetId }
   if (visited.has(assetId)) return undefined
   visited.add(assetId)
 
@@ -301,9 +306,8 @@ async function getBiatecAssetDecimals(assetId) {
 }
 
 /**
- * Prices an Algorand asset traded on Biatec's CLAMM pools by bridging to whichever asset
- * DefiLlama already recognizes (any id listed in coreAssets.algorand, not hardcoded to just
- * ALGO/USDC), using Biatec's own on-chain trailing 1-day VWAP. Same {price, geckoId, decimals}
+ * Prices an Algorand asset traded on Biatec's CLAMM pools by bridging to ALGO or USDC
+ * (BIATEC_TRUSTED_ASSET_IDS), using Biatec's own on-chain trailing 1-day VWAP. Same {price, geckoId, decimals}
  * shape as getPriceFromAlgoFiLP above: get the equivalent balance of the trusted asset via
  * `rawAmount * price / 10 ** decimals`, then sum it into that asset's own (already priced)
  * balance - this never asserts a USD figure itself, only a token-for-token exchange rate that
