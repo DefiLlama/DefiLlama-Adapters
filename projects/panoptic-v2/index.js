@@ -26,6 +26,21 @@ const config = {
       },
     ],
   },
+  robinhood: {
+    startBlock: 62901925,
+    factories: [
+      {
+        target: '0x0000000000000aDC9A108591e718F2aee963a2a7',
+        eventAbi: abi.PoolDeployedV3,
+        extraKey: 'pool-deployed-v3',
+      },
+      {
+        target: '0x0000000000000c51d0f8cf4bd9adE7191372a625',
+        eventAbi: abi.PoolDeployedV4,
+        extraKey: 'pool-deployed-v4',
+      },
+    ],
+  },
 }
 
 async function tvl(api) {
@@ -84,6 +99,11 @@ module.exports = {
   ethereum: {
     tvl,
     methodology,
-    start: 1780965215,
+    start: '2026-06-09',
+  },
+  robinhood: {
+    tvl,
+    methodology,
+    start: '2026-09-14',
   },
 }

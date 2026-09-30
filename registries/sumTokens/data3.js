@@ -771,13 +771,6 @@ module.exports = {
       "tvl": { "owners": ["0x46363C31Be0c677Bd6F3eD429686753794ee8b97"], "tokens": [ADDRESSES.bitrock.BR] },
     },
   },
-  "kalmydas": {
-    "methodology": "TVL is the sum of tokens (USDC, WETH, KAL) held by the KalSwap liquidity pairs plus the USDC held by the five KalPool strategy vaults (deposits and platform reserve) on Base mainnet. USDC temporarily allocated to the on-chain operator (max 20% of each vault reserve) leaves the vaults while a trade is open and returns on close. KAL staked single-side and KAL locked in veKAL are reported under staking.",
-    "base": {
-      "tvl": { "owners": ["0x3315E6E788E2B30aF8f4c35124695E60D510c31B","0xEA071fa5a8aD4dEa8c672569da366D7d90E5924d","0x83c26f5C90B81adDf50845CCFCdcd02B819ADeB5","0x96869F08F5B5C52664c9620269394eFF4efd065b","0x6dd6e7A6154293b22Dcd5d07d8f61F446646B15d","0x9A9990fdFf702f7aEd10f873eeD2baB60e493038","0x03FEC25393C38cC5DE1F2D2DB620b8478cAC4Ae0","0x55F8D85749EA9C374b3aBFaEF7B07429546F6A97"], "tokens": [ADDRESSES.base.USDC,ADDRESSES.optimism.WETH_1,"0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
-      "staking": { "owners": ["0xF392A8F1B6c85f607F988B44EcAE2B4d652585f5","0x58CfcB5A67Aac6255cA13771EbdCFF45bAd5d605"], "tokens": ["0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
-    },
-  },
   "sfi": {
     "ethereum": {
       "tvl": { "owners": ["0xd8831608954c7C4044938aC76E32dA81d692f0a6"], "tokens": ["0x018008bfb33d285247A21d44E50697654f754e63","0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c","0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a"] },
@@ -1025,6 +1018,16 @@ module.exports = {
       "owner": "0x3993bD557E0d4a1E5A8Ec09a005E7Eee3E032f70",
       "tokens": [
         "0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB"
+      ]
+    },
+  },
+  "arctide-launchpad": {
+    "methodology": "TVL is the USDC raised on Arctide bonding curves that have not graduated yet, held by the launch factory as Arc's native USDC until the sale reaches its goal and the raise is moved into its Arctide pool.",
+    "start": "2026-09-16",
+    "arc": {
+      "owner": "0xF7a20a20e18Fa7d4B6c68EE58dA16799382AbCe8", // ArctideLaunchFactory
+      "tokens": [
+        ADDRESSES.null
       ]
     },
   },

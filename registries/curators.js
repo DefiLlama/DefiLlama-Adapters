@@ -96,6 +96,11 @@ const configs = {
         fluent: {
           upshiftV2: ['0xeaB765200189909c806FD6e20eBb4E57D6703C82'], // Nerona Dollar Yield Strategy
         },
+        monad: {
+          morphoVaultOwners: [
+            '0x07A1eC352EF67BB5b8b75A7fF9540b27f9a53d71',
+          ],
+        }
       }
     },
   }, 
@@ -753,6 +758,18 @@ const configs = {
       }
     },
   },
+  "hub-capital": {
+    config: {
+      methodology: 'Counts the assets deposited in the Lagoon USDC vault curated by Hub Capital.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xca790385506b790554571cbc9da73f0130cdcfd5', // Lagoon: Hub Capital USDC
+          ],
+        },
+      },
+    },
+  },
   "invariant-group": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Invariant Group.',
@@ -772,18 +789,6 @@ const configs = {
             '0x614eb485de3c6c49701b40806ac1b985ad6f0a2f', '0xD172B64AA13d892bb5EB35f3482058eAE0BC5B2a',
           ]
         }
-      }
-    },
-  },
-  "jpeg-trading": {
-    config: {
-      methodology: 'Counts assets deposited in the Euler Earn vault curated by JPEG Trading.',
-      blockchains: {
-        ethereum: {
-          erc4626: [
-            '0x018b86A893F57a632F90c4A8308353Ac938adc01', // Euler Earn: JPEG Trading x Tenbin RWAs
-          ],
-        },
       }
     },
   },
@@ -874,6 +879,18 @@ const configs = {
           ],
         },
       }
+    },
+  },
+  "nova-nlp": {
+    config: {
+      methodology: "Counts the settled USDC NAV reported on-chain by the Nova NLP Lagoon vault on HyperEVM.",
+      blockchains: {
+        hyperliquid: {
+          erc4626: [
+            '0xEeEd7BB939d65938Fe8f40dd898Cd5942E32f09E', // Lagoon: Nova NLP (sNLP)
+          ],
+        },
+      },
     },
   },
   "odyssey-digital-am": {
@@ -1272,6 +1289,7 @@ const configs = {
             '0xBeEF00283d2b26a55F56B9f8c283b25e9a22E95b', // Steakhouse Morpho V2
             '0xBEEff02DE231f8B08c627C769edC73e7AcE47264', // Steakhouse Morpho V2
             '0xBEEFFFe68dFc2D3BD1ABdAd37c70634973b16478', // USDC Turbo
+            '0xBeEfF0be997Cca5B1c13A7433c2004637975739e', // Ethena x Steakhouse USDC (deployed via a factory wrapper, missed by the owner filter)
           ],
         },
         corn: {
@@ -1310,6 +1328,10 @@ const configs = {
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
             '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
             '0x96632d28Ac99A3edAb5F7B223a88d8fAf9004178', // Ethena x Steakhouse mUSD
+          ],
+          morpho: [
+            '0xBEEF0C61DA39F7EA2bFa7B0f9d6338A3a2DD2fF0', // Steakhouse USDC
+            '0xBEEF067C9D2591aCCAB7d1C336a41ca3bd45b8f5', // Steakhouse mUSD
           ],
         },
         polygon: {

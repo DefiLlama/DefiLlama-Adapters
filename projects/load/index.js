@@ -18,7 +18,7 @@ const FROM_BLOCK = 21_349_552
 const TokenCreated =
   'event TokenCreated(address indexed token, address indexed curve, address indexed creator, string name, string symbol, bytes32 metadataHash, string metadataUri, address pool, uint8 graduationCap, uint16 postGradCreatorShareBps)'
 
-const ZERO = '0x0000000000000000000000000000000000000000'
+const ZERO = ADDRESSES.null
 
 function nonzero(addr) {
   return addr && addr.toLowerCase() !== ZERO

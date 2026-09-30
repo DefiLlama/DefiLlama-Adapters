@@ -23,6 +23,15 @@ const almProxyFreezable = {
   xlayer: '0x9449ed367C60ea757544fd990B57e1C2D0Ec3A94',
 }
 
+const pauAlmProxies = {
+  ethereum: {
+    spusdc: '0x8D719A830b00e5571db00D173505CD56c0Ec224a'
+  },
+  xlayer: {
+    spusdc: '0xe6D5d041Fc5e7fDD0A53C13e78a1cc7e4ffCb667'
+  }
+}
+
 const mainnetAllocatorToTokens = {
   '0xAfA2DD8a0594B2B24B59de405Da9338C4Ce23437': [
     '0x4DEDf26112B3Ec8eC46e7E31EA5e123490B05B8B', // spDai
@@ -55,6 +64,9 @@ const mainnetAllocatorToTokens = {
     '0x8292bb45bf1ee4d140127049757c2e0ff06317ed', // rlUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
   ],
+  [pauAlmProxies.ethereum.spusdc]: [
+    ADDRESSES.ethereum.USDC,
+  ]
 }
 
 const baseAllocatorToTokens = {
@@ -95,6 +107,7 @@ const robinhoodAllocatorToTokens = {
 
 const xlayerAllocatorToTokens = {
   [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
+  [pauAlmProxies.xlayer.spusdc]: [ADDRESSES.xlayer.USDC]
 }
 
 const CONFIG = {

@@ -23,6 +23,7 @@ const CONFIG = {
     sparkVaultUsdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d',
   },
   xlayer: {
+    sparkVaultUsdc: '0xf90E63079D97a0A1f479b2b168457F420CAFf6ba',
     sparkVaultUsdt: '0xc358c90D32375721Cb3924320Fdc2F8B694347Ca',
   },
   robinhood: {

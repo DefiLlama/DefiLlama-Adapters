@@ -1098,7 +1098,7 @@ const config = {
     "owners": [
       "8fe706db7b08f957a15199e07761039a7718937aabcc0fe48bc380a4daf9afb0",
       "8f079b740ca593e6741e8a552f06352d0e6c844f6fd75533e3bd575ec76cb147",
-      "6463450788218283a2959d7cf4e1bfbaf422753e5c4596b593ed9d3f4cf20497"
+      // "6463450788218283a2959d7cf4e1bfbaf422753e5c4596b593ed9d3f4cf20497"
     ]
   },
   "injective": {
@@ -1932,7 +1932,7 @@ const config = {
 };
 
 // remove chains w/o historical tvl
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'icp', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'conflux', 'cmp', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
   'vinu', 'rollux', 'aelf', 'ailayer', 'archway',
 ]
 
@@ -2167,4 +2167,3 @@ Object.entries(earnReceiptTokens).forEach(([chain, args]) => {
 })
 
 module.exports = mergeExports([cexExports(config), gateEarnTvl]);
-

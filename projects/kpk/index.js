@@ -60,6 +60,7 @@ const configs = {
         "0xB6D6D89ad4b4D61C15a293e28b74f77F6817fF48", //kpk ETH Yield Term (Euler Earn)
         "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
         "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
+        "0xBd8Ec7444dB271635584Cc38F5d06C72eAB762f5", //Gearbox frxUSD
       ],
 
       // Upshift multiAssetVault: non-ERC4626, exposes asset() + getTotalAssets()
@@ -85,6 +86,16 @@ const configs = {
       morpho: [
         "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
         "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
+      ],
+    },
+    base: {
+      morpho: [
+        "0x392B3CCf36C8adB8094F45573346B457414cD752", //Morpho v2 USDC Yield
+      ],
+    },
+    arc: {
+      morpho: [
+        "0xF0943081f646f21cF5BFBa8e0F670C4248ab0ba5", //Morpho v2 wARS Yield
       ],
     },
   },
