@@ -153,6 +153,7 @@ const handlers = {
     const supplies = await getTokenSupplies(markets.map(m => m.fToken))
     markets.forEach(({ fToken, mint }) => {
       const reserve = reserves.find(r => r.mint.toBase58() === mint)
+      if (!reserve || supplies[fToken] === undefined) throw new Error(`juplend: missing data for ${mint}`)
       api.add(mint, +supplies[fToken] * +reserve.supplyExchangePrice.toString() / JUPLEND_EXCHANGE_PRICE_PRECISION)
     })
   },
