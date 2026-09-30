@@ -50,21 +50,13 @@ async function tvl(api) {
   await sumTokens({ chain: api.chain, owners: creditManagers, api });
 }
 
-async function borrowed(api) {
-  const markets = await getAllMarkets(api.chain);
-
-  markets.forEach((market) => {
-    api.add(market.denom, market.debt_total_amount);
-  });
-}
-
 module.exports = {
   timetravel: false,
   methodology:
-    'TVL is the tokens held by the protocol: each red bank market\'s supplied amount minus its borrowed amount, plus idle deposits held by the credit manager. Borrowed is the total debt across red bank markets.',
+    'TVL is the tokens held by the protocol: each red bank market\'s supplied amount minus its borrowed amount, plus idle deposits held by the credit manager. Borrowed is not reported while v2 markets are paused (since 2026-09-29): the only v2 debt is positions replayed by the migration.',
   zigchain: {
     tvl,
-    borrowed,
+    borrowed: () => ({}), // v2 markets paused; report market debt again once they reopen
   },
   hallmarks: [
     ['2025-11-16', 'Launch on ZigChain'],
