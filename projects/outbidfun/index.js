@@ -38,13 +38,16 @@ const MEMECOIN_DEPLOYED = 'event MemeCoinDeployed(address indexed creator, addre
 
 /** Every CoinFactory the protocol has had, each with the block it was deployed in. */
 async function factories(chain) {
-  return getConfig(`outbidfun/registry/${chain}`, undefined, {
+  const list = await getConfig(`outbidfun/registry/${chain}`, undefined, {
     fetcher: async () => {
       const entries = await new sdk.ChainApi({ chain }).call({ target: REGISTRY, abi: ENTRIES, params: [COIN_FACTORY] })
       if (!entries.length) throw new Error('outbidfun: the registry lists no CoinFactory')
       return entries.map((entry) => ({ target: entry.target, fromBlock: Number(entry.fromBlock) }))
     },
   })
+  // getConfig answers a failed read with the last list it cached, or with {} where there is none.
+  if (!Array.isArray(list) || !list.length) throw new Error('outbidfun: could not read the CoinFactories from the registry')
+  return list
 }
 
 /**
