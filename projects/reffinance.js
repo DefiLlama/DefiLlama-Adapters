@@ -10,12 +10,16 @@ async function tvl() {
   const balances = {}
   let poolIndex = 0
   const numberOfPools = await call(PROJECT_CONTRACT, 'get_number_of_pools', {})
-  const allDclPools = await call(PROJECT_DCL_CONTRACT, 'list_pools', {});
-  allDclPools.forEach((dclPoolDetail) => {
-    const { token_x, token_y, total_order_x, total_order_y, total_x, total_y } = dclPoolDetail;
-    sumSingleBalance(balances, token_x, BigNumber(total_order_x).plus(total_x).toFixed());
-    sumSingleBalance(balances, token_y, BigNumber(total_order_y).plus(total_y).toFixed());
-  })
+  // list_pools without pagination exceeds the view call gas limit
+  const { pool_count: numberOfDclPools } = await call(PROJECT_DCL_CONTRACT, 'get_metadata', {})
+  for (let dclIndex = 0; dclIndex < +numberOfDclPools; dclIndex += 100) {
+    const dclPools = await call(PROJECT_DCL_CONTRACT, 'list_pools', { from_index: dclIndex, limit: 100 })
+    dclPools.forEach((dclPoolDetail) => {
+      const { token_x, token_y, total_order_x, total_order_y, total_x, total_y } = dclPoolDetail;
+      sumSingleBalance(balances, token_x, BigNumber(total_order_x).plus(total_x).toFixed());
+      sumSingleBalance(balances, token_y, BigNumber(total_order_y).plus(total_y).toFixed());
+    })
+  }
   do {
     const pools = await call(PROJECT_CONTRACT, 'get_pools', { from_index: poolIndex, limit: 500 })
 
