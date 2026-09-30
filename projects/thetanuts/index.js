@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
 // Ethereum Vaults
 const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
@@ -179,7 +180,7 @@ const univ3nft_arb = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
 const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082'
 
 module.exports = {
-  methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, and AMM are calculated as TVL.`,
+  methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, AMM and the WheelVaults (base and quote tokens held by each vault, including its concentrated liquidity positions) are calculated as TVL.`,
   hallmarks: [
     ['2022-03-07', 'Migration from v0 to v1'],
     ['2022-09-29', 'Migration from v1 to v2'],
@@ -331,12 +332,44 @@ const config = {
   }
 }
 
-Object.keys(config).forEach(chain => {
-  const { tokensAndOwners, uniV3Owners } = config[chain]
+const VAULT_CREATED = 'event VaultCreated(address indexed vault, address indexed creator, uint256 index, address base, address quote, uint24 fee, uint256 ivBps)'
+const VAULT_CREATOR = '0x4A4c7C5549359b9fFf0137bb3EC4D48c4Aa79Cc7'
+const TOTAL_ASSETS = 'function totalAssets() view returns (uint256 totalBaseAmt, uint256 totalQuoteAmt, uint256 totalValue)'
+const M_FACTORY = '0x42c059Bf54553957ca4b8BeA67fcf43424C03A92'
+const N_FACTORY = '0x35C452E9f97A75558334E0df305598E930fc0B00'
+
+const wheelVaultFactories = {
+  base: [{ target: M_FACTORY, fromBlock: 50863717 }, { target: N_FACTORY, fromBlock: 51727986 }],
+  ethereum: [{ target: M_FACTORY, fromBlock: 25903225 }, { target: N_FACTORY, fromBlock: 26045446 }],
+  hyperliquid: [{ target: M_FACTORY, fromBlock: 44998893 }, { target: N_FACTORY, fromBlock: 46733872 }],
+  robinhood: [{ target: '0x32Ca533CE6C107296991bE889551e75892B18e00', fromBlock: 74714459 }],
+}
+
+async function wheelVaultTvl(api, factories) {
+  const vaults = []
+  for (const { target, fromBlock } of factories) {
+    const logs = await getLogs2({ api, target, fromBlock, eventAbi: VAULT_CREATED, maxBlockRange: 10000 })
+    logs.filter(i => i.creator.toLowerCase() === VAULT_CREATOR.toLowerCase()).forEach(i => vaults.push(i.vault))
+  }
+  if (!vaults.length) return
+  const [bases, quotes, assets] = await Promise.all([
+    api.multiCall({ abi: 'address:base', calls: vaults }),
+    api.multiCall({ abi: 'address:quote', calls: vaults }),
+    api.multiCall({ abi: TOTAL_ASSETS, calls: vaults }),
+  ])
+  vaults.forEach((_, i) => {
+    api.add(bases[i], assets[i].totalBaseAmt)
+    api.add(quotes[i], assets[i].totalQuoteAmt)
+  })
+}
+
+new Set([...Object.keys(config), ...Object.keys(wheelVaultFactories)]).forEach(chain => {
+  const { tokensAndOwners, uniV3Owners } = config[chain] || {}
   module.exports[chain] = {
     tvl: async (api) => {
-          if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true })
-          return sumTokens2({ api, tokensAndOwners })
-        }
+      if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true })
+      if (tokensAndOwners) await sumTokens2({ api, tokensAndOwners })
+      if (wheelVaultFactories[chain]) await wheelVaultTvl(api, wheelVaultFactories[chain])
+    }
   }
 })
