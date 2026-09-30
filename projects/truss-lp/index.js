@@ -33,4 +33,31 @@ async function tvl(api) {
   // 2) staked Slipstream positions (held by the atomic in each pool's gauge)
   const uniqPools = [...new Set(pools.map(p => p.toLowerCase()))]
   const gauges = await api.multiCall({ target: VOTER, abi: abi.gauges, calls: uniqPools })
-  const live = uniqPools.map((p, i) => ({ pool: p, gauge:
+  const live = uniqPools.map((p, i) => ({ pool: p, gauge: gauges[i] }))
+    .filter(x => x.gauge && x.gauge !== '0x0000000000000000000000000000000000000000')
+  if (!live.length) return
+
+  const nfpms = await api.multiCall({ abi: 'address:nft', calls: live.map(x => x.gauge) })
+  const staked = await api.multiCall({ abi: abi.stakedValues, calls: live.map(x => ({ target: x.gauge, params: [ATOMIC] })) })
+  const slot0s = await api.multiCall({ abi: abi.slot0, calls: live.map(x => x.pool) })
+
+  for (let i = 0; i < live.length; i++) {
+    const ids = staked[i] || []
+    if (!ids.length) continue
+    const pos = await api.multiCall({ target: nfpms[i], abi: abi.positions, calls: ids })
+    const tick = Number(slot0s[i].tick)
+    pos.forEach(p => {
+      if (Number(p.liquidity) === 0) return
+      addUniV3LikePosition({
+        api, token0: p.token0, token1: p.token1, liquidity: Number(p.liquidity),
+        tickLower: Number(p.tickLower), tickUpper: Number(p.tickUpper), tick,
+      })
+    })
+  }
+}
+
+module.exports = {
+  methodology: 'TVL is the value of all tokens held by TRUSS LP vaults: idle token balances in each vault plus the underlying tokens of every Aerodrome Slipstream position staked in a gauge on the vaults\' behalf.',
+  start: '2026-09-25',
+  base: { tvl },
+}
