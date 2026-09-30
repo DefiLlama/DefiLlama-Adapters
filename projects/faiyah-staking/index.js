@@ -2,7 +2,6 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 const FACTORY = '0x95c8853e6bD1DBCE2428Aa6953eb7680261F22fe'
-const XEF = '0x80252C2D06bbd85699c555fc3633D5B8eE67C9AD'
 
 // A same-token pool holds its reward bucket next to the principal and can pay rewards out of
 // principal when the bucket runs dry, so count what the pool holds, capped at what users staked.
@@ -20,9 +19,7 @@ async function tvl(api) {
   let n = 0, e = 0
   pools.forEach((_, i) => {
     const token = tokens[i]
-    const amount = held(token === nullAddress ? nativeBals[n++].balance : erc20Bals[e++], staked[i])
-    if (token.toLowerCase() === XEF.toLowerCase()) api.addCGToken('xeffy', Number(amount) / 1e18)
-    else api.add(token, amount)
+    api.add(token, held(token === nullAddress ? nativeBals[n++].balance : erc20Bals[e++], staked[i]))
   })
 }
 
