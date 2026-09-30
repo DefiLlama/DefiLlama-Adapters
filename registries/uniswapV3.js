@@ -1900,6 +1900,10 @@ const uniV3Configs = {
       fromBlock: 21118790,
     },
   },
+  'unitflow-finance-v3': {
+    methodology: 'Token balances held in every Unitflow v3 pool, discovered from the factory PoolCreated events.',
+    arc: { factory: '0x5bfBCeb73d39F722B1cB83fD2F11736b28c1Be6d', fromBlock: 21068735 },
+  },
   'goo-exchange': {
     start: '2026-09-26',
     methodology: 'Counts the tokens held by every pool created by the goo exchange factory on Robinhood Chain, found from its PoolCreated events.',

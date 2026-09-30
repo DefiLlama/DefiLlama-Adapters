@@ -3227,6 +3227,10 @@ const uniV2Configs = {
       },
     },
   },
+  'unitflow-finance-v2': {
+    methodology: 'Token balances held in every Unitflow v2.5 pair, enumerated from the factory.',
+    arc: '0xFc1EC6761e246D5cb0c4C22669f8635098B22ba1',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
