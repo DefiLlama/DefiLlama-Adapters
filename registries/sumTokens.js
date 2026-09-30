@@ -18,7 +18,7 @@ const covalent = require('./sumTokens/covalent')
 //   { __resolveUnknownTokenLP: true, ... } -> unknownTokens.sumTokensExport (resolves unknown-token LP
 //     pricing via core assets; use for buckets that rely on lps + useDefaultCoreAssets, e.g. migrated
 //     staking/pool2 with LP deposits). Distinct from sumTokens2's own `resolveLP` (known-LP unwrap).
-const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens"])
+const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens","deadFrom"])
 const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting","ownTokens"])
 
 function buildBucket(spec, chain) {
@@ -7022,6 +7022,7 @@ const configs = {
     },
   },
   "cexdex-stacking": {
+    deadFrom: '2026-09-30',
     "kava": {
       "owner": "0x451c3a3594aEB75EDcb13F132dc11D7d2972861A",
       "tokens": [
@@ -16344,6 +16345,7 @@ const configs = {
     },
   },
   "inbuilt-finance": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tvl": {
         "owner": "0x68DB81eAB568174D54F3fd0d9e035eDe9AAEd3e2",
@@ -16884,6 +16886,7 @@ const configs = {
     },
   },
   "kavafc": {
+    deadFrom: '2026-09-30',
     "kava": {
       "staking": {
         "owner": "0xa07deE8FF35fE2e2961a7e1006EAdA98E24aE82E",
@@ -16901,6 +16904,7 @@ const configs = {
     },
   },
   "kavalake": {
+    deadFrom: '2026-09-30',
     "methodology": "TVL is calculated based on the amount of WKAVA held in the KavaLake liquid staking vault on Kava EVM.",
     "kava": {
       "owners": [
@@ -17446,6 +17450,7 @@ const configs = {
     },
   },
   "lioncommerce": {
+    deadFrom: '2026-09-30',
     "kava": {
       "staking": {
         "owner": "0x52b18024e084150e001a34be9c7a41706517d79f",
@@ -18028,6 +18033,7 @@ const configs = {
     },
   },
   "metaid": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         [
@@ -18993,6 +18999,7 @@ const configs = {
     },
   },
   "multialt-stacking": {
+    deadFrom: '2026-09-30',
     "kava": {
       "owner": "0xFFd33A71411fbA8B989Eca9F99EE7a908a2dEf4F",
       "tokens": [
@@ -24031,6 +24038,7 @@ const configs = {
     },
   },
   "rising-undead": {
+    deadFrom: '2026-09-30',
     "kava": {
       "owner": "0xc732471083342a842a728221878327c8DeE8aEDB",
       "tokens": [
@@ -27875,6 +27883,7 @@ const configs = {
     },
   },
   "traddify": {
+    deadFrom: '2026-09-30',
     "methodology": "We count the WKAVA on 0xA7f3d2dEa7a53E7A9FEbBdE5Cf7C69d39D065030",
     "kava": {
       "tokens": [

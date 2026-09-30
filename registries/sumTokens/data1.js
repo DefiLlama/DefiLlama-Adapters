@@ -548,6 +548,7 @@ module.exports = {
     }
   },
   "privcash": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         // KAVA: 100 / 1000 / 10000 / 100000 / 1000000
@@ -579,6 +580,7 @@ module.exports = {
     }
   },
   "mirrosset": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0x587Abb291379Ea84AcE583aB07A13109b9B3F347"], // USDC @ InsurancePool

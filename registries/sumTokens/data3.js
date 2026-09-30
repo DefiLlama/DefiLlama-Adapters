@@ -391,6 +391,7 @@ module.exports = {
     },
   },
   "kinetix-derivatives-v2": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tvl": { "owners": ["0xB5CE30B6EBAA252bDEac2F768EF9b1e4Bdf8d120"], "tokens": [ADDRESSES.null,ADDRESSES.kava.USDt] },
     },
@@ -715,6 +716,7 @@ module.exports = {
     },
   },
   "stipend": {
+    deadFrom: "2023-08-01", // abandoned?
     "kava": {
       "tvl": { "owners": ["0xfc30fE377f7E333cC1250B7768107a7Da0277c44"], "tokens": [ADDRESSES.kava.WKAVA] },
     },

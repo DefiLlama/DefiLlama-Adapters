@@ -14,7 +14,6 @@ async function tvl(api) {
     { target: '0x8EEA85dA61b397EaB933C001DAAD6fC1C5A4c67C', params: '0xcf4673F714183C42DADc1B42DAC21BE09cfc3684' },
     { target: '0xc28fcef5970fd23e5bfcdc31ce1ba72ef98cc70a', params: '0xef7541FCa94988fA423bC418a854f7967f83a3E0' },
     { target: '0x371d33963fb89ec9542a11ccf955b3a90391f99f', params: '0x43Ac7f627e41EBDa7515FEaCa425306AaB9cB602' },
-    { target: '0x1E5573b2A7C1D08112d0Ff22e9F2D8EFc9583532', params: '0x9e890FBD4295D92c41fA12a2083b51C387699Fd8' },
     { target: '0x8fE243F8B47107c468537D74514d7c52Cd61E937', params: '0x56a9c9230d6D3b7bF147c10fdDBCD8F2eB1a2B6d' },
     //NEW LPs 14/07 - GAUGE / CONTRACT
     { target: '0x5383dEB37479599a33584f7Bbc346ab299e30FF0', params: '0x79eb3848B7B4630D1d883172f8e56B2e8fb18521' },
@@ -65,9 +64,20 @@ async function tvl(api) {
   })
 }
 
+// TIGER/LION LP: both sides are protocol tokens, so it counts as staking rather than tvl
+async function staking(api) {
+  const calls = [
+    { target: '0x1E5573b2A7C1D08112d0Ff22e9F2D8EFc9583532', params: '0x9e890FBD4295D92c41fA12a2083b51C387699Fd8' }, // gauge / vault -> vAMM-TIGER/LION (0x78Ef6D3E3d0da9B2248C11BE11743B4C573ADd25)
+  ]
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls })
+  const lps = await api.multiCall({ abi: 'address:stake', calls: calls.map(i => i.target) })
+  api.addTokens(lps, bals)
+  return sumUnknownTokens({ api, useDefaultCoreAssets: true, resolveLP: true, lps })
+}
+
 module.exports = {
-  misrepresentedTokens: true,
   kava: {
     tvl,
+    staking,
   }
 };

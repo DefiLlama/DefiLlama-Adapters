@@ -578,6 +578,7 @@ const uniV2Configs = {
     bsc: '0x73d9f93d53505cb8c4c7f952ae42450d9e859d10',
   },
   'direct-exchange': {
+    deadFrom: '2026-09-30',
     kava: '0xcE08c3d20Ff00a9Cf0D28922768bD606592B5D4C',
   },
   'diviswap': {
@@ -1032,6 +1033,7 @@ const uniV2Configs = {
     hallmarks: [
       ['2022-08-15', "incentives not given"]
     ],
+    deadFrom: "2022-08-15",
     kava: '0xc08BAEA14C14f25bcafe3e3E05550715505eF3dE',
   },
   'justmoney': {
@@ -1042,12 +1044,14 @@ const uniV2Configs = {
     tron: 'TBfTeNjh7k8PbkTad8z6WS2vqh7SQZUfQ8',
   },
   'kapaswap': {
+    deadFrom: '2026-09-30',
     kava: '0xAb9F1D773Bde5657BC1492dfaF57b0b9EB59FDDc',
   },
   'kapinus': {
     bsc: '0x70e881fa43a7124e36639b54162395451cef1922',
   },
   'kasavadex': {
+    deadFrom: '2026-09-30',
     hallmarks: [
       ['2022-08-15', "incentives not given"]
     ],
@@ -1070,6 +1074,7 @@ const uniV2Configs = {
     chz: '0xE2918AA38088878546c1A18F2F9b1BC83297fdD3',
   },
   'kdex': {
+    deadFrom: '2026-09-30',
     kava: '0x9a6d197e85e61c23146F5b7FA55fc8a6EDDD2D57',
   },
   'kewl': {
@@ -1125,6 +1130,7 @@ const uniV2Configs = {
     era: '0x6167ce530e710e29d0F32CFe50062028800e5918',
   },
   'kswap': {
+    deadFrom: '2026-09-30',
     kava: '0xEFD3ad14E5cF09b0EbE435756337fb2e9D10Dc1a',
   },
   'kswapfinance': {
@@ -1347,6 +1353,7 @@ const uniV2Configs = {
     polygon: '0x800b052609c355cA8103E06F022aA30647eAd60a',
   },
   'mversex': {
+    deadFrom: '2026-09-30',
     kava: '0x266F951c525130a4E230bB40F0e3525C6C99B9c5',
   },
   'nanoswap': {
@@ -1768,6 +1775,7 @@ const uniV2Configs = {
     stable: '0x19E10fb5875C4901D9650aFc001197285dBBC060',
   },
   'sevenswap': {
+    deadFrom: '2026-09-30',
     kava: '0x72b97F61fdb9a3aD34cd284B2f9c55d04127019c',
   },
   'shadow-legacy': {
