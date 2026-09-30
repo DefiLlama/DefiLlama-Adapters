@@ -35,7 +35,7 @@ async function tvl(api) {
   const balances = api.getBalances();
 
   const stakerAum = await fetchStakerAUM();
-  if (stakerAum) balances['zigchain:uzig'] = stakerAum;
+  if (stakerAum) balances['zigchain:azig'] = stakerAum;
 
   let vaults = [];
   try {
