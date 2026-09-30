@@ -93,7 +93,10 @@ const configs = {
   'zona': {
     pharos: {
       poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
-    }
+    },
+    robinhood: {
+      poolDatas: ['0x3e477EE4B379d212B0833Af7441763355D4A1724']
+    },
   },
   'kaskad': {
     igra: {

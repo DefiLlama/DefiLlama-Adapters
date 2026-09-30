@@ -108,6 +108,11 @@ const configs = {
       midasTokens: [
         '0x5542F82389b76C23f5848268893234d8A63fd5c8', // mMEV
       ]
+    },
+    monad: {
+      morpho: [
+        '0xA2fa4CeD4E2d448D084f5a15011b3564922119d6'
+      ]
     }
   }
 }

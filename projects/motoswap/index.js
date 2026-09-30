@@ -61,7 +61,7 @@ module.exports = {
     'Staked amounts are read from the farm pool accounting (lpSupply), so the MOTO reward budget held by the farm is excluded. ' +
     'Treasury vesting and reward escrow contracts are protocol owned and excluded. ' +
     'Liquidity in Motoswap DEX pairs will be counted as tvl once the DEX opens on 2026-09-28.',
-  start: 1789409819, // 2026-09-14, block 25977433
+  start: '2026-09-14', // 2026-09-14, block 25977433
   ethereum: {
     tvl,
     staking,

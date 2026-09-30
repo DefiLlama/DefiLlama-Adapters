@@ -36,9 +36,28 @@ const LIQUID_TOKENS = [
   '9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D', // jlUSDC, Jupiter Lend USDC
 ]
 
+// Kamino Lend keeps deposits in an Obligation PDA, not a token account, so the reserve
+// wallet scan cannot see them. Offsets: Obligation = disc(8) tag(8) last_update(16)
+// lending_market(32) owner(32) deposits[8]. Reserve = header(128) liquidity(1232)
+// padding(1200), so ReserveCollateral starts at 2560 and its mint_total_supply at 2592 -
+// verified on chain: the mint at 2560 reports exactly the supply stored at 2592.
+const KLEND = 'KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD'
+const OBLIGATION_OWNER = 64
+const OBLIGATION_DEPOSITS = 96
+const OBLIGATION_COLLATERAL_SIZE = 136
+const RESERVE_LIQUIDITY_MINT = 128
+const RESERVE_AVAILABLE_AMOUNT = 224
+const RESERVE_BORROWED_SF = 232
+const RESERVE_PROTOCOL_FEES_SF = 344
+const RESERVE_REFERRER_FEES_SF = 360
+const RESERVE_PENDING_REFERRER_FEES_SF = 376
+const RESERVE_COLLATERAL_SUPPLY = 2592
+const SF = 2n ** 60n
+
 const SAFE = '0xbf87D9244CD8E4d9F49d3b6016F784493b199b36'
 const VAULT_V2_FACTORY = '0xA1D94F746dEfa1928926b84fB2596c06926C0405' // Morpho Vault V2 factory
 const CMTAT_FACTORY = '0x1AEbACA03Da21eEadC474febCFA5140044A33f49' // Obligate eNote factory
+const PENDLE_MARKETS = chainId => `https://api-v2.pendle.finance/core/v1/${chainId}/markets/active`
 const STELLAR_POOL_STORAGE = 'CAADAYJOZF5HXPVZXBXA3PLCU7OSRW34OKVXG2676KAGZVZBI6EYQ73L'
 const STELLAR_WALLET = 'GDY2SKUDNRGOOWMAQLDTBO4LNL6CMWHZRD3ZB55VOOM6MTXQ5Y5TRL6Q'
 
@@ -106,6 +125,37 @@ async function addArfTranches(api, holdings) {
   })
 }
 
+// Kamino Lend deposits are held as collateral shares inside an Obligation PDA owned by the
+// reserve wallet; redeem them at the reserve's own cToken rate into its liquidity mint.
+async function addKaminoDeposits(api, wallets) {
+  const obligations = (await Promise.all(wallets.map(owner => getConnection()
+    .getProgramAccounts(new PublicKey(KLEND), { filters: [{ memcmp: { offset: OBLIGATION_OWNER, bytes: owner } }] })))).flat()
+  const shares = {}
+  obligations.forEach(({ account: { data } }) => {
+    for (let i = 0; i < 8; i++) {
+      const offset = OBLIGATION_DEPOSITS + i * OBLIGATION_COLLATERAL_SIZE
+      const reserve = data.subarray(offset, offset + 32)
+      const amount = data.readBigUInt64LE(offset + 32)
+      if (!amount || reserve.every(byte => !byte)) continue
+      const key = bs58.encode(reserve)
+      shares[key] = (shares[key] ?? 0n) + amount
+    }
+  })
+  const reserves = Object.keys(shares)
+  if (!reserves.length) return
+  const accounts = await getConnection().getMultipleAccountsInfo(reserves.map(i => new PublicKey(i)))
+  accounts.forEach((account, i) => {
+    if (!account) throw new Error(`huma-v2: missing Kamino reserve ${reserves[i]}`)
+    const { data } = account
+    const scaled = offset => (Number(data.readBigUInt64LE(offset)) + Number(data.readBigUInt64LE(offset + 8)) * 2 ** 64) / Number(SF)
+    const liquidity = Number(data.readBigUInt64LE(RESERVE_AVAILABLE_AMOUNT)) + scaled(RESERVE_BORROWED_SF)
+      - scaled(RESERVE_PROTOCOL_FEES_SF) - scaled(RESERVE_REFERRER_FEES_SF) - scaled(RESERVE_PENDING_REFERRER_FEES_SF)
+    const supply = Number(data.readBigUInt64LE(RESERVE_COLLATERAL_SUPPLY))
+    if (!supply) return
+    api.add(bs58.encode(data.subarray(RESERVE_LIQUIDITY_MINT, RESERVE_LIQUIDITY_MINT + 32)), Number(shares[reserves[i]]) * liquidity / supply)
+  })
+}
+
 async function addOrcaPositions(api, holdings) {
   // Orca positions are held as NFTs; the position account is a PDA of the position mint
   const positionMints = Object.keys(holdings).filter(mint => holdings[mint] === 1)
@@ -134,6 +184,7 @@ async function solanaTvl(api) {
   const holdings = await getReserveTokens(wallets)
   LIQUID_TOKENS.forEach(token => { if (holdings[token]) api.add(token, holdings[token]) })
   await addArfTranches(api, holdings)
+  await addKaminoDeposits(api, wallets)
   await addOrcaPositions(api, holdings)
   api.removeTokenBalance(`solana:${PST}`) // the Orca position is PST/USDC; its PST leg is Huma's own receipt token
   return api.getBalances()
@@ -170,7 +221,7 @@ async function ethereumTvl(api) {
   // Liquid sleeve: Pendle PT/YT/SY/LP, Morpho vaults and plain stables. Huma rolls Pendle
   // positions on maturity and rotates between Morpho vaults, so enumerate both rather than
   // pinning addresses.
-  const { markets } = await getConfig('pendle/markets-ethereum', 'https://api-v2.pendle.finance/core/v1/1/markets/active')
+  const { markets } = await getConfig('pendle/markets-ethereum', PENDLE_MARKETS(1))
   const pendleTokens = markets.flatMap(({ pt, yt, sy, address }) => [pt, yt, sy, address].filter(i => i).map(i => i.split('-').pop()))
   const vaultLogs = await getLogs2({
     api,
@@ -180,6 +231,38 @@ async function ethereumTvl(api) {
   })
   const morphoVaults = vaultLogs.map(i => i.newVaultV2)
   return api.sumTokens({ owner: SAFE, tokens: [...new Set([...pendleTokens, ...morphoVaults, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.sUSDS, ADDRESSES.ethereum.DAI, ADDRESSES.ethereum.sUSDe, ADDRESSES.ethereum.USDe])] })
+}
+
+// Huma's Pendle sUSDe sleeve on Monad is held as an LP: unwrap the Safe's share of the
+// pool into the SY's yield token and the PT, then add any PT/YT it holds outright.
+async function monadTvl(api) {
+  const { markets } = await getConfig('pendle/markets-monad', PENDLE_MARKETS(143))
+  const lps = markets.map(({ address }) => address.split('-').pop())
+  const lpBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: lps.map(target => ({ target, params: SAFE })), permitFailure: true })
+  const owned = lps.map((market, i) => ({ market, balance: +lpBalances[i] })).filter(i => i.balance > 0)
+  if (owned.length) {
+    const calls = owned.map(i => i.market)
+    const [tokens, lpSupplies] = await Promise.all([
+      api.multiCall({ abi: 'function readTokens() view returns (address _SY, address _PT, address _YT)', calls }),
+      api.multiCall({ abi: 'erc20:totalSupply', calls }),
+    ])
+    const syCalls = tokens.map(i => i._SY)
+    const [syInMarket, ptInMarket, yieldTokens, sySupplies] = await Promise.all([
+      api.multiCall({ abi: 'erc20:balanceOf', calls: syCalls.map((target, i) => ({ target, params: calls[i] })) }),
+      api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map((token, i) => ({ target: token._PT, params: calls[i] })) }),
+      api.multiCall({ abi: 'function yieldToken() view returns (address)', calls: syCalls }),
+      api.multiCall({ abi: 'erc20:totalSupply', calls: syCalls }),
+    ])
+    // SY is not always 1:1 with its yield token, so redeem through the SY's own backing
+    const yieldInSy = await api.multiCall({ abi: 'erc20:balanceOf', calls: yieldTokens.map((target, i) => ({ target, params: syCalls[i] })) })
+    owned.forEach(({ balance }, i) => {
+      const share = balance / +lpSupplies[i]
+      api.add(yieldTokens[i], +syInMarket[i] * share * +yieldInSy[i] / +sySupplies[i])
+      api.add(tokens[i]._PT, +ptInMarket[i] * share)
+    })
+  }
+  const pendleTokens = markets.flatMap(({ pt, yt }) => [pt, yt].filter(i => i).map(i => i.split('-').pop()))
+  return api.sumTokens({ owner: SAFE, tokens: pendleTokens })
 }
 
 async function stellarTvl(api) {
@@ -197,11 +280,12 @@ async function stellarTvl(api) {
 }
 
 module.exports = {
-  doublecounted: true, // the liquid sleeve sits inside Jupiter Lend, Orca and Pendle
+  doublecounted: true, // the liquid sleeve sits inside Jupiter Lend, Kamino Lend, Orca and Pendle
   misrepresentedTokens: true, // receivables and notes are reported as their USDC face
   timetravel: false, // Solana and Soroban legs are current-state reads
-  methodology: "Sums the reserves backing PST and mPST directly on chain, using the wallets and contracts Huma discloses on its Accountable dashboard: Arf receivables valued at the Huma Institutional pools' own tranche marks (Solana and Stellar), outstanding TradeFlow Obligate eNotes at par, and the liquid sleeve held in Jupiter Lend, Orca, Pendle and stablecoins.",
+  methodology: "Sums the reserves backing PST and mPST directly on chain, using the wallets and contracts Huma discloses on its Accountable dashboard: Arf receivables valued at the Huma Institutional pools' own tranche marks (Solana and Stellar), outstanding TradeFlow Obligate eNotes at par, and the liquid sleeve held in Jupiter Lend, Kamino Lend, Orca, Pendle (Ethereum and Monad) and stablecoins.",
   solana: { tvl: solanaTvl },
   ethereum: { tvl: ethereumTvl },
+  monad: { tvl: monadTvl },
   stellar: { tvl: stellarTvl },
 }

@@ -109,8 +109,10 @@ const tvl = async (api) => {
     })
   }
 
-  if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
-    blacklistedTokens.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
+  // the gas token and this ERC-20 read the same balance on these chains, so count only one of them
+  const gasTokenTwin = { stable: ADDRESSES.stable.USDT0, arc: ADDRESSES.arc.USDC }
+  if (gasTokenTwin[api.chain] && tokens.includes(ADDRESSES.null))
+    blacklistedTokens.push(gasTokenTwin[api.chain])
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true })
 }
 

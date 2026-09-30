@@ -36,6 +36,7 @@ const addressBook = {
     usdc: ADDRESSES.ethereum.USDC,
     usdo: "0x8238884Ec9668Ef77B90C6dfF4D1a9F4F4823BFe", // OpenEden's USDO - Tokenized T-bill
     aave_v3_usdc: "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c", // aEthUSDC
+    comp_inst_usdc: "0x207158a267CBD2598BB3d611D8CBdEE2709F2F8C", // Compound V3 Institutional
     morpho_vaults: [
       // "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", // kpk-usdc-prime - No longer in use
       "0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6", // kpk-usdc-prime - V2 vault
@@ -81,7 +82,7 @@ async function tvl(api) {
   const ownerTokens = addresses.reserves.map(i => [[normalize(addresses.usdc)], i.address])
   // The MSV also has AAVE USDC and OpenEden's USDO
   if (api.chain === "ethereum" ) {
-    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc), normalize(addresses.usdo)], addresses.msv]);
+    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc), normalize(addresses.usdo), normalize(addresses.comp_inst_usdc)], addresses.msv]);
   } else {
     ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc)], addresses.msv]);
   }

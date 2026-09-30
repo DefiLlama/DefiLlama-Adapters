@@ -1,15 +1,17 @@
-const { get } = require('./helper/http')
+const { post } = require('./helper/http')
 
 async function tvl() {
-  const tvlTlos = (await get(
-    "https://mainnet.telos.net/v2/history/get_deltas?code=eosio.token&scope=eosio.rex&table=accounts",
-  )).deltas.map(d => d.data.amount);
+  const { rows } = await post("https://telos.greymass.com/v1/chain/get_table_rows", {
+    json: true, code: "eosio.token", scope: "eosio.rex", table: "accounts",
+  })
+  const tlos = rows.find(r => r.balance.endsWith(' TLOS')).balance.split(' ')[0]
 
   return {
-    telos: tvlTlos[0],
+    telos: +tlos,
   };
 }
 
 module.exports = {
+  timetravel: false,
   telos: { tvl },
 };

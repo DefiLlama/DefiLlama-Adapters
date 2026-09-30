@@ -720,6 +720,11 @@ module.exports = {
     "methodology": "TVL is the USDC collateral held in Pascal's vault token account on Solana.",
     "solana": { "tokenAccounts": ["5vRGRcwN4iYaiQdso1vgWbTDFYbS8GQNUDRMMKE2ycZS"] }
   },
+  megapump: {
+    megaeth: { owner: '0xB6bC3988d62D2979b3ab7AABCcf3c9443f7dAbc4', // MegaPump, UUPS proxy: holds the ETH of every active bonding curve
+      token: ADDRESSES.null,      },
+      methodology: "Value of eth on the contract",
+  },
   "n1-exchange-bridge": {
     "methodology": "Counts the USDC held in the N1 Exchange bridge custody wallet on Solana.",
     "solana": {
@@ -760,6 +765,17 @@ module.exports = {
       "owners": ["0x69A615DD32B89fE40D87b2e3123baE4162f2d450"],
       "resolveUniV3": true,
       "uniV3WhitelistedTokens": [ADDRESSES.arc.USDC],
+    }
+  },
+  "popdex-bridge": {
+    "methodology": "TVL is the USDT held by the PopDEX cross-chain bridge contracts on Arbitrum and Morph",
+    "arbitrum": {
+      "owners": ["0x0B15D6cF5e843C88034f64664D7fE66E5F79C5f2"],
+      "tokens": [ADDRESSES.arbitrum.USDT]
+    },
+    "morph": {
+      "owners": ["0x71FB3a05d02B48d358E4DEB55D0D461Dcb7cF71d"],
+      "tokens": [ADDRESSES.morph.USDT0]
     }
   },
 }

@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require('../helper/unknownTokens')
 
-const HEX = '0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'
+const HEX = ADDRESSES.pulse.HEX
 
 const HEX_BOND_MANAGER = '0x1eAE95554914f6221D55a1C0B199d0B57bdfB3c8'
 const BOND_MIGRATOR = '0x3FaCED611A1db97D575667f68467988E94700100'
