@@ -31,5 +31,14 @@ module.exports = {
       const tvlValue = await api.call({ abi: "uint256:tvl", target: BBHLP_VAULT_ROUTER_ADDRESS, });
       api.addUSDValue(tvlValue / 1e18)
     }
+  },
+  monad: {
+    tvl: async (api) => {
+      const vaults = [
+        '0xC2ddc1004CA0d6cC4bFd1dCD03Dcf855bED8E670',
+        '0x215394B5677Cb7a18B6fA8cc2cD155C024ee6b2E',
+      ]
+      return api.erc4626Sum({calls: vaults, isOG4626: true, })
+    }
   }
 }
