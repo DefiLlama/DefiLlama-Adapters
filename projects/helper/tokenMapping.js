@@ -47,6 +47,11 @@ const fixBalancesTokens = {
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
+  // ZIGChain v5 migrates the native denom from uzig (6 decimals) to azig (18 decimals);
+  // azig is not priced under zigchain:azig by the coins service yet
+  zigchain: {
+    azig: { coingeckoId: 'zignaly', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
