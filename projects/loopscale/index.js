@@ -178,7 +178,7 @@ const loopscaleIdl = {
   ]
 }
 
-const endpoint = process.env.LOOPSCALE_PRICING_ENDPOINT || 'https://loopscale-pricing-adapters-109615290061.europe-west2.run.app/v1/decompile_mints'
+const endpoint = 'https://loopscale-pricing-adapters-109615290061.europe-west2.run.app/v1/decompile_mints'
 
 function parseBigIntStringMap(input) {
   const out = Object.create(null);

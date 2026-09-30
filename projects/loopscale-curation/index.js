@@ -1,98 +1,91 @@
 const { PublicKey } = require('@solana/web3.js')
+const bs58 = require('bs58').default || require('bs58')
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConnection } = require('../helper/solana')
 
-// Loopscale Asset Curation vaults are Exponent strategy vaults
-// (program sVau1tXvayVWfotzm9Ahcv2qfnnfRWttt78BCnNC6dD) curated by Loopscale.
-// Each vault is managed by its own Squads multisig, so there is no single
-// on-chain curator key to discover by — new vaults must be added here.
-const CURATED_VAULTS = [
-  '63q8q952GEsJsjsQuFFJRnYDf7NBpcMLLxFuFGyYWg6C', // SOL Main
-  '9iPUphFXxnyAKYnCTG3XZv5ybHv5Ki1diqA5mis3TBVB', // OnRe Growth
-  'CafHV1mnD4iRsTetmM9iULj1Cuui7PVbPo3hGxWi3x1K', // PST Loop Vault
-  'BWuXMAURGyehq9AWCDDY79YE88ADkgYKr9wGw3Y3nVd8', // Doma SOL Internet Vault
-  'EsTx9ToYW2k1DsTw6ccpmP3RrXQriod114hcM7U5ZKaR', // DAWN Liquidity
-]
-
+const EXPONENT_VAULTS_PROGRAM = new PublicKey('sVau1tXvayVWfotzm9Ahcv2qfnnfRWttt78BCnNC6dD')
 const STRATEGY_VAULT_DISCRIMINATOR = Buffer.from([98, 228, 39, 201, 116, 210, 39, 11])
+// Loopscale Asset Curation's key in the vault's roles.curator
+const LOOPSCALE_CURATOR = 'bs1PuRvB9rBBZkryBjADYvxc2qYh51EVW2fsb1uTiBN'
+const LOOPSCALE_CURATOR_BYTES = new PublicKey(LOOPSCALE_CURATOR).toBuffer()
 
-// Exponent's abstract USD quote sentinel. Vaults quoted in it (e.g. OnRe
-// Growth) hold USD-denominated positions with 6 decimals, so map 1:1 to USDC.
-const USD_QUOTE_MINT = 'USD1111111111111111111111111111111111111111'
-const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+// Exponent's synthetic quote mints (same mapping as exponent-v2)
+const SYNTHETIC_MINT_MAP = {
+  'USD1111111111111111111111111111111111111111': ADDRESSES.solana.USDC,
+  'USD1111111111111111111111111111111111111119': 'DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT', // USDe
+}
 
-// Minimal walk of the ExponentStrategyVault account. The account is
-// borsh-encoded with variable-length vectors ahead of the fields we need, so
-// we skip forward field by field until financials.
-//
-// Layout (from the exponent SDK's ExponentStrategyVaultAccountDataCodec):
-//   discriminator [8] | navAumCircuitBreakerState [32] | squadsSettings [32]
-//   | squadsVault [32] | tokenEntries vec | underlyingMint [32] | mintLp [32]
-//   | tokenLpEscrow [32] | normalWithdrawalCutBp u16 | feeTreasury [32]
-//   | selfAddress [32] | signerBump [1] | statusFlags u8 | financials { ... }
-function decodeVaultAum(data) {
+// Layout from the exponent SDK's ExponentStrategyVault codec; enum tags are u8, vec lengths u32
+function decodeVault(data) {
   if (!data.subarray(0, 8).equals(STRATEGY_VAULT_DISCRIMINATOR))
     throw new Error('unexpected ExponentStrategyVault discriminator')
 
-  let offset = 8 + 32 + 32 + 32
-
-  const readU32 = () => { const v = data.readUInt32LE(offset); offset += 4; return v }
-  const readU64 = () => { const v = data.readBigUInt64LE(offset); offset += 8; return v }
-
-  // tokenEntries: vec<TokenEntry>
-  // TokenEntry: mint [32] | priceId | tokenSquadsAccount [32]
-  //   | tokenAccountVault [32] | lastObservedAmount u64
-  //   | forceDeallocatePolicyIds vec<u64>
-  // PriceId enum: 0 => Simple(u64), 1 => Multiply(vec<u64>)
-  const tokenEntryCount = readU32()
-  for (let i = 0; i < tokenEntryCount; i++) {
-    offset += 32 // mint
-    const priceIdKind = data.readUInt8(offset); offset += 1
-    if (priceIdKind === 0) offset += 8
-    else if (priceIdKind === 1) offset += 4 + readAheadVecLen() * 8
-    else throw new Error('unknown Exponent PriceId variant')
-    offset += 32 + 32 + 8 // tokenSquadsAccount, tokenAccountVault, lastObservedAmount
-    offset += 4 + readAheadVecLen() * 8 // forceDeallocatePolicyIds
-
-    function readAheadVecLen() { return data.readUInt32LE(offset) }
+  let offset = 8
+  const skip = (n) => { offset += n }
+  const u8 = () => data.readUInt8(offset++)
+  const u32 = () => { const v = data.readUInt32LE(offset); offset += 4; return v }
+  const u64 = () => { const v = data.readBigUInt64LE(offset); offset += 8; return v }
+  const pubkey = () => { const v = new PublicKey(data.subarray(offset, offset + 32)).toString(); offset += 32; return v }
+  const vec = (readItem) => Array.from({ length: u32() }, () => readItem())
+  const priceId = () => {
+    const kind = u8()
+    if (kind === 0) skip(8) // Simple(u64)
+    else if (kind === 1) skip(u32() * 8) // Multiply(vec<u64>)
+    else throw new Error(`unknown Exponent PriceId variant ${kind}`)
+  }
+  const strategyPosition = () => {
+    const kind = u8()
+    switch (kind) {
+      case 0: skip(32 + 4 + 32); skip(u32() * 4); priceId(); priceId(); skip(32); break // Orderbook
+      case 1: skip(32); vec(() => { skip(32); priceId(); skip(8) }); break // TokenAccount
+      case 2: // Obligation
+        if (u8() !== 0) throw new Error('unknown Exponent ObligationType variant')
+        skip(32 + 32); priceId(); vec(() => { skip(32); priceId() }); skip(u32() * 65); skip(1); break
+      case 3: case 4: skip(32 + 32); priceId(); priceId(); break // YieldPosition, ClmmPosition
+      case 5: case 6: case 8: skip(32); break // LoopscaleLoan, LoopscaleStrategy, OrcaWhirlpoolPosition
+      case 7: skip(32 + 32); break // KaminoFarm
+      case 9: skip(32 + 8); break // LoopscaleVaultStake
+      default: throw new Error(`unknown Exponent StrategyPosition variant ${kind}`)
+    }
   }
 
-  let underlyingMint = new PublicKey(data.subarray(offset, offset + 32)).toString()
-  if (underlyingMint === USD_QUOTE_MINT) underlyingMint = USDC_MINT
-  offset += 32 // underlyingMint
-  offset += 32 + 32 // mintLp, tokenLpEscrow
-  offset += 2 // normalWithdrawalCutBp
-  offset += 32 + 32 // feeTreasury, selfAddress
-  offset += 1 + 1 // signerBump, statusFlags
+  skip(32 + 32 + 32) // navAumCircuitBreakerState, squadsSettings, squadsVault
+  vec(() => { skip(32); priceId(); skip(32 + 32 + 8); skip(u32() * 8) }) // tokenEntries
+  const underlyingMint = pubkey()
+  skip(32 + 32 + 2 + 32 + 32 + 1) // mintLp, tokenLpEscrow, normalWithdrawalCutBp, feeTreasury, selfAddress, signerBump
+  const statusFlags = u8()
+  skip(8) // financials.lpBalance
+  const aum = u64() + u64() // aumInBase + aumInBaseInPositions
+  skip(72) // rest of financials
+  vec(strategyPosition)
+  skip(8 + 8) // maxAumSupply, seedId
+  vec(pubkey) // roles.manager
+  const curators = vec(pubkey)
 
-  // financials: lpBalance u64 | aumInBase u64 | aumInBaseInPositions u64 | ...
-  offset += 8 // lpBalance
-  const aumInBase = readU64()
-  const aumInBaseInPositions = readU64()
-
-  return { underlyingMint, aum: aumInBase + aumInBaseInPositions }
+  return { underlyingMint, statusFlags, aum, curators }
 }
 
 async function tvl(api) {
-  const connection = getConnection()
-  const accounts = await connection.getMultipleAccountsInfo(
-    CURATED_VAULTS.map((a) => new PublicKey(a))
-  )
-
-  const balances = {}
-  accounts.forEach((account, i) => {
-    if (!account) throw new Error(`vault account missing: ${CURATED_VAULTS[i]}`)
-    const { underlyingMint, aum } = decodeVaultAum(account.data)
-    balances[underlyingMint] = (balances[underlyingMint] ?? 0n) + aum
+  const accounts = await getConnection().getProgramAccounts(EXPONENT_VAULTS_PROGRAM, {
+    filters: [{ memcmp: { offset: 0, bytes: bs58.encode(STRATEGY_VAULT_DISCRIMINATOR) } }],
   })
 
-  const entries = Object.entries(balances)
-  api.addTokens(entries.map(([mint]) => mint), entries.map(([, aum]) => aum))
+  let vaultCount = 0
+  for (const { account } of accounts) {
+    if (!account.data.includes(LOOPSCALE_CURATOR_BYTES)) continue // skip other curators' vaults before decoding
+    const { underlyingMint, statusFlags, aum, curators } = decodeVault(account.data)
+    if (!curators.includes(LOOPSCALE_CURATOR)) continue
+    vaultCount++
+    if (statusFlags === 8) continue // inactive, hidden in the UI (as in exponent-v2)
+    api.add(SYNTHETIC_MINT_MAP[underlyingMint] || underlyingMint, aum)
+  }
+  if (!vaultCount) throw new Error('no Loopscale-curated Exponent vaults found')
 }
 
 module.exports = {
   timetravel: false,
   doublecounted: true, // vault deposits deploy into Loopscale markets and Exponent, both counted by their own adapters
   methodology:
-    'TVL is the sum of AUM (idle assets plus deployed positions, denominated in each vault\'s underlying asset) across Loopscale Asset Curation vaults, read from the on-chain vault accounts.',
+    'TVL is the sum of AUM (idle assets plus deployed positions, denominated in each vault\'s underlying asset) across the Exponent strategy vaults whose curator role is Loopscale Asset Curation, read from the on-chain vault accounts.',
   solana: { tvl },
 }
