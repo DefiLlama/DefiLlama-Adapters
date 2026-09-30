@@ -7,11 +7,32 @@ function getDecimalShifts(dynamicFields){
 
 const NAVI_API = 'https://open-api.naviprotocol.io/api/navi'
 
+// Known market storages, used when the NAVI config API is unavailable
+const fallbackStorageIds = [
+  "0xbb4e2f4b6205c2e2a2db47aeb4f830796ec7c005f88537ee775986639bc442fe", // main
+  "0xc2b6a52f0da7f91389eaffe4f68f4cacee43aa616bb8a4371118eafaf07cdd90", // ember
+  "0x199c1d5c2d58a4b05bbfa2338d02ad2676572a8a59ac148a5475b5c0fc53ed9f", // rwa
+  "0xdf18372bc9c588b96c7553bc811467a9166ed9be472b40cb45c226175377c558", // sui-eco
+  "0x51c5ad179214eb5e170dd93ba6f9b15948002caf85f7e2b091ef46d2dc2ce5b6", // sui-usdc
+  "0x79db6cdbfb59a067be7d78c1003079f56d817ac33b5d372b3165daf09f31ed69", // wbtc-usdc
+  "0x7db5c000524bfe55bb2bc343886f29eabc38f706dc1655900055fa5b60ee00a5", // xbtc-usdc
+  "0x35fecf669e7794ad25d289c2a23f065e518351acae09c5032d7237e185257924", // vsui-usdc
+  "0xafb982de1a436b1cc8a14ecd2d787762599b65d3a6b75b84b10939b1e17d9381", // vsui-sui
+  "0x6b945adccadf11cd7ec39f8c2c225a4267004a74587871cac86f9fa3dbf3be63", // hasui-sui
+  "0x2056ca72f7c81c3fb6b3a6eea117368cad7fb0c9caa4e2a7b51ee913e9e5deb9", // high-usdc
+]
+
 // Storage objects of every NAVI lending market, so newly launched markets are picked up automatically
 async function getStorageIds() {
-  const markets = await fetchURL(`${NAVI_API}/markets?env=prod`).then(r => r.data.data.markets)
-  const configs = await Promise.all(markets.map(m => fetchURL(`${NAVI_API}/config?env=prod&market=${m.key}`).then(r => r.data.data)))
-  return configs.map(c => c.storage)
+  try {
+    const markets = await fetchURL(`${NAVI_API}/markets?env=prod`).then(r => r.data.data.markets)
+    const configs = await Promise.all(markets.map(m => fetchURL(`${NAVI_API}/config?env=prod&market=${m.key}`).then(r => r.data.data)))
+    const storageIds = configs.map(c => c.storage).filter(Boolean)
+    if (storageIds.length) return storageIds
+  } catch (e) {
+    console.log('navi: config API unavailable, using fallback storage list', e.message)
+  }
+  return fallbackStorageIds
 }
 
 async function getReserves() {
