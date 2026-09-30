@@ -19,29 +19,9 @@ const config = {
     tokiLens: "0x000000896D3C2837797e9f334b4Cf366Bf645fdF",
     fromBlock: 314445420,
   },
-  optimism: {
-    factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
-    fromBlock: 133038145,
-  },
-  sonic: {
-    factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
-    fromBlock: 12222609,
-  },
-  mantle: {
-    factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
-    fromBlock: 76774978,
-  },
   bsc: {
     factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
     fromBlock: 47367768,
-  },
-  polygon: {
-    factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
-    fromBlock: 68940928,
-  },
-  avax: {
-    factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
-    fromBlock: 58592671,
   },
   fraxtal: {
     factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
