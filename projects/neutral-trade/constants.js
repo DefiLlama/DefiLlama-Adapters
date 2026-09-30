@@ -40,12 +40,24 @@ const TOKENS = {
 };
 
 const KAMINO_VAULTS = [
-  // { // disabled to avoid double counting
-  //   name: "USDC Max Yield",
-  //   address: "67dqmR76uAbjX6e81A1ganKv3ou31WUMEdeWJkwVfeXy",
-  //   token: TOKENS.USDC,
-  // },
+  {
+    name: "USDC Max Yield",
+    address: "67dqmR76uAbjX6e81A1ganKv3ou31WUMEdeWJkwVfeXy",
+    token: TOKENS.USDC,
+  },
 ];
+
+const ACCOUNTABLE_STRATEGIES = {
+  robinhood: [
+    '0xF62c201e9A28F6A57C4262004dd2e8B8e95bB1eC', // Meridian Liquidity Provider
+  ],
+  ethereum: [
+    '0x56B935Fe5183cC0DE489233d032F9A4B8ec2f9Ff', // Neutral Trade Autopilot
+  ],
+  monad: [
+    '0x5ee57E42DF67e5707F0CAE1a18DfeaDB4F0Df86c', // Neutral Trade Autopilot
+  ],
+};
 
 const HYPERLIQUID_VAULTS = [
   {
@@ -72,6 +84,8 @@ const HYPERLIQUID_VAULTS = [
 
 const NT_VAULT_PROGRAM_ID = "BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU";
 
+const VOLTR_VAULT_PROGRAM_ID = "vVoLTRjQmtFpiYoegx285Ze4gsLJ8ZxgFKVcuvmG1a8";
+
 module.exports = {
   START_TIMESTAMP,
   DRIFT_PROGRAM_ID,
@@ -79,6 +93,8 @@ module.exports = {
   TOKENS,
   VAULTS_REGISTRY_URL,
   KAMINO_VAULTS,
+  ACCOUNTABLE_STRATEGIES,
   HYPERLIQUID_VAULTS,
   NT_VAULT_PROGRAM_ID,
+  VOLTR_VAULT_PROGRAM_ID,
 };

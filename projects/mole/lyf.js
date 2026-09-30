@@ -275,7 +275,7 @@ async function calLyfTvlSui(api) {
       console.error("dex type wrong")
     }
     
-    if (!nftFields) continue;
+    if (!nftFields?.liquidity) continue; // worker without an open position (empty position_nft)
 
     let liquidity, tickLower, tickUpper, poolId
 

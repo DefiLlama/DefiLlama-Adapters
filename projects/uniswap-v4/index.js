@@ -3,6 +3,7 @@ const { getLogs2 } = require('../helper/cache/getLogs');
 const { nullAddress } = require("../helper/tokenMapping");
 const { getEnv } = require("../helper/env");
 const { cachedGraphQuery } = require("../helper/cache");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // from https://docs.uniswap.org/contracts/v4/deployments
 const config = {
@@ -41,26 +42,39 @@ const config = {
   bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343', '0x8145eb83744aac883b68ae34060bebb5031d8f5c',
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
     '0x7083609fce4d1d8dc0c979aab8c869ea2c873402', // DOT was hacked
-    '0x44f161ae29361e332dea039dfa2f404e0bc5b5cc' // H hacked 2026-06-08
+    '0x44f161ae29361e332dea039dfa2f404e0bc5b5cc', // H hacked 2026-06-08
+    '0xac531eb26ca1d21b85126de8fb87e80e09002dcf', // fake SAND mispriced on BSC (~$5.6B phantom TVL)
+
   ] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1 },
   monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895 },
   tempo: { factory: "0x33620f62c5b9b2086dd6b62f4a297a9f30347029", fromBlock: 6475880 },
   megaeth: { factory: "0xacb7e78fa05d562e0a5d3089ec896d57d057d38e", fromBlock: 7009653 },
   robinhood: { factory: "0x8366a39CC670B4001A1121B8F6A443A643e40951", fromBlock: 9070 },
+  arc: { factory: "0x8366a39cc670b4001a1121b8f6a443a643e40951", fromBlock: 1946500 },
 }
 const subgraphs = {
   xlayer: {endpoint: '2fc6nFafrPs4xybzHMnmD48qgUYoHTizhDk1mCJJUDjD', factory: '0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32' }
+}
+
+// On Arc, USDC is the gas token and the ERC-20 at 0x3600... reads the same balance as the native coin.
+// A pool quoted in native USDC and one quoted in the ERC-20 would count the PoolManager's USDC twice,
+// so read native through the ERC-20 and let the token set dedupe it.
+function normalizeCurrency(api, token) {
+  if (api.chain === 'arc' && token.toLowerCase() === nullAddress) return ADDRESSES.arc.USDC
+  return token
 }
 
 function processResult(api, results, factory, blacklistedTokens = []) {
     const tokenSet = new Set()
     const ownerTokens = []
     results.forEach(pool => {
-      tokenSet.add(pool.token0)
-      tokenSet.add(pool.token1)
+      const token0 = normalizeCurrency(api, pool.token0)
+      const token1 = normalizeCurrency(api, pool.token1)
+      tokenSet.add(token0)
+      tokenSet.add(token1)
       if (pool.hooks !== nullAddress) {
-        ownerTokens.push([[pool.token0, pool.token1], pool.hooks])
+        ownerTokens.push([[token0, token1], pool.hooks])
       }
     })
     ownerTokens.push([Array.from(tokenSet), factory])

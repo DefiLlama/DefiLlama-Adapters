@@ -38,7 +38,7 @@ const config = {
       ADDRESSES.aurora.USDC_e,
       ADDRESSES.aurora.USDT_e,
       "0xe3520349F477A5F6EB06107066048508498A291b",
-      "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB",
+      ADDRESSES.aurora.WETH_2,
       "0xf4eb217ba2454613b15dbdea6e5f22276410e89e",
     ]
   }

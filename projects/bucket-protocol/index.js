@@ -29,7 +29,8 @@ async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
   const vaultObject = await getObject(SUI_HASUI_VAULT_ID)
   const lpSupply = vaultObject.fields.lp_token_treasury.fields.total_supply.fields.value;
   const lpRatio = lpAmount / lpSupply
-  const clmmPosition = vaultObject.fields.positions[0].fields.clmm_postion.fields
+  const clmmPosition = vaultObject.fields.positions[0]?.fields?.clmm_postion?.fields
+  if (!clmmPosition) return // vault currently holds no CLMM position (rebalancing / withdrawn)
   const liquidity = clmmPosition.liquidity * lpRatio
   // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
   const tick = Math.floor(Math.log((suiHasuiPool.fields.current_sqrt_price / 2 ** 64) ** 2) / Math.log(1.0001))

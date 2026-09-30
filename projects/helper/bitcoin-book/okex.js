@@ -249,4 +249,11 @@ module.exports = [
   "bc1qccn2vjn66uxunnfqfkmsgajd3lvvuuwj9gpjxnat8548fwergrwqnhw50g",
   "bc1qhx7lpt65ltvlxlxjuktm4ma7ya2azqx42pjqldq4c2ac6aq4hhyq43jjnh",
   "bc1qlge07r0a4fne8ktrymnv25m4gwfsqnccpcqwjn92wq9exyh36m7slpg7uu",
+  "bc1q2tmtz7fje4qh3prfa3hjmghnh7c9fsyndlzf96w5rycw55jyxwnshqpgtd",
+  "bc1qxml2gfzg7jwjkww9gg26a37qx0v7avda644cx6sl65nvnwt5y9jqd53jjf",
+  "bc1qjxpq82f07j9xyhqd23hhe48426g6j3urcwxg875x9zsvzfh2hlds4tyn4c",
+  "bc1qwujz2k9fmp5k5h622v4h7effjrzte09afd3qps3zm0r543mzh4fs57qm4l",
+  "bc1q27annpxr04hjx5kkejscr0k6ljjrt0a28g4nvfmun0p7qnvhreyqeedmup",
+  "bc1q8ad2qzkg2g6wrydeqjuwrg0ft5ktu69fzky8m2jzu9g6a5tq6c2qpp685j",
+  "bc1qt0x0vrfw7a5f3y324ucpk4slm3r8xx9mmt9plmvn668udtvpad7s88xwys",
 ];

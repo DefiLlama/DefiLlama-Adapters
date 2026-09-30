@@ -18,12 +18,22 @@ const vaults = [
   '0xb77d3cf996f088b574a5ec7ddd24aa56b413ffe8e861f734558a4cfd49d68d84', // xBTC-aBTC private
 ];
 async function getVaultsLiquidity() {
-  const vaultResources = await Promise.all(vaults.map(vault => getResource(vault, '0x19bcbcf8e688fd5ddf52725807bc8bf455a76d4b5a6021cfdc4b5b2652e5cd55::vaults::Vault')));
-  const vaultsLiquidityList = await Promise.all(vaultResources.map(({position_id}) => function_view({
-    functionStr: "0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c::router_v3::get_amount_by_liquidity",
-    args: [position_id],
-    type_arguments: [],
-  })));
+  const vaultResources = []
+  const vaultsLiquidityList = []
+  for (const vault of vaults) {
+    const resource = await getResource(vault, '0x19bcbcf8e688fd5ddf52725807bc8bf455a76d4b5a6021cfdc4b5b2652e5cd55::vaults::Vault')
+    try {
+      const liquidity = await function_view({
+        functionStr: "0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c::router_v3::get_amount_by_liquidity",
+        args: [resource.position_id],
+        type_arguments: [],
+      })
+      vaultResources.push(resource)
+      vaultsLiquidityList.push(liquidity)
+    } catch (e) {
+      // closed/migrated positions abort on-chain - skip them
+    }
+  }
   return {vaultResources, vaultsLiquidityList};
 }
 

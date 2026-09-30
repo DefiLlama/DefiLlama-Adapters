@@ -2,13 +2,15 @@ const { function_view } = require("../helper/chain/aptos");
 const { sleep } = require("../helper/utils");
 const cellanaAddress = "0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1"
 
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 5;
 
 async function callWithRetry(fn) {
   for (let i = 0; i <= MAX_RETRIES; i++) {
     try { return await fn() } catch (e) {
       if (i === MAX_RETRIES) throw e;
-      await sleep(200 * (i + 1));
+      // rate limits (429) need a long backoff before the quota window resets
+      const isRateLimit = e?.response?.status === 429 || /429/.test(e?.message ?? '')
+      await sleep(isRateLimit ? 10000 * (i + 1) : 200 * (i + 1));
     }
   }
 }
@@ -45,6 +47,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   methodology:
     "Counts the lamports in each coin container in the Cellana contract account.",
   aptos: {

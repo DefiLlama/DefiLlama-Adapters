@@ -34,7 +34,7 @@ const config = {
     proxyDeployer: "0xD8006420c1b2901849505eb3517cc36a169AE0A7",
     lendingPools: [
       [
-        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+        ADDRESSES.bsc.CAKE,
         "0x8610D60f5329B0560c8F0CEb80175F342fe943F3",
       ], // CAKE
     ],
@@ -44,7 +44,7 @@ const config = {
           ADDRESSES.bsc.USDT, // USDT
           ADDRESSES.bsc.BUSD, // BUSD
           ADDRESSES.bsc.WBNB, // WBNB
-          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", // CAKE
+          ADDRESSES.bsc.CAKE, // CAKE
         ],
         "0xD576bE0d3CC1c0184d1ea3F1778A4A9Dec523859", // vault
       ],

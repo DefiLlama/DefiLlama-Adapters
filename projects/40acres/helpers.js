@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 
@@ -20,11 +21,11 @@ const fortyAcresMapping = {
 }
 
 const baseTokenMapping = {
-  optimism: '0x3c8B650257cFb5f272f799F5e2b4e65093a11a05', // VELO
-  base: '0x940181a94A35A4569E4529A3CDfB74e38FD98631', // AERO
+  optimism: ADDRESSES.optimism.VELO, // VELO
+  base: ADDRESSES.base.AERO, // AERO
   avax: {
     pharaoh: '0x13a466998ce03db73abc2d4df3bbd845ed1f28e7', // PHAR
-    blackhole: '0xcd94a87696fac69edae3a70fe5725307ae1c43f6' //BLACK
+    blackhole: ADDRESSES.avax.BLACK //BLACK
   }
 }
 

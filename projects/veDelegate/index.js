@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { gql } = require("graphql-request");
 const { request } = require("../helper/utils/graphql");
 
 const GRAPHQL_ENDPOINT = 'https://graph.vet/subgraphs/name/vebetter/dao'
-const B3TR_ADDRESS = '0x5ef79995fe8a89e0812330e4378eb2660cede699'
+const B3TR_ADDRESS = ADDRESSES.vechain.B3TR
 
 const tvlQuery = gql`
 query TVL {

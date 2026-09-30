@@ -32,7 +32,7 @@ const config = {
   "manta": [
     {
       "manta": {
-        token: '0x95cef13441be50d20ca4558cc0a27b601ac544e5',
+        token: ADDRESSES.manta.MANTA,
         "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
       }
     }

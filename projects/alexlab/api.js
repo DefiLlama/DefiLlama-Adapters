@@ -109,5 +109,6 @@ async function tvl(api) {
 }
 
 module.exports = {
+  isHeavyProtocol: true,
   stacks: { tvl }
 }

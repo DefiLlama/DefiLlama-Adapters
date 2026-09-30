@@ -92,6 +92,6 @@ async function tvl(api) {
 module.exports = {
   methodology: 'Counts assets deposited in Bonzo Yield Vaults and Bonzo-operated ICHI vaults on Hedera. The vault list is enumerated from Bonzo\'s public APIs; TVL is computed on-chain from each vault\'s token balances (balances()/getTotalAmounts() for concentrated-liquidity and ICHI vaults, want()+balance() for single-asset vaults). Marked double-counted because the underlying liquidity is deployed into SaucerSwap pools already counted on DefiLlama.',
   doublecounted: true,
-  start: 1756237030, 
+  start: '2025-08-26', 
   hedera: { tvl },
 }

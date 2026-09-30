@@ -52,7 +52,7 @@ async function addAllTokenBalances({ api, owners = [] }) {
         api.add(node.assetId, node.amount);
       })
     })
-    await sleep(2000) // avoid hitting rate limits
+    await sleep(3000) // avoid hitting rate limits
     api.log(`fuel: Processed ${Math.min(i + chunkSize, owners.length)}/${owners.length} owners...`)
   }
 }

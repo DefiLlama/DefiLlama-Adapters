@@ -27,7 +27,7 @@ async function tvl({ api }) {
 };
 
 module.exports = {
-  start: 1738198213, // Jan 30 2025 Mainnet Private Beta Launch
+  start: '2025-01-30', // Jan 30 2025 Mainnet Private Beta Launch
   methodology: `TVL counts tokens held in Variational's Core OLP Vault, Settlement Pools, and OLP hedging wallets`,
   arbitrum: { tvl },
   solana: { tvl: () => sumTokensSolana({ owner: SVM_OLP_HEDGING, solOwners: [SVM_OLP_HEDGING] }) },

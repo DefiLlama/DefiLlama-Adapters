@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const Abis = {
     "bank": {
       "usableCollateralBalance": "uint256:usableCollateralBalance"
@@ -12,7 +13,7 @@ const Abis = {
 
 const Contracts = {
   cronos: {
-    mmf: "0x97749c9B61F878a880DfE312d2594AE07AEd7656",
+    mmf: ADDRESSES.cronos.MMF,
     musd: "0x95aEaF383E2e86A47c11CffdE1F7944eCB2C38C2",
     mng: "0xC9b23289c60783649AA327732FCCEc2f5d0aC466",
     bank: "0x800E2ac0A7c243420eea2bE29Cc95B2B650f7337",

@@ -2,6 +2,8 @@
 const { get } = require('./helper/http');
 
 async function tvl() {
+  throw new Error("temporary break to verify 14m spike")
+
   const data = await get(
     'https://flamingo-us-1.b-cdn.net/flamingo/analytics/daily-latest/tvl_data'
   );

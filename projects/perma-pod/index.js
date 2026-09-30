@@ -55,7 +55,7 @@ module.exports = {
   methodology: "Sum token balances by querying the total deposit amount for each asset across the Main and Solv red banks.",
   zigchain: {
     tvl,
-    borrowed
+    borrowed: () => ({}), // hacked
   },
   hallmarks: [
     ['2025-11-16', 'Launch on ZigChain'],

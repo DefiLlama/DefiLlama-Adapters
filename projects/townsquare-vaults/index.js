@@ -18,6 +18,12 @@ const config = {
       vaultFromBlock: 70146973,
     },
   ],
+  base: [
+    {
+      vault: "0xe7aFdA918134eAA42607ec3E5463c955A02F3d70",
+      vaultFromBlock: 48975086,
+    },
+  ],
 };
 
 

@@ -16,9 +16,12 @@ module.exports = {
     ["2026-04-01", "Drift hack"]
   ],
   doublecounted: true,
-  methodology: "Calculate sum of spot positions in vaults with unrealized profit and loss",
+  methodology: "Solana: calculate sum of spot positions in vaults with unrealized profit and loss. Ethereum: each ERC-4626 vault is valued at convertToAssets(totalSupply) - the vault deploys its capital out to trading venues, so totalAssets() reads 0 and is not a usable source.",
   solana: {
     tvl,
+  },
+  ethereum: {
+    tvl: evmTvl,
   },
 };
 /**
@@ -89,5 +92,38 @@ async function tvl(api) {
     hyperliquidData = parseInt(hyperliquidData.marginSummary.accountValue);
     api.addCGToken("usd-coin", hyperliquidData);
   }
+}
+
+/**
+ * EVM vaults are ERC-4626 and are listed by the same endpoint as the Solana
+ * ones, carrying `chain` where a Solana vault carries `programId`.
+ *
+ * Valued at convertToAssets(totalSupply), not totalAssets(): the vault deploys
+ * its capital out to the trading venues, so totalAssets() reports what the
+ * contract itself still holds, which is 0 while the shares are outstanding.
+ */
+async function evmTvl(api) {
+  const vaults = (await fetchVaultAddresses())
+    .filter((vault) => vault.chain === api.chain)
+    .map((vault) => vault.address);
+  if (!vaults.length) return;
+
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaults });
+
+  // convertToAssets reverts on an empty vault, so only price the funded ones
+  const funded = vaults
+    .map((target, i) => ({ target, supply: supplies[i] }))
+    .filter((vault) => +vault.supply > 0);
+  if (!funded.length) return;
+
+  const [assets, values] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: funded.map((i) => i.target) }),
+    api.multiCall({
+      abi: 'function convertToAssets(uint256) view returns (uint256)',
+      calls: funded.map((i) => ({ target: i.target, params: [i.supply] })),
+    }),
+  ]);
+
+  values.forEach((value, i) => api.add(assets[i], value));
 }
 

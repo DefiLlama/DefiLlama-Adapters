@@ -12,6 +12,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'Counts the ETH reserve returned by curveReserveEth() on the verified SatoHook contract. This excludes feesAccrued and does not include secondary-market liquidity.',
-  start: 1777818827,
+  start: '2026-05-03',
   ethereum: { tvl },
 }

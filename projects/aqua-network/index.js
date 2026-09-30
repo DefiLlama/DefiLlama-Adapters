@@ -7,6 +7,10 @@ const ROUTER = 'CBQDHNBFBZYE4MKPWBSJOPIYLW4SFSXAXUTSXJN76GNKYVYPCKWC6QUK'
 
 const TOKEN_SETS_PAGE = 25n
 
+const blacklistedPools = new Set([
+  'CCNXGPE4AQCSNEBZO3XJDKKDI3CRLYMVS6UWBBTVDLALLWMJEXBORQ2A', // SolvBTC/xSolvBTC stableswap: volume is wash-traded by a bot fleet funded from a single wallet
+])
+
 async function tvl(api) {
   const totalSets = await callSoroban(ROUTER, 'get_tokens_sets_count')
 
@@ -18,6 +22,7 @@ async function tvl(api) {
     ])
     for (const [tokens, poolsMap] of batch) {
       for (const poolAddr of Object.values(poolsMap)) {
+        if (blacklistedPools.has(poolAddr)) continue
         const reserves = await callSoroban(poolAddr, 'get_reserves')
         if (!reserves) continue
         for (let j = 0; j < tokens.length; j++) {

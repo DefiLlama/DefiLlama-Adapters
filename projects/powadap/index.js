@@ -17,7 +17,7 @@ const project = 'bulky/powadap'
 
 async function tvl(api) {
   const { chain } = api
-  const cache = await getCache(project, chain) || {}
+  const cache = (await getCache(project, chain)) || {}
   if (!cache.vaults) cache.vaults = {}
   const { vaults, blacklist, log_coreAssetPrices, log_minTokenValue } = config[chain]
 
@@ -32,13 +32,7 @@ async function tvl(api) {
     locks.filter(i => i).forEach(i => cCache.tokens.push(i.token))
     cCache.tokens = getUniqueAddresses(cCache.tokens)
 
-    const balances = await vestingHelper({
-      cache, useDefaultCoreAssets: true,
-      blacklist, owner: vault, tokens: cCache.tokens,
-      chain, block: api.block,
-      log_coreAssetPrices, log_minTokenValue,
-    })
-    api.addBalances(balances)
+    await vestingHelper({ api, cache, useDefaultCoreAssets: true, blacklist, owner: vault, tokens: cCache.tokens, log_coreAssetPrices, log_minTokenValue, })
   }
 
   await setCache(project, chain, cache)

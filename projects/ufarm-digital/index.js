@@ -16,7 +16,10 @@ const config = {
     ufarmCore: '0xe92B70d6C805B7a487C387a8e8bec177d991f305',
     valueToken: ADDRESSES.ethereum.USDT,
     endpoint: 'https://api.ufarm.digital/api/v2/pool?limit=500',
-    blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88'], // uni v3 NFT
+    blacklistedTokens: [
+      '0xc36442b4a4522e871399cd717abdd847ab11fe88', // uni v3 NFT
+      '0xdb95d646012bb87ac2e6cd63eab2c42323c1f5af', // listed as asset by their API but not an ERC20, reverts every call
+    ],
   },
 }
 
@@ -30,13 +33,14 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { data } = await getConfig('ufarm-digital/' + api.chain, endpoint)
+      const blacklistSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
       const ownerTokens = data
-        .map(i => [i.assetAllocation?.map(a => a.asset) || [], i.poolAddress])
+        .map(i => [(i.assetAllocation?.map(a => a.asset) || []).filter(a => a && !blacklistSet.has(a.toLowerCase())), i.poolAddress])
         .filter(([assets, poolAddress]) => assets.length > 0 && !!poolAddress);
       const owners = [...new Set(ownerTokens.map(([, owner]) => owner))];
       const convexRewardPools = [...new Set(data.flatMap(({ assetAllocation = [] }) =>
         assetAllocation
-          .filter(a => a?.extraInfo?.project_id === 'convex' && a?.asset)
+          .filter(a => a?.extraInfo?.project_id === 'convex' && a?.asset && !blacklistSet.has(a.asset.toLowerCase()))
           .map(a => a.asset)
       ))];
 

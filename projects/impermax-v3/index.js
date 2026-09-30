@@ -62,7 +62,11 @@ async function tvl(api) {
   // All NFTLP positions
   if (positionsApi) {
     for (const apiUrl of positionsApi) {
-      await processUniV3Positions(api, apiUrl);
+      try {
+        await processUniV3Positions(api, apiUrl);
+      } catch (e) {
+        api.log(`impermax-v3: positions api unavailable (${apiUrl}), skipping NFTLP positions: ${e.message}`);
+      }
     }
   }
 

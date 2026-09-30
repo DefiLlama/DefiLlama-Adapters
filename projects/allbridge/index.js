@@ -61,7 +61,7 @@ const data = {
             {name: "avalanche-2", address: "0x8e3670fd7b0935d3fe832711debfe13bb689b690", decimals: 18},
             {name: "celo", address: NATIVE_ADDRESS, decimals: 18},
             {name: "celo-dollar", address: ADDRESSES.celo.cUSD, decimals: 18},
-            {name: "celo-euro", address: "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73", decimals: 18},
+            {name: "celo-euro", address: ADDRESSES.celo.cEUR, decimals: 18},
             {name: "saber", address: "0x47264ae1fc0c8e6418ebe78630718e11a07346a8", decimals: 18},
             {name: "solana", address: "0x173234922eb27d5138c5e481be9df5261faed450", decimals: 18},
             {name: "usd-coin", address: ADDRESSES.celo.USDC, decimals: 6},

@@ -133,7 +133,7 @@ async function tvlXDC(api) {
 module.exports = {
   methodology:
     "Counts the number of deposited tokens in the Prelaunch Contracts and the tokens provided as collateral in the Loop Protocol",
-  start: 1718390875,
+  start: '2024-06-14',
   ethereum: {
     tvl: tvlEthereum
   },

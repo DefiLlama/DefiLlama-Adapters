@@ -178,7 +178,7 @@ module.exports = {
         {
           pool: ADDRESSES.arbitrum.nUSD,
           tokens: [
-            "0x82f0b8b456c1a451378467398982d4834b6829c1",
+            ADDRESSES.fantom.MIM,
             "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
             "0x049d68029688eabf473097a2fc38ef61633a3c7a",
             // "0xED2a7edd7413021d440b09D654f3b87712abAB66", // nusd

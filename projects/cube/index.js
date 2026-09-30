@@ -1,9 +1,9 @@
 const { PublicKey } = require("@solana/web3.js");
 const { getConnection, sumTokens2, getAssociatedTokenAddress } = require("../helper/solana");
 
-// Cube DEX pool program (Solana mainnet). The on-chain Rust module is
-// named `cubic_pool` (legacy name from before the protocol rebrand to Cube).
-// Source of truth: sdk/src/config/networks.ts in cubee.ee/sdk.
+// Coffer DEX pool program (Solana mainnet). The on-chain Rust module is
+// named `cubic_pool` (legacy name from before the protocol rebrand to Coffer).
+// Source of truth: sdk/src/config/networks.ts in github.com/coffer-so/sdk.
 const PROGRAM_ID = "8iQtGj9mcUfFUGaiCpPy89swC3s8YTC8FhVZWfgeZhwu";
 
 // CubicPool account anchor discriminator (first 8 bytes of the account
@@ -99,7 +99,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "Sum of USD value of all tokens locked in Cube weighted pools. Reads every CubicPool account from the Cube program (handling both legacy and v4 layouts that coexist during migration) and sums balances of each pool's token vaults (derived as ATA(pool, mint, token_program)).",
+    "Sum of USD value of all tokens locked in Coffer weighted pools. Reads every CubicPool account from the Coffer program (handling both legacy and v4 layouts that coexist during migration) and sums balances of each pool's token vaults (derived as ATA(pool, mint, token_program)).",
   solana: {
     tvl,
   },

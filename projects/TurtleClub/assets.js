@@ -65,7 +65,7 @@ const tokens = {
         USDC: ADDRESSES.arbitrum.USDC,
         USDT: ADDRESSES.arbitrum.USDT,
         WETH: ADDRESSES.arbitrum.WETH,
-        RAM: '0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418',
+        RAM: ADDRESSES.arbitrum.RAM,
         Silo: '0x0341C0C0ec423328621788d4854119B97f44E391',
         SYO: '0x577Fd586c9E6BA7f2E85E025D5824DBE19896656',
         WBTC: ADDRESSES.arbitrum.WBTC,
@@ -124,7 +124,7 @@ const tokens = {
     base: {
         WETH: ADDRESSES.base.WETH,
         USDC: ADDRESSES.base.USDC,
-        AERO: '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
+        AERO: ADDRESSES.base.AERO,
         USDT: ADDRESSES.base.USDT,
         SKYA: '0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9',
         ETH: ADDRESSES.null,
@@ -165,19 +165,20 @@ const tokenMappingERC20 = {
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
         // { token: tokens.ethereum.tsSwellRswETH, use: ADDRESSES.null },
-        { token: tokens.ethereum.eUSDC_2, use: tokens.ethereum.USDC },
     ],
     linea: [
-        { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
         { token: tokens.linea.xREX, coingeckoId: "etherex", decimals: 18 },
-        // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
     ],
     swellchain: [
         // { token: tokens.swellchain.tsSwellETH, use: ADDRESSES.null }, // TODO not priced properly
+    ],
+};
+
+const TURTLE = '0x66fd8de541c0594b4dccdfc13bf3a390e50d3afd';
+
+const ownTokens = {
+    ethereum: [
+        TURTLE,
     ],
 };
 
@@ -246,6 +247,7 @@ module.exports = {
     treasuryMultisigs,
     tokenMapping,
     tokenMappingERC20,
+    ownTokens,
     treasuryNFTs,
     turtleVaults,
 };

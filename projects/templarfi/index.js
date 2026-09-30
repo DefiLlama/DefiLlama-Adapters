@@ -42,7 +42,16 @@ const CONTRACTS_TO_SKIP = new Set([
   'proxy-gov-idoge-ixlmusdc.v1.tmplr.near',
   'proxy-gov-iltc-ixlmusdc.v1.tmplr.near',
   'pyth-lazer.v1.tmplr.near',
+  'proxy-oracle-iethfxrp-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-iethfxrp-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-ixlmdejaaa-ixlmusdc-1.v1.tmplr.near',
+  'proxy-gov-ixlmdejaaa-ixlmusdc-1.v1.tmplr.near',
+  'proxy-oracle-ixlmdejtrsy-ixlmusdc-1.v1.tmplr.near',
+  'proxy-gov-ixlmdejtrsy-ixlmusdc-1.v1.tmplr.near',
 ]);
+
+// every new market ships with a gov proxy and an oracle proxy under these prefixes; none of them are markets
+const NON_MARKET_PREFIXES = ['proxy-gov-', 'proxy-oracle-']
 
 const FAST_FAIL_PATTERNS = ['does not exist', 'Buffer', 'Received undefined']
 
@@ -54,7 +63,7 @@ function detectCrossChainToken(tokenId) {
       '111bzQBB65GxAPAVoxqmMcgYo5oS3txhqs1Uh1cgahKQUeTUq1TJu': 'coingecko:usd-coin',
       '111bzQBB62XZkuam1hPr5wsG54FvwhYaPvecKwgZo1ZoKMWEXcE2n': 'coingecko:paypal-usd',
       '111bzQBB66Lr9d7WU1sDna78SqG5x1ZraFjkpPdiYXjHFRnZJUhuV': 'coingecko:defi-janus-henderson-anemoy-aaa-clo-fund',
-      '111bzQBB5y5yhcUCbDKaCx4zNjEHQbwLAdvwucCecVzC5Ub7uNKEb': 'coingecko:defi-janus-henderson-anemoy-aaa-clo-fund',
+      '111bzQBB5y5yhcUCbDKaCx4zNjEHQbwLAdvwucCecVzC5Ub7uNKEb': 'coingecko:janus-henderson-anemoy-treasury-fund',
       '111bzQBB5xzU1EsXby4ckez2qjWFTBiPoqHzZpPkq1Gr9gB7FQpeZ': 'coingecko:solv-protocol-btc',
       '111bzQBB5uBD3Wrr7pthp8XhJsreEcwTVnmjQ1wpbzkvHLEQf3ygS': 'coingecko:etherfuse-cetes',
       '111bzQBB5yT2A5maKJqJQsuNg7BA6VG4S4ZATpqmKYLwYBsfEfh6e': 'coingecko:ustbl',
@@ -93,6 +102,12 @@ function detectCrossChainToken(tokenId) {
   // XRP via omnichain bridge
   if (tokenId === 'xrp.omft.near') {
     return { chain: 'ripple', token: 'xrp.omft.near' }
+  }
+
+  // FXRP reaches Ethereum through a lock-and-mint bridge from Flare, so the
+  // underlying liquidity stays locked on Flare and is attributed there
+  if (tokenId === 'eth-0xce6170ea245dc8d1f275a710a062b70f125f0110.omft.near') {
+    return { chain: 'flare', token: 'flare:0xad552a648c74d49e10027ab8a618a3ad4901c5be' }
   }
 
   // Ethereum tokens via omnichain bridge
@@ -290,7 +305,7 @@ async function fetchDeploymentsFromContract(registryContract) {
   }
 
   return deployments.filter(deployment => {
-    if (CONTRACTS_TO_SKIP.has(deployment)) {
+    if (CONTRACTS_TO_SKIP.has(deployment) || NON_MARKET_PREFIXES.some(p => deployment.startsWith(p))) {
       console.log(`Skipping known non-market contract: ${deployment}`)
       return false
     }
@@ -419,11 +434,11 @@ async function getChainBorrowed(chain) {
 }
 
 // Supported chains for cross-chain assets
-const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana', 'cardano', 'doge', 'litecoin', 'ripple']
+const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana', 'cardano', 'doge', 'litecoin', 'ripple', 'flare']
 
 module.exports = {
-  methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Bitcoin).',
-  start: 1754902109,
+  methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Flare, Bitcoin).',
+  start: '2025-08-11',
 }
 
 SUPPORTED_CHAINS.forEach(chain => {

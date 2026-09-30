@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cachedGraphQuery } = require('../helper/cache')
 const { stakings } = require("../helper/staking");
 
@@ -303,6 +304,12 @@ const supportedChains = [
       'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-hyperevm/prod/gn',
     chainId: 999,
     identifier: 'hyperliquid'
+  },
+  {
+    name: 'Robinhood Chain',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_cm2k9xbkz4qg901vs51bm5uau/subgraphs/steer-protocol-robinhood/prod/gn',
+    chainId: 4663,
+    identifier: 'robinhood'
   }
 ]
 
@@ -333,6 +340,7 @@ const UNISWAP_V4_BEACON_NAMES = new Set([
   'MultiPositionUniHookTest',
   'MultiPositionReserveV4',
   'MultiPositionUniswapV4',
+  'MultiPositionUniswapV4NoOracle'
 ])
 
 const STEER_PERIPHERIES = {
@@ -381,6 +389,7 @@ const STEER_PERIPHERIES = {
   zeta: '0x42D1316c1ce4E0f143C12771004AFb91a03CaF6d',
   zircuit: '0xD90c8970708FfdFC403bdb56636621e3E9CCe921',
   zklink: '0x525b443C8d2D0aA8Bd70d22177EC6250286b9708',
+  robinhood: '0xCCd21830A8774484AE824AC05B3784D195686C7e'
 }
 
 function addBalances(api, balances, token0s, token1s, [balance0, balance1], fallbackBalances = []) {
@@ -405,7 +414,7 @@ function addBalances(api, balances, token0s, token1s, [balance0, balance1], fall
 function getV4MetadataToken(metadata, index) {
   if (typeof metadata !== 'string' || !/^0x[\da-f]{128,}$/i.test(metadata)) return
   const token = `0x${metadata.slice(2 + index * 64 + 24, 2 + (index + 1) * 64)}`
-  return token === '0x0000000000000000000000000000000000000000' ? undefined : token
+  return token === ADDRESSES.null ? undefined : token
 }
 
 supportedChains.forEach(chain => {
@@ -432,7 +441,6 @@ supportedChains.forEach(chain => {
           ])
           addBalances(api, bals, token0s, token1s, ['total0', 'total1'], legacyVaults)
         } catch (e) {
-          console.warn(`Steer ${api.chain}: RPC balances unavailable; using subgraph snapshot balances`)
           addBalances(api, [], [], [], ['total0', 'total1'], legacyVaults)
         }
       }
@@ -469,7 +477,6 @@ supportedChains.forEach(chain => {
             v4Vaults,
           )
         } catch (e) {
-          console.warn(`Steer ${api.chain}: UniV4 RPC balances unavailable; using subgraph snapshot balances`)
           addBalances(api, [], [], [], ['bal0', 'bal1'], v4Vaults)
         }
       }
@@ -505,8 +512,8 @@ module.exports.base.staking = stakings(
   "base"
 )
 
-const deadChains = ["thundercore"] 
+const deadChains = ["thundercore"]
 
 deadChains.forEach(chain => {
-  module.exports[chain] = {tvl: () => ({})}
+  module.exports[chain] = { tvl: () => ({}) }
 })

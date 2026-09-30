@@ -23,6 +23,11 @@ const USDG_VAULTS_ROBINHOOD = [
   "0x37788ff0c1d4e45a7fe06bc7e71e0cc00121d0a8", // Purinta USDG vault
 ]
 
+// Vaults on Base that need to be priced via convertToAssets (pegged to WETH)
+const WETH_VAULTS_BASE = [
+  "0x4d72fed1b6ce42f8dea811f7b6685ebe4ec04e01", // Kabu WETH vault
+]
+
 // API3 tokens lent out to market makers (held in MM custody, not visible in DAO wallets)
 // See https://api3dao.github.io/api3-dao-tracker/treasury
 const MM_LOANS_API3 = [
@@ -45,6 +50,39 @@ const ROBINHOOD_OWNERS = [
   "0x82b4a86c796d9508350d129ba150b5d625ec98a4", // Agent on Robinhood
   "0xa45314481e2a64f2c8169584bca4ea27ceccfd9e", // MERKL on Robinhood
 ];
+
+const BASE_OWNERS = [
+  "0x26d9aa12b8909e4628f8a78ffaf19d2ee08bb068", // Agent on Base
+  "0x7d02b68deb9956f211083da811f4856c901884c9", // MERKL on Base
+];
+
+// Cancelled StakeableVesting contracts. Their owner()/beneficiary() are DAO Safes, so
+// whatever is left in them (API3 held directly + their Api3Pool position) returns to
+// the treasury when claimed. Read live, so a contract drops out once it is swept.
+// See https://api3dao.github.io/api3-dao-tracker/treasury
+const API3_POOL = "0x6dd655f10d4b9e242ae186d9050b68f725c76d76"
+const CANCELLED_VESTING_CONTRACTS = [
+  "0x299dbfad8a61ec0d49e1ff7df9855a15ee550759",
+  "0xdcfd1785d0013402344fbd5ae463c612c9bdb98d",
+  "0xabfc9efa28b0396f5083a0ad6ebaddd7905a6e6b",
+  "0xbecc00998f3f11cfbd8797723b19f50c700a0f4e",
+  "0xb5eedbe89a1f87fdeea874c94f99f023227ad437",
+  "0xcffe97fb5cb0aa83ba33e327d3891d8705aaf784",
+  "0x8688a5ae1c096378dd6cdb891b0e32d1c03f284a",
+  "0x3d6663a6bc03e0e7a10ca14960c18f72fec29a10",
+  "0xbaf20e0c99eab9580b479a328524fb96fab1ef35",
+  "0x6d9b718f6445ed098868b727ace6a7e0a5956688",
+  "0x755a34fc7c7bce0cebae2d9314a9820b2db40f69",
+  "0x87ec590efa59a02b016fa279f778db27a9afec9a",
+  "0xb524d5914a2e3fd69ad0a14547b8d6b7076d6b39",
+  "0xfcc24ebb8db2f435a0e16840ed52100882ff9eee",
+  "0x2901af93cca527231eee8e4c54974df97f69b0a7",
+  "0xfb032a3c11db1d11324296addc7e1a310d25a68d",
+  "0x33397c03f0f5d073350f0300ec9a2485920689cd",
+  "0x2a6dfc701d2ae2f89b7f07d46baf468132d16856",
+  "0x6cbe85fc0602834daab559aa7a953e9b65cb5d36",
+  "0xb86c4a46fafba750743e089481bccc74d1fcb53d",
+]
 
 // Convert ERC-4626 vault shares held by owners into their underlying asset
 async function addVaultAssets(api, { vaults, owners, underlying }) {
@@ -75,6 +113,21 @@ async function addVaultAssets(api, { vaults, owners, underlying }) {
   }
 }
 
+// API3 sitting in the Api3Pool under the cancelled vesting contracts
+// (staked + unstaked + pending unstake), the same way the DAO tracker counts it
+async function addCancelledVestingPoolPositions(api) {
+  const calls = CANCELLED_VESTING_CONTRACTS.map(i => ({ target: API3_POOL, params: i }))
+  const [staked, users] = await Promise.all([
+    api.multiCall({ abi: 'function userStake(address) view returns (uint256)', calls }),
+    api.multiCall({ abi: 'function getUser(address) view returns (uint256 unstaked, uint256 vesting, uint256 unstakeAmount, uint256 unstakeShares, uint256 unstakeScheduledFor, uint256 lastDelegationUpdateTimestamp, uint256 lastProposalTimestamp)', calls }),
+  ])
+  staked.forEach((amount, i) => {
+    api.add(API3, amount)
+    api.add(API3, users[i].unstaked)
+    api.add(API3, users[i].unstakeAmount)
+  })
+}
+
 const base = treasuryExports({
   ethereum: {
     tokens: [
@@ -86,6 +139,7 @@ const base = treasuryExports({
     ],
     owners: OWNERS,
     ownTokens: [API3],
+    ownTokenOwners: CANCELLED_VESTING_CONTRACTS, // API3 the cancelled vesting contracts hold directly
     resolveLP: true,
     resolveUniV3: true,
     fetchCoValentTokens: false,
@@ -98,11 +152,21 @@ const base = treasuryExports({
     owners: ROBINHOOD_OWNERS,
     fetchCoValentTokens: false,
   },
+  base: {
+    tokens: [
+      nullAddress,
+      ADDRESSES.base.WETH,
+      ADDRESSES.base.USDC,
+    ],
+    owners: BASE_OWNERS,
+    fetchCoValentTokens: false,
+  },
 })
 
 const baseTvl = base.ethereum.tvl
 const baseOwnTokens = base.ethereum.ownTokens
 const baseRobinhoodTvl = base.robinhood.tvl
+const baseBaseTvl = base.base.tvl
 
 base.ethereum.tvl = async (api) => {
   // 1. Run existing treasury logic (standard ERC20 + LPs + UniV3)
@@ -131,6 +195,12 @@ base.robinhood.tvl = async (api) => {
   return api.getBalances()
 }
 
+base.base.tvl = async (api) => {
+  await baseBaseTvl(api)
+  await addVaultAssets(api, { vaults: WETH_VAULTS_BASE, owners: BASE_OWNERS, underlying: ADDRESSES.base.WETH })
+  return api.getBalances()
+}
+
 base.ethereum.ownTokens = async (api) => {
   // Run existing treasury logic
   await baseOwnTokens(api)
@@ -149,6 +219,9 @@ base.ethereum.ownTokens = async (api) => {
   // Add API3 lent out to market makers (fixed loan amounts, returned at expiry)
   const API3_DECIMALS = 1e18
   MM_LOANS_API3.forEach(amount => api.add(API3, BigInt(amount) * BigInt(API3_DECIMALS)))
+
+  // Add the Api3Pool positions of the cancelled vesting contracts
+  await addCancelledVestingPoolPositions(api)
 
   return api.getBalances()
 }

@@ -1,7 +1,8 @@
 const ADDRESSES = require('../coreAssets.json')
-const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
+
+const near = sdk.chains.near
 
 function transformAddress(addr) {
   const bridgedAssetIdentifier = ".factory.bridge.near";
@@ -12,15 +13,9 @@ function transformAddress(addr) {
   return addr
 }
 
-const endpoints = [
-  "https://rpc.mainnet.near.org",
-  "https://near.lava.build"
-]
-
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
   'meta-pool.near': { name: 'staked-near', decimals: 24, },
-  [ADDRESSES.near.LINA]: { name: 'linear-protocol', decimals: 24, },
   "storage.herewallet.near": { name: 'here-staking', decimals: 24, },
   'usn': { name: 'usn', decimals: 18, },
   'aurora': { name: 'ethereum', decimals: 18, },
@@ -66,72 +61,18 @@ const tokenMapping = {
   'xrp.omft.near': { name: 'ripple', decimals: 6 },
 }
 
-function shouldRetry(error) {
-  if (!error.response) return true;
-  const retriable = [400, 429, 500, 504];
-  return retriable.includes(error.response.status);
-}
-
-async function rpcRequest(payload) {
-  let lastError;
-
-  for (const url of endpoints) {
-    try {
-      return await axios.post(url, payload, { validateStatus: status => status < 400 });
-    } catch (err) {
-      if (!shouldRetry(err)) throw err;
-      lastError = err;
-    }
-  }
-  throw lastError;
-}
-
 async function view_account(account_id) {
-  const payload = {
-    jsonrpc: "2.0",
-    id: "1",
-    method: "query",
-    params: {
-      request_type: "view_account",
-      finality: "final",
-      account_id
-    }
-  };
-
-  const result = await rpcRequest(payload);
-  if (result.data.error) throw new Error(`${result.data.error.message}: ${result.data.error.data}`);
-  return result.data.result;
+  return near.viewAccount({ account: account_id })
 }
 
+// view call, `args` are JSON serialised; the reply is JSON parsed
 async function call(contract, method, args = {}) {
-  const payload = {
-    jsonrpc: "2.0",
-    id: "1",
-    method: "query",
-    params: {
-      request_type: "call_function",
-      finality: "final",
-      account_id: contract,
-      method_name: method,
-      args_base64: Buffer.from(JSON.stringify(args)).toString("base64")
-    }
-  };
-
-  const result = await rpcRequest(payload);
-  if (result.data.error) throw new Error(`${result.data.error.message}: ${result.data.error.data}`);
-  return JSON.parse(Buffer.from(result.data.result.result).toString());
+  return near.call({ contract, method, args })
 }
 
+// `ft_balance_of` raw balance; 0 when the token contract does not exist
 async function getTokenBalance(token, account) {
-  try {
-    const response = await call(token, "ft_balance_of", { account_id: account })
-    return response
-  } catch (e) {
-    if (e.message.includes("does not exist while viewing")) {
-      return 0;
-    }
-    throw e;
-  }
+  return near.getTokenBalance({ token, account })
 }
 
 async function addTokenBalances(tokens, account, balances = {}) {

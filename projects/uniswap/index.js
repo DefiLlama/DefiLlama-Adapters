@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { uniV3Export } = require('../helper/uniswapV3')
 const { cachedGraphQuery, getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -47,7 +48,7 @@ function v3TvlPaged(chain) {
 const uniV3Config = {
   // base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock: 1371680, blacklistedTokens: blacklists.base },
   celo: { factory: '0xAfE208a311B21f13EF87E33A90049fC17A7acDEc', fromBlock: 13916355, },
-  moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 },
+  // moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 },
   era: { factory: '0x8FdA5a7a8dCA67BBcDd10F02Fa0649A937215422', fromBlock: 12637080 },
   boba: { factory: "0xFFCd7Aed9C627E82A765c3247d562239507f6f1B", fromBlock: 969351, },
   rsk: { factory: "0xAf37Ec98A00fD63689cF3060Bf3b6784e00CaD82", fromBlock: 5829207, },
@@ -59,21 +60,21 @@ const uniV3Config = {
   taiko: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 961 },
   sei: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 79245151 },
   mantle: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 63795918 },
-  polygon_zkevm: { factory: "0xff83c3c800Fec21de45C5Ec30B69ddd5Ee60DFC2", fromBlock: 8466867 },
+  // polygon_zkevm: { factory: "0xff83c3c800Fec21de45C5Ec30B69ddd5Ee60DFC2", fromBlock: 8466867 },
   xdai: { factory: "0xe32F7dD7e3f098D518ff19A22d5f028e076489B1", fromBlock: 27416614 },
   bob: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 5188280 },
   lisk: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 577168 },
   wc: { factory: "0x7a5028BDa40e7B173C278C5342087826455ea25a", fromBlock: 1603366 },
-  corn: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 10878 },
+  // corn: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 10878 },
   telos: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 386633562 },
   goat: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 848385 },
   hemi: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 1293598 },
   sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
   unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
   lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
-  xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664, blacklistedTokens: ['0x5d5f074837f5d4618b3916ba74de1bf9662a3fed'] },
+  xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664, blacklistedTokens: [ADDRESSES.xdc.SRX] },
   lens: { factory: "0xe0704DB90bcAA1eAFc00E958FF815Ab7aa11Ef47", fromBlock: 1 },
-  etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
+  // etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
   // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
   rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
   plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
@@ -82,6 +83,8 @@ const uniV3Config = {
   '0g': { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 6673868 },
   megaeth: { factory: '0x3a5f0cd7d62452b7f899b2a5758bfa57be0de478', fromBlock: 7009646 },
   robinhood: { factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', fromBlock: 8930 },
+  ink: { factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424', fromBlock: 284117 },
+  arc: { factory: '0xf0db7b58379503491d857db50ac9ece64c653918', fromBlock: 1946500 },
 }
 
 Object.keys(uniV3Config).forEach(chain => {
@@ -117,6 +120,7 @@ const okuGraphMap = {
   nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
+  etlk: 'https://omni.v2.icarus.tools/etherlink',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
 }
 

@@ -32,7 +32,7 @@ function getTvlFunction(token, cgId) {
   }
 }
 
-const API = "https://partner-api.stafi.io/stafi/v1/partnerapi/rtoken/getstakelist"
+const API = "https://rtoken-api.stafi.io/stafi/v1/partnerapi/rtoken/getstakelist" // partner-api.stafi.io no longer resolves
 function chainTvl(chain) {
   const [token, cgId] = chainToParams[chain]
   return getTvlFunction(token, cgId)

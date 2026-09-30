@@ -1,6 +1,6 @@
 const ADDRESSES = require('./coreAssets.json')
 const { sumTokensExport, nullAddress } = require('./sumTokens')
-const { ankrChainMapping } = require('./token')
+const { chainsWithTokenPullSupport } = require('./token')
 const { defaultTokens } = require('./cex')
 const { getUniqueAddresses } = require('./utils')
 const sdk = require('@defillama/sdk')
@@ -20,7 +20,7 @@ function treasuryExports(config) {
     if (chain === 'solana') {
       tvlConfig.solOwners = owners;
     } else if (config[chain].fetchCoValentTokens !== false) {
-      if (ankrChainMapping[chain]) {
+      if (chainsWithTokenPullSupport.has(chain)) {
         tvlConfig.fetchCoValentTokens = true;
         if (!tvlConfig.tokenConfig) tvlConfig.tokenConfig = { onlyWhitelisted: false };
       } else if (defaultTokens[chain]) {

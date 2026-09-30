@@ -11,7 +11,7 @@ module.exports = {
       owner: '0x92631e0e84ff01853ef1bb88fc9c9f7d1e1af1ca',
       tokens: [
         ADDRESSES.cronos.WCRO_1,
-        '0xf2001b145b43032aaf5ee2884e456ccd805f677d',
+        ADDRESSES.cronos.dai,
         ADDRESSES.cronos.USDC,
         '0x6582c738660bf0701f05b04dce3c4e5fcfcda47a',
         ADDRESSES.cronos.USDT,
