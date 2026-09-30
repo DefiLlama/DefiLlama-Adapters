@@ -3,12 +3,12 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
 // Kal Mydas protocol treasury on Base mainnet.
+// - Gnosis Safe multisig (protocol treasury: USDC, KAL)
 // - TreasuryRWAV2 (tokenized gold and bitcoin reserve, being funded)
 // - RainyDayFund (emergency reserve)
 // - Protocol KAL held by the presale, airdrop, referral and depositor bonus contracts (ownTokens)
 // - Platform reserve held inside the KalPool strategy vaults (reserveBalance - operatorBalance),
-//   excluded from the Kal Mydas protocol TVL. This reserve stays locked in the vault contracts
-//   and is only used as trading capital by the strategy operators; it cannot be withdrawn at will.
+//   excluded from the Kal Mydas protocol TVL
 const KAL = '0xe99556D5594faf533fcB346A8a9B11259D29afA8'
 const USDC = ADDRESSES.base.USDC
 
@@ -28,14 +28,16 @@ const VAULTS = [
 ]
 
 async function vaultReserves(api) {
-  const [balances, reserves, operatorBalances] = await Promise.all([
-    api.multiCall({ abi: 'erc20:balanceOf', target: USDC, calls: VAULTS }),
-    api.multiCall({ abi: 'uint256:reserveBalance', calls: VAULTS }),
-    api.multiCall({ abi: 'uint256:operatorBalance', calls: VAULTS }),
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', target: USDC, calls: VAULTS })
+  // vaults not yet deployed at this block hold no USDC and revert on the getters, so skip empty ones
+  const funded = VAULTS.map((vault, i) => ({ vault, held: BigInt(balances[i]) })).filter(v => v.held > 0n)
+  const calls = funded.map(v => v.vault)
+  const [reserves, operatorBalances] = await Promise.all([
+    api.multiCall({ abi: 'uint256:reserveBalance', calls }),
+    api.multiCall({ abi: 'uint256:operatorBalance', calls }),
   ])
-  VAULTS.forEach((_, i) => {
+  funded.forEach(({ held }, i) => {
     let reserveInVault = BigInt(reserves[i]) - BigInt(operatorBalances[i])
-    const held = BigInt(balances[i])
     if (reserveInVault > held) reserveInVault = held
     if (reserveInVault > 0n) api.add(USDC, reserveInVault.toString())
   })
@@ -45,6 +47,7 @@ async function vaultReserves(api) {
 const exportsObj = treasuryExports({
   base: {
     owners: [
+      '0x55a7645F04CEbCE3eb706D441cB649fFDe4D5027', // Gnosis Safe multisig
       '0x4f1F316e76d8E8637006eF246E9dD6dc3b4680C1', // TreasuryRWAV2
       '0xD1795dD0Cfe169E4dE601469C07E0c4884aD251f', // RainyDayFund
     ],

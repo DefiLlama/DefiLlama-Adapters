@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const USDC = ADDRESSES.base.USDC
 const WETH = ADDRESSES.optimism.WETH_1
@@ -30,8 +31,11 @@ const KAL_PAIRS = [
   '0x3315E6E788E2B30aF8f4c35124695E60D510c31B', // KAL/USDC, KalSwap V2
   '0x1FaC3B6a11C441Dd1535deB4c1140a7D01fB8E98', // KAL/USDC, KalSwap V3
   '0xEA071fa5a8aD4dEa8c672569da366D7d90E5924d', // KAL/WETH
-  '0x65e8d79D0103A470e92A81F2cDB970bA9a823b9E', // KAL/USDC on Aerodrome, LP farmed in the Kal Mydas Aerodrome LP staking
 ]
+
+// Aerodrome KAL/USDC pool is counted by Aerodrome; only the LP staked in KalAeroLPStaking is pool2
+const AERO_KAL_USDC = '0x65e8d79D0103A470e92A81F2cDB970bA9a823b9E'
+const AERO_LP_STAKING = '0x8E5176e0B020C3a8D33425E2B5b62e12EB39f11d'
 
 // Single-side KAL staking and veKAL
 const STAKING = [
@@ -45,24 +49,35 @@ async function tvl(api) {
   // Part of the reserve can be out with the trading operator (operatorBalance),
   // so the reserve still sitting in the vault is reserveBalance - operatorBalance.
   // That part is protocol-owned and is reported in the Kal Mydas treasury adapter.
-  const [balances, reserves, operatorBalances] = await Promise.all([
-    api.multiCall({ abi: 'erc20:balanceOf', target: USDC, calls: VAULTS }),
-    api.multiCall({ abi: 'uint256:reserveBalance', calls: VAULTS }),
-    api.multiCall({ abi: 'uint256:operatorBalance', calls: VAULTS }),
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', target: USDC, calls: VAULTS })
+  // vaults not yet deployed at this block hold no USDC and revert on the getters, so skip empty ones
+  const funded = VAULTS.map((vault, i) => ({ vault, held: BigInt(balances[i]) })).filter(v => v.held > 0n)
+  const calls = funded.map(v => v.vault)
+  const [reserves, operatorBalances] = await Promise.all([
+    api.multiCall({ abi: 'uint256:reserveBalance', calls }),
+    api.multiCall({ abi: 'uint256:operatorBalance', calls }),
   ])
-  VAULTS.forEach((_, i) => {
+  funded.forEach(({ held }, i) => {
     const reserveInVault = BigInt(reserves[i]) - BigInt(operatorBalances[i])
-    const userUSDC = BigInt(balances[i]) - (reserveInVault > 0n ? reserveInVault : 0n)
+    const userUSDC = held - (reserveInVault > 0n ? reserveInVault : 0n)
     if (userUSDC > 0n) api.add(USDC, userUSDC.toString())
   })
   return api.sumTokens({ owner: USDC_WETH_PAIR, tokens: [USDC, WETH] })
 }
 
+async function pool2(api) {
+  await api.sumTokens({ owners: KAL_PAIRS, tokens: [USDC, WETH, KAL] })
+  // the Aerodrome LP token reverts before the pool was deployed, when it held no USDC
+  const aeroUSDC = await api.call({ abi: 'erc20:balanceOf', target: USDC, params: AERO_KAL_USDC })
+  if (BigInt(aeroUSDC) === 0n) return api.getBalances()
+  return sumTokens2({ api, owner: AERO_LP_STAKING, tokens: [AERO_KAL_USDC], resolveLP: true })
+}
+
 module.exports = {
-  methodology: 'TVL is the USDC deposited by users in the KalPool strategy vaults (vault USDC balance minus the platform reserve still held in the vault, reserveBalance - operatorBalance) plus the USDC and WETH in the KalSwap USDC/WETH market, on Base. Both vault generations (V5_1_4 and V5_2_0) are counted during the migration. The platform reserve is protocol-owned, stays locked in the vault contracts and is only used as trading capital by the strategy operators; it is reported in the Kal Mydas treasury. Markets paired with KAL (KalSwap and the Aerodrome KAL/USDC pool) are farmed for KAL rewards and reported under pool2. KAL staked single-side and KAL locked in veKAL are reported under staking.',
+  methodology: 'TVL is the USDC deposited by users in the KalPool strategy vaults (vault USDC balance minus the platform reserve still held in the vault, reserveBalance - operatorBalance) plus the USDC and WETH in the KalSwap USDC/WETH market, on Base. Both vault generations (V5_1_4 and V5_2_0) are counted during the migration. The platform reserve is protocol-owned trading capital and is reported in the Kal Mydas treasury. KalSwap markets paired with KAL and the Aerodrome KAL/USDC LP staked in the Kal Mydas Aerodrome LP staking are farmed for KAL rewards and reported under pool2. KAL staked single-side and KAL locked in veKAL are reported under staking.',
   base: {
     tvl,
-    pool2: (api) => api.sumTokens({ owners: KAL_PAIRS, tokens: [USDC, WETH, KAL] }),
+    pool2,
     staking: (api) => api.sumTokens({ owners: STAKING, tokens: [KAL] }),
   },
 }
