@@ -98,7 +98,7 @@ async function tvlRobinhood(api) {
 
 module.exports = {
   methodology:
-    "TVL is the quote-asset side of each Parabolarc Uniswap v4 launch pool, including the locked launch position and the floor. On Arc that quote is USDC. On Robinhood it is native ETH, across the one-pair, multi, and stock factories (including earlier factories that still have live launches). The launched tokens are excluded, since their only market is the pool Parabolarc seeded. Extra multi-quote pools besides the ETH/USDC market, fee treasuries, and the $PARC buyback vault are excluded. Marked doublecounted because the pools sit in the Uniswap v4 PoolManager and are already inside Uniswap v4's TVL on that chain.",
+    "TVL is the quote-asset side of each Parabolarc Uniswap v4 launch pool, including the locked launch position and the floor. On Arc that quote is USDC. On Robinhood it is native ETH for the one-pair and multi factories, and for the stock factories it is whichever token each launch is paired against (a Robinhood stock token or another ERC20), including earlier factories that still have live launches. The launched tokens are excluded, since their only market is the pool Parabolarc seeded. Extra multi-quote pools besides the ETH/USDC market, fee treasuries, and the $PARC buyback vault are excluded. Marked doublecounted because the pools sit in the Uniswap v4 PoolManager and are already inside Uniswap v4's TVL on that chain.",
   start: 1790315996,
   timetravel: true,
   doublecounted: true,
