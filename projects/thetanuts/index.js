@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs2 } = require('../helper/cache/getLogs')
 
 // Ethereum Vaults
 const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
@@ -332,25 +331,22 @@ const config = {
   }
 }
 
-const VAULT_CREATED = 'event VaultCreated(address indexed vault, address indexed creator, uint256 index, address base, address quote, uint24 fee, uint256 ivBps)'
-const VAULT_CREATOR = '0x4A4c7C5549359b9fFf0137bb3EC4D48c4Aa79Cc7'
 const TOTAL_ASSETS = 'function totalAssets() view returns (uint256 totalBaseAmt, uint256 totalQuoteAmt, uint256 totalValue)'
 const M_FACTORY = '0x42c059Bf54553957ca4b8BeA67fcf43424C03A92'
 const N_FACTORY = '0x35C452E9f97A75558334E0df305598E930fc0B00'
 
 const wheelVaultFactories = {
-  base: [{ target: M_FACTORY, fromBlock: 50863717 }, { target: N_FACTORY, fromBlock: 51727986 }],
-  ethereum: [{ target: M_FACTORY, fromBlock: 25903225 }, { target: N_FACTORY, fromBlock: 26045446 }],
-  hyperliquid: [{ target: M_FACTORY, fromBlock: 44998893 }, { target: N_FACTORY, fromBlock: 46733872 }],
-  robinhood: [{ target: '0x32Ca533CE6C107296991bE889551e75892B18e00', fromBlock: 74714459 }],
+  base: [M_FACTORY, N_FACTORY],
+  ethereum: [M_FACTORY, N_FACTORY],
+  hyperliquid: [M_FACTORY, N_FACTORY],
+  robinhood: ['0x32Ca533CE6C107296991bE889551e75892B18e00'],
 }
 
 async function wheelVaultTvl(api, factories) {
-  const vaults = []
-  for (const { target, fromBlock } of factories) {
-    const logs = await getLogs2({ api, target, fromBlock, eventAbi: VAULT_CREATED, maxBlockRange: 10000 })
-    logs.filter(i => i.creator.toLowerCase() === VAULT_CREATOR.toLowerCase()).forEach(i => vaults.push(i.vault))
-  }
+  const counts = await api.multiCall({ abi: 'uint256:vaultCount', calls: factories })
+  const calls = []
+  factories.forEach((target, i) => { for (let j = 0; j < Number(counts[i]); j++) calls.push({ target, params: [j] }) })
+  const vaults = await api.multiCall({ abi: 'function vaults(uint256) view returns (address)', calls })
   if (!vaults.length) return
   const [bases, quotes, assets] = await Promise.all([
     api.multiCall({ abi: 'address:base', calls: vaults }),
