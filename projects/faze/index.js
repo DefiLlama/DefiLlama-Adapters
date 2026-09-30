@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk')
+const { getLogs2 } = require('../helper/cache/getLogs')
 const ABI = require('./abi.json')
 const { quoteAmount } = require('./positionMath')
 
@@ -13,11 +13,11 @@ const DEAD = '0x000000000000000000000000000000000000dead'
 const START_BLOCK = 20561244
 
 async function tvl(api) {
-  const block = await api.getBlock()
-  const discover = (target, eventAbi) => sdk.getEventLogs({ chain: api.chain, target, eventAbi, onlyArgs: true, fromBlock: START_BLOCK, toBlock: block, maxBlockRange: 6250, cacheInCloud: true })
-  const launches = await discover(CURVE, ABI.Launched)
-  const pools = await discover(HOOK, ABI.PoolRegistered)
-  const compounds = await discover(HOOK, ABI.Compounded)
+  // extraKey keeps the two hook event caches apart; getLogs2 caches per target otherwise
+  const discover = (target, eventAbi, extraKey) => getLogs2({ api, target, eventAbi, fromBlock: START_BLOCK, extraKey })
+  const launches = await discover(CURVE, ABI.Launched, 'launched')
+  const pools = await discover(HOOK, ABI.PoolRegistered, 'pools')
+  const compounds = await discover(HOOK, ABI.Compounded, 'compounds')
   const coins = launches.length ? await api.multiCall({ target: CURVE, abi: ABI.getCoin, calls: launches.map(l => l.token) }) : []
   const isCore = (asset, quote) => asset.toLowerCase() !== FAZE && quote.toLowerCase() !== FAZE
   launches.forEach((l, i) => {
@@ -37,7 +37,7 @@ async function tvl(api) {
   const bands = [...uniqueBands.values()]
   for (const b of bands) calls.push({ params: [b.poolId, HOOK, Number(b.tickLower), Number(b.tickUpper), b.poolId] })
   const positions = await api.multiCall({ target: VIEW, abi: 'function getPositionInfo(bytes32,address,int24,int24,bytes32) view returns(uint128,uint256,uint256)', calls })
-  const byId = new Map(pools.map((p, i) => [p.poolId, { ...p, price: BigInt(prices[i][0]) }]))
+  const byId = new Map(pools.map((p, i) => [p.poolId, { asset: p.asset, quote: p.quote, price: BigInt(prices[i][0]) }]))
   function addPosition(p, liquidity, lo, hi) {
     if (!p) throw new Error('FAZE compounding position without registered pool')
     if (isCore(p.asset, p.quote)) api.add(p.quote, quoteAmount(BigInt(liquidity), p.price, lo, hi, BigInt(p.quote) < BigInt(p.asset)).toString())
