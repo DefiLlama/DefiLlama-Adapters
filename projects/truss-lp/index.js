@@ -1,7 +1,7 @@
 // TRUSS LP - automated concentrated-liquidity vaults on Aerodrome Slipstream (Base)
 // TVL = idle token0/token1 held by every vault + every Slipstream position the
 // AerodromeAtomicV3 contract has staked in a gauge on the vaults' behalf.
-const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
+const { sumTokens2, unwrapSlipstreamNFT } = require('../helper/unwrapLPs')
 
 const FACTORY = '0x65Ab206bc394a2DA6bd687Ba99ABad1Bd6f2dB2f' // LPVaultFactoryV3
 const ATOMIC = '0x57Ab7cADE09605149d5a00Cd6Fa71588C164122b'  // AerodromeAtomicV3 (stakes positions for vaults)
@@ -12,8 +12,6 @@ const abi = {
   allVaults: 'function allVaults(uint256) view returns (address)',
   gauges: 'function gauges(address) view returns (address)',
   stakedValues: 'function stakedValues(address depositor) view returns (uint256[])',
-  positions: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
-  slot0: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, bool unlocked)',
 }
 
 async function tvl(api) {
@@ -39,20 +37,15 @@ async function tvl(api) {
 
   const nfpms = await api.multiCall({ abi: 'address:nft', calls: live.map(x => x.gauge) })
   const staked = await api.multiCall({ abi: abi.stakedValues, calls: live.map(x => ({ target: x.gauge, params: [ATOMIC] })) })
-  const slot0s = await api.multiCall({ abi: abi.slot0, calls: live.map(x => x.pool) })
 
-  for (let i = 0; i < live.length; i++) {
-    const ids = staked[i] || []
-    if (!ids.length) continue
-    const pos = await api.multiCall({ target: nfpms[i], abi: abi.positions, calls: ids })
-    const tick = Number(slot0s[i].tick)
-    pos.forEach(p => {
-      if (Number(p.liquidity) === 0) return
-      addUniV3LikePosition({
-        api, token0: p.token0, token1: p.token1, liquidity: Number(p.liquidity),
-        tickLower: Number(p.tickLower), tickUpper: Number(p.tickUpper), tick,
-      })
-    })
+  // gauges of different pools can share a position manager, so group the staked ids by manager
+  const idsByNfpm = {}
+  nfpms.forEach((nfpm, i) => {
+    const key = nfpm.toLowerCase()
+    idsByNfpm[key] = (idsByNfpm[key] || []).concat(staked[i].map(String))
+  })
+  for (const [nftAddress, positionIds] of Object.entries(idsByNfpm)) {
+    if (positionIds.length) await unwrapSlipstreamNFT({ api, nftAddress, positionIds })
   }
 }
 
