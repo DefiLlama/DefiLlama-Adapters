@@ -16,12 +16,12 @@ async function tvl(api) {
     permitFailure: true,
   })
 
-  const tokens = [...new Set(pools.map(pool => pool.token).filter(Boolean))]
+  const tokens = [...new Set(pools.map(pool => pool?.token).filter(Boolean))]
   return sumTokens2({ api, owner: PRE_GENESIS_FARM, tokens, permitFailure: true })
 }
 
 module.exports = {
-  methodology: 'TVL is the value of ERC-20 assets deposited into Holi SHYT Pre-Genesis Farm on Robinhood Chain.',
+  methodology: 'TVL is the value of ERC-20 assets deposited into Holi Pre-Genesis Farm on Robinhood Chain.',
   start: '2026-09-29',
   robinhood: { tvl },
 }
