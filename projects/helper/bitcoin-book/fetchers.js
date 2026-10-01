@@ -417,4 +417,24 @@ module.exports = {
     )
     return reserveAddresses.map(r => r.address).filter(Boolean)
   },
+  bitsafeCBTC: async () => {
+    // BitSafe publishes the CBTC (Canton) reserve addresses through its public API. Balances are NOT read
+    // from that API: the addresses are only enumerated here and their BTC is read from the Bitcoin chain.
+    const API_URL = 'https://api.mainnet.bitsafe.finance/cbtc/v1/address-calculation-data'
+    const owners = await getConfig('bitsafe/cbtc-reserve-addresses', undefined, {
+      fetcher: async () => {
+        const data = await get(API_URL)
+        if (data?.status !== 'ready' || data.bitcoin_network !== 'bitcoin')
+          throw new Error('bitsafe cbtc: address feed is not ready for bitcoin mainnet')
+        const chain = (data.chains ?? []).find(c => c.chain === 'canton-mainnet')
+        const addresses = (chain?.addresses ?? []).map(a => a.address_for_verification)
+        if (!addresses.length) throw new Error('bitsafe cbtc: feed returned no reserve addresses')
+        // a partial reserve list would understate TVL, so one bad entry fails the whole fetch
+        if (!addresses.every(isValidBitcoinAddress)) throw new Error('bitsafe cbtc: feed returned an invalid bitcoin address')
+        return [...new Set(addresses)]
+      }
+    })
+    if (!Array.isArray(owners) || !owners.length) throw new Error('bitsafe cbtc: no reserve addresses available')
+    return owners
+  },
 }
