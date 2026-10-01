@@ -179,16 +179,7 @@ const configs = {
   },
   'orbio': {
     methodology: 'Counts ORBIO tokens deposited in the Orbio staking contract on Robinhood Chain.',
-    robinhood: {
-      staking: async (api) => {
-        const balance = await api.call({
-          target: '0xaa07a0e9209e16ac99708c3ec70159c6ef3128a3',
-          abi: 'erc20:balanceOf',
-          params: ['0xe0710011278bfb63e57c5f227e5980984b1eddca'],
-        })
-        api.addCGToken('orbio-so', Number(balance) / 1e18)
-      },
-    },
+    robinhood: { staking: ['0xe0710011278bfb63e57c5f227e5980984b1eddca', '0xaa07a0e9209e16ac99708c3ec70159c6ef3128a3'] },
   },
   'capminal': {
     methodology: 'Counts CAP held in the ScapStaking contract on Base, including staked and unbonding principal plus funded but unclaimed CAP rewards.',
