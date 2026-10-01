@@ -57,6 +57,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the token balances held by the pools created by the Kaleido V3 factory on Arc.',
-  start: '2026-09-19',
+  start: '2026-09-29',
   arc: { tvl },
 }
