@@ -14625,8 +14625,21 @@ const configs = {
       "owners": [
         "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0"
       ],
+      "fetchCoValentTokens": true
+    },
+    "base": {
+      "owners": [
+        "0x0000BC1c4fD15Dd79029AF8F5d77D68ae4490000"
+      ],
+      "fetchCoValentTokens": true
+    },
+    "robinhood": {
+      "owner": "0x26605f322f7fF986f381bB9A6e3f5DAb0bEaEb09",
       "tokens": [
-        ADDRESSES.null
+        ADDRESSES.null,
+        ADDRESSES.robinhood.WETH,
+        ADDRESSES.robinhood.USDG,
+        ADDRESSES.robinhood.USDe
       ]
     },
     "xlayer": {
@@ -14637,6 +14650,13 @@ const configs = {
         ADDRESSES.stable.USDT0
       ]
     },
+    "monad": {
+      "owner": "0x30e8ee7b5881bf2E158A0514f2150aabe2c68b23",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.monad.USDC
+      ]
+    }
   },
   "flare-loans": {
     "methodology": "We count all WSGB on 0xFa21A4ABD1a58CefAB79CFd597aCcc314403eE9f and all EXFI on 0x4595fc96262057f9b0d4276ff04de8f2f44e612e, which are backing the stablecoin",
