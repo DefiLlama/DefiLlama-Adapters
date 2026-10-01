@@ -6,7 +6,7 @@ const FACTORY = '0xbB74f2319494461B2591F8fbF126654Dd4c2a649'
 const LENDING = '0xE4e7f16DB22e6bb2E505fbC504d7B2B4B995A6E3' // Kaleido lending market; its registered tokens are the ones Kaleido pools are made of
 
 // The pools' quote asset is a WETH9 deployed on Arc that wraps native USDC 1:1 (18 decimals). It has no price
-// of its own, so its balance is counted as USDC (6 decimals) below.
+// of its own, so its balance is counted as native USDC below.
 const WRAPPED_NATIVE = '0x8c6c0A4C5500c2bC196383B4D85feb7f08a5C75b'
 
 const FEES = [100, 500, 3000, 10000]
@@ -49,15 +49,14 @@ async function tvl(api) {
   const key = Object.keys(balances).find(k => k.toLowerCase() === `arc:${WRAPPED_NATIVE.toLowerCase()}`)
   if (key) {
     const raw = BigInt(balances[key].toString())
-    delete balances[key]
     api.removeTokenBalance(WRAPPED_NATIVE)
-    api.add(ADDRESSES.arc.USDC, raw / 10n ** 12n)
+    api.add(ADDRESSES.null, raw)
   }
   return api.getBalances()
 }
 
 module.exports = {
   methodology: 'TVL is the token balances held by the pools created by the Kaleido V3 factory on Arc.',
-  start: 1789855914, // 2026-09-19
+  start: '2026-09-19',
   arc: { tvl },
 }

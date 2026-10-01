@@ -23,6 +23,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'TVL is the collateral and the lender-listed funds held by the Kaleido lending contract on Arc. Native USDC (the chain\'s gas token) is counted from the contract\'s native balance. Funds already lent out are not counted.',
-  start: 1790640000, // 2026-09-29
+  start: '2026-09-29',
   arc: { tvl },
 }
