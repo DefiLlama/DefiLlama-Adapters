@@ -6,9 +6,10 @@ const { sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../help
 // wallets hold, read on chain.
 //
 // Wallets come from the factories' AccountCreated events. A wallet's positions are the LP NFTs it holds plus those
-// staked for it. On Base (log indexer) staked Aerodrome positions are found from the NFTs each wallet received and
-// confirmed with the gauge; on Robinhood Chain they are read directly: the Giga farm lists each staker's NFTs, and
-// every UP gauge (listed by the UP voter) returns each wallet's staked ids. Loose tokens in the wallets count too.
+// staked for it. Held NFTs are enumerated from each position manager. On Base (log indexer) the gauges a wallet
+// staked into are the Aerodrome gauges it sent NFTs to, and each returns the wallet's staked ids; on Robinhood Chain
+// they are read directly: the Giga farm lists each staker's NFTs, and every UP gauge (listed by the UP voter)
+// returns each wallet's staked ids. Loose tokens in the wallets count too.
 
 const TRANSFER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 const transferAbi = 'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
@@ -29,7 +30,7 @@ const config = {
     ],
     algebra: [],
     farms: [],
-    stakedFromLogs: true,
+    gaugeVoter: '0x16613524e02ad97eDfeF371bC883F2F5d6C480A5', // Aerodrome voter, for gauges found from logs
     tokens: [
       '0x4200000000000000000000000000000000000006', // WETH
       '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
@@ -72,40 +73,23 @@ async function wallets(api, { factories }, toBlock) {
   return [...new Set(lists.flat().map(l => l.account.toLowerCase()))]
 }
 
-// Base: every NFT id each wallet ever received from this position manager, then only those it holds or has staked
-// in a gauge now.
-async function positionsOf(api, nft, owners, fromBlock, toBlock, { gauges = false } = {}) {
-  // One query for all wallets: the recipient topic matches any of them.
+// Base: a wallet only lets an NFT leave to its owner or to a farm that stakes it, so the gauges it staked into are
+// the voter's gauges among the contracts it sent NFTs to. Each of those gauges returns the wallet's staked ids.
+async function stakedFromLogs(api, nft, voter, owners, fromBlock, toBlock) {
+  // One query for all wallets: the sender topic matches any of them.
   const logs = await getLogs({
     api, target: nft, eventAbi: transferAbi, onlyArgs: true, fromBlock, toBlock,
-    topics: [TRANSFER, null, owners.map(o => '0x' + o.slice(2).padStart(64, '0'))],
-    extraKey: `btb-${owners.length}`,
+    topics: [TRANSFER, owners.map(o => '0x' + o.slice(2).padStart(64, '0'))],
+    extraKey: `btb-sent-${owners.length}`,
   })
-  const received = owners.map(owner => logs.filter(l => l.to.toLowerCase() === owner))
-  const candidates = []
-  received.forEach((logs, i) => {
-    const ids = new Set(logs.map(l => l.tokenId.toString()))
-    ids.forEach(id => candidates.push({ owner: owners[i], id }))
-  })
-  if (!candidates.length) return []
-
-  const holders = await api.multiCall({ abi: 'function ownerOf(uint256) view returns (address)', target: nft, calls: candidates.map(c => c.id), permitFailure: true })
-  const held = [], elsewhere = []
-  candidates.forEach((c, i) => {
-    const holder = holders[i]?.toLowerCase()
-    if (!holder) return // burned
-    if (holder === c.owner) held.push(c.id)
-    else elsewhere.push({ ...c, holder })
-  })
-
-  if (gauges && elsewhere.length) {
-    const staked = await api.multiCall({
-      abi: 'function stakedContains(address depositor, uint256 tokenId) view returns (bool)',
-      calls: elsewhere.map(c => ({ target: c.holder, params: [c.owner, c.id] })), permitFailure: true,
-    })
-    elsewhere.forEach((c, i) => { if (staked[i] === true) held.push(c.id) })
-  }
-  return [...new Set(held)]
+  const pairs = [...new Set(logs.map(l => `${l.from.toLowerCase()}:${l.to.toLowerCase()}`))].map(p => p.split(':'))
+  const recipients = [...new Set(pairs.map(([, to]) => to))]
+  if (!recipients.length) return []
+  const isGauge = await api.multiCall({ abi: 'function isGauge(address) view returns (bool)', target: voter, calls: recipients })
+  const gauges = new Set(recipients.filter((_, i) => isGauge[i]))
+  const calls = pairs.filter(([, to]) => gauges.has(to)).map(([owner, target]) => ({ target, params: [owner] }))
+  const staked = await api.multiCall({ abi: 'function stakedValues(address) view returns (uint256[])', calls })
+  return staked.flat().map(String)
 }
 
 // NFT ids an ERC721-enumerable contract lists for each owner (a position manager, or a farm that tracks stakers).
@@ -134,8 +118,8 @@ async function tvl(api) {
   const fromBlock = Math.min(...cfg.factories.map(f => f.fromBlock))
 
   const idsFor = async (nft, { gauges = false } = {}) => {
-    if (cfg.stakedFromLogs) return positionsOf(api, nft, owners, fromBlock, toBlock, { gauges })
     const ids = (await enumerated(api, nft, owners)).map(String)
+    if (gauges && cfg.gaugeVoter) ids.push(...await stakedFromLogs(api, nft, cfg.gaugeVoter, owners, fromBlock, toBlock))
     const farm = cfg.farms.find(f => f.nft.toLowerCase() === nft.toLowerCase())
     if (farm) ids.push(...(await enumerated(api, farm.chef, owners)).map(String))
     const voter = cfg.voters?.find(v => v.nft.toLowerCase() === nft.toLowerCase())
