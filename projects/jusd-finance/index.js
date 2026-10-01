@@ -1,11 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 // JUSD deploys USDC into curated credit strategies, issued through two vaults:
-// Accountable on Ethereum and Venzo on Arbitrum. Both are USDC vault share
-// tokens with the symbol JUSD. TVL values each vault's full share supply in USDC
-// with convertToAssets(), which includes capital lent to the strategy borrower or
-// deployed off chain. (The Accountable vault's totalAssets() returns only its idle
-// cash, so it is not used.)
+// Accountable on Ethereum and Venzo on Arbitrum.
+// tvl: USDC held idle in each vault. borrowed: the rest of each vault's assets
+// (its share supply valued with convertToAssets), i.e. USDC lent to the strategy
+// borrower or deployed off chain. On Arbitrum most shares tokenize an existing
+// off-chain strategy position, evidenced by the issuer's proof of reserves.
 const VAULTS = {
   ethereum: [
     '0x2B5895b716311A1eaC8f93fB88C56aF9eC8C1A69', // JUSD Credit Vault (Accountable)
@@ -21,21 +21,36 @@ const USDC = {
   arbitrum: ADDRESSES.arbitrum.USDC_CIRCLE,
 }
 
-function tvl(chain) {
-  return async (api) => {
-    const vaults = VAULTS[chain]
-    const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaults })
-    const assets = await api.multiCall({
+async function vaultState(api) {
+  const vaults = VAULTS[api.chain]
+  const usdc = USDC[api.chain]
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaults })
+  const [assets, idle] = await Promise.all([
+    api.multiCall({
       abi: 'function convertToAssets(uint256) view returns (uint256)',
       calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i]] })),
-    })
-    assets.forEach((amount) => api.add(USDC[chain], amount))
-  }
+    }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault) => ({ target: usdc, params: [vault] })) }),
+  ])
+  return { usdc, assets, idle }
+}
+
+async function tvl(api) {
+  const { usdc, idle } = await vaultState(api)
+  idle.forEach((amount) => api.add(usdc, amount))
+}
+
+async function borrowed(api) {
+  const { usdc, assets, idle } = await vaultState(api)
+  assets.forEach((amount, i) => {
+    const lent = BigInt(amount) - BigInt(idle[i])
+    if (lent > 0n) api.add(usdc, lent.toString())
+  })
 }
 
 module.exports = {
-  methodology: 'Values the full share supply of the two JUSD vault share tokens in USDC with convertToAssets(), the Accountable vault on Ethereum and the Venzo vault on Arbitrum, both denominated in USDC. This includes USDC lent to the strategy borrower and capital deployed off chain, as reported by each vault. The Ethereum vault is also part of Accountable, so this listing is marked as double counted.',
+  methodology: 'TVL is the USDC held idle in the two JUSD vaults, the Accountable vault on Ethereum and the Venzo vault on Arbitrum. Borrowed is the rest of each vault\'s assets, its share supply valued in USDC with convertToAssets(), which is USDC lent to the strategy borrower or deployed off chain. The Ethereum vault is also part of Accountable, so this listing is marked as double counted.',
   doublecounted: true,
-  ethereum: { tvl: tvl('ethereum') },
-  arbitrum: { tvl: tvl('arbitrum') },
+  ethereum: { tvl, borrowed },
+  arbitrum: { tvl, borrowed },
 }
