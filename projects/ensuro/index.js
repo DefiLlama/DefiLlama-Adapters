@@ -65,35 +65,21 @@ const addressBook = {
   }
 };
 
-const normalize = i => i.toLowerCase()
-
-async function unwrap4626Tokens({ api, tokensAndOwners, }) {
-  const tokens = tokensAndOwners.map(i => i[0])
-  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })), })
-  const assets = (await api.multiCall({ abi: 'address:asset', calls: tokens, })).map(normalize)
-  const balsInAssets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: tokensAndOwners.map((i, idx) => ({ target: i[0], params: bals[idx] })), })
-  api.addTokens(assets, balsInAssets)
-  return api.getBalances()
-}
-
 async function tvl(api) {
   const addresses = addressBook[api.chain];
   // Most of the reserves can only have USDC
-  const ownerTokens = addresses.reserves.map(i => [[normalize(addresses.usdc)], i.address])
+  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc], i.address])
   // The MSV also has AAVE USDC and OpenEden's USDO
   if (api.chain === "ethereum" ) {
-    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc), normalize(addresses.usdo), normalize(addresses.comp_inst_usdc)], addresses.msv]);
+    ownerTokens.push([[addresses.usdc, addresses.aave_v3_usdc, addresses.usdo, addresses.comp_inst_usdc], addresses.msv]);
   } else {
-    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc)], addresses.msv]);
+    ownerTokens.push([[addresses.usdc, addresses.aave_v3_usdc], addresses.msv]);
   }
 
   // Also Morpho vaults
-  for (const vault of addresses.morpho_vaults) {
-    await unwrap4626Tokens({api, tokensAndOwners: [[normalize(vault), normalize(addresses.msv)]] });
-  }
-  if (addresses.ipor_fusion_vault !== undefined) {
-    await unwrap4626Tokens({api, tokensAndOwners: [[normalize(addresses.ipor_fusion_vault), normalize(addresses.msv)]] });
-  }
+  ownerTokens.push([addresses.morpho_vaults, addresses.msv])
+  if (addresses.ipor_fusion_vault)
+    ownerTokens.push([[addresses.ipor_fusion_vault], addresses.msv])
   return sumTokens2({ api, ownerTokens});
 }
 
