@@ -14882,6 +14882,16 @@ const configs = {
       ]
     },
   },
+  "fuci": {
+    "methodology": "TVL is the USDC held by the FuciEscrow contract on Arc: USDC locked for open jobs between clients and AI agents, plus settled payouts waiting to be withdrawn.",
+    "start": "2026-09-29",
+    "arc": {
+      "owner": "0xb30d1c83454260614ccf06ae0f3c1af8b47515b1",
+      "tokens": [
+        ADDRESSES.arc.USDC
+      ]
+    },
+  },
   "gainsNetwork": {
     "hallmarks": [
       [
