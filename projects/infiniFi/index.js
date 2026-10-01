@@ -4,6 +4,12 @@ const accounting = {
   monad: '0x386DfFb5a31588aB56Df20C54Ec649F3B554362C',
 }
 
+// L1 mirror farms for Outland Base / Monad — assets are counted on those L2 chains
+const ethereumOutlandMirrorFarms = new Set([
+  '0xbD6c2d1C4809a5D8847FbA3a3cf7d6BDf6b6C3bA',
+  '0xA7c1DAEAA5D97e1319B4Ff6Cdf658F5C4582A27E',
+].map((a) => a.toLowerCase()))
+
 const abis = {
   farmRegistry: 'address:farmRegistry',
   getFarms: "function getFarms() external view returns (address[] memory)",
@@ -13,7 +19,12 @@ const abis = {
 
 const tvl = async (api) => {
   const farmsRegistry = await api.call({ abi: abis.farmRegistry, target: accounting[api.chain] })
-  const farms = await api.call({ abi: abis.getFarms, target: farmsRegistry })
+  let farms = await api.call({ abi: abis.getFarms, target: farmsRegistry })
+  // exclude L1 mirror farms if on Ethereum
+  if(api.chain === 'ethereum') {
+    farms = farms.filter((farm) => !ethereumOutlandMirrorFarms.has(farm.toLowerCase()))
+  }
+
   const [balances, tokens] = await Promise.all([
     api.multiCall({ calls: farms, abi: abis.assets }),
     api.multiCall({ calls: farms, abi: abis.assetToken }),
@@ -25,7 +36,8 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  methodology: 'TVL of the protocol is the value of all asssets deposited in the protocol kept in the accounting contract',
+  methodology:
+    'Sums assets() across farms registered in each chain Accounting contract. On Ethereum, L1 Outland mirror farms for Base and Monad are excluded because the same assets are counted on those L2 chains.',
 }
 
 Object.keys(accounting).forEach((chain) => {
