@@ -123,9 +123,10 @@ chainExports.aptos = {
   },
 };
 
+chainExports.core = { tvl: () => ({}) };
+
 module.exports = {
   ...chainExports,
-  timetravel: true,
   methodology:
     "TVL counts stablecoins in fundVault, dexBridgeVault, and all strategies contracts.",
 };
