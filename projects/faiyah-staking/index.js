@@ -1,6 +1,3 @@
-const sdk = require('@defillama/sdk')
-const { nullAddress } = require('../helper/tokenMapping')
-
 const FACTORY = '0x95c8853e6bD1DBCE2428Aa6953eb7680261F22fe'
 
 // A same-token pool holds its reward bucket next to the principal and can pay rewards out of
@@ -12,15 +9,9 @@ async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:stakingToken', calls: pools })
   const staked = await api.multiCall({ abi: 'uint256:totalStaked', calls: pools })
 
-  const native = pools.filter((_, i) => tokens[i] === nullAddress)
-  const { output: nativeBals } = await sdk.api.eth.getBalances({ targets: native, chain: api.chain, block: api.block })
-  const erc20Bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools.map((p, i) => ({ target: tokens[i], params: p })).filter(({ target }) => target !== nullAddress) })
-
-  let n = 0, e = 0
-  pools.forEach((_, i) => {
-    const token = tokens[i]
-    api.add(token, held(token === nullAddress ? nativeBals[n++].balance : erc20Bals[e++], staked[i]))
-  })
+  // native (null address) and ERC20 balances, in pool order
+  const bals = await api.getTokenBalances({ tokensAndOwners: pools.map((pool, i) => [tokens[i], pool]) })
+  pools.forEach((_, i) => api.add(tokens[i], held(bals[i], staked[i])))
 }
 
 module.exports = {
