@@ -44,12 +44,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the sum of the actual token balances (balancesRaw) the Ranges Vault holds for every pool listed by the RangePoolFactory, read with vault.getPoolTokenInfo. BPTs of range pools held by other range pools are excluded so that the underlying assets of a nested pool are not counted twice.',
-  ethereum: {
-    tvl,
-    start: '2026-02-28',
-  },
-  robinhood: {
-    tvl,
-    start: '2026-09-08',
-  },
+  start: '2026-02-28',
+  ethereum: { tvl },
+  robinhood: { tvl },
 }
