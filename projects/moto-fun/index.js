@@ -16,6 +16,6 @@ module.exports = {
   methodology:
     'TVL is the ETH held by the moto.fun bonding curve contract for coins that have not graduated yet. ' +
     'Graduated coins trade on Motoswap pairs, which are counted in the Motoswap adapter.',
-  start: '2026-09-28', // block 26075263
+  start: '2026-09-28', // curve deployed at block 26075451 (2026-09-28 10:47 UTC); earlier blocks read 0 ETH
   ethereum: { tvl },
 }

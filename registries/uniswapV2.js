@@ -3236,7 +3236,7 @@ const uniV2Configs = {
     },
   },
   'motoswap-amm': {
-    start: '2026-09-29', // factory deployed at block 26075263 (2026-09-28 10:09 UTC)
+    start: '2026-09-29', // factory deployed at block 26075263 (2026-09-28 10:09 UTC), so 2026-09-29 is the first daily snapshot where it exists
     methodology: 'Value of the tokens in Motoswap pairs, enumerated from the factory. Motoswap LP tokens staked in the Motoswap farms are not added again.',
     ethereum: '0x81C9CBC47d700dA1777aBd831D8dA3f526DfAe24',
   },
