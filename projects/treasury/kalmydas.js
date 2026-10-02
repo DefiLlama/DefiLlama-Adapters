@@ -51,7 +51,8 @@ const exportsObj = treasuryExports({
       '0x4f1F316e76d8E8637006eF246E9dD6dc3b4680C1', // TreasuryRWAV2
       '0xD1795dD0Cfe169E4dE601469C07E0c4884aD251f', // RainyDayFund
     ],
-    tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH],
+    tokens: [ADDRESSES.null, ADDRESSES.base.USDC, ADDRESSES.base.WETH],
+    fetchCoValentTokens: false,
     ownTokens: [KAL],
     ownTokenOwners: [
       '0x6466C5042669f8d6D7f0c725B51cD2650d1E1b9A', // KAL presale (unsold KAL)
