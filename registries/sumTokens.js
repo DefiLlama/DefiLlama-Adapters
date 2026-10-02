@@ -26897,6 +26897,14 @@ const configs = {
       ]
     },
   },
+  "sundaeswap-v4": {
+    "methodology": "Counts the tokens held in SundaeSwap V4 pool UTxOs at the V4 pool script address.",
+    "cardano": {
+      "owners": [
+        "addr1zysundaev4jxq60ehm8tlz6v8nk6lpxpnvgfa2jeszs55f4uzrlrz2kdd83wzt9u9n9qt2swgvhrmmn96k55nq6yuj4qeujly6"
+      ]
+    },
+  },
   "sunperp": {
     "methodology": "TVL includes Vault Contract and MPC Wallet assets",
     "tron": {
