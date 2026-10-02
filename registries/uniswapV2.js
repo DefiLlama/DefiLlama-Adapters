@@ -3235,6 +3235,11 @@ const uniV2Configs = {
       },
     },
   },
+  'motoswap-amm': {
+    start: '2026-09-29', // factory deployed at block 26075263 (2026-09-28 10:09 UTC)
+    methodology: 'Value of the tokens in Motoswap pairs, enumerated from the factory. Motoswap LP tokens staked in the Motoswap farms are not added again.',
+    ethereum: '0x81C9CBC47d700dA1777aBd831D8dA3f526DfAe24',
+  },
   'unitflow-finance-v2': {
     methodology: 'Token balances held in every Unitflow v2.5 pair, enumerated from the factory.',
     arc: '0xFc1EC6761e246D5cb0c4C22669f8635098B22ba1',
