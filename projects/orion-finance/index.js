@@ -29,6 +29,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is the sum of ERC-4626 totalAssets() across active Orion vaults from getAllOrionVaults(0) and getAllOrionVaults(1), plus totalAssets() of vaults from getAllDecommissionedVaults.',
+    'TVL is the sum of accounted ERC-4626 totalAssets() (underlying notional AUM, not vault-contract token balances) across active vaults from OrionConfig.getAllOrionVaults(0) and getAllOrionVaults(1), plus getAllDecommissionedVaults. Excludes pending deposits, pendingVaultFees, and pendingProtocolFees.',
   ethereum: { tvl },
 }
