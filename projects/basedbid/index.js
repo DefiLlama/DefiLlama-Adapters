@@ -46,10 +46,8 @@ const TRACKED_TOKENS = {
     ADDRESSES.robinhood.WETH,
     ADDRESSES.robinhood.USDG,
   ],
-  // Arc: the gas token is USDC (18 decimals via eth_getBalance); 0x3600... is its 6-decimal
-  // ERC-20 facade, which Uniswap V4 pools on Arc use as the "wrapped native" currency.
+  // Arc: native USDC (eth_getBalance, 18 decimals) and the 0x3600 ERC-20 (6 decimals) are one balance; count it once.
   arc: [
-    ADDRESSES.null,
     ADDRESSES.arc.USDC,
     ADDRESSES.arc.EURC,
     ADDRESSES.arc.WETH,
@@ -144,6 +142,8 @@ const GET_LIQUIDITY_V4_LIST_ABI = 'function getLiquidityV4List() view returns (a
 const GET_LIQUIDITY_V4_POOL_DATA_ABI =
   `function getLiquidityV4Pooldata(address token) view returns (tuple(address owner, bool isTokenBurn, address baseToken, bytes32 subBoard, string metaData, address positionManager, uint256 poolId, address hooks, ${V4_HOOK_DATA_TUPLE} v4HookData, tuple(bool isWhitelist, uint256 maxBuyPerOrigin) whitelistOption) poolData)`
 const GET_LP_LOCK_ABI = 'function getLpLock(address positionManager) view returns (address)'
+const FEE_RECEIVER_OF_ABI = 'function feeReceiverOf(uint256 tokenId) view returns (address)'
+const TOKEN_OF_OWNER_BY_INDEX_ABI = 'function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)'
 
 const PCS_INFINITY_POSITIONS_ABI =
   'function positions(uint256) view returns ((address currency0, address currency1, address hooks, address poolManager, uint24 fee, bytes32 parameters) poolKey, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, address subscriber)'
@@ -190,7 +190,6 @@ async function getLpCustodians(api) {
     abi: GET_LP_LOCK_ABI,
     target: basedBid,
     calls: positionManagers,
-    permitFailure: true,
   })
 
   const lockOf = {}
@@ -321,7 +320,6 @@ async function readRegistry(api, custodians) {
   const flashV3Count = Number(await api.call({
     target: basedBid,
     abi: GET_FLASH_V3_TOKEN_COUNT_ABI,
-    permitFailure: true,
   }) || 0)
 
   if (flashV3Count > 0) {
@@ -329,7 +327,6 @@ async function readRegistry(api, custodians) {
       target: basedBid,
       abi: GET_FLASH_V3_TOKEN_ABI,
       calls: Array.from({ length: flashV3Count }, (_, i) => ({ params: [i] })),
-      permitFailure: true,
     })
     flashV3Tokens.forEach(addLaunched)
   }
@@ -350,6 +347,29 @@ async function readRegistry(api, custodians) {
       ? await getOwnedPositionIds(api, pcsPosm, [...pcsInfinityIds], custodians.ownersFor(pcsPosm))
       : [],
   }
+}
+
+// Locks are permissionless and shared across diamonds: count a locked position only if this diamond is its fee receiver.
+async function getV3PositionIds(api, nftAddress, custodians) {
+  const basedBid = lc(BASED_BID[api.chain])
+  const lock = custodians.lockOf[lc(nftAddress)]
+  const ids = []
+  for (const owner of custodians.ownersFor(nftAddress)) {
+    const count = Number(await api.call({ abi: 'erc20:balanceOf', target: nftAddress, params: [owner] }))
+    if (!count) continue
+    const ownerIds = await api.multiCall({
+      abi: TOKEN_OF_OWNER_BY_INDEX_ABI,
+      target: nftAddress,
+      calls: Array.from({ length: count }, (_, i) => ({ params: [owner, i] })),
+    })
+    if (lc(owner) !== lock) {
+      ids.push(...ownerIds)
+      continue
+    }
+    const receivers = await api.multiCall({ abi: FEE_RECEIVER_OF_ABI, target: lock, calls: ownerIds })
+    ids.push(...ownerIds.filter((_, i) => lc(receivers[i]) === basedBid))
+  }
+  return ids
 }
 
 async function unwrapUniV4Positions(api, uniV4ByNft, launchedTokens) {
@@ -433,17 +453,19 @@ async function tvl(api) {
 
   // Native coin, core assets and every quote token used by a listed project, held directly by
   // based.bid (e.g. funds raised by launches that are still on the bonding curve).
-  const tokens = getUniqueAddresses([...(TRACKED_TOKENS[api.chain] || []), ...quoteTokens], api.chain)
+  let tokens = getUniqueAddresses([...(TRACKED_TOKENS[api.chain] || []), ...quoteTokens], api.chain)
+  if (api.chain === 'arc') tokens = tokens.filter((token) => token !== ADDRESSES.null)
   await sumTokens2({ api, owner, tokens, blacklistedTokens: launchedTokens })
 
   // Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager), held by the
   // lock contract registered for that position manager (diamond as fallback). Every token
   // except the launched ones counts, so any quote token is tracked.
   for (const nftAddress of UNIV3_LIKE_NFTS[api.chain] || []) {
+    const positionIds = await getV3PositionIds(api, nftAddress, custodians)
+    if (!positionIds.length) continue
     await sumTokens2({
       api,
-      owners: custodians.ownersFor(nftAddress),
-      uniV3ExtraConfig: { nftAddress },
+      uniV3ExtraConfig: { nftAddress, positionIds },
       blacklistedTokens: launchedTokens,
     })
   }
