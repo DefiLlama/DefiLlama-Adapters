@@ -1,20 +1,21 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 
-// ADEXTO (https://adexto.xyz) opens every market as one AdextoCurve: a bonding curve that trades the token
-// against the chain's native coin and never graduates or migrates. Contracts:
-// https://github.com/0xcuy/adexto/tree/main/contracts
+// ADEXTO (https://adexto.xyz) opens every market as one bonding curve that trades the token against the
+// chain's native coin and never graduates or migrates. Contracts: https://github.com/0xcuy/adexto/tree/main/contracts
 
-// ADEXTO factories of generations 0.11.0, 0.12.0 and 1.0.0, which share the TrinityProjectDeployed event
-// (contracts/AdextoFactory.sol, "COMPATIBILITY"). Each address was checked on chain with VERSION(). Sources:
-// "Mainnet deployments" in https://github.com/0xcuy/adexto/blob/main/README.md (1.0.0 and 0.11.0),
-// https://github.com/0xcuy/adexto/blob/main/src/config/contracts.ts (0.12.0) and, per launch,
+// Every ADEXTO factory generation that has markets. All of them emit the same TrinityProjectDeployed event
+// (contracts/AdextoFactory.sol, "COMPATIBILITY"), and every curve they create exposes realNative(). Each address
+// was checked on chain with VERSION(). Sources: "Mainnet deployments" in
+// https://github.com/0xcuy/adexto/blob/main/README.md (1.0.0 and 0.11.0),
+// https://github.com/0xcuy/adexto/blob/main/src/config/contracts.ts (0.12.0 and 0.10.0) and, per launch,
 // https://github.com/0xcuy/adexto/blob/main/src/config/onchain-launches.json.
-// The 0.10.0 factories are not listed: their markets on 0G were superseded or test launches.
+// The 0.10.0 factories on Base, Arbitrum and Monad have no markets (totalProjectsCount() = 0), so only 0G lists it.
 // fromBlock is the block of the chain's first market, so no factory log can predate it.
 const config = {
   '0g': {
-    fromBlock: 43706550, // ADEXTO, tx 0xce701d9d33daa3cf1918b2f428166d9da690110a7144e13b125e788008bdc182
+    fromBlock: 43578117, // NOVA784, tx 0x36f4d78c9f9a35c92004465e7fb9d583dc74fa2de710cb6be9468d2f996fb2f3
     factories: [
+      '0xaA85bc0cceB35B524b6BB730612540Fb88df0f8e', // 0.10.0
       '0x51c4168226463F7e5A141e1c6D30520734BC840a', // 0.11.0
       '0x06C80fD2d5d9365C20aC468c15874DBE748877e2', // 0.12.0
       '0xEBbE0fB112859b57A0ad1afbeD4978e43dC96c5D', // 1.0.0
