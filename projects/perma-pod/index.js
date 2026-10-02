@@ -20,23 +20,21 @@ const ZIG_DENOM = 'azig';
 const VALDORA_STAKER_CONTRACT = 'zig18nnde5tpn76xj3wm53n0tmuf3q06nruj3p6kdemcllzxqwzkpqzqk7ue55';
 const PROBE_AZIG = 10n ** 21n; // 1,000 ZIG
 
-// Returns how much stZIG redeeming PROBE_AZIG gives, or null if Valdora can't be queried.
+// Returns how much stZIG redeeming PROBE_AZIG gives. Throws rather than letting stZIG go
+// unpriced (and silently missing from the totals) when the rate is unavailable.
 async function stzigPerProbe(chain) {
-  try {
-    const { stzig_amount } = await queryContract({
-      contract: VALDORA_STAKER_CONTRACT,
-      chain,
-      data: { reverse_st_zig_price: { amount: PROBE_AZIG.toString() } },
-    });
-    return stzig_amount && stzig_amount !== '0' ? BigInt(stzig_amount) : null;
-  } catch (e) {
-    return null;
-  }
+  const { stzig_amount } = await queryContract({
+    contract: VALDORA_STAKER_CONTRACT,
+    chain,
+    data: { reverse_st_zig_price: { amount: PROBE_AZIG.toString() } },
+  });
+  if (!stzig_amount || stzig_amount === '0') throw new Error('Valdora returned no stZIG rate');
+  return BigInt(stzig_amount);
 }
 
 function adder(api, stzigProbe) {
   return (denom, amount) => {
-    if (denom === STZIG_DENOM && stzigProbe) {
+    if (denom === STZIG_DENOM) {
       api.add(ZIG_DENOM, ((BigInt(amount) * PROBE_AZIG) / stzigProbe).toString());
     } else {
       api.add(denom, amount);
