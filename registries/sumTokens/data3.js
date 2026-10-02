@@ -1033,4 +1033,13 @@ module.exports = {
       ]
     },
   },
+  "zava": {
+    "methodology": "TVL is the AVAX held by the zAVA Mine contract.",
+    "avax": {
+      "owner": "0xB9D7517bC53D0F0F5e6E7C0030979Dd67de85128", // Mine
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
 }
