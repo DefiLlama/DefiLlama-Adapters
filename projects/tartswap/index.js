@@ -41,9 +41,12 @@ const ADDRESSES = require('../helper/coreAssets.json')
  * BUCKETS
  * ---------------------------------------------------------------------------
  *   tvl     — third-party assets deposited in TartSwap contracts: OTC escrow
- *             legs, game collateral + seeder liability, partner-token stakes in
- *             the partner vaults, and LP tokens in the farm whose pair does NOT
- *             contain TART or CREPE. Counted once per contract.
+ *             legs (offers selling TART/CREPE are skipped - the own token is
+ *             never tvl), game collateral + seeder liability, partner-token
+ *             stakes in the partner vaults, and LP tokens in the farm whose
+ *             pair does NOT contain TART or CREPE. Counted once per contract.
+ *             Those farm LPs are PancakeSwap V2 pairs that PancakeSwap's TVL
+ *             already counts, hence `doublecounted: true` on the export.
  *   staking — TartSwap's own tokens (TART and CREPE) locked by users in their
  *             staking vaults and the single-token staking pools. DefiLlama's
  *             `staking` bucket is exactly "the protocol's own token staked in
@@ -120,7 +123,8 @@ const OFFER_STATUS_OPEN = 1
  * book), never from a hardcoded token list — makers may list any BEP-20. We then
  * read the desk's real balances for those tokens, which equals the escrow: the
  * fill fee is forwarded to the treasury inside the same transaction, so the
- * contract never retains protocol revenue.
+ * contract never retains protocol revenue. Offers that sell TART or CREPE are
+ * skipped: the protocol's own token does not count as tvl.
  */
 async function addOtcEscrow(api) {
   for (const desk of OTC_DESKS) {
@@ -141,6 +145,7 @@ async function addOtcEscrow(api) {
     for (const offer of offers) {
       if (Number(offer.status) !== OFFER_STATUS_OPEN) continue
       if (!Number(offer.sellRemaining)) continue
+      if (isOwnToken(offer.sellToken)) continue
       // sellToken == address(0) means the maker escrowed native BNB.
       escrowedTokens.add(offer.sellToken)
     }
@@ -205,28 +210,26 @@ function getPools(api, target) {
 
 /**
  * Splits the funded, non-own-token pools of a farm/staking contract into LPs
- * whose pair contains TART/CREPE (pool2) and everything else (tvl). Pair
- * membership is read from the LP itself (`token0/token1`); a stake token that
- * is not a pair (both calls fail) is treated as a plain third-party token.
+ * whose pair contains TART/CREPE (pool2) and third-party LPs (tvl). Pair
+ * membership is read from the LP itself (`token0/token1`). Every funded stake
+ * token of that kind is a PancakeSwap V2 pair; a failed read aborts the run
+ * instead of guessing a bucket.
  */
 async function classifyPools(api, target) {
   const pools = await getPools(api, target)
   const funded = pools.filter((pool) => !isOwnToken(pool.stakeToken) && Number(pool.totalStaked) > 0)
   const stakeTokens = funded.map((pool) => pool.stakeToken)
   const [token0s, token1s] = await Promise.all([
-    api.multiCall({ abi: abi.token0, calls: stakeTokens, permitFailure: true }),
-    api.multiCall({ abi: abi.token1, calls: stakeTokens, permitFailure: true }),
+    api.multiCall({ abi: abi.token0, calls: stakeTokens }),
+    api.multiCall({ abi: abi.token1, calls: stakeTokens }),
   ])
   const ownLps = []
   const thirdPartyLps = []
-  const plainTokens = []
   stakeTokens.forEach((token, i) => {
-    const isPair = token0s[i] && token1s[i]
-    if (!isPair) return plainTokens.push(token)
     if (isOwnToken(token0s[i]) || isOwnToken(token1s[i])) return ownLps.push(token)
     thirdPartyLps.push(token)
   })
-  return { ownLps, thirdPartyLps, plainTokens }
+  return { ownLps, thirdPartyLps }
 }
 
 // -----------------------------------------------------------------------------
@@ -237,14 +240,15 @@ async function tvl(api) {
   await addGamesEscrow(api)
   await addPartnerVaults(api, 'tvl')
 
-  // Farm/staking pools holding third-party LPs (pair without TART/CREPE) or
-  // plain third-party tokens. The LP is unwrapped to its underlying reserves.
+  // Farm/staking pools holding third-party LPs (pair without TART/CREPE). The
+  // LP is unwrapped to its underlying reserves; PancakeSwap's TVL counts the
+  // same reserves, so the adapter is exported with `doublecounted: true`.
   const [farm, stakingPools] = await Promise.all([classifyPools(api, LP_FARM), classifyPools(api, STAKING_V3)])
   await sumTokens2({
     api,
     ownerTokens: [
-      [[...farm.thirdPartyLps, ...farm.plainTokens], LP_FARM],
-      [[...stakingPools.thirdPartyLps, ...stakingPools.plainTokens], STAKING_V3],
+      [farm.thirdPartyLps, LP_FARM],
+      [stakingPools.thirdPartyLps, STAKING_V3],
     ],
     resolveLP: true,
   })
@@ -296,16 +300,19 @@ async function pool2(api) {
 }
 
 module.exports = {
+  // The farm LPs counted in tvl are PancakeSwap V2 pairs that PancakeSwap's
+  // TVL already counts.
+  doublecounted: true,
   methodology:
     'Counts assets held in TartSwap-owned contracts on BNB Smart Chain. ' +
-    'TVL: (a) tokens escrowed by makers in the TartSwapOTC peer-to-peer desk for offers that are still open, ' +
+    'TVL: (a) third-party tokens escrowed by makers in the TartSwapOTC peer-to-peer desk for offers that are still open (offers selling TART or CREPE are not counted), ' +
     '(b) USDT collateral escrowed by players in the FastRoundArena parimutuel game engine (open, locked and unclaimed-resolved rounds), ' +
     '(c) the SeederRewards outstanding liability (totalOwed), i.e. game bonus credits already booked to specific players that the protocol can never reclaim, ' +
     '(d) partner tokens staked in TartPartnerStakingVault contracts (totalStaked), and ' +
-    '(e) PancakeSwap LP tokens deposited in the TartSwap farm whose pair does not contain TART or CREPE, unwrapped to their underlying reserves. ' +
+    '(e) PancakeSwap V2 LP tokens deposited in the TartSwap farm and staking-pool contracts (TartLPFarm, TartStakingV3) whose pair does not contain TART or CREPE, unwrapped to their underlying reserves; PancakeSwap already counts those reserves, so the adapter is flagged as double counted. ' +
     'Staking: TartSwap\'s own tokens locked by users - TART (the protocol token, listed 2026-08-31) in its tiered staking vault and CREPE in the TartStakingVault and the CREPE single-token staking pools; each vault\'s undistributed reward reserve is excluded because it is protocol-owned until streamed. ' +
-    'Pool2: LP tokens of TART/CREPE pairs deposited into the TartSwap farm (e.g. the TART/WBNB PancakeSwap pair). ' +
-    'The TartSwap swap router is a fee-taking wrapper around PancakeSwap V2 rather than an AMM of its own, so it holds no liquidity and no pair reserves are counted here - that liquidity already belongs to PancakeSwap. ' +
+    'Pool2: LP tokens of TART/CREPE pairs deposited into the same farm and staking-pool contracts (e.g. the TART/WBNB PancakeSwap pair). ' +
+    'The TartSwap swap router is a fee-taking wrapper around PancakeSwap V2 rather than an AMM of its own, so it holds no liquidity and the pairs it routes through are not counted - that liquidity belongs to PancakeSwap. The only pair reserves counted are the share behind the LP tokens users deposited, as described in (e) and under Pool2. ' +
     'Fee and treasury contracts (GameFeeSplitter, TartFeeDistributor, TartFeeConverter, TartFeeCollector, treasury and reserve wallets) are protocol revenue and are excluded.',
   // Earliest TartSwap contract in this adapter: TartStakingVault, deployed
   // 2026-06-29T15:33:46Z on BSC mainnet.
