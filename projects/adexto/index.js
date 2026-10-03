@@ -1,76 +1,54 @@
-const { getLogs2 } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // ADEXTO (https://adexto.xyz) opens every market as one bonding curve that trades the token against the
 // chain's native coin and never graduates or migrates. Contracts: https://github.com/0xcuy/adexto/tree/main/contracts
 
-// Every ADEXTO factory generation that has markets. All of them emit the same TrinityProjectDeployed event
-// (contracts/AdextoFactory.sol, "COMPATIBILITY"), and every curve they create exposes realNative(). Each address
-// was checked on chain with VERSION(). Sources: "Mainnet deployments" in
-// https://github.com/0xcuy/adexto/blob/main/README.md (1.0.0 and 0.11.0),
-// https://github.com/0xcuy/adexto/blob/main/src/config/contracts.ts (0.12.0 and 0.10.0) and, per launch,
-// https://github.com/0xcuy/adexto/blob/main/src/config/onchain-launches.json.
-// The 0.10.0 factories on Base, Arbitrum and Monad have no markets (totalProjectsCount() = 0), so only 0G lists it.
-// fromBlock is the block of the chain's first market, so no factory log can predate it.
+// Every ADEXTO factory generation, mapped to its deploy block. Each factory lists its launches on chain in
+// allProjects / totalProjectsCount, and is skipped at blocks before it existed.
 const config = {
   '0g': {
-    fromBlock: 43578117, // NOVA784, tx 0x36f4d78c9f9a35c92004465e7fb9d583dc74fa2de710cb6be9468d2f996fb2f3
-    factories: [
-      '0xaA85bc0cceB35B524b6BB730612540Fb88df0f8e', // 0.10.0
-      '0x51c4168226463F7e5A141e1c6D30520734BC840a', // 0.11.0
-      '0x06C80fD2d5d9365C20aC468c15874DBE748877e2', // 0.12.0
-      '0xEBbE0fB112859b57A0ad1afbeD4978e43dC96c5D', // 1.0.0
-    ],
+    '0xaA85bc0cceB35B524b6BB730612540Fb88df0f8e': 43173642, // 0.10.0
+    '0x51c4168226463F7e5A141e1c6D30520734BC840a': 43704079, // 0.11.0
+    '0x06C80fD2d5d9365C20aC468c15874DBE748877e2': 45602744, // 0.12.0
+    '0xEBbE0fB112859b57A0ad1afbeD4978e43dC96c5D': 45793987, // 1.0.0
   },
   monad: {
-    fromBlock: 103845897, // CURB, tx 0x743152ee89066a98e1b5cad500fe8d65f55255585d908f132a90b101985aadca
-    factories: [
-      '0x5800e9715a47a598fce9bc3B65a95FD6BeBf76A3', // 0.11.0
-      '0xcA9c77f050CD1e0685b03D0236579966DA9B39B9', // 0.12.0
-      '0x3dFcBEd7dd889F465cC9f75c430B43Ef873b6056', // 1.0.0
-    ],
+    '0x5800e9715a47a598fce9bc3B65a95FD6BeBf76A3': 102583076, // 0.11.0
+    '0xcA9c77f050CD1e0685b03D0236579966DA9B39B9': 108871845, // 0.12.0
+    '0x3dFcBEd7dd889F465cC9f75c430B43Ef873b6056': 109440540, // 1.0.0
   },
   base: {
-    fromBlock: 51372549, // BLOOP, tx 0x06299c0c23f3c3fb0c74e9c5fbcbf1611fd3a4980d9a1ebb64d1c3378b173b55
-    factories: [
-      '0x216E7880D64D94335B583c539802d3e61958d4A2', // 0.11.0
-      '0xe5B9555fbbcE72A5739dD29c3939A23fd230136F', // 0.12.0
-      '0xF5f904ca7763Fc6755bbCe5466a9DBd4C15c2708', // 1.0.0
-    ],
+    '0x216E7880D64D94335B583c539802d3e61958d4A2': 50971523, // 0.11.0
+    '0xe5B9555fbbcE72A5739dD29c3939A23fd230136F': 51922828, // 0.12.0
+    '0xF5f904ca7763Fc6755bbCe5466a9DBd4C15c2708': 52008858, // 1.0.0
   },
   arbitrum: {
-    fromBlock: 505650908, // WOMBO, tx 0x868aee2e6632a437b0b58a3ed1556091a0e658de0071420644726fe60479f362
-    factories: [
-      '0xE17f1027FC5f294327D701829baeD9d6519e922C', // 0.11.0
-      '0x75EeDEd196D2BE283d815D52F617eB70bCe865bC', // 0.12.0
-      '0x79DF3671e7e7456832C84a34c2bC0DB7871C0E0E', // 1.0.0
-    ],
+    '0xE17f1027FC5f294327D701829baeD9d6519e922C': 502476317, // 0.11.0
+    '0x75EeDEd196D2BE283d815D52F617eB70bCe865bC': 509845969, // 0.12.0
+    '0x79DF3671e7e7456832C84a34c2bC0DB7871C0E0E': 510474755, // 1.0.0
   },
   robinhood: {
-    fromBlock: 77064241, // SAI, tx 0xe05bc1fb93ba902ff6a15b36e80aa804609ab4e6c1780a0a6bcec8723286f38e
-    factories: [
-      '0x8e63e117E71A80Cfc10fDF375F079e2e29cd7D7D', // 1.0.0, the only generation on Robinhood Chain
-    ],
+    '0x8e63e117E71A80Cfc10fDF375F079e2e29cd7D7D': 76864198, // 1.0.0, the only generation on Robinhood Chain
   },
 }
 
-const DEPLOYED_EVENT = 'event TrinityProjectDeployed(address indexed token, address indexed curve, address indexed creator, string name, string symbol, uint256 initialSupply, uint256 curveTokens, uint256 virtualNative, uint256 depthFeeBps, uint256 creatorFeeBps, uint256 treasuryBuybackBps, bytes32 metadataRoot)'
+const ALL_PROJECTS = 'function allProjects(uint256) view returns (address token, address curve)'
 
 module.exports = {
-  methodology: 'Native coin (ETH, MON or 0G) that ADEXTO bonding curves hold as real reserve, read from each curve with realNative(). The virtual reserve, which only sets the opening price and is never deposited, is excluded, as are accrued fees not yet claimed and the unsold market tokens the curves hold.',
+  methodology: 'Native coin (ETH, MON or 0G) held by ADEXTO bonding curves, which are listed by each factory generation. This includes creator and protocol fees not yet claimed. The unsold market tokens the curves hold are not counted.',
 }
 
 Object.keys(config).forEach((chain) => {
-  const { fromBlock, factories } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+      const block = await api.getBlock()
+      const factories = Object.entries(config[chain]).filter(([, deployBlock]) => block >= deployBlock).map(([factory]) => factory)
       const curves = []
       for (const factory of factories) {
-        const launches = await getLogs2({ api, factory, eventAbi: DEPLOYED_EVENT, fromBlock })
-        curves.push(...launches.map((launch) => launch.curve))
+        const projects = await api.fetchList({ target: factory, lengthAbi: 'totalProjectsCount', itemAbi: ALL_PROJECTS })
+        curves.push(...projects.map((project) => project.curve))
       }
-      if (!curves.length) return
-      const reserves = await api.multiCall({ abi: 'uint256:realNative', calls: curves })
-      reserves.forEach((reserve) => api.addGasToken(reserve))
+      return api.sumTokens({ owners: curves, tokens: [ADDRESSES.null] })
     },
   }
 })
