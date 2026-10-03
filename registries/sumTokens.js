@@ -23349,11 +23349,15 @@ const configs = {
     },
   },
   "quantumpools": {
-    "methodology": "TVL is the value of every Uniswap V3 concentrated-liquidity position held by the QuantumPools vault, unwrapped to underlying token amounts at the current pool tick.",
+    "methodology": "TVL is the value of every Uniswap V3 concentrated-liquidity position held by the QuantumPools vaults on Base and Robinhood Chain, unwrapped to underlying token amounts at the current pool tick.",
     "doublecounted": true,
     "start": "2026-09-28",
     "robinhood": {
       "owner": "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3",
+      "resolveUniV3": true
+    },
+    "base": {
+      "owner": "0x9597f68203d1bc85744A5Fc11D890aA7777e386B",
       "resolveUniV3": true
     },
   },
