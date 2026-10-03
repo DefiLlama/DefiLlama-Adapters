@@ -13,6 +13,10 @@ const STRATEGY_FACTORY_DEPLOY_BLOCK = 67634274;
 
 // Platform token, used only to route its own pool to pool2 instead of tvl.
 const ARROWFARM = '0x416d0c4b431cfa33b4a4974e3dfc9f5089137148';
+// The coins service has no price for ARROWFARM on robinhood, so its amounts are
+// priced through its CoinGecko listing instead.
+const ARROWFARM_CG_ID = 'arrowfarm';
+const ARROWFARM_DECIMALS = 18;
 
 const wantsAbi = 'function wants() view returns (address token0, address token1)';
 const balancesAbi = 'function balances() view returns (uint256 amount0, uint256 amount1)';
@@ -68,9 +72,14 @@ async function pool2(api) {
     const { token0, token1 } = wants;
     const { amount0, amount1 } = balances;
     if (token0.toLowerCase() !== ARROWFARM && token1.toLowerCase() !== ARROWFARM) return;
-    api.add(token0, amount0);
-    api.add(token1, amount1);
+    addToken(api, token0, amount0);
+    addToken(api, token1, amount1);
   });
+}
+
+function addToken(api, token, amount) {
+  if (token.toLowerCase() === ARROWFARM) api.addCGToken(ARROWFARM_CG_ID, Number(amount) / 10 ** ARROWFARM_DECIMALS);
+  else api.add(token, amount);
 }
 
 module.exports = {
