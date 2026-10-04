@@ -3,6 +3,13 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'peddleswap-v3': {
+    start: '2026-09-12',
+    methodology: 'Token balances in PeddleSwap V3 pools on Robinhood Chain, Base and Arc, discovered from factory PoolCreated events.',
+    robinhood: { factory: '0xd0E25fD59A18f9728E11A04a24CaF0982231cf95', fromBlock: 61044184 },
+    base: { factory: '0x8f5890e843C89a7f963ecdEFF84D0900518AE106', fromBlock: 51852483 },
+    arc: { factory: '0x94C0883ec4A24BD69610bdD408Fd8263119827A2', fromBlock: 23924352 },
+  },
   'bbbfi-swap-v3': {
     methodology: 'Token balances in BBBFi-owned V3 pools on XDC and BSC, discovered from factory PoolCreated events. Tokens retain their original chain and address for DefiLlama pricing. Staked position NFTs are not counted a second time; reward budgets and bridge reserves are excluded.',
     xdc: { factory: '0x5037e5B64B677311Ed5332eee7b8C766fFe24088', fromBlock: 106991944 },
