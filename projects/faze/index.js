@@ -37,9 +37,9 @@ async function tvl(api) {
   const pools = await discover(HOOK, ABI.PoolRegistered, 'pools')
   const compounds = await discover(HOOK, ABI.Compounded, 'compounds')
   const coins = launches.length ? await api.multiCall({ target: CURVE, abi: ABI.getCoin, calls: launches.map(l => l.token) }) : []
-  const isCore = (asset, quote) => asset.toLowerCase() !== FAZE && quote.toLowerCase() !== FAZE
+  const isCoreQuote = (quote) => quote.toLowerCase() !== FAZE
   launches.forEach((l, i) => {
-    if (isCore(l.token, l.terms.quoteToken)) api.add(l.terms.quoteToken, coins[i].ethReserve)
+    if (isCoreQuote(l.terms.quoteToken)) api.add(l.terms.quoteToken, coins[i].ethReserve)
   })
   if (!pools.length) return
 
@@ -58,7 +58,7 @@ async function tvl(api) {
   const byId = new Map(pools.map((p, i) => [p.poolId, { asset: p.asset, quote: p.quote, price: BigInt(prices[i][0]) }]))
   function addPosition(p, liquidity, lo, hi) {
     if (!p) throw new Error('FAZE compounding position without registered pool')
-    if (isCore(p.asset, p.quote)) api.add(p.quote, quoteAmount(BigInt(liquidity), p.price, lo, hi, BigInt(p.quote) < BigInt(p.asset)).toString())
+    if (isCoreQuote(p.quote)) api.add(p.quote, quoteAmount(BigInt(liquidity), p.price, lo, hi, BigInt(p.quote) < BigInt(p.asset)).toString())
   }
   pools.forEach((p, i) => addPosition(byId.get(p.poolId), positions[i][0], -887200, 887200))
   bands.forEach((b, i) => addPosition(byId.get(b.poolId), positions[pools.length + i][0], Number(b.tickLower), Number(b.tickUpper)))
@@ -67,6 +67,6 @@ async function tvl(api) {
 module.exports = {
   start: '2026-09-13',
   doublecounted: true,
-  methodology: 'Real quote reserves on FAZE bonding curves plus the quote side of permanently locked graduation and compounding positions. Excludes virtual reserves, unclaimed fees, minted launch-token inventory, FAZE-denominated quote assets and FAZE own-token pools. Locked positions overlap Uniswap v4 TVL.',
+  methodology: 'Real quote reserves on FAZE bonding curves plus the quote side of permanently locked graduation and compounding positions. Excludes virtual reserves, unclaimed fees, minted launch-token inventory and FAZE-denominated quote assets. Includes eligible quote reserves in FAZE own-token pools. Locked positions overlap Uniswap v4 TVL.',
   arc: { tvl },
 }
