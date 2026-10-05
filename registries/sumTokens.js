@@ -20647,6 +20647,10 @@ const configs = {
       }
     },
   },
+  "nullmask": {
+    start: '2026-10-01',
+    ethereum: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT] },
+  },
   "numbers": {
     "misrepresentedTokens": true,
     "methodology": "Core TVL = non‑NUM assets (USDC on Ethereum, BUSD on BSC) derived from unwrapping the LP tokens staked in the farm contracts. 'staking' tracks single‑asset NUM staking and 'pool2' tracks full NUM‑LP staking. NUM itself is excluded from core TVL to avoid double counting.",
