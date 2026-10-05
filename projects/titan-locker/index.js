@@ -5,9 +5,8 @@ const { sumTokens2, unwrapUniswapV4NFTs } = require('../helper/unwrapLPs')
  *
  * Every lock is its own contract, created by a manager. TVL is what those lock
  * contracts hold right now: ERC-20 and Uniswap V2 LP balances read with
- * balanceOf, Uniswap V3 positions owned by a lock contract, and Uniswap V4
- * positions still owned by their lock. A withdrawn lock holds nothing, so it
- * stops counting on its own.
+ * balanceOf, and each lock's recorded Uniswap V3 or V4 position while the lock
+ * still owns it. A withdrawn lock holds nothing, so it stops counting on its own.
  *
  * Lock ids run 0..tokenLockerCount-1 (the managers post-increment from 0).
  */
@@ -36,37 +35,48 @@ async function readLocks(api, managers, abi) {
   if (!managers.length) return []
   const counts = await api.multiCall({ abi: 'function tokenLockerCount() view returns (uint40)', calls: managers })
   const calls = managers.flatMap((target, i) => Array.from({ length: Number(counts[i]) }, (_, id) => ({ target, params: [id] })))
-  return api.multiCall({ abi, calls })
+  // A lock record reads its token's balanceOf live, so a token whose balanceOf reverts fails only its
+  // own record. Skip that record rather than fail the whole adapter.
+  const locks = await api.multiCall({ abi, calls, permitFailure: true })
+  return locks.filter(Boolean)
+}
+
+// A position id outlives its lock, and a lock's owner can rescue stray NFTs sent to it, so count only
+// each lock's recorded position, and only while the lock still owns it.
+async function lockedPositionIds(api, nftAddress, positions) {
+  const owners = await api.multiCall({
+    abi: 'function ownerOf(uint256) view returns (address)',
+    calls: positions.map((p) => ({ target: nftAddress, params: [p.id] })),
+    permitFailure: true,
+  })
+  return positions.filter((p, i) => owners[i]?.toLowerCase() === p.lock.toLowerCase()).map((p) => p.id)
 }
 
 async function tvl(api) {
   const { v1 = [], v2 = [] } = config[api.chain]
   const ownerTokens = []
-  const v3Owners = {} // position manager -> lock contracts
-  const v4Positions = {} // position manager -> [{ id, lock }]
+  const v3Positions = {} // position manager -> [{ id, lock }]
+  const v4Positions = {}
 
   for (const lock of await readLocks(api, v1, LOCK_DATA_V1)) ownerTokens.push([[lock.token], lock.contractAddress])
 
   for (const lock of await readLocks(api, v2, LOCK_DATA_V2)) {
     const kind = Number(lock.kind)
-    if (kind === UNIV3) (v3Owners[lock.asset] ??= []).push(lock.contractAddress)
-    else if (kind === UNIV4) (v4Positions[lock.asset] ??= []).push({ id: lock.tokenId, lock: lock.contractAddress })
+    const position = { id: lock.tokenId, lock: lock.contractAddress }
+    if (kind === UNIV3) (v3Positions[lock.asset] ??= []).push(position)
+    else if (kind === UNIV4) (v4Positions[lock.asset] ??= []).push(position)
     else ownerTokens.push([[lock.asset], lock.contractAddress])
   }
 
-  await sumTokens2({ api, ownerTokens, resolveLP: true })
+  await sumTokens2({ api, ownerTokens, resolveLP: true, permitFailure: true })
 
-  for (const [nftAddress, owners] of Object.entries(v3Owners))
-    await sumTokens2({ api, owners, resolveUniV3: true, uniV3ExtraConfig: { nftAddress } })
+  for (const [nftAddress, positions] of Object.entries(v3Positions)) {
+    const positionIds = await lockedPositionIds(api, nftAddress, positions)
+    if (positionIds.length) await sumTokens2({ api, resolveUniV3: true, uniV3ExtraConfig: { nftAddress, positionIds } })
+  }
 
-  // A V4 position id outlives its lock, so count only positions still owned by the lock contract.
   for (const [nftAddress, positions] of Object.entries(v4Positions)) {
-    const owners = await api.multiCall({
-      abi: 'function ownerOf(uint256) view returns (address)',
-      calls: positions.map((p) => ({ target: nftAddress, params: [p.id] })),
-      permitFailure: true,
-    })
-    const positionIds = positions.filter((p, i) => owners[i]?.toLowerCase() === p.lock.toLowerCase()).map((p) => p.id)
+    const positionIds = await lockedPositionIds(api, nftAddress, positions)
     // unwrapUniswapV4NFTs returns its own balances object rather than adding to api, so add it in.
     if (positionIds.length) api.addBalances(await unwrapUniswapV4NFTs({ api, nftAddress, uniV4ExtraConfig: { positionIds } }))
   }
@@ -79,7 +89,7 @@ module.exports = {
     'Counts the assets held by every Titan Locker lock contract on Robinhood Chain. Each lock is its own ' +
     'contract created by a Titan Locker manager; lock records are read on chain to find each lock contract and its asset. ' +
     'ERC-20 and Uniswap V2 LP balances are read with balanceOf (LP tokens are unwrapped into their underlying tokens), ' +
-    'Uniswap V3 positions owned by a lock contract are valued from their liquidity, and Uniswap V4 positions are counted ' +
-    'only while still owned by their lock. Withdrawn locks hold nothing and stop counting automatically.',
+    'and each lock\'s recorded Uniswap V3 or V4 position is valued from its liquidity while the lock still owns it. ' +
+    'Withdrawn locks hold nothing and stop counting automatically.',
   robinhood: { tvl },
 }
