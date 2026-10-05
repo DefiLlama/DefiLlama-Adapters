@@ -59,6 +59,7 @@ module.exports = {
   methodology:
     "TVL is calculated by getting the total promised liquidity on the orderbook on a specific block.",
   start: '2024-02-27',
+  deadFrom: '2025-02-27',
 };
 
 for (const chain in mgvReaders) {
