@@ -83,9 +83,10 @@ const evmOwners = [
   "0x8a4af9f649434350f795fa7ba7edfb5404b9b078",
   "0xb3e8a3b17c50f077685bcdef2ca496e54d91c4bd",
   "0x4cad1efbfd5f0848e0c3c14fab23f92b2fa81f17",
+  "0xa4856e07d14045014b2c3fece5460bd37b310f10", // add on 05/10/2026
 ]
 
-const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos","avax","polygon","metis","kava","klaytn","base","hyperliquid","sonic"]
+const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos","avax","polygon","metis","kava","klaytn","base","hyperliquid","sonic","morph"]
 
 const config = {
   tron: {
@@ -129,6 +130,7 @@ const config = {
       "r3AEihLNr81VYUf5PdfH5wLPqtJJyJs6yY",
       "rGDreBvnHrX1get7na3J4oowN19ny4GzFn",
       "rwTTsHVUDF8Ub2nzV2oAeWxfJzUvobXLEf",
+      "rMCVBYFYtVJy6F4gUSd7RrM8GXApM6MNDN", // add on 05/10/2026
     ],
   },
   solana: {
@@ -153,6 +155,12 @@ const config = {
   doge: {
     owners: [
       'DTHZron9cR6WstH6VcdsVZwSbVDEnFKkGQ',
+      'DRoaiomCBuDGEpZGw2d2xmXP9ffKcfhuuQ', // add on 05/10/2026
+    ],
+  },
+  near: {
+    owners: [
+      '241754260760e04e3a90acf27b1c54296b81e52a3b21fab8347ae88066946092', // add on 05/10/2026
     ],
   },
   starknet: {
@@ -215,6 +223,7 @@ const config = {
       "EQAXl6XExQorMSzpkn_28S79OwtY_zEURRGMLS5kMStdeQng",
       "EQBggwBbNUqxxHhaqM6Ck-5cnBgukkjyfpyQdPNcFjQggwrJ",
       "UQCe6OZlNFHXWBai5V3CzYsdO68yZR2GMdMYWO6NJ1wYi5PA", // add on 18/09/2026
+      "UQCK-8sWM1jrIL4a6bYQopOAONhKEIfn9JzMv4BG9ZyFn5M9", // add on 05/10/2026
     ],
   },
   cardano: {

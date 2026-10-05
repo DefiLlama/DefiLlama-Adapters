@@ -1033,6 +1033,18 @@ module.exports = {
       ]
     },
   },
+  "solon-stocks": {
+    "methodology": "TVL is the Robinhood Chain stock tokens (NVDA, AAPL, TSLA) held by the Solon ReserveVault, which backs the .sol stock tokens minted on Arc 1:1. The .sol tokens on Arc are not counted.",
+    "start": "2026-10-03",
+    "robinhood": {
+      "owner": "0x3504aA69ca9C5A5Bc3dA312a6c761e9633251cFc", // ReserveVault
+      "tokens": [
+        "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", // NVDA
+        "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", // AAPL
+        "0x322F0929c4625eD5bAd873c95208D54E1c003b2d", // TSLA
+      ]
+    },
+  },
   "peddlequest": {
     "methodology": "Reward pools that quest creators have deposited into the PeddlesQuestEscrow contract and that have not yet been claimed by winners or swept after the claim deadline. Counts the escrow's balance of the chain's gas token and of every allow-listed reward token. On Arc the gas token is USDC, so only the native balance is read.",
     "start": "2026-10-02",
@@ -1051,7 +1063,7 @@ module.exports = {
     "arc": {
       "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
       "tokens": [ADDRESSES.null]
-    },
+    }
   },
   "zava": {
     "methodology": "TVL is the AVAX held by the zAVA Mine contract.",

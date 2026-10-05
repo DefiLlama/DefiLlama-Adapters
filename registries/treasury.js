@@ -4114,6 +4114,19 @@ const configs = {
       },
     },
   },
+  'treasury/nullmask': {
+    ethereum: {
+      owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
+      tokens: [nullAddress, ADDRESSES.ethereum.USDT],
+    },
+    solana: {
+      owners: [
+        'GRbpmTbmDeGn8BXHXb1jfEeUT6sGAt7Da44YpWxCS8nr', // ops wallet
+        'FrXTvkebakR2oNctgsHz1yeijmu9wTZifL3FmffJP5xJ', // team wallet
+      ],
+      ownTokens: ['HuAXPyDWDaMYFKuwQHpqL1oPnj93zdzWmtvFGzCeCUa7'], // MASK
+    },
+  },
   'treasury/neutra-finance': {
     arbitrum: {
       tokens: [

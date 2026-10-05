@@ -1911,6 +1911,10 @@ const uniV3Configs = {
     // Uniswap V3 fork; pools are CREATE2'd by a separate pool deployer but PoolCreated is emitted by the factory
     robinhood: { factory: '0x221A6239E40709792b0d4bdc140fA36158CD41C7', fromBlock: 73266708 },
   },
+  'abyss-dex': {
+    methodology: 'TVL is the sum of both underlying ERC20 balances held by Abyss pools on Robinhood. Pools are discovered from factory PoolCreated events. Separate treasury and fee-vault holdings are excluded.',
+    robinhood: { factory: '0xe7feF2BC860B25bbdEB6F6AB96d88bAAa77ddad7', fromBlock: 50161538 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
