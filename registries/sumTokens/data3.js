@@ -1033,6 +1033,26 @@ module.exports = {
       ]
     },
   },
+  "peddlequest": {
+    "methodology": "Reward pools that quest creators have deposited into the PeddlesQuestEscrow contract and that have not yet been claimed by winners or swept after the claim deadline. Counts the escrow's balance of the chain's gas token and of every allow-listed reward token. On Arc the gas token is USDC, so only the native balance is read.",
+    "start": "2026-10-02",
+    "base": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null, ADDRESSES.base.USDC]
+    },
+    "bsc": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC]
+    },
+    "robinhood": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null]
+    },
+    "arc": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null]
+    },
+  },
   "zava": {
     "methodology": "TVL is the AVAX held by the zAVA Mine contract.",
     "avax": {
