@@ -22,7 +22,8 @@ async function suiTvl(api) {
   for (const vault of Object.values(vaults)) {
 
     const suiVault = vault.detailsByChain[SUI_CHAIN_IDENTIFIER];
-    if (!suiVault || blacklistedVaults.includes(suiVault.address)) {
+    // skip vaults whose receipt coin is not a coin type (malformed api entry, makes get_vault_tvl abort)
+    if (!suiVault || blacklistedVaults.includes(suiVault.address) || !suiVault.receiptCoin?.address?.includes('::')) {
       continue;
     }
     const vaultTvl = await sui.query({
