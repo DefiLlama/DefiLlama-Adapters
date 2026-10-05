@@ -13,7 +13,7 @@ const OWNER_OF_ABI = 'function ownerOf(uint256 tokenId) view returns (address)'
 // held by a superseded one, which is exactly what happened on Robinhood Chain's 2026-09-09
 // redeploy (the old locker's fee-conversion swap couldn't decode that chain's forked router, but
 // it kept every liquidity position it already held).
-function tvlForChain({ lockers, positionManager, pairedToken, stateViewer, startBlock, maxBlockRange }) {
+function tvlForChain({ lockers, positionManager, pairedToken, stateViewer, startBlock }) {
   return async (api) => {
     const allLockedPositionIds = []
 
@@ -23,7 +23,6 @@ function tvlForChain({ lockers, positionManager, pairedToken, stateViewer, start
         target: locker,
         eventAbi: TOKEN_REWARD_ADDED_EVENT,
         fromBlock: startBlock,
-        maxBlockRange,
       })
 
       const positionIds = [
@@ -97,8 +96,6 @@ module.exports = {
       pairedToken: ADDRESSES.arc.USDC,
       stateViewer: '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b',
       startBlock: 21_167_882,
-      // Arc's archive RPC caps eth_getLogs at 100,000 blocks.
-      maxBlockRange: 100_000,
     }),
   },
 }
