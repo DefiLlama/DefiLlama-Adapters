@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-// Mercurifi DEX (trade.mercuri.finance), a hook-based AMM on Arc: tokens that graduate from the Mercurifi
+// Mercurifi Trade (trade.mercuri.finance), a hook-based AMM on Arc: tokens that graduate from the Mercurifi
 // Launchpad trade in Uniswap V4 pools opened at graduation, where the protocol's immutable LaunchHook charges
 // the fee. The graduation transaction sends the full-range position to the LiquidityLocker, which has no
 // withdrawal path. Curves that have not graduated are the launchpad listing (projects/mercurifi-launchpad).

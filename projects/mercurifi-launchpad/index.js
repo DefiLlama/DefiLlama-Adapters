@@ -5,7 +5,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 // Mercurifi Launchpad (launch.mercuri.finance), a bonding-curve launchpad on Arc: a launch deploys a token and
 // its own bonding curve, and the token trades against that curve priced in USDC, which is also Arc's gas
 // token. The buy that sells the curve out opens a Uniswap V4 pool at the curve's last price in the same
-// transaction; the locked pool positions are the Mercurifi DEX listing (projects/mercurifi-dex), not counted
+// transaction; the locked pool positions are the Mercurifi Trade listing (projects/mercurifi), not counted
 // here. Contracts: https://github.com/mercuri-finance/mercuri-launch-contracts
 const FACTORY = '0x8f5DfA0c48E14cCD03AE01795B8a95759BA859EB'
 const FACTORY_BLOCK = 22060881 // LaunchFactory deployment
@@ -34,7 +34,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the native USDC held by bonding curves that have not graduated. Launched tokens and unclaimed fees are excluded; the Uniswap V4 positions locked at graduation are the Mercurifi DEX listing (projects/mercurifi-dex).',
+  methodology: 'TVL is the native USDC held by bonding curves that have not graduated. Launched tokens and unclaimed fees are excluded; the Uniswap V4 positions locked at graduation are counted under Mercurifi Trade.',
   start: '2026-09-21',
   arc: { tvl },
 }
