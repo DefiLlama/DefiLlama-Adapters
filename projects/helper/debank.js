@@ -17,6 +17,7 @@ const debankToLlamaChain = {
   frax: 'fraxtal',
   mnt: 'mantle',
   gno: 'xdai',
+  hood: 'robinhood',
 }
 
 function getLlamaChain(debankChain) {
