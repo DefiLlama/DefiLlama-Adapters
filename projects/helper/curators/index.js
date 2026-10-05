@@ -1,5 +1,6 @@
 const { getLogs2 } = require("../../helper/cache/getLogs")
 const { ABI, MorphoConfigs, EulerConfigs, SiloConfigs, VesuConfigs } = require('./configs')
+const { leaveOutMorphoBadDebt } = require('./morpho-bad-debt')
 const { nullAddress } = require('../tokenMapping')
 const { multiCall } = require('../chain/starknet')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
@@ -229,6 +230,9 @@ async function getCuratorTvlErc4626(api, vaults) {
     calls: vaults,
     permitFailure: true,
   })
+
+  // Morpho vaults holding bad debt count only what they can pay back (see ./morpho-bad-debt.js)
+  await leaveOutMorphoBadDebt(api, vaults, assets, totalAssets)
 
   // Separate vaults into Morpho v2 and others
   const v2Vaults = []
