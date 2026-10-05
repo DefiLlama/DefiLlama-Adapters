@@ -8,19 +8,14 @@ const ZC = '0x4E67DB19044549fF420860834c91b45BaD298722'
 const FROM_BLOCK = 26069641 // first PoolRegistered on the Entrypoint, 2026-09-27
 
 const poolRegisteredEvent = 'event PoolRegistered(address _pool, address _asset, uint256 _scope)'
-const assetConfigAbi = 'function assetConfig(address) view returns (address pool, uint256 minimumDepositAmount, uint256 vettingFeeBPS, uint256 maxRelayFeeBPS)'
 
-// Registered pools still configured on the Entrypoint, as [asset, pool] pairs.
+// Every pool ever registered: removePool only drops the Entrypoint config, deposits stay withdrawable in the pool.
 async function registeredPools(api) {
   const logs = await getLogs2({ api, target: ENTRYPOINT, eventAbi: poolRegisteredEvent, fromBlock: FROM_BLOCK })
-  const assets = [...new Set(logs.map(log => log._asset.toLowerCase()))]
-  const configs = await api.multiCall({ abi: assetConfigAbi, calls: assets, target: ENTRYPOINT })
-  return assets
-    .map((asset, i) => [asset, configs[i].pool])
-    .filter(([, pool]) => pool !== '0x0000000000000000000000000000000000000000')
+  return logs.map(log => [log._asset.toLowerCase(), log._pool])
 }
 
-// Deposits of any asset other than zipcoin's own token (none registered yet).
+// Deposits of any asset other than zipcoin's own token.
 async function tvl(api) {
   const tokensAndOwners = (await registeredPools(api)).filter(([asset]) => asset !== ZC.toLowerCase())
   return sumTokens2({ api, tokensAndOwners })
