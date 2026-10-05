@@ -61,6 +61,7 @@ const DEFAULTS = {
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
+  AMADEUS_RPC: "https://mainnet-rpc.ama.one/api",
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
