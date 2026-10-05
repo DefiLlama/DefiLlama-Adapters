@@ -1671,12 +1671,6 @@ const configs = {
             '0x50B75d586929Ab2F75dC15f07E1B921b7C4Ba8fA',
             '0x75a1253432356f90611546a487b5350CEF08780D',
           ],
-          turtleclub_erc4626: [
-            '0xF470EB50B4a60c9b069F7Fd6032532B8F5cC014d',
-            '0xA5DaB32DbE68E6fa784e1e50e4f620a0477D3896',
-            '0xe1Ac97e2616Ad80f69f705ff007A4bbb3655544a',
-            '0x77570CfEcf83bc6bB08E2cD9e8537aeA9F97eA2F',
-          ],
         },
         base: {
           morphoVaultOwners: [
