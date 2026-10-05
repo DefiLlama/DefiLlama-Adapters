@@ -22140,6 +22140,35 @@ const configs = {
       ]
     },
   },
+  "payy": {
+    "methodology": "TVL is the USDC locked in the Payy Network rollup bridge contracts, which back users' private USDC notes on the Payy L2. Counts the current Ethereum rollup and the two earlier Polygon rollups it migrated from.",
+    "start": "2024-02-27",
+    "hallmarks": [
+      [
+        "2026-02-17",
+        "Rollup migrated from Polygon to Ethereum"
+      ],
+      [
+        "2026-09-24",
+        "Ethereum rollup exploited, ~$1.92M USDC drained"
+      ]
+    ],
+    "ethereum": {
+      "owner": "0x367c1eaf14aa06b78ce76bd0243297de79d85270",
+      "tokens": [
+        ADDRESSES.ethereum.USDC
+      ]
+    },
+    "polygon": {
+      "owners": [
+        "0x4cbb5041df8d815d752239960fba5e155ba2687e",
+        "0xcd92281548df923141fd9b690c7c8522e12e76e6"
+      ],
+      "tokens": [
+        ADDRESSES.polygon.USDC_CIRCLE
+      ]
+    },
+  },
   "peakdefi": {
     "start": "2020-12-08",
     "bsc": {
