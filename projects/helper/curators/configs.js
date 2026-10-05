@@ -33,6 +33,9 @@ const ABI = {
     getProxyListLength: 'uint256:getProxyListLength',
     proxyList: 'function proxyList(uint256) view returns (address)',
     creator: 'address:creator',
+    cash: 'uint256:cash',
+    totalBorrows: 'uint256:totalBorrows',
+    interestRate: 'uint256:interestRate',
   },
   silo: {
     CreateSiloVaultEvent: 'event CreateSiloVault(address indexed vault, address incentivesController, address idleVault)',

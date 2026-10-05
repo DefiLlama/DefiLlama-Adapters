@@ -188,6 +188,31 @@ async function getSiloVaults(api, owners) {
   return allVaults
 }
 
+// An Euler (EVK) vault that is fully lent while its borrow rate has been cut to near zero has stopped
+// charging its borrowers, which a lender only does once the loans are not coming back. Its loans are
+// left out and the vault counts only its cash.
+const FROZEN_MIN_UTILIZATION_BPS = 9500n // 95% lent out
+const FROZEN_MAX_BORROW_APR_BPS = 100n // 1% a year, far below any market rate for a fully lent vault
+const SECONDS_PER_YEAR = 31536000n
+const RAY = 10n ** 27n // EVK interestRate() is a per-second rate scaled by 1e27
+
+function isFrozenEulerVault(cash, totalBorrows, interestRate) {
+  if (cash == null || totalBorrows == null || interestRate == null) return false
+  const total = BigInt(cash) + BigInt(totalBorrows)
+  if (total === 0n) return false
+  const utilizationBps = BigInt(totalBorrows) * 10000n / total
+  const borrowAprBps = BigInt(interestRate) * SECONDS_PER_YEAR * 10000n / RAY
+  return utilizationBps >= FROZEN_MIN_UTILIZATION_BPS && borrowAprBps < FROZEN_MAX_BORROW_APR_BPS
+}
+
+async function countFrozenEulerVaultsAtCash(api, vaults, totalAssets) {
+  const [cash, totalBorrows, interestRates] = await Promise.all([ABI.euler.cash, ABI.euler.totalBorrows, ABI.euler.interestRate]
+    .map(abi => api.multiCall({ abi, calls: vaults, permitFailure: true })))
+  vaults.forEach((_, i) => {
+    if (isFrozenEulerVault(cash[i], totalBorrows[i], interestRates[i])) totalAssets[i] = cash[i]
+  })
+}
+
 async function getCuratorTvlErc4626(api, vaults) {
   if (!vaults || vaults.length === 0) return;
   vaults = vaults.map(v => v.toLowerCase())
@@ -196,6 +221,7 @@ async function getCuratorTvlErc4626(api, vaults) {
   // Get assets and totalAssets for all vaults
   const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
+  await countFrozenEulerVaultsAtCash(api, vaults, totalAssets)
 
   // Check which vaults are Morpho v2 (have liquidityAdapter function)
   const liquidityAdapters = await api.multiCall({
