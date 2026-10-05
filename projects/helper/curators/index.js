@@ -557,6 +557,47 @@ async function getNested4626Vaults(api, vaults) {
   }
 }
 
+// Shares of a counted vault that another counted vault of the same curator holds are in both vaults'
+// assets: e.g. an Euler Earn vault allocating to the curator's eVaults, an IPOR, Aera or Lagoon vault
+// holding the curator's Morpho vault, or an eVault whose asset is another counted vault. Each holding
+// is counted once:
+// - a holder whose asset is the issuer (an escrow vault) books the shares themselves, so they are
+//   taken out of the holder's booking, in issuer shares;
+// - MetaMorpho, Morpho V2 and EVK vaults count nothing but their own asset, so their other holdings
+//   are left alone (Morpho V2 holdings through adapters are netted in getCuratorTvlErc4626);
+// - any other holder (Euler Earn, IPOR, Aera, Veda, or the Safe that holds a Lagoon vault's assets)
+//   counts the shares at their underlying value, which is taken out of the issuer's booking.
+async function netCrossHoldings(api, issuers, holders) {
+  issuers = [...new Set(issuers.map(v => v.toLowerCase()))]
+  holders = [...new Set(holders.map(v => v.toLowerCase()))]
+  const issuerSet = new Set(issuers)
+  const [holderAssets, morphos, adapterCounts, cash, safes] = await Promise.all(
+    [ABI.ERC4626.asset, 'address:MORPHO', 'uint256:adaptersLength', 'uint256:cash', 'address:safe']
+      .map(abi => api.multiCall({ abi, calls: holders, permitFailure: true })))
+
+  const pairs = []
+  holders.forEach((holder, i) => {
+    const asset = holderAssets[i]?.toLowerCase()
+    if (issuerSet.has(asset)) pairs.push({ issuer: asset, holder, ownAsset: holderAssets[i] })
+    else if (!morphos[i] && adapterCounts[i] == null && cash[i] == null)
+      issuers.filter(issuer => issuer !== holder).forEach(issuer => pairs.push({ issuer, holder }))
+    if (safes[i] && safes[i] !== nullAddress)
+      issuers.filter(issuer => issuer !== holder).forEach(issuer => pairs.push({ issuer, holder: safes[i] }))
+  })
+  if (!pairs.length) return
+
+  const shares = await api.multiCall({ abi: ABI.ERC4626.balanceOf, calls: pairs.map(({ issuer, holder }) => ({ target: issuer, params: [holder] })), permitFailure: true })
+  const held = pairs.map((pair, i) => ({ ...pair, shares: shares[i] })).filter(({ shares }) => shares && BigInt(shares) > 0n)
+  held.filter(h => h.ownAsset).forEach(h => api.add(h.ownAsset, -BigInt(h.shares)))
+  const valued = held.filter(h => !h.ownAsset)
+  if (!valued.length) return
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: valued.map(h => h.issuer), permitFailure: true })
+  const amounts = await api.multiCall({ abi: ABI.ERC4626.convertToAssets, calls: valued.map(h => ({ target: h.issuer, params: [h.shares] })), permitFailure: true })
+  valued.forEach((_, i) => {
+    if (assets[i] && amounts[i]) api.add(assets[i], -BigInt(amounts[i]))
+  })
+}
+
 async function getCuratorTvl(api, vaults) {
 
   if (api.chain === 'solana') {
@@ -669,6 +710,10 @@ async function getCuratorTvl(api, vaults) {
   if (vaults.midasTokens) {
     await getCuratorTvlMidasToken(api, vaults.midasTokens)
   }
+
+  const shareVaults = [...allErc4626Vaults, ...allVaults.euler, ...allVaults.silo, ...(vaults.accountableVaults || [])]
+  const otherVaults = ['aera', 'turtleclub', 'boringVaults', 'symbiotic', 'upshiftV2', 'nestedVaults'].flatMap(key => vaults[key] || [])
+  await netCrossHoldings(api, shareVaults, [...shareVaults, ...otherVaults])
 
   return api.getBalances()
 }
