@@ -50,7 +50,7 @@ async function tvl(api) {
     api.multiCall({ abi: abi.getSchedule, calls: idCalls(VESTING, scheduleCount) }),
   ])
 
-  const notLock = t => t !== LOCK_TOKEN
+  const notLock = t => t.toLowerCase() !== LOCK_TOKEN.toLowerCase()
   const ownerTokens = [
     [getUniqueAddresses(locks.filter(l => !l.withdrawn && l.amount > 0).map(l => l.token)).filter(notLock), LOCKER],
     [getUniqueAddresses(schedules.filter(s => s.total > s.claimed).map(s => s.token)).filter(notLock), VESTING],
@@ -60,7 +60,7 @@ async function tvl(api) {
   return api.getBalances()
 }
 
-const pairsLock = (l) => [l.token0, l.token1].some(t => t.toLowerCase() === LOCK_TOKEN)
+const pairsLock = (l) => [l.token0, l.token1].some(t => t.toLowerCase() === LOCK_TOKEN.toLowerCase())
 
 /* Active Liquidity Locker locks. Ids start at 1 and nextLockId is the next one
  * to be issued, so 1..nextLockId-1 all exist. */
