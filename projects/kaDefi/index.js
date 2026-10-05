@@ -8,6 +8,7 @@ const POL_Pool_One = "0xdf65B85E43dBa1F153325e7e4A0682B7DeBBFe0f";
 const POL_Pool_Two = "0x738d2b4b59A0A3AA4086bC44C40a45845bB73FCC";
 
 module.exports = {
+  deadFrom: '2026-09-30',
   kava: {
     tvl: sumTokensExport({ owners: [POL_Pool_One, POL_Pool_Two], tokens: [ERC20ContractWkavaAddress], }),
     staking: sumTokensExport({ owners: [POL_Pool_One, POL_Pool_Two], tokens: [ERC20ContractKafiAddress], useDefaultCoreAssets: true, lps: [WkavaKafiLpAddress], }),

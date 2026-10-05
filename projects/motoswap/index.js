@@ -1,11 +1,11 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Motoswap on Ethereum mainnet.
-// MOTO launched on 2026-09-14 together with the Vampire Attack liquidity mining campaign (VampChef).
-// The Motoswap DEX (Uniswap v2 style factory) opens on 2026-09-28; a dexFactory section will be added then.
+// MOTO launched on 2026-09-14 together with the launch farming campaign (VampChef), which ended on 2026-09-28.
+// The Motoswap DEX opened on 2026-09-28; its liquidity is tracked in the uniswapV2 registry as motoswap-amm.
 
 const MOTO = '0xBd965230588EAA536dE6aA45E8ebbc01638535e0'
-const VAMP_CHEF = '0x51e648f08a9a08A724591938d9cbc483C809aCA4' // Vampire Attack MasterChef style farm (proxy)
+const VAMP_CHEF = '0x51e648f08a9a08A724591938d9cbc483C809aCA4' // launch farming MasterChef style farm (proxy)
 const MOTO_STAKING = '0xCE88F2C6B49EfBb92555eE5475311f0e250C2528' // lock MOTO for revenue share (proxy)
 
 // Excluded on purpose (protocol owned, not user deposits):
@@ -31,7 +31,7 @@ function isMoto(token) {
   return token.toLowerCase() === MOTO.toLowerCase()
 }
 
-// Vampire Attack: LP tokens staked in the chef. The pairs contain MOTO, so this is pool2.
+// Launch farming: LP tokens staked in the chef. The pairs contain MOTO, so this is pool2.
 async function pool2(api) {
   const pools = await getStakedPools(api)
   pools
@@ -49,19 +49,20 @@ async function staking(api) {
   return sumTokens2({ api, owner: MOTO_STAKING, tokens: [MOTO] })
 }
 
-// No DEX liquidity to count until the Motoswap factory opens on 2026-09-28.
+// DEX liquidity is counted in the motoswap-amm listing (registries/uniswapV2.js), not here.
 async function tvl() {
   return {}
 }
 
 module.exports = {
   methodology:
-    'Vampire Attack: Uniswap v2 LP tokens staked in the Motoswap farm contract are counted as pool2 (the pairs contain MOTO). ' +
+    'Launch farming: Uniswap v2 LP tokens staked in the Motoswap launch farm are counted as pool2 (the pairs contain MOTO). ' +
     'MOTO staked single sided in the farm and MOTO locked in MotoStaking are counted as staking. ' +
     'Staked amounts are read from the farm pool accounting (lpSupply), so the MOTO reward budget held by the farm is excluded. ' +
     'Treasury vesting and reward escrow contracts are protocol owned and excluded. ' +
-    'Liquidity in Motoswap DEX pairs will be counted as tvl once the DEX opens on 2026-09-28.',
-  start: 1789409819, // 2026-09-14, block 25977433
+    'Liquidity in Motoswap DEX pairs is counted in the Motoswap AMM listing.',
+  start: '2026-09-14', // 2026-09-14, block 25977433
+  hallmarks: [['2026-09-28', 'DEX launch; launch farming ended']],
   ethereum: {
     tvl,
     staking,

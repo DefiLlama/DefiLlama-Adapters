@@ -373,11 +373,10 @@ const configs = {
         '0x921D8FDF089775D5AC61b2d6e8f34F1edd554D8f',
         '0xa8D00712abE7af3446cdC651c159737cCFB43255',
         '0xed7cb3973C7bFE4bf78dA8E5f52EB04c0dF53d3B',
-        '0x62DE034b1A69eF853c9d0D8a33D26DF5cF26682E',
-        '0x8c8E076Cd7D2A17Ba2a5e5AF7036c2b2B7F790f6',
         '0xAbA69f6E893B18bE066a237f723F43315BBF9D9A',
       ],
       ownTokens: ['0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7'],
+      fetchCoValentTokens: false,
     },
   },
   'treasury/abachi': {
@@ -967,6 +966,24 @@ const configs = {
       ],
       owners: ['0xF5411006eEfD66c213d2fd2033a1d340458B7226'],
       ownTokens: ['0x872bAD41CFc8BA731f811fEa8B2d0b9fd6369585', '0x539bde0d7dbd336b79148aa742883198bbf60342'],
+    },
+  },
+  'treasury/bbbfi': {
+    // Team-owned bridge inventory (including accrued BBB fees), not user TVL.
+    // Keep the protocol token in ownTokens; do not discover unrelated assets.
+    xdc: {
+      owners: ['0xb0a9379CA1A90CdC7dBCe2558FbAD59cbAF10EfC'],
+      tokens: [],
+      ownTokens: ['0x2C0cDA5734dD76c512E05AE0F9397e8a2059c4f4'],
+      fetchCoValentTokens: false,
+      permitFailure: false,
+    },
+    bsc: {
+      owners: ['0xfA730fB268D62FceEB75AD01ab4b016dc413905F'],
+      tokens: [],
+      ownTokens: ['0xE7D366A8064232B7EdEFcEA7Fab853EB5cB9CC83'],
+      fetchCoValentTokens: false,
+      permitFailure: false,
     },
   },
   'treasury/beamable-network': {
@@ -2614,6 +2631,14 @@ const configs = {
     robinhood: {
       owners: ['0x7C008EfE8428b473852DCCb9FeBa918d559878C2'],
       tokens: [nullAddress]
+    },
+  },
+  'treasury/outbidfun': {
+    robinhood: {
+      // Treasury (operations), RevenueRouter (fees awaiting their 80/20 split) and
+      // OutbidBuyback (the vault collecting for the $OUTBID buyback).
+      owners: ['0xE693C039cc91F8dbe64586245565388e2e44C0A4', '0xeEc171B409788644acBf1c50B825Cc6d9682D9b7', '0x9FBb9614bA47F2FD7ECFaa16880B535034a4eEF5'],
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG],
     },
   },
   'treasury/hoodpump': {
@@ -5255,6 +5280,12 @@ const configs = {
         ADDRESSES.abstract.USDC,
       ],
       owners: ['0x8210c4a20dfA79F555560F77dc72BD7A846a3eF1'],
+    },
+    solana: {
+      owners: [
+        'BLUg8cuP292HdFomNvc5xY4vJVVY45W5ozo5ThQMArBP', // PDA owning the treasury program's USDC vault (program W9uUoBaUe87NGD2CPqRQCsGwL7ruW4QgWD7bWMShiny)
+        '93X5tgk9654EGff1R5qDyJM3HXun1w8k39XtGzJFQKJT', // Squads vault: treasury admin and destination of balance skimmed above the vault target
+      ],
     },
   },
   'treasury/silent-protocol': {

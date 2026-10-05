@@ -52,11 +52,11 @@ const config = {
     strategies: ["0x2840f364E1cB5f83B6158618E7aaFb0a0AEb6736"],
   },
 
-  core: {
-    fundVault: "0x3448263b315E73bCAfC28296a41FE80E4Ae49AD6",
-    dexBridgeVault: "0x1B92EF64d4197690F9B8758f122585edc89d67C6",
-    strategies: ["0x948e4B1F0A199d6C27CD1118483a45843222F60C"],
-  },
+  // core: {
+  //   fundVault: "0x3448263b315E73bCAfC28296a41FE80E4Ae49AD6",
+  //   dexBridgeVault: "0x1B92EF64d4197690F9B8758f122585edc89d67C6",
+  //   strategies: ["0x948e4B1F0A199d6C27CD1118483a45843222F60C"],
+  // },
 
   soneium: {
     fundVault: "0x1a842A4F6C9FaDA6230581cAfBE6619D4B3aBA7d",
@@ -88,10 +88,10 @@ const stablecoins = {
     ADDRESSES.optimism.USDC_CIRCLE, // USDC
     ADDRESSES.optimism.USDT, // USDT
   ],
-  core: [
-    ADDRESSES.core.USDC, // USDC
-    ADDRESSES.core.USDT, // USDT
-  ],
+  // core: [
+  //   ADDRESSES.core.USDC, // USDC
+  //   ADDRESSES.core.USDT, // USDT
+  // ],
   soneium: [
     ADDRESSES.soneium.USDC, // USDC
     "0x102d758f688a4C1C5a80b116bD945d4455460282", // USDT
@@ -133,9 +133,10 @@ chainExports.aptos = {
   },
 };
 
+chainExports.core = { tvl: () => ({}) };
+
 module.exports = {
   ...chainExports,
-  timetravel: true,
   methodology:
     "TVL counts stablecoins in fundVault, dexBridgeVault, and all strategies contracts.",
 };

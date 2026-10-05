@@ -1,12 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { GraphQLClient, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk")
 const { addDexPosition, resolveLPPosition, getStorage, usdtAddressTezos, } = require('../helper/chain/tezos')
 const { dexes, farms } = require('./data')
 const { PromisePool } = require('@supercharge/promise-pool');
-let graphQLClient
 
-const indexer = "https://indexer.youves.com/v1/graphql"
 const engines = {
   uUSDTezosV1: 'KT1FFE2LC5JpVakVjHm5mM36QVp2p3ZzH4hH',
   uUSDTezosV3: 'KT1DHndgk8ah1MLfciDnCV2zPJrVbnnAH9fd',
@@ -29,21 +26,11 @@ const uDEFI_TOKEN = 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1'
 const tzBTC_TOKEN = ADDRESSES.tezos.tzBTC
 
 
+// sum of collateral recorded per vault in the engine's vault_contexts big map
 async function fetchBalance(balances, token, engineAddress, decimals = 0, sharePrice) {
-  const query = gql`
-{
-  vault_aggregate(where: { engine_contract_address: { _eq: "${engineAddress}" } }) {
-    aggregate {
-      sum {
-        balance
-      }
-    }
-  }
-}
-`
-
-  const oracleData = await graphQLClient.request(query)
-  let balance = oracleData["vault_aggregate"]["aggregate"]["sum"]["balance"] / 10 ** decimals
+  const { vault_contexts } = await getStorage(engineAddress)
+  const vaults = await sdk.chains.tezos.getBigMapKeys({ id: vault_contexts, select: 'value' })
+  let balance = vaults.reduce((sum, vault) => sum + +vault.balance, 0) / 10 ** decimals
 
   if (token === 'tzbtc-lp') {
     const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
@@ -62,25 +49,26 @@ async function getTzBTCLPSharePrice() {
 }
 
 async function tvl() {
-  graphQLClient = new GraphQLClient(indexer);
   const balances = {}
   const sharePrice = await getTzBTCLPSharePrice()
-  await Promise.all([
-    // fetchBalance(balances, ADDRESSES.tezos.uUSD, engines.uDefiuUSDV2, 0),  // disabling this because backing of uUSD is already counted in tvl
-    fetchBalance(balances, usdtAddressTezos, engines.uUSDUSDtV3, 0),
-    fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV2, 0),
-    fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV3, 0),
-    fetchBalance(balances, 'tezos', engines.uUSDTezosV1, 6),
-    fetchBalance(balances, 'tezos', engines.uUSDTezosV3, 6),
-    fetchBalance(balances, 'tezos', engines.uBTCTezosV2, 6),
-    fetchBalance(balances, 'tezos', engines.uBTCTezosV3, 6),
-    fetchBalance(balances, 'tezos', engines.uDefitzV2, 6),
-    fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLPV2, 0, sharePrice),
-    fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLPV3, 0, sharePrice),
-    fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLPV2, 0, sharePrice),
-    fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLPV3, 0, sharePrice),
-    fetchBalance(balances, 'tzbtc-lp', engines.uDefitzBTCLPV2, 0, sharePrice),
-  ])
+  const vaults = [
+    // [ADDRESSES.tezos.uUSD, engines.uDefiuUSDV2, 0],  // disabling this because backing of uUSD is already counted in tvl
+    [usdtAddressTezos, engines.uUSDUSDtV3, 0],
+    [tzBTC_TOKEN, engines.uUSDtzBTCV2, 0],
+    [tzBTC_TOKEN, engines.uUSDtzBTCV3, 0],
+    ['tezos', engines.uUSDTezosV1, 6],
+    ['tezos', engines.uUSDTezosV3, 6],
+    ['tezos', engines.uBTCTezosV2, 6],
+    ['tezos', engines.uBTCTezosV3, 6],
+    ['tezos', engines.uDefitzV2, 6],
+    ['tzbtc-lp', engines.uUSDtzBTCLPV2, 0],
+    ['tzbtc-lp', engines.uUSDtzBTCLPV3, 0],
+    ['tzbtc-lp', engines.uBTCtzBTCLPV2, 0],
+    ['tzbtc-lp', engines.uBTCtzBTCLPV3, 0],
+    ['tzbtc-lp', engines.uDefitzBTCLPV2, 0],
+  ]
+  for (const [token, engine, decimals] of vaults)
+    await fetchBalance(balances, token, engine, decimals, sharePrice)
 
   return balances
 }
@@ -96,10 +84,8 @@ async function pool2() {
     .for(youvesLPs)
     .process(account => addDexPosition({ balances, account }))
 
-  const promises = []
   for (const { farmContract, contractAddress } of eligibleFarms)
-    promises.push(resolveLPPosition({ balances, lpToken: contractAddress, owner: farmContract, ignoreList: youvesLPs }))
-  await Promise.all(promises)
+    await resolveLPPosition({ balances, lpToken: contractAddress, owner: farmContract, ignoreList: youvesLPs })
 
   return balances
 }

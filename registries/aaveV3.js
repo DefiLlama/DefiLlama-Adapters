@@ -93,7 +93,10 @@ const configs = {
   'zona': {
     pharos: {
       poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
-    }
+    },
+    robinhood: {
+      poolDatas: ['0x3e477EE4B379d212B0833Af7441763355D4A1724']
+    },
   },
   'kaskad': {
     igra: {
@@ -108,6 +111,8 @@ const configs = {
       poolDatas: [
         '0xfd0b6b6F736376F7B99ee989c749007c7757fDba', // canonical market (multi-reserve)
         '0xeEb78818C026A3c1b82804627d101e27Ce5E60CB', // isolated market (AUSD + PT-AUSD tokens)
+        '0xD2638FB3b0b5cb81a6Cdc856Cb72f95CB4103C43', // isolated market (WMON + PT-shMON tokens)
+        '0x5Db4aE52ec0Ac110c10e11580E6A85D66179ccb4', // isolated market (syzUSD + USDC + USDT0 + AUSD tokens) 
       ],
       staking: ['0xBB4738D05AD1b3Da57a4881baE62Ce9bb1eEeD6C', '0xAD96C3dffCD6374294e2573A7fBBA96097CC8d7c'], // dustLock, DUST
     },

@@ -19,6 +19,10 @@ const config = {
     factory: '0x820FB8127a689327C863de8433278d6181123982',
     fromBlock: 6785181,
   },
+  robinhood: {
+    factory: '0x820FB8127a689327C863de8433278d6181123982',
+    fromBlock: 1855301,
+  },
 }
 
 module.exports = {
@@ -34,16 +38,16 @@ Object.keys(config).forEach(chain => {
       const publicVaults = numPublicVaults > 0 ? await api.call({ abi: 'function publicVaults(uint256 startIndex_, uint256 endIndex_) returns (address[] memory)', target: factory, params: [0, numPublicVaults] }) : []
       const privateVaults = numPrivateVaults > 0 ? await api.call({ abi: 'function privateVaults(uint256 startIndex_, uint256 endIndex_) returns (address[] memory)', target: factory, params: [0, numPrivateVaults] }) : []
       const vaults = [...publicVaults, ...privateVaults]
-      
+
       if (vaults.length === 0) return
 
       const [token0s, token1s, bals] = await Promise.all([
         api.multiCall({ abi: 'address:token0', calls: vaults }),
         api.multiCall({ abi: 'address:token1', calls: vaults }),
-        api.multiCall({ 
-          abi: 'function totalUnderlying() view returns (uint256, uint256)', 
+        api.multiCall({
+          abi: 'function totalUnderlying() view returns (uint256, uint256)',
           calls: vaults,
-          permitFailure: true 
+          permitFailure: true
         }),
       ])
 

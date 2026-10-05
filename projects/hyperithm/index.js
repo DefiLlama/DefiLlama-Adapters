@@ -64,9 +64,11 @@ const vaultConfigs = {
       midasTokens: [
         '0xd90F6bFEd23fFDE40106FC4498DD2e9EDB95E4e7', // mHYPER
       ],
+      // aHyperBTC/aHYPER looping vaults excluded: their NAV is aHyperBTC/aHYPER shares already counted here
       accountableVaults: [
         '0xC6De1DC0B59682bE906E5BcA14E385E74EE88168', // Hyperithm Delta Neutral cbBTC (aHyperBTC)
         '0x7Cd231120a60F500887444a9bAF5e1BD753A5e59', // Hyperithm Delta Neutral USD (aHYPER)
+        '0x1a5b77cEf5e4B6F806aEac6f6eA9213a617dc7E3', // Saturn PT-USDat Loop Vault (aPTUSDat)
       ],
     },
     katana: {

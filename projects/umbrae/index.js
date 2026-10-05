@@ -63,7 +63,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'TVL is the sum of both pair tokens held by every liquidity pool Umbrae has deployed on Base. Pools are enumerated on chain from the three pair factories (the original DLMM factory, which is paused for trading but still holds withdrawable LP funds; the current DLMM v2 factory; and the DAMM v4 factory) via allPairsLength()/allPairs(), and each pool contributes its own balance of tokenX and tokenY. DLMM is a Liquidity Book style discrete-bin concentrated-liquidity AMM and DAMM is a dynamic-fee constant-product AMM; in both, the pair contract custodies liquidity directly, so no LP unwrapping is required.',
-  start: 1773845971, // 2026-03-18, Base block 43528312 — first DLMM factory deployment
+  start: '2026-03-18', // 2026-03-18, Base block 43528312 — first DLMM factory deployment
   base: {
     tvl,
   },

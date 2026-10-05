@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -5,7 +6,7 @@ const FACTORY = '0xd6b86b9B1bB64b941b21AaA6a0e3A673e8405A3b'
 const FEE_SPLITTER = '0xd6b05564cea990b69abf10b433279093758e2a54'
 const POSITION_MANAGER = '0x6049c9a0e26405C0985f9E3685C87d0aE917f82B' // Uniswap V4 PositionManager on Arc
 const STATE_VIEW = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b' // Uniswap V4 StateView on Arc
-const USDC = '0x0000000000000000000000000000000000000000' // native USDC (gas token, 18 decimals)
+const USDC = ADDRESSES.null // native USDC (gas token, 18 decimals)
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 
 async function tvl(api) {

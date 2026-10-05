@@ -55,6 +55,11 @@ const config = {
     factory: "0x00000081e37a462F3137C944D6bf2527eD6Afb01",
     fromBlock: 2376497,
   },
+  robinhood: {
+    factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
+    tokiLens: "0x00000031F662013D68E6CD0ceFe97043AE0ac5b8",
+    fromBlock: 63550958,
+  },
 };
 
 async function tvl(api) {
