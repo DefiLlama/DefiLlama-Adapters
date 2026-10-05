@@ -1,4 +1,5 @@
 module.exports = {
+  deadFrom: '2026-09-30',
   kava: {
     tvl,
   },

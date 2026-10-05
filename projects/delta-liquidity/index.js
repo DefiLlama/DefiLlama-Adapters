@@ -4,9 +4,20 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 // Delta v3 (live stack)
 const VAULT_FACTORY = '0x68EDc4948F60D21c4a7Dcbb8Ed4500cE6D0b153c'
-const LADDER_MANAGER = '0x64680254BF644BBdDe394b95129895c13317FeD4'
-const LADDER_MANAGER_V2 = '0xC5941433114BB47a9733CB31a0A3A3dBfF45B418'
-const LADDER_MANAGERS = [LADDER_MANAGER, LADDER_MANAGER_V2]
+// DeltaLadderManager v1..v9 + DeltaRangeOrderManager (https://deltaliquidity.app/docs)
+const LADDER_MANAGER_CONFIGS = [
+  { address: '0x64680254BF644BBdDe394b95129895c13317FeD4', fromBlock: 29958861 }, // v1
+  { address: '0xC5941433114BB47a9733CB31a0A3A3dBfF45B418', fromBlock: 37292861 }, // v2
+  { address: '0x5cA6214227D1195c4b7b4B96847b8966c688295D', fromBlock: 43637319 }, // v3
+  { address: '0xAC6a35D097bB230EB9966dDd8E5970055a622D98', fromBlock: 47955644 }, // v4
+  { address: '0x077AF3f17C0ef7Bb04A9882e1955e9C23D2F9e91', fromBlock: 49481958 }, // v5
+  { address: '0xf321ED71750C3E627a0f435C8950429f231E3497', fromBlock: 51528669 }, // v6
+  { address: '0x56Bf0F5B26d888b989a9A20eC2164F0CA560836c', fromBlock: 52778747 }, // v7
+  { address: '0xbCb96b15dC2246D242c879316c86e25e846ad5FB', fromBlock: 57152395 }, // v8
+  { address: '0x83551A233f6D7b3cb4dEFBF55AbFD887C6811ce4', fromBlock: 62065759 }, // v9
+  { address: '0x24F4A03352e9fACd1005Aa35A7822c83A140F7f7', fromBlock: 70055277 }, // DeltaRangeOrderManager
+]
+const LADDER_MANAGERS = LADDER_MANAGER_CONFIGS.map(i => i.address)
 const ROUTER_V3 = '0x46dFEa430d1F069C129E26445319562e29f39C47'
 
 // Delta v2 (legacy stack, still active)
@@ -18,7 +29,6 @@ const NPM = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3' // UniswapV3 Nonfungibl
 const V4_POSM = '0x58daec3116aae6D93017bAAea7749052E8a04fA7' // UniswapV4 PositionManager
 const V4_STATE_VIEW = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b'
 const DELTA = '0xe8ffd7e24187F72afB08d75B1bb13088A989a791'
-const LADDER_DEPLOY_BLOCK = 29958000
 
 async function getOwnersAndTokens(api) {
     // Delta vaults (each vault custodies one Uniswap v3 position NFT)
@@ -42,12 +52,12 @@ async function getOwnersAndTokens(api) {
     // No v4 subgraph on this chain, so position ids are enumerated from each
     // manager's own events, then filtered to those the manager still holds.
     let candidateIds = []
-    for (const target of LADDER_MANAGERS) {
+    for (const { address: target, fromBlock } of LADDER_MANAGER_CONFIGS) {
         const opened = await getLogs2({
             api,
             target,
             eventAbi: 'event ManagedOpenV4(address indexed owner, bytes32 indexed poolId, uint256[] tokenIds)',
-            fromBlock: LADDER_DEPLOY_BLOCK,
+            fromBlock,
             extraKey: 'managed-open-v4',
         })
         candidateIds.push(...opened.flatMap(i => i.tokenIds.map(j => j.toString())))

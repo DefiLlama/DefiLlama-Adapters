@@ -96,6 +96,11 @@ const configs = {
         fluent: {
           upshiftV2: ['0xeaB765200189909c806FD6e20eBb4E57D6703C82'], // Nerona Dollar Yield Strategy
         },
+        monad: {
+          morphoVaultOwners: [
+            '0x07A1eC352EF67BB5b8b75A7fF9540b27f9a53d71',
+          ],
+        }
       }
     },
   }, 

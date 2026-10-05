@@ -13,7 +13,7 @@ const CONFIG = {
 async function tvl(api, pools) {
     const timestamp = api.timestamp
     const activePools = pools
-        .filter(p => !p.start || timestamp >= p.start)
+        .filter(p => !p.start || timestamp >= Date.parse(p.start) / 1e3)
         .map(p => p.pool)
 
     if (!activePools.length) return

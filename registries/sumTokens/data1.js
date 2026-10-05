@@ -548,6 +548,7 @@ module.exports = {
     }
   },
   "privcash": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         // KAVA: 100 / 1000 / 10000 / 100000 / 1000000
@@ -579,6 +580,7 @@ module.exports = {
     }
   },
   "mirrosset": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0x587Abb291379Ea84AcE583aB07A13109b9B3F347"], // USDC @ InsurancePool
@@ -765,6 +767,17 @@ module.exports = {
       "owners": ["0x69A615DD32B89fE40D87b2e3123baE4162f2d450"],
       "resolveUniV3": true,
       "uniV3WhitelistedTokens": [ADDRESSES.arc.USDC],
+    }
+  },
+  "popdex-bridge": {
+    "methodology": "TVL is the USDT held by the PopDEX cross-chain bridge contracts on Arbitrum and Morph",
+    "arbitrum": {
+      "owners": ["0x0B15D6cF5e843C88034f64664D7fE66E5F79C5f2"],
+      "tokens": [ADDRESSES.arbitrum.USDT]
+    },
+    "morph": {
+      "owners": ["0x71FB3a05d02B48d358E4DEB55D0D461Dcb7cF71d"],
+      "tokens": [ADDRESSES.morph.USDT0]
     }
   },
 }

@@ -1677,6 +1677,7 @@ const uniV3Configs = {
   },
   'xtrade': { xlayer: { factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172', fromBlock: 813172, isAlgebra: true, }, },
   'sheriff-v3': { robinhood: { factory: '0x21Fd9aB06cc927E66013e89b045c26b3eDE7bB20', fromBlock: 1, isAlgebra: true, }, },
+  'rayls-dex': { rls: { factory: '0x3f912b39A89708Db8E10205421d3726e2DF4984D', fromBlock: 946546, isAlgebra: true, }, },
   'zebra-v2': {
     scroll: {
       factory: '0x96a7F53f7636c93735bf85dE416A4Ace94B56Bd9',
@@ -1900,11 +1901,19 @@ const uniV3Configs = {
       fromBlock: 21118790,
     },
   },
+  'unitflow-finance-v3': {
+    methodology: 'Token balances held in every Unitflow v3 pool, discovered from the factory PoolCreated events.',
+    arc: { factory: '0x5bfBCeb73d39F722B1cB83fD2F11736b28c1Be6d', fromBlock: 21068735 },
+  },
   'goo-exchange': {
     start: '2026-09-26',
     methodology: 'Counts the tokens held by every pool created by the goo exchange factory on Robinhood Chain, found from its PoolCreated events.',
     // Uniswap V3 fork; pools are CREATE2'd by a separate pool deployer but PoolCreated is emitted by the factory
     robinhood: { factory: '0x221A6239E40709792b0d4bdc140fA36158CD41C7', fromBlock: 73266708 },
+  },
+  'abyss-dex': {
+    methodology: 'TVL is the sum of both underlying ERC20 balances held by Abyss pools on Robinhood. Pools are discovered from factory PoolCreated events. Separate treasury and fee-vault holdings are excluded.',
+    robinhood: { factory: '0xe7feF2BC860B25bbdEB6F6AB96d88bAAa77ddad7', fromBlock: 50161538 },
   },
 }
 

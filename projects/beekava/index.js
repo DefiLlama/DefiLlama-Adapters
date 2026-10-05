@@ -12,6 +12,7 @@ const POL_Pool_Three = "0x8470991Ce998d336146104549A04690082f2B372";
 const owners = [POL_Pool_One, POL_Pool_Two, POL_Pool_Three,]
 
 module.exports = {
+  deadFrom: '2026-09-30',
   kava: {
     tvl: sumTokensExport({ owners, tokens: [ERC20ContractWkavaAddress] }),
     pool2: sumTokensExport({ owners, tokens: [WkavaBeekLpAddress], lps: [WkavaBeekLpAddress], useDefaultCoreAssets: true, }),

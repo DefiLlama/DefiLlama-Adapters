@@ -14,6 +14,7 @@ const rubyUsdcLp = "0x5FF7D68eE6e5f0bbE211B3c0d010160e3cD27Db9";
 const Kavalps = [rubyKavaLp, rshareKavaLp, rubyRshareLp, rubyUsdcLp];
 
 module.exports = {
+  deadFrom: '2026-09-30',
   hallmarks: [
     ['2022-08-15', "incentives not given"]
   ],

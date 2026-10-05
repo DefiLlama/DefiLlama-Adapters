@@ -391,6 +391,7 @@ module.exports = {
     },
   },
   "kinetix-derivatives-v2": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tvl": { "owners": ["0xB5CE30B6EBAA252bDEac2F768EF9b1e4Bdf8d120"], "tokens": [ADDRESSES.null,ADDRESSES.kava.USDt] },
     },
@@ -715,6 +716,7 @@ module.exports = {
     },
   },
   "stipend": {
+    deadFrom: "2023-08-01", // abandoned?
     "kava": {
       "tvl": { "owners": ["0xfc30fE377f7E333cC1250B7768107a7Da0277c44"], "tokens": [ADDRESSES.kava.WKAVA] },
     },
@@ -769,13 +771,6 @@ module.exports = {
     },
     "ethereum": {
       "tvl": { "owners": ["0x46363C31Be0c677Bd6F3eD429686753794ee8b97"], "tokens": [ADDRESSES.bitrock.BR] },
-    },
-  },
-  "kalmydas": {
-    "methodology": "TVL is the sum of tokens (USDC, WETH, KAL) held by the KalSwap liquidity pairs plus the USDC held by the five KalPool strategy vaults (deposits and platform reserve) on Base mainnet. USDC temporarily allocated to the on-chain operator (max 20% of each vault reserve) leaves the vaults while a trade is open and returns on close. KAL staked single-side and KAL locked in veKAL are reported under staking.",
-    "base": {
-      "tvl": { "owners": ["0x3315E6E788E2B30aF8f4c35124695E60D510c31B","0xEA071fa5a8aD4dEa8c672569da366D7d90E5924d","0x83c26f5C90B81adDf50845CCFCdcd02B819ADeB5","0x96869F08F5B5C52664c9620269394eFF4efd065b","0x6dd6e7A6154293b22Dcd5d07d8f61F446646B15d","0x9A9990fdFf702f7aEd10f873eeD2baB60e493038","0x03FEC25393C38cC5DE1F2D2DB620b8478cAC4Ae0","0x55F8D85749EA9C374b3aBFaEF7B07429546F6A97"], "tokens": [ADDRESSES.base.USDC,ADDRESSES.optimism.WETH_1,"0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
-      "staking": { "owners": ["0xF392A8F1B6c85f607F988B44EcAE2B4d652585f5","0x58CfcB5A67Aac6255cA13771EbdCFF45bAd5d605"], "tokens": ["0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
     },
   },
   "sfi": {
@@ -1033,6 +1028,15 @@ module.exports = {
     "start": "2026-09-16",
     "arc": {
       "owner": "0xF7a20a20e18Fa7d4B6c68EE58dA16799382AbCe8", // ArctideLaunchFactory
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
+  "zava": {
+    "methodology": "TVL is the AVAX held by the zAVA Mine contract.",
+    "avax": {
+      "owner": "0xB9D7517bC53D0F0F5e6E7C0030979Dd67de85128", // Mine
       "tokens": [
         ADDRESSES.null
       ]
