@@ -77,7 +77,7 @@ async function tvl(api) {
   const hasCounter = (i) => Boolean(counterOf[i])
   const hasPair = (i) => hasCounter(i) && Boolean(memecoins[i]) && memecoins[i] !== nullAddress
 
-  const vaultCalls = swarms.flatMap((s, i) => !hasPair(i) ? [] : Array.from({ length: Number(vaultCounts[i] ?? 0) }, (_, j) => ({ target: s, params: [j], swarm: i })))
+  const vaultCalls = swarms.flatMap((s, i) => !hasCounter(i) ? [] : Array.from({ length: Number(vaultCounts[i] ?? 0) }, (_, j) => ({ target: s, params: [j], swarm: i })))
   const vaults = await api.multiCall({ abi: 'function vaults(uint256) view returns (address)', calls: vaultCalls.map(({ target, params }) => ({ target, params })) })
 
   const swarmOfVault = vaults.map((_, k) => vaultCalls[k].swarm)
@@ -100,6 +100,7 @@ async function tvl(api) {
   }
   const ponsKeyOf = (k) => {
     if (!hooks[k] || hooks[k] === nullAddress) return null // not yet graduated: no Pons pool configured
+    if (!hasPair(swarmOfVault[k]) || fees[k] == null || spacings[k] == null) return null // a key read failed: skip, not throw
     const [currency0, currency1] = pairOf(swarmOfVault[k])
     return { currency0, currency1, fee: fees[k], tickSpacing: spacings[k], hooks: hooks[k] }
   }
@@ -107,9 +108,9 @@ async function tvl(api) {
   // inventory: the launched token each vault holds, summed per swarm in base units
   const memeHeld = swarms.map(() => 0)
   const balances = await api.multiCall({
-    abi: 'erc20:balanceOf', calls: vaults.map((v, k) => ({ target: memecoins[swarmOfVault[k]], params: [v] })), permitFailure: true,
+    abi: 'erc20:balanceOf', calls: vaults.map((v, k) => ({ target: memecoins[swarmOfVault[k]] || nullAddress, params: [v] })), permitFailure: true,
   })
-  balances.forEach((b, k) => { memeHeld[swarmOfVault[k]] += Number(b ?? 0) })
+  balances.forEach((b, k) => { if (hasPair(swarmOfVault[k])) memeHeld[swarmOfVault[k]] += Number(b ?? 0) })
 
   // ranges: the vaults' open v4 positions. A vault holds them in the PoolManager directly (keyed by
   // owner, ticks and a salt), not as position NFTs, so each is valued here from its liquidity and
@@ -128,6 +129,7 @@ async function tvl(api) {
     if (!ranges[j]) return null
     const venue = Number(ranges[j].venue)
     if (venue === 0) return ponsKeyOf(r.vault)
+    if (!hasPair(swarmOfVault[r.vault])) return null
     const [currency0, currency1] = pairOf(swarmOfVault[r.vault]), extra = venueOf.get(`${r.vault}:${venue}`)
     if (!extra) return null
     return { currency0, currency1, fee: extra.fee, tickSpacing: extra.tickSpacing, hooks: nullAddress }
