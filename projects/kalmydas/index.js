@@ -5,7 +5,7 @@ const USDC = ADDRESSES.base.USDC
 const WETH = ADDRESSES.optimism.WETH_1
 const KAL = '0xe99556D5594faf533fcB346A8a9B11259D29afA8'
 
-// KalPool strategy vaults, generations V5_1_4 and V5_2_0 (both live during the migration)
+// KalPool strategy vaults, generations V5_1_4, V5_2_0 and V5_2_2 (all live during the migration)
 const VAULTS = [
   // V5_1_4
   '0x96869F08F5B5C52664c9620269394eFF4efd065b', // HORIZON
@@ -21,6 +21,13 @@ const VAULTS = [
   '0xf5aC77495227741CeB696d43Cd0fD4Ed83F73Bf8', // TREASURY
   '0x9b87C7075ca523a160F6e9657dDEedb263CFa3c2', // ORION
   '0x7393819B67A4f70C307831B114Ca5f5e224bebF1',
+  // V5_2_2
+  '0x6bDdFAA9Fe728bEee4A14FD64F7C770490A42654', // HORIZON
+  '0xAb1825cB888c88a283518905f7981C3b2E158bD8', // VALKYRIE
+  '0xB502e605804d03c45Ea8a7f73814Fd3efcB2975d', // REVOLUTION
+  '0xeCf3c5963B3514714F9d6bDC3F481EB8e4007Aa9', // TREASURY
+  '0x04495A5F602fad117cC39806603c95D458De405E', // ORION
+  '0x9455fFC22D84031BAf05f3091DB4FF6e48722F77', // GENESIS
 ]
 
 // KalSwap USDC/WETH market: not farmed with KAL, counted as tvl
@@ -42,6 +49,7 @@ const STAKING = [
   '0xF392A8F1B6c85f607F988B44EcAE2B4d652585f5',
   '0x590f7d2ba77ADac6fC1e3cc2df16781989919529',
   '0x58CfcB5A67Aac6255cA13771EbdCFF45bAd5d605',
+  '0x116BBb2333B482cAB15ae10620E7671D6231434e', // LiquidityRewards V8_2
 ]
 
 async function tvl(api) {
@@ -74,7 +82,7 @@ async function pool2(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the USDC deposited by users in the KalPool strategy vaults (vault USDC balance minus the platform reserve still held in the vault, reserveBalance - operatorBalance) plus the USDC and WETH in the KalSwap USDC/WETH market, on Base. Both vault generations (V5_1_4 and V5_2_0) are counted during the migration. The platform reserve is protocol-owned trading capital and is reported in the Kal Mydas treasury. KalSwap markets paired with KAL and the Aerodrome KAL/USDC LP staked in the Kal Mydas Aerodrome LP staking are farmed for KAL rewards and reported under pool2. KAL staked single-side and KAL locked in veKAL are reported under staking.',
+  methodology: 'TVL is the USDC deposited by users in the KalPool strategy vaults (vault USDC balance minus the platform reserve still held in the vault, reserveBalance - operatorBalance) plus the USDC and WETH in the KalSwap USDC/WETH market, on Base. All live vault generations (V5_1_4, V5_2_0 and V5_2_2) are counted during the migration. The platform reserve is protocol-owned trading capital and is reported in the Kal Mydas treasury. KalSwap markets paired with KAL and the Aerodrome KAL/USDC LP staked in the Kal Mydas Aerodrome LP staking are farmed for KAL rewards and reported under pool2. KAL staked single-side and KAL locked in veKAL are reported under staking.',
   base: {
     tvl,
     pool2,
