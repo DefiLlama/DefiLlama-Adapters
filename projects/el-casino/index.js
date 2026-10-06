@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 // EL-Casino — on-chain casino on Robinhood Chain. Every room (roulette, crash, blackjack, slots, keno, …) is its own
 // contract deployed by a game factory; it holds its own token pool that pays winnings and is funded by stakers
 // ("become the house"). Rooms are listed from the factories themselves (getTotalGames / getGames).
-const ELCAS = '0xE73f12D9d81ff6b11c1d0261F440c2EA4C400E18' // the protocol's own token: rooms in $ELCAS count as staking
+const ELCAS = '0xE73f12D9d81ff6b11c1d0261F440c2EA4C400E18' // the protocol's own token: rooms in $ELCAS are excluded
 
 const FACTORIES = [
   // V4 game factories
@@ -35,13 +35,8 @@ async function tvl(api) {
   return sumTokens2({ api, tokensAndOwners })
 }
 
-async function staking(api) {
-  const owners = (await rooms(api)).filter((g) => g.token.toLowerCase() === ELCAS.toLowerCase()).map((g) => g.gameAddress)
-  return sumTokens2({ api, owners, tokens: [ELCAS] })
-}
-
 module.exports = {
-  methodology: 'Sums the tokens held by every EL-Casino room, listed from the V4 and V5 game factories: each room\'s token pool pays winnings and is funded by stakers ("become the house"). Rooms whose pool is in $ELCAS, the protocol\'s own token, are counted under staking.',
+  methodology: 'Sums the tokens held by every EL-Casino room, listed from the V4 and V5 game factories: each room\'s token pool pays winnings and is funded by stakers ("become the house"). Rooms whose pool is in $ELCAS, the protocol\'s own token, are excluded.',
   start: '2026-09-01',
-  robinhood: { tvl, staking },
+  robinhood: { tvl },
 }
