@@ -78,11 +78,14 @@ const ARBITRUM_STAKING = [
   '0x8B09F3B41203ec18Ec2E80eEc1bd57A91f21DB7D', // syrupBar
 ]
 
+// TRN lock escrow on Arbitrum: TRN locked here is released as TRN on Base, Arc and Robinhood Chain
+const ARBITRUM_TRN_ESCROW = '0xCff7404874ffb1Ab1Cc62631bfE097C391b6491d'
+
 module.exports = {
     hallmarks:[
   ],
   methodology:
-    "t3rn TVL is the USD value of token balances in the bridge contracts and TRN tokens staked on Arbitrum.",
+    "t3rn TVL is the USD value of token balances in the bridge contracts and TRN tokens staked on Arbitrum. TRN locked in the TRN lock escrow on Arbitrum (bridged to Base, Arc and Robinhood Chain) is the protocol's own token and is reported under ownTokens.",
 }
 
 Object.keys(CONFIG).forEach(chain => module.exports[chain] = {
@@ -110,4 +113,15 @@ module.exports.arbitrum.staking = async (api) => {
   }
   
   return balances;
+}
+
+// TRN locked in the lock escrow on Arbitrum: the protocol's own token, so reported as ownTokens, priced like staking
+module.exports.arbitrum.ownTokens = async (api) => {
+  const balances = await sumTokens2({ api, owners: [ARBITRUM_TRN_ESCROW], tokens: [TRN_ARBITRUM] })
+  const arbTrnKey = `arbitrum:${TRN_ARBITRUM.toLowerCase()}`
+  if (balances[arbTrnKey]) {
+    balances['coingecko:t3rn'] = balances[arbTrnKey] / 1e18
+    delete balances[arbTrnKey]
+  }
+  return balances
 }
