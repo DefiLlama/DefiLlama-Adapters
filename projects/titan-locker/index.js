@@ -1,12 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, unwrapUniswapV4NFTs } = require('../helper/unwrapLPs')
 
 /* Titan Locker, a token, LP, Uniswap V3/V4 position and vesting locker on
  * Robinhood Chain.
  *
- * Every lock is its own contract, created by a manager. TVL is what those lock
- * contracts hold right now: ERC-20 and Uniswap V2 LP balances read with
- * balanceOf, and each lock's recorded Uniswap V3 or V4 position while the lock
- * still owns it. A withdrawn lock holds nothing, so it stops counting on its own.
+ * Every lock is its own contract, created by a manager. TVL is the core-asset
+ * side of what those lock contracts hold right now: ERC-20 and Uniswap V2 LP
+ * balances read with balanceOf, and each lock's recorded Uniswap V3 or V4
+ * position while the lock still owns it. A withdrawn lock holds nothing, so it
+ * stops counting on its own.
  *
  * Lock ids run 0..tokenLockerCount-1 (the managers post-increment from 0).
  */
@@ -19,6 +21,11 @@ const LOCK_DATA_V2 =
 // LockKind in ITitanLockerManagerV2: ERC20, UNIV3, UNIV4, ERC20_VESTING
 const UNIV3 = 1
 const UNIV4 = 2
+
+// any other leg is the locking team's own token
+const QUOTE_TOKENS = new Set(
+  [ADDRESSES.null, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.USDe].map((t) => t.toLowerCase())
+)
 
 const config = {
   robinhood: {
@@ -68,7 +75,7 @@ async function tvl(api) {
     else ownerTokens.push([[lock.asset], lock.contractAddress])
   }
 
-  await sumTokens2({ api, ownerTokens, resolveLP: true, permitFailure: true })
+  await sumTokens2({ api, ownerTokens, resolveLP: true })
 
   for (const [nftAddress, positions] of Object.entries(v3Positions)) {
     const positionIds = await lockedPositionIds(api, nftAddress, positions)
@@ -81,7 +88,9 @@ async function tvl(api) {
     if (positionIds.length) api.addBalances(await unwrapUniswapV4NFTs({ api, nftAddress, uniV4ExtraConfig: { positionIds } }))
   }
 
-  return api.getBalances()
+  for (const key of Object.keys(api.getBalances())) {
+    if (!QUOTE_TOKENS.has(key.split(':').pop().toLowerCase())) api.removeTokenBalance(key)
+  }
 }
 
 module.exports = {
@@ -90,6 +99,8 @@ module.exports = {
     'contract created by a Titan Locker manager; lock records are read on chain to find each lock contract and its asset. ' +
     'ERC-20 and Uniswap V2 LP balances are read with balanceOf (LP tokens are unwrapped into their underlying tokens), ' +
     'and each lock\'s recorded Uniswap V3 or V4 position is valued from its liquidity while the lock still owns it. ' +
+    'Only the ETH, WETH, USDG and USDe side is counted; locked project tokens and the project-token legs of LP positions are excluded. ' +
     'Withdrawn locks hold nothing and stop counting automatically.',
+  doublecounted: true,
   robinhood: { tvl },
 }
