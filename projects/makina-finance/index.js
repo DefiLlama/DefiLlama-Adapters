@@ -1,37 +1,87 @@
 // https://docs.makina.finance/
 // https://makina.finance/
 
-// Makina TVL Adapter - External Pricing Version
-const DUSD_TOKEN = '0x1e33e98af620f1d563fcd3cfd3c75ace841204ef';
-const DETH_TOKEN = '0x871ab8e36cae9af35c6a3488b049965233deb7ed';
-const DBIT_TOKEN = '0x972966bcc17f7d818de4f27dc146ef539c231bdf';
-const usdSHFmk_TOKEN = '0xac499adf00a54044b988a59b19016655c3494b06';
-const intMkSrRoyUSDC_TOKEN = '0x1004D230aCA4b781d0049AFD6D0b1ee8ed3A6787';
-const DQAeETH_TOKEN = '0x2b24dFcE3a6AEF36E147C692Fa32d484ec538FC1';
+const { getLogs2 } = require('../helper/cache/getLogs')
+
+// Makina core factories are deployed at the same address on every chain. On a given chain, the hub factory
+// deploys that chain's machines (and their hub calibers), while the other factory deploys spoke calibers for
+// machines hosted on the other hub chain.
+const HUB_FACTORY_ETHEREUM = '0x8d28A69328561eF9F171c58996fEcB9F494e070c'
+const HUB_FACTORY_BASE = '0x1E1fa6F5f258b744881634216bDBc612B09C3C30'
+
+const config = {
+  ethereum: {
+    hubFactory: { address: HUB_FACTORY_ETHEREUM, fromBlock: 23426666 },
+    factories: [
+      { address: HUB_FACTORY_ETHEREUM, fromBlock: 23426666 },
+      { address: HUB_FACTORY_BASE, fromBlock: 25834668 },
+    ],
+  },
+  base: {
+    hubFactory: { address: HUB_FACTORY_BASE, fromBlock: 50439206 },
+    factories: [
+      { address: HUB_FACTORY_BASE, fromBlock: 50439206 },
+      { address: HUB_FACTORY_ETHEREUM, fromBlock: 35929980 },
+    ],
+  },
+}
+
+const abi = {
+  MachineCreated: 'event MachineCreated(address indexed machine, address indexed shareToken)',
+  PreDepositVaultCreated: 'event PreDepositVaultCreated(address indexed preDepositVault, address indexed shareToken)',
+  CaliberCreated: 'event CaliberCreated(address indexed caliber, address indexed machineEndpoint)',
+  accountingToken: 'address:accountingToken',
+  lastTotalAum: 'uint256:lastTotalAum',
+  convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
+  depositToken: 'address:depositToken',
+}
 
 async function tvl(api) {
-  const [dusdSupply, dethSupply, dbitSupply, usdSHFmkSupply, intMkSrRoyUSDCSupply, DQAeETHSupply] = await Promise.all([
-    api.call({ abi: 'erc20:totalSupply', target: DUSD_TOKEN }),
-    api.call({ abi: 'erc20:totalSupply', target: DETH_TOKEN }),
-    api.call({ abi: 'erc20:totalSupply', target: DBIT_TOKEN }),
-    api.call({ abi: 'erc20:totalSupply', target: usdSHFmk_TOKEN }),
-    api.call({ abi: 'erc20:totalSupply', target: intMkSrRoyUSDC_TOKEN }),
-    api.call({ abi: 'erc20:totalSupply', target: DQAeETH_TOKEN }),
-  ]);
+  const { hubFactory, factories } = config[api.chain]
 
-  return {
-    [DUSD_TOKEN]: dusdSupply,
-    [DETH_TOKEN]: dethSupply,
-    [DBIT_TOKEN]: dbitSupply,
-    [usdSHFmk_TOKEN]: usdSHFmkSupply,
-    [intMkSrRoyUSDC_TOKEN]: intMkSrRoyUSDCSupply,
-    [DQAeETH_TOKEN]: DQAeETHSupply,
-  };
+  const [machineLogs, preDepositLogs, caliberLogs] = await Promise.all([
+    getLogs2({ api, target: hubFactory.address, fromBlock: hubFactory.fromBlock, eventAbi: abi.MachineCreated, extraKey: 'machines' }),
+    getLogs2({ api, target: hubFactory.address, fromBlock: hubFactory.fromBlock, eventAbi: abi.PreDepositVaultCreated, extraKey: 'preDepositVaults' }),
+    Promise.all(factories.map(({ address, fromBlock }) => getLogs2({ api, target: address, fromBlock, eventAbi: abi.CaliberCreated, extraKey: 'calibers' }))),
+  ])
+
+  const machines = machineLogs.map(log => log.machine)
+  const shareTokens = machineLogs.map(log => log.shareToken)
+  // every hub and spoke caliber on this chain, whichever hub chain its machine lives on
+  const calibers = caliberLogs.flat().map(log => log.caliber)
+
+  // a machine's AUM covers its hub caliber and all of its spoke calibers, denominated in its accounting token
+  const [accountingTokens, aums] = await Promise.all([
+    api.multiCall({ abi: abi.accountingToken, calls: machines }),
+    api.multiCall({ abi: abi.lastTotalAum, calls: machines }),
+  ])
+  api.add(accountingTokens, aums)
+
+  // machines can allocate into other machines: net out Makina share tokens held by Makina calibers and machines
+  const holders = [...calibers, ...machines]
+  const nestedShares = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: shareTokens.flatMap(token => holders.map(holder => ({ target: token, params: [holder] }))),
+  })
+  const nestedCalls = []
+  shareTokens.forEach((_, i) => {
+    const shares = nestedShares.slice(i * holders.length, (i + 1) * holders.length).reduce((sum, bal) => sum + BigInt(bal), 0n)
+    if (shares > 0n) nestedCalls.push({ machineIndex: i, call: { target: machines[i], params: [shares.toString()] } })
+  })
+  const nestedAssets = await api.multiCall({ abi: abi.convertToAssets, calls: nestedCalls.map(({ call }) => call) })
+  nestedCalls.forEach(({ machineIndex }, i) => api.add(accountingTokens[machineIndex], -BigInt(nestedAssets[i])))
+
+  // deposits still sitting in pre-deposit vaults that have not migrated to their machine yet
+  const preDepositVaults = preDepositLogs.map(log => log.preDepositVault)
+  const depositTokens = await api.multiCall({ abi: abi.depositToken, calls: preDepositVaults })
+  return api.sumTokens({ tokensAndOwners2: [depositTokens, preDepositVaults] })
 }
 
 module.exports = {
-  methodology: "TVL counts the total supply of share tokens of the protocol",
-  misrepresentedTokens: true,
-  start: 23428036,
-  ethereum: { tvl },
-};
+  methodology: 'Machines and pre-deposit vaults are discovered from Makina factory events. TVL is the sum of each machine\'s on-chain lastTotalAum() (hub and spoke calibers combined), valued in its accounting token, plus deposit tokens still held by pre-deposit vaults. Makina share tokens held by other Makina machines or calibers are subtracted to avoid double counting nested strategies.',
+  start: '2025-09-24',
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
