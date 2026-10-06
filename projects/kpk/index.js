@@ -172,7 +172,7 @@ async function getAlephVaultTvl(api, vaults) {
 
 // ---- kpk Fund (OIV) TVL via DeBank ----
 const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE, XAUT_CARRY_SAFE, WBTC_CARRY_SAFE, RH_USD_SAFE, RH_SPY_SAFE, RH_ETH_USD_SAFE]
-const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'robinhood']
+const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'robinhood']
 
 // ---- Zodiac-managed Safes (Institutional vertical) TVL via DeBank ----
 // Safes owned by external institutions but actively managed by kpk via Zodiac Roles Modifier.
@@ -187,7 +187,7 @@ const ZODIAC_MANAGED_SAFES = [
   '0xe7f2C930d6c64B91b96cd46C2933885765810A8E', // dYdX wallet (eth/arb)
   '0xd97eCe4a24C4538d96E14296c5544c871caE2eEB', // dYdX wallet (eth) - USDY + kpk USDC Prime Core V2
 ]
-const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc', 'polygon', 'avax']
+const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'bsc']
 
 // ---- Historical Zodiac mandate TVL from the kpk treasury IR cache ----
 //
