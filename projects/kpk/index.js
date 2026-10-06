@@ -7,6 +7,11 @@ const { dydxLiveTvl, dydxHistoricalTvl } = require("./dydx")
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
 const ETH_ALPHA_SAFE = "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b" // ETH Alpha Fund Portfolio Safe
 const USD_ALPHA_SAFE = "0x38F6a1B46144fAEe6a6D9F79D8dE264C18e23848" // USD Alpha Fund Portfolio Safe
+const XAUT_CARRY_SAFE = "0x67269455871526A052cA89329218a41e810Ecc15" // XAUt Carry Fund Portfolio Safe
+const WBTC_CARRY_SAFE = "0x0295E5d0530C23E560CdbFc097C488a0A0D7752D" // WBTC Carry Fund Portfolio Safe
+const RH_USD_SAFE = "0x01F18eadd996e41235A9155Ec9aF5878c6ED6294" // kpk Robinhood USD Portfolio Safe (Robinhood Chain)
+const RH_SPY_SAFE = "0xe2548934197AbE73F97326302A0900302fCb34d1" // kpk Robinhood SPY Portfolio Safe (Robinhood Chain)
+const RH_ETH_USD_SAFE = "0x2EeB414D0bc548094a574E6801f5365498D28aa4" // kpk Robinhood ETH-USD Portfolio Safe (Robinhood Chain)
 
 const GearboxCompressorABI = {
   // returns credit managers associated with the given legacy (market) configurators
@@ -166,8 +171,8 @@ async function getAlephVaultTvl(api, vaults) {
 }
 
 // ---- kpk Fund (OIV) TVL via DeBank ----
-const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE]
-const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
+const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE, XAUT_CARRY_SAFE, WBTC_CARRY_SAFE, RH_USD_SAFE, RH_SPY_SAFE, RH_ETH_USD_SAFE]
+const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'robinhood']
 
 // ---- Zodiac-managed Safes (Institutional vertical) TVL via DeBank ----
 // Safes owned by external institutions but actively managed by kpk via Zodiac Roles Modifier.
@@ -182,7 +187,7 @@ const ZODIAC_MANAGED_SAFES = [
   '0xe7f2C930d6c64B91b96cd46C2933885765810A8E', // dYdX wallet (eth/arb)
   '0xd97eCe4a24C4538d96E14296c5544c871caE2eEB', // dYdX wallet (eth) - USDY + kpk USDC Prime Core V2
 ]
-const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc', 'polygon', 'avax']
+const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'bsc']
 
 // ---- Historical Zodiac mandate TVL from the kpk treasury IR cache ----
 //
@@ -285,5 +290,9 @@ for (const chain of allChains) {
 exportObjects.dydx = {
   tvl: async (api) => isHistoricalRun(api) ? dydxHistoricalTvl(api) : dydxLiveTvl(api),
 }
+
+// no longer swept, kept so their history stays in the API
+for (const chain of ['optimism', 'polygon', 'avax'])
+  exportObjects[chain] = { tvl: () => ({}) }
 
 module.exports = exportObjects
