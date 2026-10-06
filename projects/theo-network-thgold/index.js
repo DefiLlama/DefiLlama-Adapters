@@ -3,6 +3,7 @@ const thGOLD  = '0x610F0E33b0A6b3802ff29D3Cf6bBd9A0ACF784ed' // 6 decimals
 const XAU_USD = '0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6' // Chainlink XAU/USD, 8 decimals, USD per troy ounce
 
 module.exports = {
+  start: '2026-09-16', // first thGOLD mint; contract deployed 2026-09-15
   doublecounted: true,
   misrepresentedTokens: true, // metals are reported as a USD value, which the token breakdown labels USDT
   methodology:

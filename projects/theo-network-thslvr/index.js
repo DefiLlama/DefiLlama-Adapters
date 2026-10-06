@@ -3,6 +3,7 @@ const thSLVR  = '0x84C8F334434fb6fF769F760653FEb88838357039' // 6 decimals
 const XAG_USD = '0x379589227b15F1a12195D3f2d90bBc9F31f95235' // Chainlink XAG/USD, 8 decimals, USD per troy ounce
 
 module.exports = {
+  start: '2026-09-21', // first thSLVR mint; contract deployed 2026-09-17
   doublecounted: true,
   misrepresentedTokens: true, // metals are reported as a USD value, which the token breakdown labels USDT
   methodology:
