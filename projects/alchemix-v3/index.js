@@ -4,6 +4,7 @@ const FACTORY = {
   ethereum: { factory: '0xdd56b00302e91C4c2b8246156bDEAa1cEDc58984', fromBlock: 24875892 },
   arbitrum: { factory: '0x8c7C0C380bA4eE38461eb5a6b82e5d930EC11Ca2', fromBlock: 452291175 },
   optimism: { factory: '0x8c7C0C380bA4eE38461eb5a6b82e5d930EC11Ca2', fromBlock: 150271732 },
+  base: { factory: '0x2584E8b0616b3E750492c9629a3b27679C410cb9', fromBlock: 51125654 },
 }
 
 const CREATE_VAULT_EVENT =
@@ -18,8 +19,9 @@ async function tvl(api) {
 module.exports = {
   doublecounted: true,
   methodology:
-    'TVL sums totalAssets() of every Alchemix V3 MYT (ERC-4626) vault found from VaultV2Factory.CreateVaultV2 events.',
+    'Value of all assets deposited in Alchemix V3 vaults',
   ethereum: { tvl },
   arbitrum: { tvl },
   optimism: { tvl },
+  base: { tvl },
 }
