@@ -82,7 +82,12 @@ async function stakedFromLogs(api, nft, voter, owners, fromBlock, toBlock) {
     topics: [TRANSFER, owners.map(o => '0x' + o.slice(2).padStart(64, '0'))],
     extraKey: `btb-sent-${owners.length}`,
   })
-  const pairs = [...new Set(logs.map(l => `${l.from.toLowerCase()}:${l.to.toLowerCase()}`))].map(p => p.split(':'))
+  // Keep only transfers sent by a BTB wallet. The sender filter above is not always applied by the log source, and
+  // without this every staker in the same gauges was counted (Base read $32M instead of about $600).
+  const ownerSet = new Set(owners.map(o => o.toLowerCase()))
+  const pairs = [...new Set(logs
+    .filter(l => ownerSet.has(l.from.toLowerCase()))
+    .map(l => `${l.from.toLowerCase()}:${l.to.toLowerCase()}`))].map(p => p.split(':'))
   const recipients = [...new Set(pairs.map(([, to]) => to))]
   if (!recipients.length) return []
   const isGauge = await api.multiCall({ abi: 'function isGauge(address) view returns (bool)', target: voter, calls: recipients })
