@@ -646,6 +646,12 @@ async function getCuratorTvl(api, vaults) {
     allVaults.silo = allVaults.silo.concat(await getSiloVaults(api, vaults.siloVaultOwners))
   }
 
+  // excludedVaults: vaults this listing picks up (e.g. through owner discovery) that another listing counts
+  if (vaults.excludedVaults) {
+    const excluded = new Set(vaults.excludedVaults.map(v => v.toLowerCase()))
+    for (const key of Object.keys(allVaults)) allVaults[key] = allVaults[key].filter(v => !excluded.has(v.toLowerCase()))
+  }
+
   // Combine all ERC-4626 vaults (morpho, erc4626, etc.) into a single array
   // This ensures de-duplication works across all ERC-4626 vaults regardless of which array they come from
   const allErc4626Vaults = [
