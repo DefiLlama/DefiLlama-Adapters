@@ -6,14 +6,25 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 
 // Each hub chain has a HubCoreFactory that deploys its machines (and their hub calibers) and pre-deposit vaults.
 // fromBlock is the first machine/pre-deposit deployment on that factory.
+// Spoke calibers deployed on a chain for the other hub's machines are resolved from ethereum data only, so ethereum
+// tvl never depends on base logs:
+// - on ethereum, from CaliberCreated on the spoke factory (same address as the base hub factory)
+// - on base, via each ethereum machine's getSpokeCaliberMailbox(8453) -> mailbox.caliber()
 const hubs = {
-  ethereum: { chainId: 1, factory: '0x8d28A69328561eF9F171c58996fEcB9F494e070c', fromBlock: 23426666 },
-  base: { chainId: 8453, factory: '0x1E1fa6F5f258b744881634216bDBc612B09C3C30', fromBlock: 50872000 },
+  ethereum: {
+    chainId: 1, factory: '0x8d28A69328561eF9F171c58996fEcB9F494e070c', fromBlock: 23426666,
+    spokeFactory: { address: '0x1E1fa6F5f258b744881634216bDBc612B09C3C30', fromBlock: 25834668 },
+  },
+  base: {
+    chainId: 8453, factory: '0x1E1fa6F5f258b744881634216bDBc612B09C3C30', fromBlock: 50872000,
+    spokeOf: 'ethereum',
+  },
 }
 
 const abi = {
   MachineCreated: 'event MachineCreated(address indexed machine, address indexed shareToken)',
   PreDepositVaultCreated: 'event PreDepositVaultCreated(address indexed preDepositVault, address indexed shareToken)',
+  CaliberCreated: 'event CaliberCreated(address indexed caliber, address indexed machineEndpoint)',
   accountingToken: 'address:accountingToken',
   lastTotalAum: 'uint256:lastTotalAum',
   hubCaliber: 'address:hubCaliber',
@@ -32,18 +43,19 @@ async function getMachines(api) {
   return { machines: logs.map(log => log.machine), shareTokens: logs.map(log => log.shareToken) }
 }
 
-// calibers deployed on this chain by machines hosted on the other hub chains
+// calibers deployed on this chain by machines hosted on the other hub chain
 async function getSpokeCalibers(api) {
-  const calibers = []
-  for (const chain of Object.keys(hubs)) {
-    if (chain === api.chain) continue
-    const hubApi = new sdk.ChainApi({ chain, timestamp: api.timestamp })
-    await hubApi.getBlock()
-    const { machines } = await getMachines(hubApi)
-    const mailboxes = await hubApi.multiCall({ abi: abi.getSpokeCaliberMailbox, calls: machines.map(target => ({ target, params: [hubs[api.chain].chainId] })), permitFailure: true })
-    calibers.push(...await api.multiCall({ abi: abi.caliber, calls: mailboxes.filter(Boolean), permitFailure: true }))
+  const { spokeFactory, spokeOf } = hubs[api.chain]
+  if (spokeFactory) {
+    const logs = await getLogs2({ api, target: spokeFactory.address, fromBlock: spokeFactory.fromBlock, eventAbi: abi.CaliberCreated, extraKey: 'spokeCalibers' })
+    return logs.map(log => log.caliber)
   }
-  return calibers.filter(Boolean)
+  const hubApi = new sdk.ChainApi({ chain: spokeOf, timestamp: api.timestamp })
+  await hubApi.getBlock()
+  const { machines } = await getMachines(hubApi)
+  // reverts for machines without a spoke caliber on this chain
+  const mailboxes = await hubApi.multiCall({ abi: abi.getSpokeCaliberMailbox, calls: machines.map(target => ({ target, params: [hubs[api.chain].chainId] })), permitFailure: true })
+  return api.multiCall({ abi: abi.caliber, calls: mailboxes.filter(Boolean) })
 }
 
 async function tvl(api) {
