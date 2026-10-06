@@ -110,7 +110,8 @@ async function leaveOutMorphoBadDebt(api, allVaults, allAssets, totalAssets) {
   const [states, params] = await Promise.all([abi.market, abi.idToMarketParams].map((a) => multi(api, a, markets.map((m) => ({ target: m.morpho, params: [m.id] })))))
   const withIrm = markets.map((m, i) => ({ m, i })).filter(({ i }) => isAddr(params[i]?.irm))
   const rates = await multi(api, abi.rateAtTarget, withIrm.map(({ m, i }) => ({ target: params[i].irm, params: [m.id] })))
-  const marketInfo = new Map(markets.map((m, i) => [keyOf(m), { state: states[i], bricked: false }]))
+  const marketInfo = new Map(markets.map((m, i) => [keyOf(m), { state: states[i], params: params[i], bricked: false }]))
+  const loaded = (p) => marketInfo.get(keyOf(p))?.state && marketInfo.get(keyOf(p))?.params
   const now = api.timestamp || Math.floor(Date.now() / 1000)
   withIrm.forEach(({ m, i }, k) => { marketInfo.get(keyOf(m)).bricked = isBricked(states[i], rates[k], now) })
 
@@ -123,7 +124,7 @@ async function leaveOutMorphoBadDebt(api, allVaults, allAssets, totalAssets) {
     if (shares[k] && state) p.assets = BigInt(shares[k].supplyShares) * (BigInt(state.totalSupplyAssets) + VIRTUAL_ASSETS) / (BigInt(state.totalSupplyShares) + VIRTUAL_SHARES)
   })
   for (const v of v1) {
-    if (v.positions.some((p) => p.assets == null)) continue // incomplete read: keep totalAssets()
+    if (v.positions.some((p) => p.assets == null || !loaded(p))) continue // incomplete read: keep totalAssets()
     const total = totals.get(v.vault)
     const bricked = v.positions.filter((p) => marketInfo.get(keyOf(p)).bricked)
     const held = v.positions.reduce((sum, p) => sum + p.assets, 0n)
@@ -134,7 +135,7 @@ async function leaveOutMorphoBadDebt(api, allVaults, allAssets, totalAssets) {
   }
 
   for (const v of v2) {
-    if (v.incomplete || v.idle == null || v.adapters.some((a) => a.realAssets == null) || v.positions.some((p) => p.assets == null)) continue
+    if (v.incomplete || v.idle == null || v.adapters.some((a) => a.realAssets == null) || v.positions.some((p) => p.assets == null || !loaded(p))) continue
     const bricked = v.positions.filter((p) => marketInfo.get(keyOf(p))?.bricked).reduce((sum, p) => sum + BigInt(p.assets), 0n)
     if (bricked === 0n) continue
     const real = v.adapters.reduce((sum, a) => sum + BigInt(a.realAssets), BigInt(v.idle))
