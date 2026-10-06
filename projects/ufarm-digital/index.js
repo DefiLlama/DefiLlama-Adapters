@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
-
-const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = {
   arbitrum: {
@@ -32,7 +30,8 @@ Object.keys(config).forEach(chain => {
   const { endpoint, blacklistedTokens = [] } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const { data } = await getConfig('ufarm-digital/' + api.chain, endpoint)
+      const { data: pools } = await getConfig('ufarm-digital/' + api.chain, endpoint)
+      const data = pools.filter(i => !i.isRWA) // RWA pools are listed as assets, not TVL
       const blacklistSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
       const ownerTokens = data
         .map(i => [(i.assetAllocation?.map(a => a.asset) || []).filter(a => a && !blacklistSet.has(a.toLowerCase())), i.poolAddress])
