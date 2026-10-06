@@ -1,14 +1,14 @@
-const { getSystemAccount } = require('../helper/chain/substrate')
+const { getTokenData } = require('../helper/chain/elrond');
 
-const TREASURY_ADDRESS = "5HZAAREPzwBc4EPWWeTHA2WRcJoCgy4UBk8mwYFWR5BTCNcT";
+const HWTAO = 'HWTAO-2e9136';
 
 const tvl = async (api) => {
-  const { free, reserved } = await getSystemAccount('bittensor', TREASURY_ADDRESS, { balanceBytes: 8 }) // TAO balances are u64
-  api.addCGToken('bittensor', Number(free + reserved) / 1e9)
+  const { supply } = await getTokenData(HWTAO);
+  api.addCGToken('bittensor', Number(supply));
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'Value of tao locked in the bridge contract',
+  methodology: 'Value of TAO locked in the bridge, measured by HWTAO supply on MultiversX (1 HWTAO = 1 locked TAO).',
   bittensor: { tvl },
 }
