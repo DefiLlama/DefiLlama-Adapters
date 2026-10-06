@@ -1620,12 +1620,6 @@ const configs = {
       methodology: 'Count all assets are deposited in all vaults curated by Vault Bridge and its partners.',
       blockchains: {
         ethereum: {
-          morpho: [
-            '0xBEefb9f61CC44895d8AEc381373555a64191A9c4',
-            '0xc54b4E08C1Dcc199fdd35c6b5Ab589ffD3428a8d',
-            '0x31A5684983EeE865d943A696AAC155363bA024f9',
-            '0x812B2C6Ab3f4471c0E43D4BB61098a9211017427',
-          ],
           erc4626: [
             '0x3DD459dE96F9C28e3a343b831cbDC2B93c8C4855',
           ],
@@ -1670,12 +1664,6 @@ const configs = {
             '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
             '0x50B75d586929Ab2F75dC15f07E1B921b7C4Ba8fA',
             '0x75a1253432356f90611546a487b5350CEF08780D',
-          ],
-          turtleclub_erc4626: [
-            '0xF470EB50B4a60c9b069F7Fd6032532B8F5cC014d',
-            '0xA5DaB32DbE68E6fa784e1e50e4f620a0477D3896',
-            '0xe1Ac97e2616Ad80f69f705ff007A4bbb3655544a',
-            '0x77570CfEcf83bc6bB08E2cD9e8537aeA9F97eA2F',
           ],
         },
         base: {
