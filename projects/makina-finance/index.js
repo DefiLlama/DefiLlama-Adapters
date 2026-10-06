@@ -72,17 +72,11 @@ async function tvl(api) {
 
   // machines can allocate into other machines: net out Makina share tokens held by any Makina caliber or machine on this chain
   const holders = [...hubCalibers, ...await getSpokeCalibers(api), ...machines]
-  const nestedShares = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: shareTokens.flatMap(token => holders.map(holder => ({ target: token, params: [holder] }))),
-  })
-  const nestedCalls = []
-  shareTokens.forEach((_, i) => {
-    const shares = nestedShares.slice(i * holders.length, (i + 1) * holders.length).reduce((sum, bal) => sum + BigInt(bal), 0n)
-    if (shares > 0n) nestedCalls.push({ machineIndex: i, call: { target: machines[i], params: [shares.toString()] } })
-  })
-  const nestedAssets = await api.multiCall({ abi: abi.convertToAssets, calls: nestedCalls.map(({ call }) => call) })
-  nestedCalls.forEach(({ machineIndex }, i) => api.add(accountingTokens[machineIndex], -BigInt(nestedAssets[i])))
+  const pairs = machines.flatMap((machine, i) => holders.map(holder => ({ machine, shareToken: shareTokens[i], accountingToken: accountingTokens[i], holder })))
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: pairs.map(({ shareToken, holder }) => ({ target: shareToken, params: [holder] })) })
+  const nested = pairs.map((pair, i) => ({ ...pair, shares: balances[i] })).filter(({ shares }) => BigInt(shares) > 0n)
+  const nestedAssets = await api.multiCall({ abi: abi.convertToAssets, calls: nested.map(({ machine, shares }) => ({ target: machine, params: [shares] })) })
+  nested.forEach(({ accountingToken }, i) => api.add(accountingToken, -BigInt(nestedAssets[i])))
 
   // deposits still sitting in pre-deposit vaults that have not migrated to their machine yet
   const preDepositLogs = await getLogs2({ api, target: factory, fromBlock, toBlock: await getToBlock(api), eventAbi: abi.PreDepositVaultCreated, extraKey: 'preDepositVaults' })
