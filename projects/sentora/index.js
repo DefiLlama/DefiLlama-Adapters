@@ -46,6 +46,16 @@ const nestedMorphoHolders = [
   '0x264f0dd8f4183ea93b3c51b9f0e02375f88b8c2c',
 ]
 
+const ethereumBoringVaults = [
+  '0x9761ddf8e79930b334f1be1bd93abe3695061cca', // kraken earn vault
+  '0x7dee0120739b7ec048b469939efb178adbbb19b2', // kraken earnBTC vault
+  '0xdbd87325d7b1189dcc9255c4926076ff4a96a271', // boostedUSDC
+  '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f', // balancedUSDC
+  '0x13cc1b39cb259ba10cd174eae42012e698ed7c51', // lombard vault
+  '0x63d124cf1afc22f0ccea376168200508d2a0868e', // kraken beHolder
+  '0xf15351a0d66743e09457c45eae88df34fcee8cb7', // kraken beHolder ETH
+]
+
 const customConfig = {
   ethereum: {
     etherfi: [
@@ -91,15 +101,7 @@ const curatorExport = getCuratorExport({
       ],
       morpho: ethereumMorphoVaults,
       morphoVaultOwners: ethereumMorphoVaultOwners,
-      boringVaults: [
-        '0x9761ddf8e79930b334f1be1bd93abe3695061cca', // kraken earn vault
-        '0x7dee0120739b7ec048b469939efb178adbbb19b2', // kraken earnBTC vault
-        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271', // boostedUSDC
-        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f', // balancedUSDC
-        '0x13cc1b39cb259ba10cd174eae42012e698ed7c51', // lombard vault
-        '0x63d124cf1afc22f0ccea376168200508d2a0868e', // kraken beHolder
-        '0xf15351a0d66743e09457c45eae88df34fcee8cb7', // kraken beHolder ETH
-      ],
+      boringVaults: ethereumBoringVaults,
     },
     ink: {
       boringVaults: [
@@ -180,6 +182,28 @@ async function subtractNestedMorphoShares(api) {
   api.add(assets, amounts.map(a => -a))
 }
 
+// The Veda vaults also hold shares of Sentora's own Upshift vaults (Advanced Strategies USDC holds sentUSD,
+// the Upshift USD share token). Those shares sit in the Veda vault's NAV and in the Upshift vault's
+// getTotalAssets(), so they are subtracted from the Upshift side, valued at the Upshift share price.
+async function subtractNestedUpshiftShares(api) {
+  const block = await api.getBlock()
+  const vaults = customConfig.ethereum.upshift.filter(v => block >= v.deployBlock).map(v => v.vault)
+  if (!vaults.length) return
+  const holders = [...new Set([...ethereumBoringVaults, ...nestedMorphoHolders].map(a => a.toLowerCase()))]
+  const [lpTokens, assets, totalAssets] = await Promise.all([
+    api.multiCall({ abi: 'address:lpTokenAddress', calls: vaults }),
+    api.multiCall({ abi: 'address:asset', calls: vaults }),
+    api.multiCall({ abi: 'uint256:getTotalAssets', calls: vaults }),
+  ])
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: lpTokens })
+  const pairs = vaults.flatMap((_, i) => holders.map(holder => ({ i, holder })))
+  const shares = await api.multiCall({ abi: 'erc20:balanceOf', calls: pairs.map(({ i, holder }) => ({ target: lpTokens[i], params: [holder] })) })
+  pairs.forEach(({ i }, k) => {
+    if (BigInt(shares[k]) === 0n || BigInt(supplies[i]) === 0n) return
+    api.add(assets[i], -(BigInt(shares[k]) * BigInt(totalAssets[i]) / BigInt(supplies[i])))
+  })
+}
+
 module.exports = { timetravel: false, ...curatorExport }
 
 for (const chain of Object.keys(customConfig)) {
@@ -189,7 +213,10 @@ for (const chain of Object.keys(customConfig)) {
     tvl: async (api) => {
       if (curatorChain?.tvl) await curatorChain.tvl(api)
       await customTvl(api)
-      if (chain === 'ethereum') await subtractNestedMorphoShares(api)
+      if (chain === 'ethereum') {
+        await subtractNestedMorphoShares(api)
+        await subtractNestedUpshiftShares(api)
+      }
     },
   }
 }
