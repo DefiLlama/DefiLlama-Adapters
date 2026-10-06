@@ -3,15 +3,16 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 /* HoodLock, a token locker, liquidity locker and vesting protocol on Robinhood Chain.
  *
- * TVL is what the contracts hold right now, read with balanceOf. A withdrawn
+ * Token lockers are tracked under vesting, so tvl is zero. Locked value is what
+ * the contracts hold right now, read with balanceOf. A withdrawn
  * lock leaves its record behind with a `withdrawn` flag, so summing records
  * would keep counting tokens that already left. The records are read only to
  * discover WHICH tokens each contract holds.
  *
- * HoodLock's own token, LOCK, is reported under staking rather than tvl.
+ * HoodLock's own token, LOCK, is reported under staking rather than vesting.
  *
  * Burns are excluded on purpose: burned supply sits at the dead address and is
- * no longer held by any HoodLock contract, so it is not TVL.
+ * no longer held by any HoodLock contract, so it is not counted.
  *
  * Uniswap V3 and V4 positions locked in the Liquidity Locker count by what the
  * position holds. The locker owns the position NFT for the life of a lock, and
@@ -23,6 +24,7 @@ const LOCKER = '0xd0f7d8c6e9f6d80c297bebe4f7fd1b9c8125c32f'
 const VESTING = '0x910e19bcC4bce46999994Ed7297E0Fc4431ec72E'
 const LOCK_TOKEN = '0xd5bf43f29bf7aa5bb42ae9e217b84b86eb7a4b94'
 const LP_LOCKER = '0x91Aa2dA1956C77F8448E18DCaf53383bCc658e67'
+const LP_LOCKER_BLOCK = 80030403 // Liquidity Locker deploy block
 
 const abi = {
   totalLocks: 'uint256:totalLocks',
@@ -36,7 +38,7 @@ const abi = {
 /** Ids run 1..n inclusive: both contracts pre-increment their counter. */
 const idCalls = (target, n) => Array.from({ length: Number(n) }, (_, i) => ({ target, params: i + 1 }))
 
-async function tvl(api) {
+async function vesting(api) {
   const [lockCount, scheduleCount] = await Promise.all([
     api.call({ abi: abi.totalLocks, target: LOCKER }),
     api.call({ abi: abi.totalSchedules, target: VESTING }),
@@ -65,6 +67,7 @@ const pairsLock = (l) => [l.token0, l.token1].some(t => t.toLowerCase() === LOCK
 /* Active Liquidity Locker locks. Ids start at 1 and nextLockId is the next one
  * to be issued, so 1..nextLockId-1 all exist. */
 async function activeLpLocks(api) {
+  if (await api.getBlock() < LP_LOCKER_BLOCK) return []
   const next = Number(await api.call({ abi: abi.nextLockId, target: LP_LOCKER }))
   const calls = Array.from({ length: Math.max(0, next - 1) }, (_, i) => ({ target: LP_LOCKER, params: i + 1 }))
   if (!calls.length) return []
@@ -89,12 +92,13 @@ const staking = (api) => sumTokens2({ api, owners: [LOCKER, VESTING], tokens: [L
 
 module.exports = {
   methodology:
-    'Counts the ERC-20 balances held by the HoodLock locker and vesting contracts on Robinhood Chain, ' +
+    'HoodLock is a token locker, so locked value is reported as vesting and tvl is zero by design. ' +
+    'Vesting counts the ERC-20 balances held by the HoodLock locker and vesting contracts on Robinhood Chain, ' +
     'plus the Uniswap V3 and V4 positions locked in the HoodLock Liquidity Locker, valued by the tokens each position holds. ' +
     'Lock and vesting records are read on chain to find which tokens each contract holds, then every ' +
     'balance is read with balanceOf, so withdrawn locks and fully claimed vesting stop counting ' +
     'automatically. HoodLock\'s own LOCK token held by the contracts is reported as staking, and locked positions ' +
     'that pair LOCK as pool2. Burned supply ' +
     'is excluded because it is sent to the dead address and is no longer held by any HoodLock contract.',
-  robinhood: { tvl, staking, pool2 },
+  robinhood: { tvl: () => ({}), vesting, staking, pool2 },
 }
