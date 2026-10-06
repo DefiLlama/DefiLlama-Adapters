@@ -53,8 +53,31 @@ async function removeNestedMidas(api, tokens, vaults) {
   api.add(calls.map(c => c.target), balances.map(b => -b))
 }
 
+// The Liquid Boring Vaults also hold shares of Morpho vaults curated by Sentora and Steakhouse, which count
+// those assets under their own listings. They stay with the vault's curator, so the shares the Liquid
+// vaults hold are subtracted here, valued at each vault's share price.
+const curatorVaultsHeld = {
+  ethereum: [
+    '0x6dC58a0FdfC8D694e571DC59B9A52EEEa780E6bf', // Sentora RLUSD Main (sentora)
+    '0xC21b08C16458202593D4D9B26b9984Ee67b38BbD', // Sentora PRIME Main (sentora)
+    '0xbeef088055857739c12cd3765f20b7679def0f51', // Steakhouse Prime USDC (steakhouse)
+  ],
+}
+
+async function removeHeldCuratorVaults(api, vaults) {
+  const held = curatorVaultsHeld[api.chain] || []
+  if (!held.length || !vaults.length) return
+  const calls = held.flatMap(target => vaults.map(v => ({ target, params: [v.vault] })))
+  const shares = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true }) // a vault may not exist yet at past blocks
+  const positions = calls.map((call, i) => ({ ...call, shares: shares[i] })).filter(p => p.shares && BigInt(p.shares) > 0n)
+  if (!positions.length) return
+  const assets = await api.multiCall({ abi: 'address:asset', calls: positions.map(p => p.target) })
+  const amounts = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: positions.map(p => ({ target: p.target, params: [p.shares] })) })
+  api.add(assets, amounts.map(a => -a))
+}
+
 const curatorExport = getCuratorExport({
-  methodology: 'Count all assets deposited in all vaults curated by Nonce Capital: the ether.fi Liquid Boring Vaults (Ethereum and Optimism) and the Midas-issued Liquid Reserve and Liquid RWA tokens (Optimism). Midas tokens held by the Liquid vaults are excluded, as they are already counted in the vaults\' NAV.',
+  methodology: 'Count all assets deposited in all vaults curated by Nonce Capital: the ether.fi Liquid Boring Vaults (Ethereum and Optimism) and the Midas-issued Liquid Reserve and Liquid RWA tokens (Optimism). Midas tokens held by the Liquid vaults are excluded, as they are already counted in the vaults\' NAV, and so are the Sentora and Steakhouse Morpho vault shares they hold, which those curators count.',
   blockchains: {
     ethereum: {},
     optimism: {
@@ -75,6 +98,7 @@ for (const chain of ['ethereum', 'optimism']) {
       const vaults = liquidBoringVaults.filter(v => block >= v.deployBlocks[chain])
       await curatorChain.tvl(api)
       await boringVaultTvl(api, vaults)
+      await removeHeldCuratorVaults(api, vaults)
       if (chain === 'optimism') {
         const midasTokens = optimismMidasTokens.filter(t => block >= t.deployBlock).map(t => t.token)
         await removeNestedMidas(api, midasTokens, vaults)
