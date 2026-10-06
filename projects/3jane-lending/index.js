@@ -30,9 +30,6 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: `We count the tokens on the contract`,
-  hallmarks: [
-    ['2026-09-29', 'USD3 supply cap raised to $100M, deposits reopened'],
-  ],
   ethereum: {
     tvl,
     borrowed,
