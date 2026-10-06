@@ -2,6 +2,9 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require('../helper/coreAssets.json');
 
 module.exports = {
+  hallmarks: [
+    ['2026-10-02', 'Blast L2 shutdown announced, bridge withdrawals until Oct 26'],
+  ],
   ethereum: {
     tvl: async (api) =>{
       const balances = {
