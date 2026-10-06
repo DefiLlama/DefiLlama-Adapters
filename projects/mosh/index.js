@@ -72,14 +72,18 @@ async function tvl(api) {
     api.multiCall({ abi: 'uint256:vaultCount', calls: swarms, permitFailure: true }),
   ])
   const counterOf = swarms.map((s, i) => (native[i] ?? LEGACY_SWARMS.includes(s)) ? nullAddress : counters[i])
+  // a swarm whose counter asset did not read is skipped rather than allowed to fail the whole run;
+  // its vaults need the launched token too, to build a pool key
+  const hasCounter = (i) => Boolean(counterOf[i])
+  const hasPair = (i) => hasCounter(i) && Boolean(memecoins[i]) && memecoins[i] !== nullAddress
 
-  const vaultCalls = swarms.flatMap((s, i) => Array.from({ length: Number(vaultCounts[i] ?? 0) }, (_, j) => ({ target: s, params: [j], swarm: i })))
+  const vaultCalls = swarms.flatMap((s, i) => !hasPair(i) ? [] : Array.from({ length: Number(vaultCounts[i] ?? 0) }, (_, j) => ({ target: s, params: [j], swarm: i })))
   const vaults = await api.multiCall({ abi: 'function vaults(uint256) view returns (address)', calls: vaultCalls.map(({ target, params }) => ({ target, params })) })
 
   const swarmOfVault = vaults.map((_, k) => vaultCalls[k].swarm)
 
   // cash: the counter asset held by each swarm and each of its vaults
-  const ownerTokens = swarms.map((s, i) => [[counterOf[i]], s])
+  const ownerTokens = swarms.flatMap((s, i) => hasCounter(i) ? [[[counterOf[i]], s]] : [])
   vaults.forEach((v, k) => ownerTokens.push([[counterOf[swarmOfVault[k]]], v]))
   await sumTokens2({ api, ownerTokens })
 
@@ -114,15 +118,18 @@ async function tvl(api) {
   // inventory above.
   const rangeCounts = await api.multiCall({ abi: 'uint256:openRangeCount', calls: vaults, permitFailure: true })
   const rangeCalls = vaults.flatMap((v, k) => Array.from({ length: Number(rangeCounts[k] ?? 0) }, (_, j) => ({ target: v, params: [j], vault: k })))
-  const ranges = rangeCalls.length ? await api.multiCall({ abi: RANGE_ABI, calls: rangeCalls.map(({ target, params }) => ({ target, params })) }) : []
-  const extraKeys = [...new Set(rangeCalls.map((r, j) => Number(ranges[j].venue) > 0 ? `${r.vault}:${Number(ranges[j].venue)}` : null).filter(Boolean))]
+  // a range or venue that does not read is skipped, not allowed to fail the whole run
+  const ranges = rangeCalls.length ? await api.multiCall({ abi: RANGE_ABI, calls: rangeCalls.map(({ target, params }) => ({ target, params })), permitFailure: true }) : []
+  const extraKeys = [...new Set(rangeCalls.map((r, j) => ranges[j] && Number(ranges[j].venue) > 0 ? `${r.vault}:${Number(ranges[j].venue)}` : null).filter(Boolean))]
   const extraCalls = extraKeys.map(key => { const [k, v] = key.split(':').map(Number); return { target: vaults[k], params: [v - 1], key } })
-  const extras = extraCalls.length ? await api.multiCall({ abi: EXTRA_VENUE_ABI, calls: extraCalls.map(({ target, params }) => ({ target, params })) }) : []
+  const extras = extraCalls.length ? await api.multiCall({ abi: EXTRA_VENUE_ABI, calls: extraCalls.map(({ target, params }) => ({ target, params })), permitFailure: true }) : []
   const venueOf = new Map(extraCalls.map((c, i) => [c.key, extras[i]]))
   const rangeKeys = rangeCalls.map((r, j) => {
+    if (!ranges[j]) return null
     const venue = Number(ranges[j].venue)
     if (venue === 0) return ponsKeyOf(r.vault)
     const [currency0, currency1] = pairOf(swarmOfVault[r.vault]), extra = venueOf.get(`${r.vault}:${venue}`)
+    if (!extra) return null
     return { currency0, currency1, fee: extra.fee, tickSpacing: extra.tickSpacing, hooks: nullAddress }
   })
 
@@ -135,6 +142,7 @@ async function tvl(api) {
   const sqrtPriceOf = new Map(pools.map((id, i) => [id, slot0[i] ? Number(slot0[i].sqrtPriceX96) / 2 ** 96 : 0]))
 
   ranges.forEach((r, j) => {
+    if (!r) return
     const key = rangeKeys[j], sp = key && sqrtPriceOf.get(rangePools[j]), L = Number(r.liquidity)
     if (!sp || !L) return
     const sa = Math.sqrt(1.0001 ** Number(r.tickLower)), sb = Math.sqrt(1.0001 ** Number(r.tickUpper))
