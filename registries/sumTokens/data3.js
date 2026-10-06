@@ -37,17 +37,21 @@ module.exports = {
     },
   },
   "ethos-network": {
-    "methodology": "Measures the total amount of ETH stored in the Vouch contract. Each vouch represents a trust relationship backed by ETH.",
+    "methodology": "TVL is the ETH held in the v1 Vouch contract. Staking is the WHUF held in the EthosVouchV2 contract. Each vouch represents a trust relationship backed by ETH or WHUF.",
     "start": "2025-01-21",
     "base": {
       "tvl": { "owner": "0xD89E6B7687f862dd6D24B3B2D4D0dec6A89A6fdd", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x8B5Ef9c00152CaDBfedA4f59212EDB6e2e45de11"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "ethos-markets": {
-    "methodology": "Measures the total amount of ETH stored in the Reputation Markets contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
+    "methodology": "TVL is the ETH held in the v1 Reputation Markets contract plus the WHUF held in the EthosMarket contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
     "start": "2025-01-21",
     "base": {
-      "tvl": { "owner": "0xC26F339F4E46C776853b1c190eC17173DBe059Bf", "tokens": [ADDRESSES.null] },
+      "tvl": { "ownerTokens": [
+        [[ADDRESSES.null], "0xC26F339F4E46C776853b1c190eC17173DBe059Bf"],
+        [["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"], "0x27F49210bc000BEE3197aFB4397969df35810919"],
+      ] },
     },
   },
   "king-finance": {
