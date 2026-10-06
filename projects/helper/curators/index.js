@@ -210,7 +210,7 @@ async function countFrozenEulerVaultsAtCash(api, vaults, totalAssets) {
   const [cash, totalBorrows, interestRates] = await Promise.all([ABI.euler.cash, ABI.euler.totalBorrows, ABI.euler.interestRate]
     .map(abi => api.multiCall({ abi, calls: vaults, permitFailure: true })))
   vaults.forEach((_, i) => {
-    if (isFrozenEulerVault(cash[i], totalBorrows[i], interestRates[i])) totalAssets[i] = cash[i]
+    if (totalAssets[i] && isFrozenEulerVault(cash[i], totalBorrows[i], interestRates[i])) totalAssets[i] = cash[i]
   })
 }
 
