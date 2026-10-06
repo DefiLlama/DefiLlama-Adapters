@@ -7145,6 +7145,36 @@ const configs = {
       ]
     },
   },
+  "chance": {
+    "methodology": "Counts prize deposits and unsettled entry payments escrowed in the Chance InstantWin and MultiWin game contracts (current and previous deployments) on Robinhood Chain. CHANCE, the protocol's own token, posted as prizes is counted under staking.",
+    "start": "2026-09-24",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0xfB9017fd176747Dd7D67dA2CF05E7735543ec5F9",
+          "0x1cF459104a2E0E5806a2c28722a1Fab4e5585Cc1",
+          "0x90Ca273088097f6B4b4869D597A74b6d4F7b102f",
+          "0xE504a0b1AAa95F80221CEEd0eFf44Ba85beAd798"
+        ],
+        "tokens": [
+          ADDRESSES.robinhood.USDG,
+          "0x020bfc650a365f8bb26819deaabf3e21291018b4", // CASHCAT
+          "0x98096d17e191b3da1d5f99a6d7b3584351b11e18" // BONER
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0xfB9017fd176747Dd7D67dA2CF05E7735543ec5F9",
+            "0x1cF459104a2E0E5806a2c28722a1Fab4e5585Cc1",
+            "0x90Ca273088097f6B4b4869D597A74b6d4F7b102f",
+            "0xE504a0b1AAa95F80221CEEd0eFf44Ba85beAd798"
+          ],
+          "0x500d15e7c0d0e99ac4aae2a40d8738ba1b3167c9" // CHANCE
+        ]
+      }
+    },
+  },
   "chaotic": {
     "moonriver": {
       "owner": "0x78D4664408c06F2BeDc4f108f3Fc8f0AB017a0AE",
