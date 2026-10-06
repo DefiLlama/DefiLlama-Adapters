@@ -291,4 +291,8 @@ exportObjects.dydx = {
   tvl: async (api) => isHistoricalRun(api) ? dydxHistoricalTvl(api) : dydxLiveTvl(api),
 }
 
+// no longer swept, kept so their history stays in the API
+for (const chain of ['optimism', 'polygon', 'avax'])
+  exportObjects[chain] = { tvl: () => ({}) }
+
 module.exports = exportObjects
