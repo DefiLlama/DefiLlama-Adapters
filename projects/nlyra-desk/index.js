@@ -44,7 +44,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: 'TVL counts the ETH, WETH, USDG and USDe that users keep in the NLYRA Desk escrow contracts (grid, infinity, DCA, TWAP, martingale, ladder, copy-trading and sniper bots, the OTC desk and open Predict rounds). Staking counts the NLYRA deposited in the NLYRA staking contracts.',
+  methodology: 'TVL counts the ETH, WETH, USDG and USDe that users keep in the NLYRA Desk escrow contracts (grid, infinity, DCA, TWAP, martingale, ladder, copy-trading and sniper bots, the OTC desk and open Predict rounds). Other tokens held in the escrows (NLYRA itself, and small-cap or look-alike tokens without a reliable price) are not counted. Staking counts the NLYRA deposited in the NLYRA staking contracts.',
   robinhood: {
     tvl,
     staking,
