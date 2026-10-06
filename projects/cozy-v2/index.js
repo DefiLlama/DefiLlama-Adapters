@@ -6,6 +6,9 @@ const config = {
 }
 
 module.exports = {
+  hallmarks: [
+    ["2026-09-07", "Exploit (~$163k), TVL fell from $175k to $5k"],
+  ],
 };
 
 Object.keys(config).forEach(chain => {

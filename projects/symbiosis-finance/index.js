@@ -29,3 +29,5 @@ deprecatedChains.forEach(chain => {
 })
 
 module.exports.bitcoin = { tvl: getBTCExport('symbiosis') }
+
+module.exports.hallmarks = [["2026-09-10", "Bridge exploit (~$336k unbacked cross-chain mint), TVL fell ~$1.2M over Sep 10-12"]]
