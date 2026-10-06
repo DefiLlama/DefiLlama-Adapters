@@ -94,7 +94,10 @@ async function leaveOutMorphoBadDebt(api, allVaults, allAssets, totalAssets) {
     multi(api, abi.marketIdsLength, adapters.map((a) => a.address)),
     multi(api, abi.balanceOf, v2.map((v) => ({ target: assets.get(v.vault), params: [v.vault] }))),
   ])
-  adapters.forEach((a, k) => a.v.adapters.push({ ...a, realAssets: realAssets[k], morpho: adapterMorphos[k], marketCount: marketCounts[k] }))
+  adapters.forEach((a, k) => {
+    a.v.adapters.push({ ...a, realAssets: realAssets[k], morpho: adapterMorphos[k], marketCount: marketCounts[k] })
+    if (isAddr(adapterMorphos[k]) && marketCounts[k] == null) a.v.incomplete = true // a market adapter whose markets did not load
+  })
   v2.forEach((v, i) => { v.idle = idle[i] })
   const adapterMarkets = v2.flatMap((v) => v.adapters).filter((a) => isAddr(a.morpho) && a.marketCount != null)
     .flatMap((a) => range(a.marketCount).map((j) => ({ a, j })))

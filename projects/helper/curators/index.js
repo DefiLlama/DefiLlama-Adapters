@@ -214,7 +214,9 @@ async function countFrozenEulerVaultsAtCash(api, vaults, totalAssets) {
   })
 }
 
-async function getCuratorTvlErc4626(api, vaults) {
+// euler: run the frozen-Euler check (Euler vault lists only). booked: collects the vaults whose
+// asset() and totalAssets() reads succeeded, for the cross-holding netting.
+async function getCuratorTvlErc4626(api, vaults, { euler = false, booked = new Set() } = {}) {
   if (!vaults || vaults.length === 0) return;
   vaults = vaults.map(v => v.toLowerCase())
   vaults = [...new Set(vaults)] // de-dup vault addresses
@@ -222,7 +224,8 @@ async function getCuratorTvlErc4626(api, vaults) {
   // Get assets and totalAssets for all vaults
   const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
-  await countFrozenEulerVaultsAtCash(api, vaults, totalAssets)
+  vaults.forEach((vault, i) => { if (assets[i] && totalAssets[i]) booked.add(vault) })
+  if (euler) await countFrozenEulerVaultsAtCash(api, vaults, totalAssets)
 
   // Check which vaults are Morpho v2 (have liquidityAdapter function)
   const liquidityAdapters = await api.multiCall({
@@ -662,13 +665,14 @@ async function getCuratorTvl(api, vaults) {
   ]
 
   // Process all ERC-4626 vaults together for proper de-duplication
+  const booked = new Set()
   if (allErc4626Vaults.length > 0) {
-    await getCuratorTvlErc4626(api, allErc4626Vaults)
+    await getCuratorTvlErc4626(api, allErc4626Vaults, { booked })
   }
 
   // Process other vault types separately
-  await getCuratorTvlErc4626(api, allVaults.euler)
-  await getCuratorTvlErc4626(api, allVaults.silo)
+  await getCuratorTvlErc4626(api, allVaults.euler, { euler: true, booked })
+  await getCuratorTvlErc4626(api, allVaults.silo, { booked })
 
   // aera.finance vaults
   if (vaults.aera) {
@@ -721,7 +725,7 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlMidasToken(api, vaults.midasTokens)
   }
 
-  const shareVaults = [...allErc4626Vaults, ...allVaults.euler, ...allVaults.silo, ...(vaults.accountableVaults || [])]
+  const shareVaults = [...booked, ...(vaults.accountableVaults || [])] // only vaults whose reads succeeded
   const otherVaults = ['aera', 'turtleclub', 'boringVaults', 'symbiotic', 'upshiftV2', 'nestedVaults'].flatMap(key => vaults[key] || [])
   await netCrossHoldings(api, shareVaults, [...shareVaults, ...otherVaults])
 
