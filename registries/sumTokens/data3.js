@@ -865,6 +865,13 @@ module.exports = {
       "tvl": { "owners": ["0xAF0Bf8593dC6CA973DF2132731B0F9B5F974FA9F", "0xa1bf9bb17C283CF17F01516f78f3127D2C84C79d"], "tokens": [ADDRESSES.base.USDC] },
     }
   },
+  "alfaclub-v2": {
+    "methodology": "USDG held by the AlfaClub V2 RoomKey contract on Robinhood Chain: bonding-curve reserves backing outstanding room keys, plus key-trading fees not yet claimed.",
+    "start": "2026-09-27",
+    "robinhood": {
+      "tvl": { "owners": ["0x64Fb2678cCe04A352a405eAa024eE02935f0ACb9"], "tokens": [ADDRESSES.robinhood.USDG] },
+    }
+  },
   "usdr": {
     "methodology": "TVL is the $M balance held by the USDR extension contract on RISE Chain, which is the collateral backing every minted USDR.",
     "rise": {
