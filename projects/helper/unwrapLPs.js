@@ -12,7 +12,7 @@ const uniV3ABI = require('./abis/uniV3.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
-const { tickToPrice } = require('./utils/tick');
+const { tickToPrice, getSqrtPriceX96AtTick } = require('./utils/tick');
 const { queryAllium } = require('./allium');
 const { cachedGraphQuery } = require('./cache');
 
@@ -288,8 +288,9 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
     const bottomTick = +position.tickLower
     const topTick = +position.tickUpper
     const sp = lpInfo[getKey(position)].sqrtPrice
-    const sa = tickToPrice(bottomTick / 2)
-    const sb = tickToPrice(topTick / 2)
+    // exact edges: 1.0001 ** (tick / 2) drifts ~1e-12 from TickMath, which misvalues positions priced at an edge
+    const sa = Number(getSqrtPriceX96AtTick(bottomTick)) / 2 ** 96
+    const sb = Number(getSqrtPriceX96AtTick(topTick)) / 2 ** 96
 
     let amount0 = 0
     let amount1 = 0
