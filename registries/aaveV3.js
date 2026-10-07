@@ -101,7 +101,10 @@ const configs = {
   'kaskad': {
     igra: {
       poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
-    }
+    },
+    robinhood: {
+      poolDatas: ['0x9ff935c295925540077416042E3A0e1bE5276401']
+    },
   },
   'velkonix': { megaeth: { poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'], }, },
   'oter-fi': { robinhood: { poolDatas: ['0xD95D42BAd744821af78da755C6fC012f10ad1824'], }, },
