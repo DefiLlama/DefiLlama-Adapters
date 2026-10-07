@@ -41,7 +41,9 @@ function createTvl(chain) {
   return async (api) => {
     const [yusan, bridge] = await Promise.all([
       getCache(YUSAN_API),
-      getCache(ONESEC_API),
+      // 1sec.to 403s (dead since Mar 2026, froze this feed): without the split,
+      // multi-chain tokens are skipped below instead of triple-counted
+      getCache(ONESEC_API).catch(() => null),
     ])
 
     for (const symbol of chainTokens[chain]) {
@@ -58,6 +60,7 @@ function createTvl(chain) {
 
       let amount = available
       if (chainsWithToken.length > 1) {
+        if (!bridge) continue
         amount = calcChainShare(available, bridge[symbol], chain, chainsWithToken)
       }
 
@@ -91,7 +94,7 @@ async function borrowed(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'Cross-chain lending protocol. Deposits attributed to origin chains.',
+    'Cross-chain lending protocol. Deposits attributed to origin chains. When the bridge split feed is unavailable, multi-chain tokens are excluded rather than counted on every chain.',
   icp: { tvl: createTvl('icp'), borrowed },
   bitcoin: { tvl: createTvl('bitcoin') },
   doge: { tvl: createTvl('doge') },
