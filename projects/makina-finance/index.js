@@ -39,7 +39,7 @@ const getToBlock = async (api) => api.chain === 'base' ? (await api.getBlock()) 
 
 async function getMachines(api) {
   const { factory, fromBlock } = hubs[api.chain]
-  const logs = await getLogs2({ api, target: factory, fromBlock, toBlock: await getToBlock(api), eventAbi: abi.MachineCreated, extraKey: 'machines' })
+  const logs = await getLogs2({ api, target: factory, fromBlock, eventAbi: abi.MachineCreated, extraKey: 'machines' })
   return { machines: logs.map(log => log.machine), shareTokens: logs.map(log => log.shareToken) }
 }
 
@@ -79,7 +79,7 @@ async function tvl(api) {
   nested.forEach(({ accountingToken }, i) => api.add(accountingToken, -BigInt(nestedAssets[i])))
 
   // deposits still sitting in pre-deposit vaults that have not migrated to their machine yet
-  const preDepositLogs = await getLogs2({ api, target: factory, fromBlock, toBlock: await getToBlock(api), eventAbi: abi.PreDepositVaultCreated, extraKey: 'preDepositVaults' })
+  const preDepositLogs = await getLogs2({ api, target: factory, fromBlock, eventAbi: abi.PreDepositVaultCreated, extraKey: 'preDepositVaults' })
   const preDepositVaults = preDepositLogs.map(log => log.preDepositVault)
   const depositTokens = await api.multiCall({ abi: abi.depositToken, calls: preDepositVaults })
   return api.sumTokens({ tokensAndOwners2: [depositTokens, preDepositVaults] })
