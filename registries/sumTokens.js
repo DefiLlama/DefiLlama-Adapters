@@ -361,7 +361,7 @@ const configs = {
     },
   },
   "flooor-fun": {
-    "methodology": "TVL is the native ETH held in the flooor.fun auction contracts on Base (the current main contract, the legacy contract, and one auction contract per NFT collection), comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). ETH exits a contract when sellToHighest() is called, distributing 99.5% to the NFT seller and 0.5% fee to the protocol.",
+    "methodology": "TVL is the native ETH held in the flooor.fun auction contracts on Base (the current main contract, the legacy contract, and one auction contract per NFT collection), comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). When sellToHighest() is called, the winning bid is split: 95% is sent to the NFT seller and 0.5% to the protocol as a fee, while 4.5% stays in the contract as epoch pool rewards (poolAccrued) until signers claim it.",
     "base": {
       "owners": [
         "0xD53292182A342953f446CD4D10Dc177776044306", // current
