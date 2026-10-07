@@ -90,38 +90,54 @@ async function getMorphoVaults(api, owners, {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
 
+  // Collect every vault created by the factories first: ownership can be
+  // transferred after creation, so creation logs alone go stale both ways
+  // (miss vaults transferred in, keep counting vaults transferred out).
+  const discoveredVaults = []
+
   // Query v1 vaults
   if (MorphoConfigs[api.chain]?.vaultFactories) {
-    let filter = getAllVaults ? _ => true : log => isOwner(log.initialOwner, owners)
     for (const factory of MorphoConfigs[api.chain].vaultFactories) {
-      const vaultOfOwners = (
-        await getLogs2({
-          api,
-          eventAbi: ABI.morpho.CreateMetaMorphoEvent,
-          target: factory.address,
-          fromBlock: factory.fromBlock,
-          toBlock: safeBlock,
-          onlyUseExistingCache,
-        })
-      ).filter(filter).map((log) => log.metaMorpho)
-      allVaults = allVaults.concat(vaultOfOwners)
+      const logs = await getLogs2({
+        api,
+        eventAbi: ABI.morpho.CreateMetaMorphoEvent,
+        target: factory.address,
+        fromBlock: factory.fromBlock,
+        toBlock: safeBlock,
+        onlyUseExistingCache,
+      })
+      discoveredVaults.push(...logs.map((log) => log.metaMorpho))
     }
   }
 
   // Query v2 vaults
   if (MorphoConfigs[api.chain]?.vaultFactoriesV2) {
-    let filter = getAllVaults ? _ => true : log => isOwner(log.owner, owners)
     for (const factory of MorphoConfigs[api.chain].vaultFactoriesV2) {
-      const vaultOfOwners = (
-        await getLogs2({
-          api,
-          eventAbi: ABI.morpho.CreateVaultV2Event,
-          target: factory.address,
-          fromBlock: factory.fromBlock,
-          toBlock: safeBlock
-        })
-      ).filter(filter).map((log) => log.newVaultV2)
-      allVaults = allVaults.concat(vaultOfOwners)
+      const logs = await getLogs2({
+        api,
+        eventAbi: ABI.morpho.CreateVaultV2Event,
+        target: factory.address,
+        fromBlock: factory.fromBlock,
+        toBlock: safeBlock,
+        onlyUseExistingCache,
+      })
+      discoveredVaults.push(...logs.map((log) => log.newVaultV2))
+    }
+  }
+  if (getAllVaults) return discoveredVaults
+  if (!discoveredVaults.length) return []
+
+  // Verify the CURRENT owner on-chain
+  const currentOwners = await api.multiCall({
+    abi: ABI.owner,
+    calls: discoveredVaults,
+    permitFailure: true,
+  })
+
+  for (let i = 0; i < discoveredVaults.length; i++) {
+    if (!currentOwners[i]) continue
+    if (isOwner(currentOwners[i], owners)) {
+      allVaults.push(discoveredVaults[i])
     }
   }
 
