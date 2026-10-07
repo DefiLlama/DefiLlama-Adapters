@@ -27498,6 +27498,14 @@ const configs = {
       ]
     },
   },
+  "taifoon": {
+    "methodology": "TVL is the ICP held on the ICP ledger by the tICP bridge custody canister (dkafq-4aaaa-aaaaj-a6ysq-cai, default account). It backs the tICP released on Base, Arc and Robinhood Chain.",
+    "icp": {
+      "owners": [
+        "dkafq-4aaaa-aaaaj-a6ysq-cai"
+      ]
+    },
+  },
   "tangent-protocol": {
     "cardano": {
       "tvl": {
