@@ -1102,6 +1102,11 @@ const configs = {
             '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
           ],
         },
+        arc: {
+          morpho: [
+            '0xabb75DcDAC72ff9a4a3603119B1e6d060f212ECA', // Aerie x Plume USDC Core (Morpho V2)
+          ],
+        },
       }
     },
     _meta: {
