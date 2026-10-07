@@ -34,6 +34,11 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+  horizen: {
+    [ADDRESSES.horizen.ZEN]: `base:${ADDRESSES.base.ZEN}`,
+    [ADDRESSES.horizen.USDC]: `base:${ADDRESSES.base.USDC}`,
+    [ADDRESSES.horizen.cbBTC]: `base:${ADDRESSES.base.cbBTC}`,
+  },
 }
 const ibcMappings = {
   // Sample Code
