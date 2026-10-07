@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -11,7 +12,7 @@ const STATE_VIEW = "0xF3334192D15450CdD385c8B70e03f9A6bD9E673b"; // Uniswap V4 S
 // The native-USDC quote path (pairToken = 0x0, the 18-decimal ledger of the same funds as 0x3600…)
 // exists in the contracts but was never approved on mainnet; it is skipped explicitly so USDC is only
 // ever counted through the view token.
-const NATIVE = "0x0000000000000000000000000000000000000000";
+const NATIVE = ADDRESSES.null;
 const FACTORY_START_BLOCK = 20883999;
 
 const ABI = {

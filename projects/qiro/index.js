@@ -41,6 +41,6 @@ module.exports = {
     'VaultDeployed logs. Capital deployed to whitelisted subaccounts is no longer held by the protocol ' +
     'and is reported separately as borrowed, at the optimistic value of each vault\'s position managers ' +
     '(VaultStrategyManager totalOptimisticValue), which includes yield accrued but not yet returned to the vault.',
-  start: 1789148495, // first vault deployment
+  start: '2026-09-11', // first vault deployment
   ethereum: { tvl, borrowed },
 }

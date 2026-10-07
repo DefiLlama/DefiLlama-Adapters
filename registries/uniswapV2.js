@@ -24,6 +24,11 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'bbbfi-swap-v2': {
+    methodology: 'Value of reserves in BBBFi-owned V2 AMM pools on XDC and BSC, discovered from each factory. Uses the standard core-asset reserve valuation helper. Staked LP receipts are not added again; reward budgets and bridge reserves are excluded.',
+    xdc: '0xFe536C6a76487563D4393a3Bd03ef2621546A198',
+    bsc: '0xE9Eb4365b8BBb5D7A68c9aE98BcDbe18db3FCEb7',
+  },
   'zero-swap': {
     robinhood: '0xc802A440559cEE8A66E2023403d34Be9084A720e',
   },
@@ -146,7 +151,15 @@ const uniV2Configs = {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
   'eticahub': {
-    etica: { factory: '0xfc8dE5A5087c8825AA54E2C57B3FFe0e23784bc3', staking: ['0x75d81d03a98CD9195593b8963aF17E13fAa70334', '0xa5a1bc6307b0b87989b8456d4b35f88a68650044'] },
+    misrepresentedTokens: true,
+    etica: {
+      factory: '0xfc8dE5A5087c8825AA54E2C57B3FFe0e23784bc3',
+      coreAssets: [ADDRESSES.etica.ETI], // ETI; ETX is priced through the ETI/ETX pair
+      blacklistedTokens: [
+        '0x75d81d03a98CD9195593b8963aF17E13fAa70334', // stETX, its ETX is counted under staking
+      ],
+      staking: { owner: '0x75d81d03a98CD9195593b8963aF17E13fAa70334', tokens: ['0xa5A1Bc6307b0b87989B8456D4b35F88a68650044'], lps: ['0x88f179117BE4402a71ca3e9094E7942D03Db84b3'], coreAssets: [ADDRESSES.etica.ETI] },
+    },
   },
   'asteroneo': {
     neox: '0x1dAbb81D9Faeb1DF4a8c97A60C5269c7D45e66B0',
@@ -565,6 +578,7 @@ const uniV2Configs = {
     bsc: '0x73d9f93d53505cb8c4c7f952ae42450d9e859d10',
   },
   'direct-exchange': {
+    deadFrom: '2026-09-30',
     kava: '0xcE08c3d20Ff00a9Cf0D28922768bD606592B5D4C',
   },
   'diviswap': {
@@ -1019,6 +1033,7 @@ const uniV2Configs = {
     hallmarks: [
       ['2022-08-15', "incentives not given"]
     ],
+    deadFrom: "2022-08-15",
     kava: '0xc08BAEA14C14f25bcafe3e3E05550715505eF3dE',
   },
   'justmoney': {
@@ -1029,12 +1044,14 @@ const uniV2Configs = {
     tron: 'TBfTeNjh7k8PbkTad8z6WS2vqh7SQZUfQ8',
   },
   'kapaswap': {
+    deadFrom: '2026-09-30',
     kava: '0xAb9F1D773Bde5657BC1492dfaF57b0b9EB59FDDc',
   },
   'kapinus': {
     bsc: '0x70e881fa43a7124e36639b54162395451cef1922',
   },
   'kasavadex': {
+    deadFrom: '2026-09-30',
     hallmarks: [
       ['2022-08-15', "incentives not given"]
     ],
@@ -1057,6 +1074,7 @@ const uniV2Configs = {
     chz: '0xE2918AA38088878546c1A18F2F9b1BC83297fdD3',
   },
   'kdex': {
+    deadFrom: '2026-09-30',
     kava: '0x9a6d197e85e61c23146F5b7FA55fc8a6EDDD2D57',
   },
   'kewl': {
@@ -1112,6 +1130,7 @@ const uniV2Configs = {
     era: '0x6167ce530e710e29d0F32CFe50062028800e5918',
   },
   'kswap': {
+    deadFrom: '2026-09-30',
     kava: '0xEFD3ad14E5cF09b0EbE435756337fb2e9D10Dc1a',
   },
   'kswapfinance': {
@@ -1334,6 +1353,7 @@ const uniV2Configs = {
     polygon: '0x800b052609c355cA8103E06F022aA30647eAd60a',
   },
   'mversex': {
+    deadFrom: '2026-09-30',
     kava: '0x266F951c525130a4E230bB40F0e3525C6C99B9c5',
   },
   'nanoswap': {
@@ -1755,6 +1775,7 @@ const uniV2Configs = {
     stable: '0x19E10fb5875C4901D9650aFc001197285dBBC060',
   },
   'sevenswap': {
+    deadFrom: '2026-09-30',
     kava: '0x72b97F61fdb9a3aD34cd284B2f9c55d04127019c',
   },
   'shadow-legacy': {
@@ -2218,6 +2239,12 @@ const uniV2Configs = {
     theta: '0xa2De4F2cC54dDFdFb7D27E81b9b9772bd45bf89d',
   },
   'voltswap-v2': {
+    _options: {
+      blacklistedTokens: [
+        ADDRESSES.meter.WMTR,  // hacked
+        ADDRESSES.meter.MTRG,  // hacked
+      ],
+    },
     base: '0x2A5478bE24F9E536cCb91DBF650EFD6cE6C00398',
     meter: '0xb33dE8C0843F90655ad6249F20B473a627443d21',
   },
@@ -3194,6 +3221,28 @@ const uniV2Configs = {
       factory: '0x4188aDbFfBec026EdE44F2C3A7E22beDD880a46f',
     },
     start: '2026-07-10',
+  },
+  'arctide-dex': {
+    start: '2026-09-16',
+    methodology: 'Value of the tokens locked in the liquidity pools. LP fees are paid in native USDC outside the reserves and are not counted. Staking is the TIDE deposited in Hardstake, priced against USDC in its Arctide pool.',
+    arc: {
+      factory: '0x6AFd30Cb35D8B70Cfd84C9AcA92ddc2Dda2879Cb',
+      staking: {
+        owner: '0x5bd527c326Ab26d2969C40EF83D7Bbd2Ac454588', // Hardstake
+        tokens: ['0x92395d0cD51BB504a39E53105CB6862948aF1B8E'], // TIDE
+        lps: ['0x8E61d497784779C31936Fdfc223B7D53fB2664B7'], // TIDE/USDC
+        useDefaultCoreAssets: true,
+      },
+    },
+  },
+  'motoswap-amm': {
+    start: '2026-09-29', // factory deployed at block 26075263 (2026-09-28 10:09 UTC), so 2026-09-29 is the first daily snapshot where it exists
+    methodology: 'Value of the tokens in Motoswap pairs, enumerated from the factory. Motoswap LP tokens staked in the Motoswap farms are not added again.',
+    ethereum: '0x81C9CBC47d700dA1777aBd831D8dA3f526DfAe24',
+  },
+  'unitflow-finance-v2': {
+    methodology: 'Token balances held in every Unitflow v2.5 pair, enumerated from the factory.',
+    arc: '0xFc1EC6761e246D5cb0c4C22669f8635098B22ba1',
   },
 }
 

@@ -6,8 +6,8 @@ const KFT = "0xa0eeda2e3075092d66384fe8c91a1da4bca21788"
 const kBRISE = '0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9'
 
 module.exports = {
+  deadFrom: '2026-09-30',
   misrepresentedTokens: true,
-  methodology: "Using DefiLlama's SDK for making on-chain calls to Selfex Factory Contract to iterate over Liquidity Pools & count token balances therein.",
 };
 
 chains.forEach(chain => {

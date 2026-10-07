@@ -50,6 +50,9 @@ const CONTRACTS_TO_SKIP = new Set([
   'proxy-gov-ixlmdejtrsy-ixlmusdc-1.v1.tmplr.near',
 ]);
 
+// every new market ships with a gov proxy and an oracle proxy under these prefixes; none of them are markets
+const NON_MARKET_PREFIXES = ['proxy-gov-', 'proxy-oracle-']
+
 const FAST_FAIL_PATTERNS = ['does not exist', 'Buffer', 'Received undefined']
 
 function detectCrossChainToken(tokenId) {
@@ -302,7 +305,7 @@ async function fetchDeploymentsFromContract(registryContract) {
   }
 
   return deployments.filter(deployment => {
-    if (CONTRACTS_TO_SKIP.has(deployment)) {
+    if (CONTRACTS_TO_SKIP.has(deployment) || NON_MARKET_PREFIXES.some(p => deployment.startsWith(p))) {
       console.log(`Skipping known non-market contract: ${deployment}`)
       return false
     }
@@ -435,7 +438,7 @@ const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'so
 
 module.exports = {
   methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Flare, Bitcoin).',
-  start: 1754902109,
+  start: '2025-08-11',
 }
 
 SUPPORTED_CHAINS.forEach(chain => {

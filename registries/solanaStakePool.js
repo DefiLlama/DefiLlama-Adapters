@@ -126,6 +126,14 @@ const configs = {
   'blazestake': {
     solana: { type: 'staked', address: '6WecYymEARvjG5ZyqkrVQ6YkhPfujNzWpSPwNKXHCbV2' },
   },
+  'forward-industries-sol': {
+    methodology: "TVL is the total amount of SOL staked in the Forward Industries fwdSOL stake pool.",
+    solana: '2iZHumJq19hyCYkD3xFoZ6dbiFbJ5nqbwALMdJBYQsJa',
+  },
+  'definity-staked-sol': {
+    methodology: "TVL is the total amount of SOL staked in the Definity definSOL stake pool.",
+    solana: 'Bvbu55B991evqqhLtKcyTZjzQ4EQzRUwtf9T4CcpMmPL',
+  },
 }
 
 module.exports = buildProtocolExports(configs, solanaStakePoolExportFn)

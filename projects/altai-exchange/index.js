@@ -26,7 +26,7 @@ module.exports = {
   doublecounted: false,
   misrepresentedTokens: false,
   methodology: "Altai Exchange is a Real World Assets (RWA) protocol on BNB Chain that tokenizes physical precious metals (gold, silver, platinum, palladium, etc.). TVL represents the total USD value of all RWA-backed tokens and stablecoins currently staked/locked in the official staking contract. Token prices are supplied directly on-chain via Pyth Network oracles, with some metal tokens using troy ounce (31.1 g) denomination that is automatically normalized by the protocol.",
-  start: 1730287364,
+  start: '2024-10-30',
   bsc: { tvl },
   hallmarks: [
     ['2024-10-30', "Altai Exchange Mainnet Launch"]

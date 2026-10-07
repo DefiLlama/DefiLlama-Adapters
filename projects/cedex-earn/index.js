@@ -17,7 +17,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: 'Tvl: alue of USDC in the vault, borrowed: USDC borrowed by the users',
+  methodology: 'Tvl: value of USDC in the vault, borrowed: USDC borrowed by the users',
   ethereum: {
     tvl: sumTokensExport({
       owners: [DEPOSIT_VAULT, CREDIT_VAULT],

@@ -12,7 +12,7 @@ const uniV3ABI = require('./abis/uniV3.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
-const { tickToPrice } = require('./utils/tick');
+const { tickToPrice, getSqrtPriceX96AtTick } = require('./utils/tick');
 const { queryAllium } = require('./allium');
 const { cachedGraphQuery } = require('./cache');
 
@@ -224,8 +224,10 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
     calls: poolInfos,
   });
 
+  // value positions from sqrtPriceX96, not tick: a swap that stops exactly on a tick boundary moving down reports
+  // tick = boundary - 1 while the price sits on the boundary, which would count a full tick of liquidity that isn't there
   slot0.forEach((slot, i) => {
-    lpInfoArray[i].tick = slot.tick;
+    lpInfoArray[i].sqrtPrice = Number(slot.sqrtPriceX96) / 2 ** 96;
   });
 
   positions.map(addV4PositionBalances)
@@ -285,19 +287,17 @@ async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, api, blac
     const liquidity = position.liquidity
     const bottomTick = +position.tickLower
     const topTick = +position.tickUpper
-    const tick = +lpInfo[getKey(position)].tick
-    const sa = tickToPrice(bottomTick / 2)
-    const sb = tickToPrice(topTick / 2)
+    const sp = lpInfo[getKey(position)].sqrtPrice
+    // exact edges: 1.0001 ** (tick / 2) drifts ~1e-12 from TickMath, which misvalues positions priced at an edge
+    const sa = Number(getSqrtPriceX96AtTick(bottomTick)) / 2 ** 96
+    const sb = Number(getSqrtPriceX96AtTick(topTick)) / 2 ** 96
 
     let amount0 = 0
     let amount1 = 0
 
-    if (tick < bottomTick) {
+    if (sp <= sa) {
       amount0 = liquidity * (sb - sa) / (sa * sb)
-    } else if (tick < topTick) {
-      const price = tickToPrice(tick)
-      const sp = price ** 0.5
-
+    } else if (sp < sb) {
       amount0 = liquidity * (sb - sp) / (sp * sb)
       amount1 = liquidity * (sp - sa)
     } else {
@@ -687,6 +687,13 @@ const gasTokens = [nullAddress, ADDRESSES.GAS_TOKEN_2, '0xbbbbbbbbbbbbbbbbbbbbbb
   '0x000000000000000000000000000000000000800a', // zksync era gas token
 ]
 const gasTokenSet = new Set(gasTokens)
+// ERC-20 views of the native coin: balanceOf returns the same number as eth_getBalance, so they are
+// read as the native balance and deduped per owner, otherwise listing both counts the coin twice
+const nativeTokenAliases = {
+  polygon: '0x0000000000000000000000000000000000001010', // POL (MRC20)
+  celo: '0x471ece3750da237f93b8e339c536989b8978a438', // CELO (GoldToken)
+  metis: '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000', // METIS
+}
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -701,7 +708,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   tokensAndOwners = tokensAndOwners.filter(i => {
     if (i[1] === nullAddress) return false  // ignore nullAddress owners, as they are usually used to burn tokens
     const token = normalizeAddress(i[0], chain)
-    if (token !== nullAddress && !gasTokens.includes(token))
+    if (token !== nullAddress && !gasTokens.includes(token) && token !== nativeTokenAliases[chain])
       return true
     ethBalanceInputs.push(i[1])
     return false

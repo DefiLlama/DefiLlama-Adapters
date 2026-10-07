@@ -293,6 +293,11 @@ const defaultTokens = {
     '0xabc9547b534519ff73921b1fba6e672b5f58d083', // WOO
     ADDRESSES.avax.USDC_e, //USDC.e
   ],
+  morph: [
+    nullAddress,
+    ...Object.values(ADDRESSES.morph),
+    '0x389C08Bc23A7317000a1FD76c7c5B0cb0b4640b5', // BGB
+  ],
   near: [
     'usdt.tether-token.near',
   ],

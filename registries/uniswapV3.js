@@ -3,6 +3,11 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'bbbfi-swap-v3': {
+    methodology: 'Token balances in BBBFi-owned V3 pools on XDC and BSC, discovered from factory PoolCreated events. Tokens retain their original chain and address for DefiLlama pricing. Staked position NFTs are not counted a second time; reward budgets and bridge reserves are excluded.',
+    xdc: { factory: '0x5037e5B64B677311Ed5332eee7b8C766fFe24088', fromBlock: 106991944 },
+    bsc: { factory: '0x33c27c73003666C61136B8b5c0C4e91939Ec95E3', fromBlock: 120709856 },
+  },
   'noxa-fi-v3': {
     megaeth: { factory: '0x1201EB5081eabc99b23DD952C1BFA5ea090d8779', fromBlock: 249856 },
     monad: { factory: '0x35af92183701E54f751f8b0376da7F9b151bf5A5', fromBlock: 42804409 },
@@ -1672,6 +1677,7 @@ const uniV3Configs = {
   },
   'xtrade': { xlayer: { factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172', fromBlock: 813172, isAlgebra: true, }, },
   'sheriff-v3': { robinhood: { factory: '0x21Fd9aB06cc927E66013e89b045c26b3eDE7bB20', fromBlock: 1, isAlgebra: true, }, },
+  'rayls-dex': { rls: { factory: '0x3f912b39A89708Db8E10205421d3726e2DF4984D', fromBlock: 946546, isAlgebra: true, }, },
   'zebra-v2': {
     scroll: {
       factory: '0x96a7F53f7636c93735bf85dE416A4Ace94B56Bd9',
@@ -1753,6 +1759,30 @@ const uniV3Configs = {
     bsc: {
       factory: '0x73DC984D9490286E735548f61dfCCec67Af82ed9',
       fromBlock: 98756164,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    robinhood: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 60744015,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    base: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 51196358,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    ethereum: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 25958738,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    },
+    arc: {
+      factory: '0xaa5865dC3A60b25D305226d66fd573021f0D8fFB',
+      fromBlock: 21098115,
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
     }
@@ -1870,7 +1900,21 @@ const uniV3Configs = {
       factory: '0xB09f790A1907a1db006e88F14C4f0168fBee9598',
       fromBlock: 21118790,
     },
-  }
+  },
+  'unitflow-finance-v3': {
+    methodology: 'Token balances held in every Unitflow v3 pool, discovered from the factory PoolCreated events.',
+    arc: { factory: '0x5bfBCeb73d39F722B1cB83fD2F11736b28c1Be6d', fromBlock: 21068735 },
+  },
+  'goo-exchange': {
+    start: '2026-09-26',
+    methodology: 'Counts the tokens held by every pool created by the goo exchange factory on Robinhood Chain, found from its PoolCreated events.',
+    // Uniswap V3 fork; pools are CREATE2'd by a separate pool deployer but PoolCreated is emitted by the factory
+    robinhood: { factory: '0x221A6239E40709792b0d4bdc140fA36158CD41C7', fromBlock: 73266708 },
+  },
+  'abyss-dex': {
+    methodology: 'TVL is the sum of both underlying ERC20 balances held by Abyss pools on Robinhood. Pools are discovered from factory PoolCreated events. Separate treasury and fee-vault holdings are excluded.',
+    robinhood: { factory: '0xe7feF2BC860B25bbdEB6F6AB96d88bAAa77ddad7', fromBlock: 50161538 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)

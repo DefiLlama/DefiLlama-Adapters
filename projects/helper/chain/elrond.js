@@ -1,14 +1,42 @@
 const ADDRESSES = require('../coreAssets.json')
+const axios = require('axios')
 const { get } = require('../http')
 const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
-const { post } = require('../http')
 const { getEnv } = require('../env')
 const { getUniqueAddresses, sleep } = require('../utils')
 const { default: PromisePool } = require('@supercharge/promise-pool')
 
+// api.multiversx.com allows ~120 requests a minute per IP and answers 429 with a Retry-After of up to a minute,
+// so vm queries are spaced out process-wide and a 429 pauses everything for the time the API asks
+const QUERY_GAP_MS = 520
+let nextQuerySlot = 0
+async function waitForQuerySlot() {
+  const at = Math.max(Date.now(), nextQuerySlot)
+  nextQuerySlot = at + QUERY_GAP_MS
+  if (at > Date.now()) await sleep(at - Date.now())
+}
+
+async function vmQuery({ scAddress, funcName, args = [] }, { retries = 5 } = {}) {
+  for (let attempt = 0; ; attempt++) {
+    await waitForQuerySlot()
+    try {
+      const { data } = await axios.post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress, funcName, args })
+      return data
+    } catch (e) {
+      const status = e.response?.status
+      const transient = status === 429 || status >= 500 || !e.response // no response: DNS hiccup, reset connection, timeout
+      if (!transient || attempt >= retries) throw new Error(`vm query ${funcName} on ${scAddress} failed: ${e.message}`)
+      const wait = status === 429 ? (+e.response.headers?.['retry-after'] || 30) * 1000 : 3000
+      nextQuerySlot = Math.max(nextQuerySlot, Date.now() + wait)
+      sdk.log(`multiversx api ${status ?? e.code}, pausing vm queries for ${wait / 1000}s`)
+      await sleep(wait)
+    }
+  }
+}
+
 const call = async ({ target, abi, params = [], responseTypes = [] }) => {
-  const data = await post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress: target, funcName: abi, args: params, })
+  const data = await vmQuery({ scAddress: target, funcName: abi, args: params })
 
   const response = data.returnData.map(parseResponses)
   return responseTypes.length === 1 ? response[0] : response
@@ -94,10 +122,12 @@ async function sumTokens({ owner, owners = [], tokens = [], balances = {}, black
 // Query a contract and decode the response using types from its ABI json, without @multiversx/sdk-core.
 // outputType: the endpoint's output type (e.g. 'CommonSettings' or 'List<FarmContext>')
 // abiTypes: the "types" object from the contract's ABI json
-async function queryContractWithAbi({ target, funcName, args = [], outputType, abiTypes = {} }) {
-  const data = await post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress: target, funcName, args })
-  const buffer = Buffer.from(data.returnData[0] || '', 'base64')
-  return decodeTopLevel(buffer, outputType, abiTypes)
+// multiValue: the endpoint returns MultiValueEncoded<outputType>, one return item per value, decoded to an array
+async function queryContractWithAbi({ target, funcName, args = [], outputType, abiTypes = {}, multiValue = false }) {
+  const data = await vmQuery({ scAddress: target, funcName, args })
+  if (data.returnCode && data.returnCode !== 'ok') throw new Error(`${funcName} on ${target} failed: ${data.returnCode} ${data.returnMessage ?? ''}`)
+  const decode = (item) => decodeTopLevel(Buffer.from(item || '', 'base64'), outputType, abiTypes)
+  return multiValue ? data.returnData.map(decode) : decode(data.returnData[0])
 }
 
 // codec reference: https://docs.multiversx.com/developers/data/serialization-overview
@@ -109,7 +139,44 @@ function decodeTopLevel(buffer, type, types) {
     while (!reader.eof()) out.push(decodeNested(reader, inner, types))
     return out
   }
+  switch (type) { // top-level values drop the length prefix, the item is the whole buffer
+    case 'BigUint': return buffer.length ? BigInt('0x' + buffer.toString('hex')).toString() : '0'
+    case 'TokenIdentifier':
+    case 'EgldOrEsdtTokenIdentifier': return buffer.toString('utf8')
+  }
   return decodeNested(reader, type, types) // structs encode identically top-level and nested
+}
+
+// bech32 (BIP173) encoding of a 32 byte hex address, the form the /query endpoint and the API accept
+const BECH32_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+function bech32Polymod(values) {
+  const GEN = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
+  let chk = 1
+  for (const v of values) {
+    const top = chk >> 25
+    chk = ((chk & 0x1ffffff) << 5) ^ v
+    for (let i = 0; i < 5; i++) if ((top >> i) & 1) chk ^= GEN[i]
+  }
+  return chk
+}
+function toBech32(hex, hrp = 'erd') {
+  const bytes = Buffer.from(hex.replace(/^0x/, ''), 'hex')
+  const data = []
+  let acc = 0, bits = 0
+  for (const byte of bytes) {
+    acc = (acc << 8) | byte
+    bits += 8
+    while (bits >= 5) {
+      bits -= 5
+      data.push((acc >> bits) & 31)
+    }
+  }
+  if (bits) data.push((acc << (5 - bits)) & 31)
+  const chars = [...hrp].map((c) => c.charCodeAt(0))
+  const hrpExpanded = [...chars.map((c) => c >> 5), 0, ...chars.map((c) => c & 31)]
+  const checksum = bech32Polymod([...hrpExpanded, ...data, 0, 0, 0, 0, 0, 0]) ^ 1
+  const tail = Array.from({ length: 6 }, (_, i) => (checksum >> (5 * (5 - i))) & 31)
+  return `${hrp}1${[...data, ...tail].map((i) => BECH32_CHARSET[i]).join('')}`
 }
 
 function decodeNested(reader, type, types) {
@@ -173,4 +240,5 @@ module.exports = {
   getNFTs,
   getTokenData,
   sumTokensExport,
+  toBech32,
 }

@@ -14,6 +14,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2026-09-30',
       methodology: 'gets the balance of the strategy contract',
   kava: {
     tvl,

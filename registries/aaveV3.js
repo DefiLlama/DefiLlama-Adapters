@@ -101,7 +101,10 @@ const configs = {
   'kaskad': {
     igra: {
       poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
-    }
+    },
+    robinhood: {
+      poolDatas: ['0x9ff935c295925540077416042E3A0e1bE5276401']
+    },
   },
   'velkonix': { megaeth: { poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'], }, },
   'oter-fi': { robinhood: { poolDatas: ['0xD95D42BAd744821af78da755C6fC012f10ad1824'], }, },
@@ -111,6 +114,8 @@ const configs = {
       poolDatas: [
         '0xfd0b6b6F736376F7B99ee989c749007c7757fDba', // canonical market (multi-reserve)
         '0xeEb78818C026A3c1b82804627d101e27Ce5E60CB', // isolated market (AUSD + PT-AUSD tokens)
+        '0xD2638FB3b0b5cb81a6Cdc856Cb72f95CB4103C43', // isolated market (WMON + PT-shMON tokens)
+        '0x5Db4aE52ec0Ac110c10e11580E6A85D66179ccb4', // isolated market (syzUSD + USDC + USDT0 + AUSD tokens) 
       ],
       staking: ['0xBB4738D05AD1b3Da57a4881baE62Ce9bb1eEeD6C', '0xAD96C3dffCD6374294e2573A7fBBA96097CC8d7c'], // dustLock, DUST
     },

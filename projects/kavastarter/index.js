@@ -11,6 +11,7 @@ const POL_Pool_Two = "0x9aedc0D09E0Ede60Ba5B5F969a955937af024c44";
 const POL_Pool_Three = "0x486F6f8cF46EC5CC584ec3f08C494E55a8484111";
 
 module.exports = {
+  deadFrom: '2026-09-30',
   kava: {
     tvl: sumTokensExport({ owners: [POL_Pool_One, POL_Pool_Two], tokens: [WKAVA] }),
     staking: sumTokensExport({ owner: POL_Pool_Three, tokens: [KAVASTARTER], lps: [KAST_LP], useDefaultCoreAssets: true, })

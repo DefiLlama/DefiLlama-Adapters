@@ -177,6 +177,10 @@ const configs = {
       staking: ['0x321b7ff75154472B18EDb199033fF4D116F340Ff', '0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf'],
     },
   },
+  'orbio': {
+    methodology: 'Counts ORBIO tokens deposited in the Orbio staking contract on Robinhood Chain.',
+    robinhood: { staking: ['0xe0710011278bfb63e57c5f227e5980984b1eddca', '0xaa07a0e9209e16ac99708c3ec70159c6ef3128a3'] },
+  },
   'capminal': {
     methodology: 'Counts CAP held in the ScapStaking contract on Base, including staked and unbonding principal plus funded but unclaimed CAP rewards.',
     start: '2026-05-30',

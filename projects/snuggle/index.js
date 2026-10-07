@@ -194,7 +194,7 @@ async function robinhoodTvl(api) {
 
 module.exports = {
   methodology: 'TVL is the value of all concentrated liquidity positions (Uniswap V3, Aerodrome, PancakeSwap, SushiSwap, Camelot) managed by Snuggle and MaxFi (Snuggle whitelabel) vaults on Base, Arbitrum, and Robinhood.',
-  start: 1704067200,
+  start: '2024-01-01',
   doublecounted: true,
   base: { tvl: baseTvl },
   arbitrum: { tvl: arbitrumTvl },

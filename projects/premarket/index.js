@@ -39,6 +39,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'TVL is the collateral and delivery token balances held by the Premarket OptionMarketVault.',
-  start: 1776277239,
+  start: '2026-04-15',
   megaeth: { tvl },
 }

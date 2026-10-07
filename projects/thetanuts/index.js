@@ -179,7 +179,8 @@ const univ3nft_arb = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
 const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082'
 
 module.exports = {
-  methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, and AMM are calculated as TVL.`,
+  methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, AMM and the WheelVaults (base and quote tokens held by each vault, including its Uniswap V3 positions and Aave deposits) are calculated as TVL. WheelVaults pairing the NUTS token are counted under pool2.`,
+  doublecounted: true,
   hallmarks: [
     ['2022-03-07', 'Migration from v0 to v1'],
     ['2022-09-29', 'Migration from v1 to v2'],
@@ -331,12 +332,46 @@ const config = {
   }
 }
 
-Object.keys(config).forEach(chain => {
-  const { tokensAndOwners, uniV3Owners } = config[chain]
+const NUTS = '0x23f3D4625AEF6f0b84d50dB1d53516e6015c0c9B'
+const TOTAL_ASSETS = 'function totalAssets() view returns (uint256 totalBaseAmt, uint256 totalQuoteAmt, uint256 totalValue)'
+const M_FACTORY = '0x42c059Bf54553957ca4b8BeA67fcf43424C03A92'
+const N_FACTORY = '0x35C452E9f97A75558334E0df305598E930fc0B00'
+
+const wheelVaultFactories = {
+  base: [M_FACTORY, N_FACTORY],
+  ethereum: [M_FACTORY, N_FACTORY],
+  hyperliquid: [M_FACTORY, N_FACTORY],
+  robinhood: ['0x32Ca533CE6C107296991bE889551e75892B18e00'],
+}
+
+async function wheelVaultTvl(api, factories, isPool2 = false) {
+  const counts = await api.multiCall({ abi: 'uint256:vaultCount', calls: factories })
+  const calls = []
+  factories.forEach((target, i) => { for (let j = 0; j < Number(counts[i]); j++) calls.push({ target, params: [j] }) })
+  const vaults = await api.multiCall({ abi: 'function vaults(uint256) view returns (address)', calls })
+  if (!vaults.length) return
+  const [bases, quotes, assets] = await Promise.all([
+    api.multiCall({ abi: 'address:base', calls: vaults }),
+    api.multiCall({ abi: 'address:quote', calls: vaults }),
+    api.multiCall({ abi: TOTAL_ASSETS, calls: vaults }),
+  ])
+  vaults.forEach((_, i) => {
+    // vaults pairing the protocol's own token go to pool2
+    if ([bases[i], quotes[i]].some(t => t.toLowerCase() === NUTS.toLowerCase()) !== isPool2) return
+    api.add(bases[i], assets[i].totalBaseAmt)
+    api.add(quotes[i], assets[i].totalQuoteAmt)
+  })
+}
+
+new Set([...Object.keys(config), ...Object.keys(wheelVaultFactories)]).forEach(chain => {
+  const { tokensAndOwners, uniV3Owners } = config[chain] || {}
   module.exports[chain] = {
     tvl: async (api) => {
-          if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true })
-          return sumTokens2({ api, tokensAndOwners })
-        }
+      if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true })
+      if (tokensAndOwners) await sumTokens2({ api, tokensAndOwners })
+      if (wheelVaultFactories[chain]) await wheelVaultTvl(api, wheelVaultFactories[chain])
+    }
   }
 })
+
+module.exports.ethereum.pool2 = (api) => wheelVaultTvl(api, wheelVaultFactories.ethereum, true)

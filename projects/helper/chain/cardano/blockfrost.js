@@ -1,93 +1,51 @@
-const axios = require('axios')
-const { getEnv } = require('../../env')
-
-const axiosObj = axios.create({
-  baseURL: 'https://cardano-mainnet.blockfrost.io/api/v0',
-  headers: {
-    'project_id': getEnv('BLOCKFROST_PROJECT_ID'),
-    'Content-Type': 'application/json'
-  },
-  timeout: 300000,
-})
+// Blockfrost transport lives in @defillama/sdk (`sdk.chains.cardano`, reads BLOCKFROST_PROJECT_ID / CARDANO_BLOCKFROST);
+// this module keeps the historical function names and result shapes.
+require('../../env') // seeds BLOCKFROST_PROJECT_ID into process.env for the sdk
+const { cardano } = require('@defillama/sdk').chains
 
 async function getAddressesUTXOs(address) {
-  const utxos = []
-  let page = 1
-  let response
-  do {
-    response = await axiosObj.get(`addresses/${address}/utxos?page=${page}`)
-    response = response.data
-    utxos.push(...response)
-    page++
-  } while (response.length)
-  return utxos
+  return cardano.getAddressUtxos({ address })
 }
 
+// `{ unit, quantity }[]` held by the address (empty for unused addresses)
 async function getAssets(address) {
-  return (await axiosObj.get(`addresses/${address}`)).data.amount
+  return cardano.getAddressAssets({ address })
 }
 
 
 async function assetsAddresses(address) {
-  const addresses = []
-  let page = 1
-  let response
-  
-  do {
-    response = await axiosObj.get(`assets/${address}/addresses`, {
-      params: { count: 100, page, }
-    })
-    response = response.data
-    addresses.push(...response)
-    page++
-  } while (response.length)
-  return addresses
+  return cardano.getAssetAddresses({ assetId: address })
 }
 
 async function addressesUtxosAssetAll(address, asset) {
-
-  const addresses = []
-  let page = 1
-  let response
-  do {
-    response = await axiosObj.get(`/addresses/${address}/utxos/${asset}`, {
-      params: { count: 100, page, }
-    })
-    response = response.data
-    addresses.push(...response)
-    page++
-  } while (response.length)
-  return addresses
+  return cardano.getAddressUtxosByAsset({ address, asset })
 }
 
 async function getTxUtxos(tx_hash) {
-  const { data } = await axiosObj.get(`txs/${tx_hash}/utxos`)
-  return data
+  return cardano.getTxUtxos({ txHash: tx_hash })
 }
 
 async function getTxsRedeemers(utxo) {
-  const { data } = await axiosObj.get(`txs/${utxo}/redeemers`)
-  return data
+  return cardano.getTxRedeemers({ txHash: utxo })
 }
 
 async function getTxsMetadata(utxo) {
-  const { data } = await axiosObj.get(`txs/${utxo}/metadata`)
-  return data
+  return cardano.getTxMetadata({ txHash: utxo })
 }
 
 async function getScriptsDatum(datumHash) {
-  const { data } = await axiosObj.get(`scripts/datum/${datumHash}`)
-  return data
+  return cardano.getScriptDatum({ datumHash })
 }
 
-async function getTokensMinted(tokenId){
-  const {data} = await axiosObj.get(`assets/${tokenId}`)
-  return Number(data.quantity)
+async function getTokensMinted(tokenId) {
+  const asset = await cardano.getAsset({ assetId: tokenId })
+  if (!asset) throw new Error(`[cardano] asset ${tokenId} not found`)
+  return Number(asset.quantity)
 }
 
+// `{ address }[]` rows of every payment address controlled by a stake key
 async function getAccountAddresses(account) {
-  const { data } = await axiosObj.get(`/accounts/${account}/addresses`)
-  return data
+  return cardano.blockfrostAll({ path: `/accounts/${account}/addresses` })
 }
 
 module.exports = {

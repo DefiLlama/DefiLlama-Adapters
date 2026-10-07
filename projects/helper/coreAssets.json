@@ -1960,7 +1960,33 @@
     "WETH": "0x5A77f1443D16ee5761d310e38b62f77f726bC71c",
     "USDT": "0x1E4a5963aBFD975d8c9021ce480b42188849D41d",
     "USDC": "0x74b7f16337b8972027f6196a17a631ac6de26d22",
-    "USDT0": "0x779ded0c9e1022225f8e0630b35a9b54be713736"
+    "USDT0": "0x779ded0c9e1022225f8e0630b35a9b54be713736",
+    "wQQQx": "0x4c1ae29c159838fc1b224636e28e086eb69101f7",
+    "wSPCXx": "0x8e2eed8b8b5e13ea7bf38e50d7821d2c57309072",
+    "wSPYx": "0xe7e553cd128f0011777323a0b44a7b96ea1cb540",
+    "wNVDAx": "0xa8ddb5cd96b5222afe198316e9a57caa642850d5",
+    "wTSLAx": "0xc3fdbe3a68ee5de461d30415a8165cf9aefe1171",
+    "wGOOGLx": "0xf8c5308f80e459bb53d9ebe689854d9cbb2caa6f",
+    "wAAPLx": "0x943bf64d566c32a2bcd41ac92fb63c111cc9de8f",
+    "wCRCLx": "0xb11134f14d5b94db60d4599dfdc3bf1bba2150e8",
+    "wXIAOx": "0x076cf393e701839fc7a5832d2c68aafa235682ae",
+    "wPOPMTx": "0x4ebf5fd25b02022afad96e2fa25da54a246fded0",
+    "wGMEx": "0x459d3ae62b86cc6125e06260dddfd3afed24a877",
+    "wMETAx": "0xe840946ffebcd66b7c4e95095effafadfa0d0e56",
+    "wTCENTx": "0x41333df9e7639188bbfca5522dc4844398af9f9e",
+    "wDELLx": "0x04db4384013664baa627c1a3fa4ff0c50f37cfd3",
+    "wORCLx": "0x1349456830ddc3d8599e4d6a63698883eca67ada",
+    "wCOINx": "0x44c7ed7ffdf8465c9d27f60aec845eed3d49d56e",
+    "wAMZNx": "0x910cabde3eba7fc1ce64fd14bd680b9f60fa0f90",
+    "wHOODx": "0x59801175a9b2248f9bf4ba7f82e17045c4672ec8",
+    "wINTCx": "0x33aa35b0271fffe2048cc093ab7fe60931786719",
+    "wMEITx": "0xad1b65c8556957cf23d1b5e9accdc449b415fa97",
+    "wBMNRx": "0xdad5623b32c81aeaa75478fcfe934e9e97018c58",
+    "wSNDKx": "0x75e82e2884ea10f72fca777449b73377f4646219",
+    "wMUx": "0xe2047ee3bddb5c99ae428ab83df63f8730698e30",
+    "wIWMx": "0x25d218f19b706c8680aa26fb64e676cf84b58f65",
+    "wSKHYx": "0x6215a58ed045d71f2561aaabe54f4c885c522998",
+    "wMSFTx": "0x166fbe68274b6a47e025f4ba17388c539f1fa1d0"
   },
   "genesys": {
     "WGSYS": "0xAa7aE83eb30DDdd14A017D4222121776317EA8Ba"
@@ -2223,7 +2249,7 @@
     "HSUITE": "0x00000000000000000000000000000000000c01f3"
   },
   "etica": {
-    "WEGAZ": "0x232fb2B87CAce92B2438054A7eB79B4081E3E11a"
+    "ETI": "0x34c61EA91bAcdA647269d4e310A86b875c09946f"
   },
   "morph": {
     "LBTC": "0xecAc9C5F704e954931349Da37F60E39f515c11c1",
@@ -2737,7 +2763,7 @@
     "WVTCN": "0x1150fd1335b0a53347f8bfb763729a99fbeab2ef"
   },
   "zigchain": {
-    "uzig": "uzig"
+    "azig": "azig"
   },
   "monad": {
     "LBTC": "0xecAc9C5F704e954931349Da37F60E39f515c11c1",

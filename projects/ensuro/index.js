@@ -36,6 +36,7 @@ const addressBook = {
     usdc: ADDRESSES.ethereum.USDC,
     usdo: "0x8238884Ec9668Ef77B90C6dfF4D1a9F4F4823BFe", // OpenEden's USDO - Tokenized T-bill
     aave_v3_usdc: "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c", // aEthUSDC
+    comp_inst_usdc: "0x207158a267CBD2598BB3d611D8CBdEE2709F2F8C", // Compound V3 Institutional
     morpho_vaults: [
       // "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", // kpk-usdc-prime - No longer in use
       "0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6", // kpk-usdc-prime - V2 vault
@@ -64,35 +65,21 @@ const addressBook = {
   }
 };
 
-const normalize = i => i.toLowerCase()
-
-async function unwrap4626Tokens({ api, tokensAndOwners, }) {
-  const tokens = tokensAndOwners.map(i => i[0])
-  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })), })
-  const assets = (await api.multiCall({ abi: 'address:asset', calls: tokens, })).map(normalize)
-  const balsInAssets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: tokensAndOwners.map((i, idx) => ({ target: i[0], params: bals[idx] })), })
-  api.addTokens(assets, balsInAssets)
-  return api.getBalances()
-}
-
 async function tvl(api) {
   const addresses = addressBook[api.chain];
   // Most of the reserves can only have USDC
-  const ownerTokens = addresses.reserves.map(i => [[normalize(addresses.usdc)], i.address])
+  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc], i.address])
   // The MSV also has AAVE USDC and OpenEden's USDO
   if (api.chain === "ethereum" ) {
-    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc), normalize(addresses.usdo)], addresses.msv]);
+    ownerTokens.push([[addresses.usdc, addresses.aave_v3_usdc, addresses.usdo, addresses.comp_inst_usdc], addresses.msv]);
   } else {
-    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc)], addresses.msv]);
+    ownerTokens.push([[addresses.usdc, addresses.aave_v3_usdc], addresses.msv]);
   }
 
   // Also Morpho vaults
-  for (const vault of addresses.morpho_vaults) {
-    await unwrap4626Tokens({api, tokensAndOwners: [[normalize(vault), normalize(addresses.msv)]] });
-  }
-  if (addresses.ipor_fusion_vault !== undefined) {
-    await unwrap4626Tokens({api, tokensAndOwners: [[normalize(addresses.ipor_fusion_vault), normalize(addresses.msv)]] });
-  }
+  ownerTokens.push([addresses.morpho_vaults, addresses.msv])
+  if (addresses.ipor_fusion_vault)
+    ownerTokens.push([[addresses.ipor_fusion_vault], addresses.msv])
   return sumTokens2({ api, ownerTokens});
 }
 

@@ -14,6 +14,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2026-09-30',
   kava: { tvl, },
   methodology: 'The assets in the balancer are detected and counted.'
 }

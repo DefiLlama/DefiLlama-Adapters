@@ -27,7 +27,7 @@ async function tvl(api) {
     });
     const allVaults = vaultArrays.flat();
     if (allVaults.length) {
-      await api.erc4626Sum({ calls: allVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' });
+      await api.erc4626Sum({ calls: allVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
     }
   }
 
@@ -45,7 +45,7 @@ async function tvl(api) {
       // Spoke vaults report TVL to the hub via cross-chain messages, only count hubs to avoid double-counting
       const hubVaults = allVaults.filter((_, i) => isHubResults[i]);
       if (hubVaults.length) {
-        await api.erc4626Sum({ calls: hubVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' });
+        await api.erc4626Sum({ calls: hubVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
       }
     }
   }

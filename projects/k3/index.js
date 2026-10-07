@@ -1,5 +1,4 @@
-const { getCuratorExport } = require("../helper/curators");
-const { mergeExports } = require("../helper/utils");
+const { getCuratorExport, getCuratorTvl } = require("../helper/curators");
 
 const configs = {
   methodology:
@@ -28,7 +27,6 @@ const configs = {
         "0xb072b2779F1EF1A6A9D2d5fAa1766F341B92aB3a", // Euler Earn: K3 Capital Earn USDT
         "0x50bd66d59911f5e086ec87ae43c811e0d059dd11",
         "0xf5503d3d4bd254c2c17690eed523bcb2935db6de",
-        "0x866C6c6627303Be103814150fC0e886BE5D9ea83",
         "0xe1B4d34E8754600962Cd944B535180Bd758E6c2e",
         "0x3b3bDAA4462851621818D2CEBC835E077587147A",
         "0x8f47D9D9d5A8202a5a37c4E41fbDd3146D88A579",
@@ -115,13 +113,17 @@ const configs = {
 // Pre-sunset these vaults count under projects/euler-dao, from the sunset date
 // onward they are attributed to K3.
 // https://forum.euler.finance/t/sunsetting-of-dao-managed-market-and-vaults/1828
-const eulerSunsetConfigs = getCuratorExport({
-  start: "2026-05-06",
-  blockchains: {
-    monad: {
-      eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
-    },
-  },
-});
+const EULER_SUNSET = Math.floor(new Date("2026-05-06").getTime() / 1000);
+const EULER_SUNSET_OWNER = "0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1";
 
-module.exports = mergeExports([getCuratorExport(configs), eulerSunsetConfigs]);
+module.exports = getCuratorExport(configs);
+
+// The handed-over vaults are read together with K3's own Monad vaults, so that the shares K3's Earn
+// vaults hold of them are netted once.
+module.exports.monad = {
+  tvl: async (api) => {
+    const monad = configs.blockchains.monad;
+    const owners = api.timestamp >= EULER_SUNSET ? [...monad.eulerVaultOwners, EULER_SUNSET_OWNER] : monad.eulerVaultOwners;
+    return getCuratorTvl(api, { ...monad, eulerVaultOwners: owners });
+  },
+};

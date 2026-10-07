@@ -1,11 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const almProxy = {
   ethereum: '0x491EDFB0B8b608044e227225C715981a30F3A44E',
   base: '0x9B746dBC5269e1DF6e4193Bcb441C0FbBF1CeCEe',
   avax: '0x7107DD8F56642327945294a18A4280C78e153644',
   plume_mainnet: '0x1DB91ad50446a671e2231f77e00948E68876F812',
+  robinhood: '0x29626c2d8Ca49A51E4dECEEc5499e52983c42BD5',
 }
+
+// Diamond PAU ALM proxy (ALLOCATOR-GROVE-A), its Grove Basin shares are self-minted USDS and not counted
+const PAU_PROXY = '0x0DcD9298e163dFD3c0B5b00F0d9093C36e40A153'
 
 const tokenConfigs = {
   ethereum: [
@@ -29,6 +34,9 @@ const tokenConfigs = {
   plume_mainnet: [
     '0x9477724Bb54AD5417de8Baff29e59DF3fB4DA74f', // ACRDX (Apollo via Centrifuge on Plume)
   ],
+  robinhood: [
+    ADDRESSES.robinhood.USDG,
+  ],
 }
 
 const morphoVaultConfigs = {
@@ -36,10 +44,14 @@ const morphoVaultConfigs = {
     '0xBeefF08dF54897e7544aB01d0e86f013DA354111', // grove-bbqUSDC-V2
     '0xBEEfF0d672ab7F5018dFB614c93981045D4aA98a', // grove-bbqAUSD-V2
     '0xBEEf2B5FD3D94469b7782aeBe6364E6e6FB1B709', // grove-bbqUSDC
+    '0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b', // syrupUSDC (Maple, ERC-4626; held May-Jul 2026)
   ],
   base: [
     '0xBeEf2d50B428675a1921bC6bBF4bfb9D8cF1461A', // grove-bbqUSDC
     '0xbeef0e0834849aCC03f0089F01f4F1Eeb06873C9', // steakUSDC-V2
+  ],
+  robinhood: [
+    '0xBEEff039907422219Fb367e525954DDC092854d9', // Grove x Steakhouse USDG
   ],
 }
 
@@ -53,6 +65,8 @@ const curveConfigs = {
 }
 
 async function tvl(api) {
+  if (api.chain === 'robinhood' && api.timestamp && api.timestamp < 1784160000) return {}
+
   const tokens = tokenConfigs[api.chain] || []
   const proxy = almProxy[api.chain]
 
@@ -75,6 +89,10 @@ async function tvl(api) {
   
   await addMorphoVaultBalances(api)
   await addCurveBalances(api)
+
+  // Uniswap V3 AUSD/USDC positions held by the ALM proxy and the PAU proxy
+  if (api.chain === 'ethereum')
+    await sumTokens2({ api, owners: [almProxy.ethereum, PAU_PROXY], resolveUniV3: true })
 }
 
 async function addMorphoVaultBalances(api) {
@@ -122,7 +140,7 @@ async function addCurveBalances(api) {
 }
 
 module.exports = {
-  methodology: 'Counts the value of assets held by the Grove ALM Proxy across all chains, including RWA tokens, Aave aTokens, Morpho vault shares, Curve LP positions, and stablecoins. Excludes up to $50M of GALCO tokens from grove anchor allocation: https://investor.galaxy.com/news-releases/news-release-details/galaxy-announces-initial-closing-debut-tokenized-clo-75-million',
+  methodology: 'Counts the value of assets held by the Grove ALM Proxy on Ethereum, Base, Avalanche, Plume and Robinhood Chain and by the Grove PAU proxy on Ethereum, including RWA tokens, Aave aTokens, ERC-4626 vault shares (Morpho, Maple), Curve LP positions, Uniswap V3 positions and stablecoins. Excludes self-minted USDS held in Grove Basins and up to $50M of GACLO tokens from grove anchor allocation: https://investor.galaxy.com/news-releases/news-release-details/galaxy-announces-initial-closing-debut-tokenized-clo-75-million',
   start: '2025-06-25',
 }
 

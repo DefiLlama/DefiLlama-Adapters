@@ -20,7 +20,7 @@ const log = sdk.log
 const error = console.error
 
 async function updateProject({ tvlFunction, project, chain, tvlKey }) {
-  const existingData = await readFromElastic({ tvlKey, timestamp: time() * 1000, range: 8 * 3600 * 1000, project, throwIfMissing: false })
+  const existingData = await readFromElastic({ tvlKey, timestamp: time() * 1000, range: 12 * 3600 * 1000, project, throwIfMissing: false })
   if (existingData && (!process.env.RUN_ONLY && !isRefillMode)) {
     log('[skipped]', project, chain, 'data already exists in elastic')
     return;

@@ -98,6 +98,6 @@ const tvl = async (api) => {
 module.exports = {
   doublecounted: true,
   methodology: 'Measures TVL by calculating all tokens held by each vault.',
-  start: 1738368000,
+  start: '2025-02-01',
   hyperliquid: { tvl }
 }

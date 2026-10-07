@@ -25,6 +25,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the balance of every pool currency held by the Calamari PoolManager singleton on Ink. Pool currencies are discovered from the Initialize events emitted by the PoolManager.',
-  start: 1788150519,
+  start: '2026-08-31',
   ink: { tvl },
 }

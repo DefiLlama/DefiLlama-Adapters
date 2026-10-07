@@ -18,7 +18,7 @@ const covalent = require('./sumTokens/covalent')
 //   { __resolveUnknownTokenLP: true, ... } -> unknownTokens.sumTokensExport (resolves unknown-token LP
 //     pricing via core assets; use for buckets that rely on lps + useDefaultCoreAssets, e.g. migrated
 //     staking/pool2 with LP deposits). Distinct from sumTokens2's own `resolveLP` (known-LP unwrap).
-const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens"])
+const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens","deadFrom"])
 const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting","ownTokens"])
 
 function buildBucket(spec, chain) {
@@ -7022,6 +7022,7 @@ const configs = {
     },
   },
   "cexdex-stacking": {
+    deadFrom: '2026-09-30',
     "kava": {
       "owner": "0x451c3a3594aEB75EDcb13F132dc11D7d2972861A",
       "tokens": [
@@ -7142,6 +7143,36 @@ const configs = {
           "0x54A62D550e1754f3bB34ad80501A63815297Fccc"
         ]
       ]
+    },
+  },
+  "chance": {
+    "methodology": "Counts prize deposits and unsettled entry payments escrowed in the Chance InstantWin and MultiWin game contracts (current and previous deployments) on Robinhood Chain. CHANCE, the protocol's own token, posted as prizes is counted under staking.",
+    "start": "2026-09-24",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0xfB9017fd176747Dd7D67dA2CF05E7735543ec5F9",
+          "0x1cF459104a2E0E5806a2c28722a1Fab4e5585Cc1",
+          "0x90Ca273088097f6B4b4869D597A74b6d4F7b102f",
+          "0xE504a0b1AAa95F80221CEEd0eFf44Ba85beAd798"
+        ],
+        "tokens": [
+          ADDRESSES.robinhood.USDG,
+          "0x020bfc650a365f8bb26819deaabf3e21291018b4", // CASHCAT
+          "0x98096d17e191b3da1d5f99a6d7b3584351b11e18" // BONER
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0xfB9017fd176747Dd7D67dA2CF05E7735543ec5F9",
+            "0x1cF459104a2E0E5806a2c28722a1Fab4e5585Cc1",
+            "0x90Ca273088097f6B4b4869D597A74b6d4F7b102f",
+            "0xE504a0b1AAa95F80221CEEd0eFf44Ba85beAd798"
+          ],
+          "0x500d15e7c0d0e99ac4aae2a40d8738ba1b3167c9" // CHANCE
+        ]
+      }
     },
   },
   "chaotic": {
@@ -14624,8 +14655,21 @@ const configs = {
       "owners": [
         "0xe2ce6ab80874fa9fa2aae65d277dd6b8e65c9de0"
       ],
+      "fetchCoValentTokens": true
+    },
+    "base": {
+      "owners": [
+        "0x0000BC1c4fD15Dd79029AF8F5d77D68ae4490000"
+      ],
+      "fetchCoValentTokens": true
+    },
+    "robinhood": {
+      "owner": "0x26605f322f7fF986f381bB9A6e3f5DAb0bEaEb09",
       "tokens": [
-        ADDRESSES.null
+        ADDRESSES.null,
+        ADDRESSES.robinhood.WETH,
+        ADDRESSES.robinhood.USDG,
+        ADDRESSES.robinhood.USDe
       ]
     },
     "xlayer": {
@@ -14636,6 +14680,13 @@ const configs = {
         ADDRESSES.stable.USDT0
       ]
     },
+    "monad": {
+      "owner": "0x30e8ee7b5881bf2E158A0514f2150aabe2c68b23",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.monad.USDC
+      ]
+    }
   },
   "flare-loans": {
     "methodology": "We count all WSGB on 0xFa21A4ABD1a58CefAB79CFd597aCcc314403eE9f and all EXFI on 0x4595fc96262057f9b0d4276ff04de8f2f44e612e, which are backing the stablecoin",
@@ -14879,6 +14930,16 @@ const configs = {
       "tokens": [
         ADDRESSES.blast.USDB,
         ADDRESSES.null
+      ]
+    },
+  },
+  "fuci": {
+    "methodology": "TVL is the USDC held by the FuciEscrow contract on Arc: USDC locked for open jobs between clients and AI agents, plus settled payouts waiting to be withdrawn.",
+    "start": "2026-09-29",
+    "arc": {
+      "owner": "0xb30d1c83454260614ccf06ae0f3c1af8b47515b1",
+      "tokens": [
+        ADDRESSES.arc.USDC
       ]
     },
   },
@@ -16344,6 +16405,7 @@ const configs = {
     },
   },
   "inbuilt-finance": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tvl": {
         "owner": "0x68DB81eAB568174D54F3fd0d9e035eDe9AAEd3e2",
@@ -16884,6 +16946,7 @@ const configs = {
     },
   },
   "kavafc": {
+    deadFrom: '2026-09-30',
     "kava": {
       "staking": {
         "owner": "0xa07deE8FF35fE2e2961a7e1006EAdA98E24aE82E",
@@ -16901,6 +16964,7 @@ const configs = {
     },
   },
   "kavalake": {
+    deadFrom: '2026-09-30',
     "methodology": "TVL is calculated based on the amount of WKAVA held in the KavaLake liquid staking vault on Kava EVM.",
     "kava": {
       "owners": [
@@ -17446,6 +17510,7 @@ const configs = {
     },
   },
   "lioncommerce": {
+    deadFrom: '2026-09-30',
     "kava": {
       "staking": {
         "owner": "0x52b18024e084150e001a34be9c7a41706517d79f",
@@ -18028,6 +18093,7 @@ const configs = {
     },
   },
   "metaid": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         [
@@ -18993,6 +19059,7 @@ const configs = {
     },
   },
   "multialt-stacking": {
+    deadFrom: '2026-09-30',
     "kava": {
       "owner": "0xFFd33A71411fbA8B989Eca9F99EE7a908a2dEf4F",
       "tokens": [
@@ -20610,6 +20677,10 @@ const configs = {
       }
     },
   },
+  "nullmask": {
+    start: '2026-10-01',
+    ethereum: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT] },
+  },
   "numbers": {
     "misrepresentedTokens": true,
     "methodology": "Core TVL = non‑NUM assets (USDC on Ethereum, BUSD on BSC) derived from unwrapping the LP tokens staked in the farm contracts. 'staking' tracks single‑asset NUM staking and 'pool2' tracks full NUM‑LP staking. NUM itself is excluded from core TVL to avoid double counting.",
@@ -22103,6 +22174,35 @@ const configs = {
       ]
     },
   },
+  "payy": {
+    "methodology": "TVL is the USDC locked in the Payy Network rollup bridge contracts, which back users' private USDC notes on the Payy L2. Counts the current Ethereum rollup and the two earlier Polygon rollups it migrated from.",
+    "start": "2024-02-27",
+    "hallmarks": [
+      [
+        "2026-02-17",
+        "Rollup migrated from Polygon to Ethereum"
+      ],
+      [
+        "2026-09-24",
+        "Ethereum rollup exploited, ~$1.92M USDC drained"
+      ]
+    ],
+    "ethereum": {
+      "owner": "0x367c1eaf14aa06b78ce76bd0243297de79d85270",
+      "tokens": [
+        ADDRESSES.ethereum.USDC
+      ]
+    },
+    "polygon": {
+      "owners": [
+        "0x4cbb5041df8d815d752239960fba5e155ba2687e",
+        "0xcd92281548df923141fd9b690c7c8522e12e76e6"
+      ],
+      "tokens": [
+        ADDRESSES.polygon.USDC_CIRCLE
+      ]
+    },
+  },
   "peakdefi": {
     "start": "2020-12-08",
     "bsc": {
@@ -23311,6 +23411,19 @@ const configs = {
       ]
     },
   },
+  "quantumpools": {
+    "methodology": "TVL is the value of every Uniswap V3 concentrated-liquidity position held by the QuantumPools vaults on Base and Robinhood Chain, unwrapped to underlying token amounts at the current pool tick.",
+    "doublecounted": true,
+    "start": "2026-09-28",
+    "robinhood": {
+      "owner": "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3",
+      "resolveUniV3": true
+    },
+    "base": {
+      "owner": "0x9597f68203d1bc85744A5Fc11D890aA7777e386B",
+      "resolveUniV3": true
+    },
+  },
   "quenta": {
     "methodology": "The calculation method for Quenta's TVL is the total value of all stablecoins (ioUSDC, ioUSDT) staked in the USDQ contract.",
     "iotex": {
@@ -23393,193 +23506,6 @@ const configs = {
         "0xF760fD8fEB1F5E3bf3651E2E4f227285a82470Ff",
         "0x55A81dA2a319dD60fB028c53Cb4419493B56f6c0"
       ]
-    },
-  },
-  "raindex": {
-    "methodology": "Balance of tokens held by Rain Orderbook contract.",
-    "arbitrum": {
-      "owners": [
-        "0x90caf23ea7e507bb722647b0674e50d8d6468234",
-        "0x550878091b2b1506069f61ae59e3a5484bca9166",
-        "0x8df8075e4077dabf1e95f49059e4c1eea33094ab"
-      ],
-      "tokens": [
-        ADDRESSES.arbitrum.ARB,
-        ADDRESSES.arbitrum.USDT,
-        ADDRESSES.arbitrum.WBTC,
-        ADDRESSES.arbitrum.WETH,
-        ADDRESSES.arbitrum.USDC_CIRCLE,
-        "0x16a500aec6c37f84447ef04e66c57cfc6254cf92",
-        "0x306fd3e7b169aa4ee19412323e1a5995b8c1a1f4",
-        "0x88a269df8fe7f53e590c561954c52fccc8ec0cfb",
-        "0x11cdb42b0eb46d95f990bedd4695a6e3fa034978",
-        "0x6985884c4392d348587b19cb9eaaf157f13271cd",
-        "0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8",
-        "0xdadeca1167fe47499e53eb50f261103630974905"
-      ],
-      "permitFailure": true
-    },
-    "base": {
-      "owners": [
-        "0x2aee87d75cd000583daec7a28db103b1c0c18b76",
-        "0xd2938e7c9fe3597f78832ce780feb61945c377d7",
-        "0xa2f56f8f74b7d04d61f281be6576b6155581dcba",
-        "0x32aCbdF51abe567C91b7a5cd5E52024a5Ca56844",
-        "0x80DE00e3cA96AE0569426A1bb1Ae22CD4181dE6F",
-        "0x7A44459893F99b9d9a92d488eb5d16E4090f0545",
-        "0x881cf4c0764e733d9c387f3858ee87cca04affe0",
-        "0x52ceb8ebef648744ffdde89f7bc9c3ac35944775",
-        "0xe522cB4a5fCb2eb31a52Ff41a4653d85A4fd7C9D"
-      ],
-      "tokens": [
-        ADDRESSES.base.USDC,
-        ADDRESSES.optimism.WETH_1,
-        "0x99b2b1a2adb02b38222adcd057783d7e5d1fcc7d",
-        "0xfb18511f1590a494360069f3640c27d55c2b5290",
-        "0x653a143b8d15c565c6623d1f168cfbec1056d872",
-        "0x623cd3a3edf080057892aaf8d773bbb7a5c9b6e9",
-        "0x655a51e6803faf50d4ace80fa501af2f29c856cf",
-        "0x2c002ffec41568d138acc36f5894d6156398d539",
-        "0x2f20cf3466f80a5f7f532fca553c8cbc9727fef6",
-        "0x4d58608eff50b691a3b76189af2a7a123df1e9ba",
-        "0x4b6104755afb5da4581b81c552da3a25608c73b8",
-        "0xca72827a3d211cfd8f6b00ac98824872b72cab49",
-        "0x1111111111166b7fe7bd91427724b487980afc69",
-        "0x2c001233ed5e731b98b15b30267f78c7560b71f2",
-        "0x07d15798a67253d76cea61f0ea6f57aedc59dffb",
-        "0x26c69e4924bd0d7d52d680b33616042ee13f621c",
-        "0x02dd23668605ddc983bc2a2afa99f47d88a2f98b",
-        "0x09b052085e9c6291fbf0dfb0918c861bcb47eb25",
-        "0x8890de1637912fbbba36b8b19365cdc99122bd6e",
-        "0x3d63825b0d8669307366e6c8202f656b9e91d368",
-        "0xd262a4c7108c8139b2b189758e8d17c3dfc91a38",
-        "0x0c03ce270b4826ec62e7dd007f0b716068639f7b",
-        "0x00000e7efa313f4e11bfff432471ed9423ac6b30",
-        ADDRESSES.base.cbBTC,
-        ADDRESSES.base.WBTC,
-        "0x78c31580c97101694c70022c83d570150c11e935",
-        "0x31c2c14134e6e3b7ef9478297f199331133fc2d8",
-        "0x5cda0e1ca4ce2af96315f7f8963c85399c172204",
-        "0x823ff7bbde2869aae73a6cd53e7f614442836757",
-        "0xff05e1bd696900dc6a52ca35ca61bb1024eda8e2",
-        "0x57f5fbd3de65dfc0bd3630f732969e5fb97e6d37",
-        "0xa4a2e2ca3fbfe21aed83471d28b6f65a233c6e00",
-        "0x3722264ab15a1dfce5a5af89e6547f7949a8aba3"
-      ],
-      "permitFailure": true
-    },
-    "bsc": {
-      "owners": [
-        "0xb1d6d10561d4e1792a7c6b336b0529e4bfb5ea8f",
-        "0xd2938e7c9fe3597f78832ce780feb61945c377d7"
-      ],
-      "tokens": [
-        ADDRESSES.bsc.BTCB,
-        ADDRESSES.bsc.BUSD,
-        ADDRESSES.bsc.USDC,
-        ADDRESSES.bsc.WBNB,
-        "0x8f0fb159380176d324542b3a7933f0c2fd0c2bbf",
-        "0xad86d0e9764ba90ddd68747d64bffbd79879a238",
-        "0x194b302a4b0a79795fb68e2adf1b8c9ec5ff8d1f",
-        "0x963556de0eb8138e97a85f0a86ee0acd159d210b"
-      ],
-      "permitFailure": true
-    },
-    "ethereum": {
-      "owners": [
-        "0xf1224a483ad7f1e9aa46a8ce41229f32d7549a74",
-        "0x0eA6d458488d1cf51695e1D6e4744e6FB715d37C"
-      ],
-      "tokens": [
-        ADDRESSES.ethereum.WETH,
-        ADDRESSES.ethereum.USDC,
-        "0x13e4b8cffe704d3de6f19e52b201d92c21ec18bd",
-        "0xdbb5cf12408a3ac17d668037ce289f9ea75439d7"
-      ],
-      "permitFailure": true
-    },
-    "flare": {
-      "owners": [
-        "0xb06202aA3Fe7d85171fB7aA5f17011d17E63f382",
-        "0xcee8cd002f151a536394e564b84076c41bbbcd4d",
-        "0xaa3b14Af0e29E3854E4148f43321C4410db002bC",
-        "0xA2Ac77b982A9c0999472c1De378A81d7363d926F",
-        "0x582d9e838FE6cD9F8147C66A8f56A3FBE513a6A2"
-      ],
-      "tokens": [
-        ADDRESSES.flare.WFLR,
-        ADDRESSES.flare.eUSDT,
-        "0x22757fb83836e3f9f0f353126cacd3b1dc82a387",
-        "0xc6b19b06a92b337cbca5f7334d29d45ec4d5e532",
-        ADDRESSES.rari.USDC_e,
-        "0x19831cfb53a0dbead9866c43557c1d48dff76567",
-        ADDRESSES.flare.sFLR,
-        "0x0b38e83b86d491735feaa0a791f65c2b99535396",
-        ADDRESSES.morph.USDT0,
-        "0x26a1fab310bd080542dc864647d05985360b16a5",
-        "0x1502fa4be69d526124d453619276faccab275d3d",
-        "0xd8bf1d2720e9ffd01a2f9a2efc3e101a05b852b4"
-      ],
-      "permitFailure": true
-    },
-    "linea": {
-      "owners": [
-        "0x22410e2a46261a1b1e3899a072f303022801c764",
-        "0xF97DE1c2d864d90851aDBcbEe0A38260440B8D90"
-      ],
-      "tokens": [
-        ADDRESSES.linea.WETH,
-        ADDRESSES.linea.USDT,
-        "0x4ea77a86d6e70ffe8bb947fc86d68a7f086f198a"
-      ],
-      "permitFailure": true
-    },
-    "matchain": {
-      "owners": [
-        "0x40312EDAB8fe65091354172ad79e9459f21094e2"
-      ],
-      "tokens": [
-        ADDRESSES.matchain.WBNB,
-        ADDRESSES.matchain.USDT,
-        ADDRESSES.matchain.MAT
-      ],
-      "permitFailure": true
-    },
-    "polygon": {
-      "owners": [
-        "0xde5abe2837bc042397d80e37fb7b2c850a8d5a6c",
-        "0x34200e026fbac0c902a0ff18e77a49265ca6ac99",
-        "0xd3edafeb9eaa454ce26e60a66ccda73939c343a4",
-        "0xc95a5f8efe14d7a20bd2e5bafec4e71f8ce0b9a6",
-        "0x95c9bf235435b660aa69f519904c3f175aab393d",
-        "0xdcdee0e7a58bba7e305db3abc42f4887ce8ef729",
-        "0x16d518706d666c549da7bd31110623b09ef23abb",
-        "0x7d2f700b1f6fd75734824ea4578960747bdf269a",
-        "0x2f209e5b67a33b8fe96e28f24628df6da301c8eb",
-        "0xb8CD71e3b4339c8B718D982358cB32Ed272e4174",
-        "0x001B302095D66b777C04cd4d64b86CCe16de55A1",
-        "0xAfD94467d2eC43D9aD39f835BA758b61b2f41A0E",
-        "0x8a3c8e610d827093f7437e0c45efa648563c0dda"
-      ],
-      "tokens": [
-        ADDRESSES.polygon.DAI,
-        ADDRESSES.polygon.USDT,
-        ADDRESSES.polygon.WMATIC_2,
-        ADDRESSES.polygon.USDC,
-        ADDRESSES.polygon.USDC_CIRCLE,
-        ADDRESSES.polygon.QUICK,
-        "0x692ac1e363ae34b6b489148152b12e2785a3d8d6",
-        "0x658cda444ac43b0a7da13d638700931319b64014",
-        "0x84342e932797fc62814189f01f0fb05f52519708",
-        "0xf8dda7b3748254d562f476119b0ae6044bad10a5",
-        "0x8226ac9edb26ff16da19151042a8ba3bb2cc237f",
-        "0xd0e9c8f5fae381459cf07ec506c1d2896e8b5df6",
-        "0x3c59798620e5fec0ae6df1a19c6454094572ab92",
-        "0xe8d17b127ba8b9899a160d9a07b69bca8e08bfc6",
-        "0x6fb54ffe60386ac33b722be13d2549dd87bf63af",
-        "0xe1b3eb06806601828976e491914e3de18b5d6b28"
-      ],
-      "permitFailure": true
     },
   },
   "ray": {
@@ -24218,6 +24144,7 @@ const configs = {
     },
   },
   "rising-undead": {
+    deadFrom: '2026-09-30',
     "kava": {
       "owner": "0xc732471083342a842a728221878327c8DeE8aEDB",
       "tokens": [
@@ -25548,7 +25475,7 @@ const configs = {
           // PEPE
           "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
           // SHIB
-          "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+          ADDRESSES.ethereum.INU
         ]
       },
       "staking": {
@@ -27037,6 +26964,14 @@ const configs = {
       ]
     },
   },
+  "sundaeswap-v4": {
+    "methodology": "Counts the tokens held in SundaeSwap V4 pool UTxOs at the V4 pool script address.",
+    "cardano": {
+      "owners": [
+        "addr1zysundaev4jxq60ehm8tlz6v8nk6lpxpnvgfa2jeszs55f4uzrlrz2kdd83wzt9u9n9qt2swgvhrmmn96k55nq6yuj4qeujly6"
+      ]
+    },
+  },
   "sunperp": {
     "methodology": "TVL includes Vault Contract and MPC Wallet assets",
     "tron": {
@@ -27563,6 +27498,14 @@ const configs = {
       ]
     },
   },
+  "taifoon": {
+    "methodology": "TVL is the ICP held on the ICP ledger by the tICP bridge custody canister (dkafq-4aaaa-aaaaj-a6ysq-cai, default account). It backs the tICP released on Base, Arc and Robinhood Chain.",
+    "icp": {
+      "owners": [
+        "dkafq-4aaaa-aaaaj-a6ysq-cai"
+      ]
+    },
+  },
   "tangent-protocol": {
     "cardano": {
       "tvl": {
@@ -28062,6 +28005,7 @@ const configs = {
     },
   },
   "traddify": {
+    deadFrom: '2026-09-30',
     "methodology": "We count the WKAVA on 0xA7f3d2dEa7a53E7A9FEbBdE5Cf7C69d39D065030",
     "kava": {
       "tokens": [

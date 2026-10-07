@@ -17,6 +17,7 @@ const adapterRoutes = [
   './gmx.js',
   './traderJoeV2.js',
   './liquity.js',
+  './cosmosDex.js',
   './treasury.js',
   './bitcoin.js',
   './curators.js',

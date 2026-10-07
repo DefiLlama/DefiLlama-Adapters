@@ -61,7 +61,7 @@ async function tvlBase(api) {
 
 module.exports = {
   methodology: 'Counts the total value of WBTC assets locked in Bits yield product contracts on Ethereum network, COREBTC assets on CoreDAO network, and BASEBTC assets on Base network.',
-  start: 1749621314,
+  start: '2025-06-11',
   ethereum: {
     tvl,
   },

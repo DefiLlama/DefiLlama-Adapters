@@ -37,17 +37,19 @@ module.exports = {
     },
   },
   "ethos-network": {
-    "methodology": "Measures the total amount of ETH stored in the Vouch contract. Each vouch represents a trust relationship backed by ETH.",
+    "methodology": "TVL is the ETH held in the v1 Vouch contract. Staking is the WHUF held in the EthosVouchV2 contract. Each vouch represents a trust relationship backed by ETH or WHUF.",
     "start": "2025-01-21",
     "base": {
       "tvl": { "owner": "0xD89E6B7687f862dd6D24B3B2D4D0dec6A89A6fdd", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x8B5Ef9c00152CaDBfedA4f59212EDB6e2e45de11"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "ethos-markets": {
-    "methodology": "Measures the total amount of ETH stored in the Reputation Markets contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
+    "methodology": "TVL is the ETH held in the v1 Reputation Markets contract. Staking is the WHUF held in the EthosMarket contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
     "start": "2025-01-21",
     "base": {
       "tvl": { "owner": "0xC26F339F4E46C776853b1c190eC17173DBe059Bf", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x27F49210bc000BEE3197aFB4397969df35810919"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "king-finance": {
@@ -391,6 +393,7 @@ module.exports = {
     },
   },
   "kinetix-derivatives-v2": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tvl": { "owners": ["0xB5CE30B6EBAA252bDEac2F768EF9b1e4Bdf8d120"], "tokens": [ADDRESSES.null,ADDRESSES.kava.USDt] },
     },
@@ -715,6 +718,7 @@ module.exports = {
     },
   },
   "stipend": {
+    deadFrom: "2023-08-01", // abandoned?
     "kava": {
       "tvl": { "owners": ["0xfc30fE377f7E333cC1250B7768107a7Da0277c44"], "tokens": [ADDRESSES.kava.WKAVA] },
     },
@@ -769,13 +773,6 @@ module.exports = {
     },
     "ethereum": {
       "tvl": { "owners": ["0x46363C31Be0c677Bd6F3eD429686753794ee8b97"], "tokens": [ADDRESSES.bitrock.BR] },
-    },
-  },
-  "kalmydas": {
-    "methodology": "TVL is the sum of tokens (USDC, WETH, KAL) held by the KalSwap liquidity pairs plus the USDC held by the five KalPool strategy vaults (deposits and platform reserve) on Base mainnet. USDC temporarily allocated to the on-chain operator (max 20% of each vault reserve) leaves the vaults while a trade is open and returns on close. KAL staked single-side and KAL locked in veKAL are reported under staking.",
-    "base": {
-      "tvl": { "owners": ["0x3315E6E788E2B30aF8f4c35124695E60D510c31B","0xEA071fa5a8aD4dEa8c672569da366D7d90E5924d","0x83c26f5C90B81adDf50845CCFCdcd02B819ADeB5","0x96869F08F5B5C52664c9620269394eFF4efd065b","0x6dd6e7A6154293b22Dcd5d07d8f61F446646B15d","0x9A9990fdFf702f7aEd10f873eeD2baB60e493038","0x03FEC25393C38cC5DE1F2D2DB620b8478cAC4Ae0","0x55F8D85749EA9C374b3aBFaEF7B07429546F6A97"], "tokens": [ADDRESSES.base.USDC,ADDRESSES.optimism.WETH_1,"0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
-      "staking": { "owners": ["0xF392A8F1B6c85f607F988B44EcAE2B4d652585f5","0x58CfcB5A67Aac6255cA13771EbdCFF45bAd5d605"], "tokens": ["0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
     },
   },
   "sfi": {
@@ -1025,6 +1022,57 @@ module.exports = {
       "owner": "0x3993bD557E0d4a1E5A8Ec09a005E7Eee3E032f70",
       "tokens": [
         "0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB"
+      ]
+    },
+  },
+  "arctide-launchpad": {
+    "methodology": "TVL is the USDC raised on Arctide bonding curves that have not graduated yet, held by the launch factory as Arc's native USDC until the sale reaches its goal and the raise is moved into its Arctide pool.",
+    "start": "2026-09-16",
+    "arc": {
+      "owner": "0xF7a20a20e18Fa7d4B6c68EE58dA16799382AbCe8", // ArctideLaunchFactory
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
+  "solon-stocks": {
+    "methodology": "TVL is the Robinhood Chain stock tokens (NVDA, AAPL, TSLA) held by the Solon ReserveVault, which backs the .sol stock tokens minted on Arc 1:1. The .sol tokens on Arc are not counted.",
+    "start": "2026-10-03",
+    "robinhood": {
+      "owner": "0x3504aA69ca9C5A5Bc3dA312a6c761e9633251cFc", // ReserveVault
+      "tokens": [
+        "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", // NVDA
+        "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", // AAPL
+        "0x322F0929c4625eD5bAd873c95208D54E1c003b2d", // TSLA
+      ]
+    },
+  },
+  "peddlequest": {
+    "methodology": "Reward pools that quest creators have deposited into the PeddlesQuestEscrow contract and that have not yet been claimed by winners or swept after the claim deadline. Counts the escrow's balance of the chain's gas token and of every allow-listed reward token. On Arc the gas token is USDC, so only the native balance is read.",
+    "start": "2026-10-02",
+    "base": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null, ADDRESSES.base.USDC]
+    },
+    "bsc": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC]
+    },
+    "robinhood": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null]
+    },
+    "arc": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null]
+    }
+  },
+  "zava": {
+    "methodology": "TVL is the AVAX held by the zAVA Mine contract.",
+    "avax": {
+      "owner": "0xB9D7517bC53D0F0F5e6E7C0030979Dd67de85128", // Mine
+      "tokens": [
+        ADDRESSES.null
       ]
     },
   },

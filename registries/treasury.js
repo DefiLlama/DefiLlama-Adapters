@@ -968,6 +968,24 @@ const configs = {
       ownTokens: ['0x872bAD41CFc8BA731f811fEa8B2d0b9fd6369585', '0x539bde0d7dbd336b79148aa742883198bbf60342'],
     },
   },
+  'treasury/bbbfi': {
+    // Team-owned bridge inventory (including accrued BBB fees), not user TVL.
+    // Keep the protocol token in ownTokens; do not discover unrelated assets.
+    xdc: {
+      owners: ['0xb0a9379CA1A90CdC7dBCe2558FbAD59cbAF10EfC'],
+      tokens: [],
+      ownTokens: ['0x2C0cDA5734dD76c512E05AE0F9397e8a2059c4f4'],
+      fetchCoValentTokens: false,
+      permitFailure: false,
+    },
+    bsc: {
+      owners: ['0xfA730fB268D62FceEB75AD01ab4b016dc413905F'],
+      tokens: [],
+      ownTokens: ['0xE7D366A8064232B7EdEFcEA7Fab853EB5cB9CC83'],
+      fetchCoValentTokens: false,
+      permitFailure: false,
+    },
+  },
   'treasury/beamable-network': {
     solana: {
       tokens: [
@@ -2615,6 +2633,14 @@ const configs = {
       tokens: [nullAddress]
     },
   },
+  'treasury/outbidfun': {
+    robinhood: {
+      // Treasury (operations), RevenueRouter (fees awaiting their 80/20 split) and
+      // OutbidBuyback (the vault collecting for the $OUTBID buyback).
+      owners: ['0xE693C039cc91F8dbe64586245565388e2e44C0A4', '0xeEc171B409788644acBf1c50B825Cc6d9682D9b7', '0x9FBb9614bA47F2FD7ECFaa16880B535034a4eEF5'],
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG],
+    },
+  },
   'treasury/hoodpump': {
     robinhood: {
       owners: ['0xdAD1d6a2AfF8f9285Fd9C552491538aEcb518888', '0x453D956057036bd9871D25B965795b883047481D'],
@@ -4088,6 +4114,19 @@ const configs = {
       },
     },
   },
+  'treasury/nullmask': {
+    ethereum: {
+      owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
+      tokens: [nullAddress, ADDRESSES.ethereum.USDT],
+    },
+    solana: {
+      owners: [
+        'GRbpmTbmDeGn8BXHXb1jfEeUT6sGAt7Da44YpWxCS8nr', // ops wallet
+        'FrXTvkebakR2oNctgsHz1yeijmu9wTZifL3FmffJP5xJ', // team wallet
+      ],
+      ownTokens: ['HuAXPyDWDaMYFKuwQHpqL1oPnj93zdzWmtvFGzCeCUa7'], // MASK
+    },
+  },
   'treasury/neutra-finance': {
     arbitrum: {
       tokens: [
@@ -5254,6 +5293,12 @@ const configs = {
         ADDRESSES.abstract.USDC,
       ],
       owners: ['0x8210c4a20dfA79F555560F77dc72BD7A846a3eF1'],
+    },
+    solana: {
+      owners: [
+        'BLUg8cuP292HdFomNvc5xY4vJVVY45W5ozo5ThQMArBP', // PDA owning the treasury program's USDC vault (program W9uUoBaUe87NGD2CPqRQCsGwL7ruW4QgWD7bWMShiny)
+        '93X5tgk9654EGff1R5qDyJM3HXun1w8k39XtGzJFQKJT', // Squads vault: treasury admin and destination of balance skimmed above the vault target
+      ],
     },
   },
   'treasury/silent-protocol': {

@@ -468,6 +468,7 @@ const configs = {
     bsc: { masterchef: '0x94098E24FCf4701237CF58ef2A222C1cF5003c86', nativeToken: '0xf823f18d13df1ffdced206708d389dd455bb802b' },
   },
   'catsapes': {
+    deadFrom: '2026-09-30',
     misrepresentedTokens: true,
     kava: { masterchef: '0x85602B00C9bd973B1Afb66EC140A62480CF812d3' },
   },
@@ -569,6 +570,7 @@ const configs = {
     fantom: { masterchef: '0xF7711748bF74f2dDC261e745Ff43FdD8abfD1200', nativeToken: '0x71BE8F5F245c1F5aa5727DFdB36aAD3C71a4c26b' },
   },
   'kafidao': {
+    deadFrom: '2026-09-30',
     misrepresentedTokens: true,
     kava: { masterchef: '0x58a8E42C071b9C9d049F261E75DE5568Ef81a427', nativeToken: '0x254B63C7481A16bC4080f0Ab369320004f79Cca3', useDefaultCoreAssets: true, poolInfoABI: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accKfdPerShare)' },
   },
@@ -682,6 +684,7 @@ const configs = {
     ethpow: { masterchef: '0xC07707C7AC7E383CE344C090F915F0a083764C94', nativeToken: '0x2a0cf46ecaaead92487577e9b737ec63b0208a33', useDefaultCoreAssets: true },
   },
   'verified-credits': {
+    deadFrom: '2026-09-30',
     misrepresentedTokens: true,
     kava: { masterchef: '0x0a3b0C346cEE826aa0eBEf78c1eBcB9BE07aD2eb' },
   },

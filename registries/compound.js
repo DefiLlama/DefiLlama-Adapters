@@ -412,6 +412,7 @@ const configs = {
     hemi: { comptroller: '0xc2C583093Af9241E17B2Ec51844154468D21bF6F' },
   },
   'mare-finance-v2': {
+    deadFrom: '2026-09-30',
     methodology: 'Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets',
     kava: { comptroller: '0xFcD7D41D5cfF03C7f6D573c9732B0506C72f5C72', isInsolvent: true },
   },
@@ -471,7 +472,7 @@ const configs = {
     base: { comptroller: '0x1DB2466d9F5e10D7090E7152B68d62703a2245F0' },
   },
   'moonwell': {
-    hallmarks: [['2022-08-01', 'Nomad Bridge Exploit']],
+    hallmarks: [['2022-08-01', 'Nomad Bridge Exploit'], ['2026-08-27', 'MAMO oracle exploit on Base']],
     moonbeam: {
       comptroller: '0x8E00D5e02E65A19337Cdba98bbA9F84d4186a180',
       cether: '0x091608f4e4a15335145be0a279483c0f8e4c7955',
@@ -480,6 +481,8 @@ const configs = {
     base: {
       comptroller: '0xfBb21d0380beE3312B33c4353c8936a0F13EF26C',
       staking: ['0xe66E3A37C3274Ac24FE8590f7D84A2427194DC17', '0xa88594d404727625a9437c3f886c7643872296ae'],
+      // 2026-08-27 MAMO oracle exploiter, ~$9.5M of debt against worthless mMAMO collateral
+      excludedBorrowers: ['0x719eae70d4a83f35bf82a2740699f5db84be919d'],
     },
     optimism: { comptroller: '0xCa889f40aae37FFf165BccF69aeF1E82b5C511B9' },
     ethereum: { comptroller: '0xdec80bB934397575594E91970b37baf65f5b21bE' },
@@ -562,6 +565,30 @@ const configs = {
       { comptroller: '0xe9266ae95bB637A7Ad598CB0390d44262130F433', cether: ['0xafabd582e82042f4a8574f75c36409abea916ac5'], isInsolvent: true },
       { comptroller: '0xfFF8Fc176697D04607cF4e23E91c65aeD1c3d3F5', cether: ['0x530a8d3fdf61112f8a879d753fe02e9e37ec36aa'], isInsolvent: true },
     ],
+  },
+  'shoebillFinance-v2': {
+    // manta, metis, fuse markets flagged insolvent (borrowed bucket emptied); zeta (aave v3) removed
+    klaytn: { comptroller: '0xEE3Db1711ef46C04c448Cb9F5A03E64e7aa22814', cether: '0xac6a4566d390a0da085c3d952fb031ab46715bcf' },
+    wemix: { comptroller: '0xBA5E3f89f57342D94333C682e159e68Ee1Fc64De', cether: '0xD42ad8346d14853EB3D30568B7415cF90C579D83' },
+    manta: [
+      { comptroller: '0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC', cether: '0xE103F874B2D144C5B327FA3d57069Bb19c0779e2', isInsolvent: true },
+      { comptroller: '0x3413Dc597aE3bE40C6f10fC3D706b884eaCF470A', isInsolvent: true },
+      { comptroller: '0x4e4b415F5aa78a44CE1fc259D2cEc47BF50A9216', isInsolvent: true },
+    ],
+    mode: { comptroller: '0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC', cether: '0xD13bE8b716b18265e294831FCb1330d170840BB3' },
+    metis: { comptroller: '0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC', cether: '0x386adCa3c7D5C90523287933B05919aFcC2883dE', isInsolvent: true },
+    bsquared: [
+      { comptroller: '0x80E81348D9386Eb4d10c2A32A7458638cD3308dF', cether: '0x8dbf84c93727c85DB09478C83a8621e765D20eC2', isInsolvent: true },
+      { comptroller: '0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC', isInsolvent: true },
+    ],
+    bob: [
+      { comptroller: '0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC', cether: '0xb4255533Ad74A25A83d17154cB48A287E8f6A811', isInsolvent: true },
+      { comptroller: '0xB7ed6c062caAaCb1A13f317E0A751289280FC306', isInsolvent: true },
+      { comptroller: '0x1e514767F5cFe1ddE599dd39a79666E3BeEAaf7d', isInsolvent: true },
+    ],
+    kroma: { comptroller: '0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC', cether: '0xD13bE8b716b18265e294831FCb1330d170840BB3' },
+    fuse: { comptroller: '0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC', cether: '0xD13bE8b716b18265e294831FCb1330d170840BB3', isInsolvent: true },
+    zklink: { comptroller: '0x89e348e0ab4D83aEDbf1354004552822a805a12e', cether: '0x4dA697a89ea1D166881362b56E6863294820eC97' },
   },
   'wanlend': {
     methodology,

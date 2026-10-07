@@ -1,12 +1,13 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('../http')
 const { PromisePool } = require('@supercharge/promise-pool')
 
-const url = addr => 'https://api.kaspa.org/addresses/' + encodeURIComponent(addr) + '/balance'
+const { utxo } = sdk.chains
+const CHAIN = 'kaspa'
 
+// KAS balance in whole coins
 async function getBalance(addr) {
-  const { balance } = await get(url(addr))
-  return balance / 1e8 // sompi -> KAS
+  const sompi = await utxo.getBalance({ chain: CHAIN, address: addr })
+  return utxo.fromBaseUnits(sompi, utxo.CHAINS[CHAIN].decimals)
 }
 
 async function sumTokens({ balances = {}, owners = [] }) {

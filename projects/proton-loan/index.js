@@ -24,7 +24,7 @@ const tokenMapping = {
   'xtokens:XSOL': 'solana',
 }
 
-const API_ENDPOINT = 'https://proton.eosusa.io'
+const API_ENDPOINT = 'https://proton.eoscafeblock.com' // proton.eosusa.io resets connections (2026-09); same node the proton chain helper uses
 const LENDING_CONTRACT = 'lending.loan'
 
 function parseAsset(assetString) {

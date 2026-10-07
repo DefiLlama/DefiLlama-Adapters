@@ -20,6 +20,10 @@ const config = {
         type: 'slipstream',
         nftAddress: '0x827922686190790b37229fd06084350e74485b72',
       },
+      '0x19C1D4Ffc9a3bc09d6682daA06b08f3500BC453c': { // Aerodrome Slipstream (factory 0xf8f2eB4940CFE7d13603DDDD87f123820Fc061Ef)
+        type: 'slipstream',
+        nftAddress: '0xe1f8cd9AC4e4A65F54f38a5CdAfCA44f6dD68b53',
+      },
     },
   },
   arbitrum: {

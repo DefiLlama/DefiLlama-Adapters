@@ -25,6 +25,6 @@ module.exports = {
     'TVL is the total W0G deposited into the Ascend a0G vault (0x4B3c2f55fa67679b382c979A082Df1B32079B4cB), ' +
     'counted as the W0G held by the vault, locked in its LayerZero OFT adapter (bridged to the Ascend Staked OG ' +
     'Mellow vault on Ethereum for restaking) and pending in its withdrawal queue.',
-  start: 1770964817, // vault deployment, 0G block 24597844
+  start: '2026-02-13', // vault deployment, 0G block 24597844
   '0g': { tvl },
 }

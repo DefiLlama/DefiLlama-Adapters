@@ -176,6 +176,6 @@ module.exports = {
     'All values verified on-chain via sequential eth_call (no Multicall3). Swap pools enumerated from PoolFactory.allPools and PoolV3Factory.allPools (concentrated liquidity); StablePool coins enumerated via getNumCoins/coins so multi-coin pools are fully counted. CDP collateral read from CDPVault, lending deposits (idle liquidity + collateral) from LiquidityPool + CollateralVault, savings from SaveUSDSTVault, staked assets from SafetyModule, vault holdings from the Vault botExecutor, stablecoin reserves held by the DirectMintPSM, and idle assets held by each ERC-4626 YieldVault (capital deployed to strategies is excluded because it is redeployed into CDPs/pools already counted). Holder addresses resolved from on-chain registries (CDPRegistry, LendingRegistry). Outstanding debt is reported separately under `borrowed` and excluded from TVL: LiquidityPool debt (totalScaledDebt × borrowIndex / RAY against the LiquidityPool borrowableAsset) plus CDP debt (CDPEngine.totalDebtAll, outstanding USDST summed across every enumerated collateral asset). Staked $STRATO (StratoStaking totalUserStake + totalSelfBond) is reported under `staking`, priced against the Ethereum STRATO ERC-20 because $STRATO has no price feed on the STRATO chain itself. Prices resolved server-side by DefiLlama for the `strato` chain.',
   misrepresentedTokens: true,
   timetravel: false,
-  start: 1775151906,
+  start: '2026-04-02',
   strato: { tvl, borrowed, staking },
 }

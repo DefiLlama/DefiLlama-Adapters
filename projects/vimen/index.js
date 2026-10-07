@@ -33,6 +33,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'TVL is the value of the tokenized stocks and chain-native tokens held as 1:1 backing by every live basket token, plus any USDG rebalance buffer a basket holds. Baskets are enumerated on-chain from the three immutable factories (allBaskets) together with the five first-party baskets deployed before the factories existed; each basket reports its own constituent list on-chain and balances are read from the basket contract itself. User wallets and undistributed dividend pots held by payout distributors are not counted.',
-  start: 1783812981, // MAG7 deployment, 2026-07-11
+  start: '2026-07-12', // MAG7 deployment, 2026-07-11
   robinhood: { tvl },
 }
