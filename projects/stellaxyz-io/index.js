@@ -56,12 +56,21 @@ module.exports = {
   arbitrum: {
     tvl: async (api) => {
       const strategies = await getStrategies(api)
-      const positionManagers = await api.multiCall({ abi: 'address:positionManager', calls: strategies, permitFailure: true })
-      await sumTokens2({ api, owners: positionManagers.filter(Boolean), resolveUniV3: true })
+      // no permitFailure: a failed lookup must error loudly, never silently
+      // drop a strategy's holdings from the total
+      const positionManagers = await api.multiCall({ abi: 'address:positionManager', calls: strategies })
 
       const pools = await getPools(api)
       const tokens = await api.multiCall({ abi: 'address:depositToken', calls: pools })
       await sumTokens2({ api, tokensAndOwners2: [tokens, pools] })
+
+      // Deposit tokens possibly parked in position managers (cross product).
+      // PM-held AMM positions beyond canonical UniV3 NFTs (Camelot NPM, JoeV2
+      // LB, Pendle PTs) are not resolvable by the helpers; verified worth ~$0
+      // (test total reconciles to pool balances), so they are out of scope.
+      const pmTokenPairs = []
+      for (const pm of positionManagers) for (const token of tokens) pmTokenPairs.push([token, pm])
+      await sumTokens2({ api, tokensAndOwners: pmTokenPairs, owners: positionManagers, resolveUniV3: true })
     }
   },
 }
