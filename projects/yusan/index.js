@@ -1,4 +1,4 @@
-const { getCache } = require('../helper/http')
+const { getCache, get } = require('../helper/http')
 
 const YUSAN_API = 'https://yusan.fi/metrics_json'
 const ONESEC_API = 'https://1sec.to/api/balances'
@@ -41,9 +41,10 @@ function createTvl(chain) {
   return async (api) => {
     const [yusan, bridge] = await Promise.all([
       getCache(YUSAN_API),
-      // 1sec.to 403s (dead since Mar 2026, froze this feed): without the split,
-      // multi-chain tokens are skipped below instead of triple-counted
-      getCache(ONESEC_API).catch(() => null),
+      // 1sec.to 403s (dead since Mar 2026, froze this feed): uncached so a
+      // mid-run recovery is picked up; without the split, multi-chain tokens
+      // are skipped below instead of triple-counted
+      get(ONESEC_API).catch(() => null),
     ])
 
     for (const symbol of chainTokens[chain]) {
