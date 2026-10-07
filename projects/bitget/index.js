@@ -257,4 +257,4 @@ module.exports = mergeExports([
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
 ])
 
-module.exports.hallmarks = [["2026-09-24", "Hot-wallet hack (~$387M), TVL fell ~$500M over Sep 24-25"]]
+module.exports.hallmarks = [["2026-09-24", "Hot-wallet hack (~$387M)"]]

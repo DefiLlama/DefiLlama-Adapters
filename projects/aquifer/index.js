@@ -30,7 +30,7 @@ module.exports = {
   methodology:
     "TVL is the value of assets held in the program-derived token account of every Coin registered to Aquifer's official Solana DEX.",
   hallmarks: [
-    ["2026-08-31", "Exploit (~$2.4M), TVL fell from $2.78M to near zero"],
+    ["2026-08-31", "Exploit (~$2.5M)"],
   ],
   solana: { tvl },
 }

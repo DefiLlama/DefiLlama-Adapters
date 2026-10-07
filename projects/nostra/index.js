@@ -173,7 +173,7 @@ module.exports = {
   methodology:
     "The TVL is calculated as a difference between supplied and borrowed assets.",
   hallmarks: [
-    ["2026-09-17", "Exploit (~$3.5M), TVL fell from $4.15M to $0.71M"],
+    ["2026-09-17", "Exploit (~$3.5M)"],
   ],
   starknet: {
     tvl,
