@@ -12,15 +12,12 @@ async function tvl(api) {
     onlyArgs: true,
   })
   if (!logs.length) return
-  const quotes = await api.multiCall({
-    abi: 'uint256:realQuote',
-    calls: logs.map(i => i.curve),
-    permitFailure: true,
-  })
-  for (const quote of quotes) if (quote) api.addGasToken(quote)
+  const quotes = await api.multiCall({ abi: 'uint256:realQuote', calls: logs.map(i => i.curve) })
+  api.addGasToken(quotes)
 }
 
 module.exports = {
+  start: '2026-09-28',
   methodology: 'ETH sitting on live BullGems curves (realQuote). The memecoin, virtual reserves, fee pots and treasury are not included.',
-  robinhood: { tvl, start: '2026-09-28' },
+  robinhood: { tvl },
 }
