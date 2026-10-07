@@ -45,13 +45,11 @@ module.exports = {
     },
   },
   "ethos-markets": {
-    "methodology": "TVL is the ETH held in the v1 Reputation Markets contract plus the WHUF held in the EthosMarket contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
+    "methodology": "TVL is the ETH held in the v1 Reputation Markets contract. Staking is the WHUF held in the EthosMarket contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
     "start": "2025-01-21",
     "base": {
-      "tvl": { "ownerTokens": [
-        [[ADDRESSES.null], "0xC26F339F4E46C776853b1c190eC17173DBe059Bf"],
-        [["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"], "0x27F49210bc000BEE3197aFB4397969df35810919"],
-      ] },
+      "tvl": { "owner": "0xC26F339F4E46C776853b1c190eC17173DBe059Bf", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x27F49210bc000BEE3197aFB4397969df35810919"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "king-finance": {
