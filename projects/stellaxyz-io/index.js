@@ -1,70 +1,67 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs, getAddress } = require('../helper/cache/getLogs');
-const { cachedGraphQuery } = require('../helper/cache')
-const { graphQuery } = require('../helper/http');
-const ADDRESSES = require('../helper/coreAssets.json')
+const { getLogs } = require('../helper/cache/getLogs');
 
-const config = {
-  arbitrum: {
-    endpoint: 'https://graph.stellaxyz.io/v1/graphql',
-    // factory: '0x573a89fBc6b4a5B11a55DC9814A1018a3A9cD0CA',
-    // fromBlock: 101291920,
+// The official Stella subgraph (graph.stellaxyz.io) died around 2026-06-10,
+// freezing the feed. Everything below is discovered on-chain instead:
+// strategies via factory CreateStrategy events, lending pools via
+// AddLendingPool events on the two lending proxies.
+// The proxies are hardcoded: they are set once on the lending-proxy-aggregator
+// (0x2A1633A2F879b2a41650a48C42c14001E5607055, verified on-chain 2026-10-07)
+// and the protocol is abandoned (no team activity since 2024), so the set is
+// frozen. Pools stay event-discovered since that scan works reliably.
+const proxies = [
+  '0xfff45c0b77d7c0c33a97a879576f0550b6842bff',
+  '0x032ba65c71c82d2e6dcf91cad148adc64a5f02a7',
+]
+
+const factories = {
+  '0x573a89fbc6b4a5b11a55dc9814a1018a3a9cd0ca': 101291920, // UniV3StrategyFactory
+  '0x811A3f2577DE04Af01663Df8DcF543bF6a6187B2': 111000000, // JoeV2StrategyFactory
+  '0x6A5fB411e85D74b51862DED8d1cF54f1896d95bE': 131000000, // PendleLSDStrategyFactory
+  '0xbb5A4dCb173f643Ca6687aA837d6357DF9d6C936': 131000000, // PenpieLSDStrategyFactory
+  '0xE3d6f0D0b487B102C4eCFa5c1Cc27774ED227B7b': 161000000, // CamelotV3StrategyFactory
+}
+
+const createStrategyAbi = 'event CreateStrategy(address,address)'
+const addPoolAbi = 'event AddLendingPool(address)'
+const delistPoolAbi = 'event DelistLendingPool(address)'
+const poolsFromBlock = 131951268 // aggregator deployment, covers all pool history
+
+async function getStrategies(api) {
+  const all = []
+  for (const [factory, fromBlock] of Object.entries(factories)) {
+    const logs = await getLogs({ api, target: factory, eventAbi: createStrategyAbi, fromBlock, onlyArgs: true })
+    // data = (poolOrMarket, strategyProxy); the proxy (2nd field) is what holds positions
+    all.push(...logs.map(log => log[1]))
   }
+  return [...new Set(all)]
+}
+
+async function getPools(api) {
+  const pools = []
+  for (const proxy of proxies) {
+    // extraKey: the log cache is keyed by chain+target, so the add and delist
+    // scans on the same proxy need distinct keys or they read each other's logs
+    const adds = await getLogs({ api, target: proxy, eventAbi: addPoolAbi, fromBlock: poolsFromBlock, onlyArgs: true, extraKey: 'add-pool' })
+    const delists = await getLogs({ api, target: proxy, eventAbi: delistPoolAbi, fromBlock: poolsFromBlock, onlyArgs: true, extraKey: 'delist-pool' })
+    const delisted = new Set(delists.map(log => log[0].toLowerCase()))
+    pools.push(...adds.map(log => log[0]).filter(pool => !delisted.has(pool.toLowerCase())))
+  }
+  return [...new Set(pools)]
 }
 
 module.exports = {
   misrepresentedTokens: true,
-}
-
-const query = `query GET_ALL_LENDING_POOLS{  pools: lending_pool_registry(    where: {_or: [{is_launched: {_eq: true}}], chain_id: {_eq: 42161}, is_deprecated: {_eq: false}}  ) {    tokenName: lending_token_name      poolAddress: pool_address     }}`
-const strategyQuery = `query Strategy {  strategy(    where: {chain_id: {_eq: 42161 }, _or: [{is_launched: {_eq: true}}]}   order_by: {display_priority: asc}  ) {    id    name    strategyAddress: strategy_address  }}`
-
-Object.keys(config).forEach(chain => {
-  const { endpoint, factory, fromBlock, } = config[chain]
-  module.exports[chain] = {
+  methodology: 'Counts deposit-token balances held by all on-chain Stella lending pools plus token and Uniswap-V3 NFT positions held by strategy position managers. Discovered via factory and lending-proxy events; no subgraph dependency.',
+  arbitrum: {
     tvl: async (api) => {
-      await getStraegyTvl2()
-      const { pools } = await cachedGraphQuery('stellaxyz/lending-pool/' + api.chain, endpoint, query)
-      const lendingContracts = pools.map(i => i.poolAddress)
-      const tokens = await api.multiCall({ abi: 'address:depositToken', calls: lendingContracts })
-      await sumTokens2({ api, tokensAndOwners2: [tokens, lendingContracts] })
+      const strategies = await getStrategies(api)
+      const positionManagers = await api.multiCall({ abi: 'address:positionManager', calls: strategies, permitFailure: true })
+      await sumTokens2({ api, owners: positionManagers.filter(Boolean), resolveUniV3: true })
 
-      async function getStraegyTvl2() {
-        let hasMore = false
-        let offset = 0
-        do {
-          const { position } = await graphQuery(endpoint, `query GetPositionsDefillama($offset:Int!) {
-            position(order_by:{opened_at:asc},where: {status: {_eq: "Active"}}, limit: 1000, offset: $offset) {
-            id
-              position_value_usd
-              strategy{
-                id
-                strategy_address
-                lp_address
-                pool_address
-              }
-              opened_at
-              closed_at
-              status
-            }
-          }`, {offset})
-          hasMore = position.length === 1000
-          position.forEach(i => {
-            api.add(ADDRESSES.arbitrum.USDC, i.position_value_usd * 1e6)
-          })
-        } while (hasMore)
-      }
-
-      async function getStategyTvl() {
-        const { strategy } = await cachedGraphQuery('stellaxyz/strategy/' + api.chain, endpoint, strategyQuery)
-        const strategies = strategy.map(i => i.strategyAddress)
-        // const logs = await getLogs({        api,        target: factory,        topics: ['0x0803371633b57311f58d10924711080d2dae75ab17c5c0c262af3887cfca00bb'],        fromBlock,      })
-
-        const positionManagers = await api.multiCall({ abi: 'address:positionManager', calls: strategies })
-        return sumTokens2({ api, owners: positionManagers, resolveUniV3: true, })
-
-
-      }
+      const pools = await getPools(api)
+      const tokens = await api.multiCall({ abi: 'address:depositToken', calls: pools })
+      await sumTokens2({ api, tokensAndOwners2: [tokens, pools] })
     }
-  }
-})
+  },
+}
