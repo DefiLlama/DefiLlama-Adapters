@@ -118,6 +118,7 @@ async function borrowed() {
 
 
 module.exports = {
+  deadFrom: '2026-10-07', // cu.ardrive.io is gone and public AO CUs only serve whitelisted processes
   methodology: methodologies.lendingMarket,
   ao: { tvl, borrowed },
 };
