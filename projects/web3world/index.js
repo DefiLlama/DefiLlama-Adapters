@@ -10,7 +10,7 @@ const payload = {
 }
 
 const tvl = async (api) => {
-  const { pools } = await post(url, payload)
+  const { pools } = await post(url, payload, { timeout: 30000 })
   pools.forEach(({ tvl }) => {
     api.addUSDValue(Math.round(tvl))
   })
