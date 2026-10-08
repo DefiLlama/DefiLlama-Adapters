@@ -134,8 +134,14 @@ async function getMorphoVaults(api, owners, {
     permitFailure: true,
   })
 
+  // A failed owner() read must never look like a mismatch: fail loudly
+  // instead of silently dropping the vault (and its TVL) from the list.
+  const unreadable = discoveredVaults.filter((_, i) => !currentOwners[i])
+  if (unreadable.length) {
+    throw new Error(`getMorphoVaults: owner() read failed for ${unreadable.length} vault(s): ${unreadable.join(', ')}`)
+  }
+
   for (let i = 0; i < discoveredVaults.length; i++) {
-    if (!currentOwners[i]) continue
     if (isOwner(currentOwners[i], owners)) {
       allVaults.push(discoveredVaults[i])
     }
