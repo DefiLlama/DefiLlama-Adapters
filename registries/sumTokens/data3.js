@@ -1074,4 +1074,29 @@ module.exports = {
       ]
     },
   },
+  "tacit": {
+    "methodology": "TVL is the ETH held by Tacit's shielded pools: the ETH wrapped into the ConfidentialPool on Ethereum, and the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain. Balances are read from the pool contracts.",
+    "start": "2026-09-17",
+    "ethereum": {
+      "owners": [
+        "0x000000000Ed1eabD231Be41d93b719056F7febFC",
+        "0x000000c2A20657CE25f2Ba99737933D031AFBEE9"
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "base": {
+      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "robinhood": {
+      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
 }
