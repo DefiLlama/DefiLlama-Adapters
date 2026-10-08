@@ -24,6 +24,7 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'pentaswap': { pentagonchain: '0xC75C7E9352bC1475d7c308E65C0a21969DcEdEe7' },
   'bbbfi-swap-v2': {
     methodology: 'Value of reserves in BBBFi-owned V2 AMM pools on XDC and BSC, discovered from each factory. Uses the standard core-asset reserve valuation helper. Staked LP receipts are not added again; reward budgets and bridge reserves are excluded.',
     xdc: '0xFe536C6a76487563D4393a3Bd03ef2621546A198',
