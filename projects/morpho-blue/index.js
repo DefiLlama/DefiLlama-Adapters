@@ -48,26 +48,59 @@ const getMarket = async (api) => {
   // union with morpho's own feed, never a replacement - the feed is a subset of the list above
   const excluded = new Set([...blacklistedMarketIds.map(i => i.toLowerCase()), ...await getExcludedMarketIds(api)])
   const all = logs.map((i) => i.id.toLowerCase())
+
+  // asset_usage is 'all', so a market with an excluded asset on either leg is excluded too - same rule
+  // the fees adapter applies. Without this a market excluded only by its collateral keeps its loan
+  // balance in tvl, even though borrowed already drops it.
+  const excludedAssets = new Set(await getExcludedAssets(api))
+  if (excludedAssets.size) {
+    const candidates = all.filter((id) => !excluded.has(id))
+    const infos = await api.multiCall({ target: morphoBlue, calls: candidates, abi: abi.morphoBlueFunctions.idToMarketParams, permitFailure: true })
+    infos.forEach((info, i) => {
+      if (!info) return
+      if (excludedAssets.has(info.loanToken.toLowerCase()) || excludedAssets.has(info.collateralToken.toLowerCase()))
+        excluded.add(candidates[i])
+    })
+  }
   return { markets: all.filter((id) => !excluded.has(id)), excludedMarkets: all.filter((id) => excluded.has(id)) }
 }
 
 // tvl sums the whole balance the shared morpho contract holds of each token, so dropping an excluded
 // market from the id list does nothing while a valid market uses the same token. Subtract what the
 // excluded market still physically holds: supply minus borrowed, since borrowed assets have left the
-// contract. Only for tokens we actually summed, or the subtraction would push the token negative.
-const subtractExcludedMarkets = async (api, excludedMarkets, countedTokens) => {
+// contract. Collateral is not attributable: morpho exposes no per-market total, only position(id, user),
+// so an excluded market's collateral stays counted when a valid market shares that token - measured at
+// ~$1k on ethereum, which is why netting the collateral logs per market is not worth the scan.
+const subtractExcludedMarkets = async (api, excludedMarkets) => {
   if (!excludedMarkets.length) return
   const { morphoBlue } = config[api.chain]
   const [marketInfos, marketDatas] = await Promise.all([
     api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.idToMarketParams, permitFailure: true }),
     api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market, permitFailure: true }),
   ])
+
+  // only ever debit against a balance we actually measured. sumTokens2 runs with permitFailure, so a
+  // requested token whose balanceOf failed is absent here - subtracting then would invent a negative.
+  const balances = api.getBalances()
+  const measured = new Map(Object.entries(balances).map(([key, value]) => [key.split(':')[1].toLowerCase(), { key, value }]))
+
+  const idleByToken = new Map()
   marketDatas.forEach((data, i) => {
-    if (!data || !marketInfos[i]) return
+    if (!data || !marketInfos[i]) {
+      sdk.log(`morpho-blue: ${api.chain} could not read excluded market ${excludedMarkets[i]}, leaving its balance in tvl`)
+      return
+    }
     const loanToken = marketInfos[i].loanToken.toLowerCase()
-    if (!countedTokens.has(loanToken)) return
     const idle = BigInt(data.totalSupplyAssets || 0) - BigInt(data.totalBorrowAssets || 0)
-    if (idle > 0n) api.add(loanToken, (-idle).toString())
+    if (idle > 0n) idleByToken.set(loanToken, (idleByToken.get(loanToken) ?? 0n) + idle)
+  })
+
+  idleByToken.forEach((idle, token) => {
+    const entry = measured.get(token)
+    if (!entry) return
+    // clamp: a market's accounting supply can exceed what the contract holds when interest is phantom
+    const balance = BigInt(entry.value)
+    api.add(entry.key.split(':')[1], (-(idle > balance ? balance : idle)).toString())
   })
 }
 
@@ -136,8 +169,7 @@ const tvl = async (api) => {
   }
 
   await sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true })
-  const blacklistedSet = new Set(blacklistedTokens.map(t => t.toLowerCase()))
-  await subtractExcludedMarkets(api, excludedMarkets, new Set(tokens.map(t => t.toLowerCase()).filter(t => !blacklistedSet.has(t))))
+  await subtractExcludedMarkets(api, excludedMarkets)
   return api.getBalances()
 }
 
