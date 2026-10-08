@@ -268,6 +268,7 @@ const configs = {
       pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
       apcVault: '0xd0428799fbc35557834d33121ba4472692c8908a',
       hybVault: '0x6Ce4bc043398Ac40392d1E063328048072b2075d',
+      axilpot: '0x921974d7b1a2dbaccaf5ba893a3a1500638cea6b',
     }),
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
   },
