@@ -170,6 +170,7 @@ const _getFolioLogs = async (api, folioDeployers) => {
         eventAbi: "event FolioDeployed(address indexed folioOwner, address indexed folio, address folioAdmin)",
         fromBlock: deployer.startBlock,
         onlyArgs: true,
+        extraKey: "folio-deployed",
       }).catch(() => []),
       getLogs({
         api,
@@ -177,6 +178,7 @@ const _getFolioLogs = async (api, folioDeployers) => {
         eventAbi: "event GovernedFolioDeployed(address indexed stToken, address indexed folio, address ownerGovernor, address ownerTimelock, address tradingGovernor, address tradingTimelock)",
         fromBlock: deployer.startBlock,
         onlyArgs: true,
+        extraKey: "governed-folio-deployed",
       }).catch(() => [])
     ])
   );
