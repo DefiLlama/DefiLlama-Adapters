@@ -134,7 +134,6 @@ async function getEulerVaults(api, owners) {
     const getProxyListLength = await api.call({
       abi: ABI.euler.getProxyListLength,
       target: factory,
-      permitFailure: true,
     });
     if (getProxyListLength) {
       const lists = []
