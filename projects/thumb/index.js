@@ -20,6 +20,6 @@ async function tvl(api) {
 
 module.exports = {
   start: '2026-10-01',
-  methodology: 'Counts quote collateral held in Thumb launch vaults. Excludes minted launch-token inventory, fee recipients, treasury balances, and liquidity migrated to external DEX pools.',
+  methodology: 'TVL is the total on-chain quote-asset balance held in Thumb launch vaults discovered from Core TokenCreated events.',
   anubi: { tvl },
 }
