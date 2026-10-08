@@ -27,7 +27,10 @@ function position(nftId, vault, supply) {
   return { nftId, vault, owner: OWNER, supply, borrow: '999999999999999999999' }
 }
 
-function createApi(positions, { chain = 'ethereum', ids = positions.map(p => p.nftId), fail } = {}) {
+function createApi(positions, {
+  chain = 'ethereum', ids = positions.map(p => p.nftId), fail,
+  totalSupplyShares = '100', reserves = ['1000', '2000', '9000000', '9000000'],
+} = {}) {
   const api = new ChainApi({ chain, block: 26145588 })
   api.sumTokens = async () => api.getBalances()
   const byId = new Map(positions.map(p => [p.nftId, p]))
@@ -46,9 +49,9 @@ function createApi(positions, { chain = 'ethereum', ids = positions.map(p => p.n
     return calls.map(handlers[abi])
   }
   api.call = async ({ abi }) => {
-    if (abi.includes('getTotalSupplySharesRaw')) return ((1n << 128n) + 100n).toString()
+    if (abi.includes('getTotalSupplySharesRaw')) return ((1n << 128n) + BigInt(totalSupplyShares)).toString()
     assert.ok(abi.includes('getDexCollateralReserves'))
-    return ['1000', '2000', '9000000', '9000000']
+    return reserves
   }
   return api
 }
@@ -75,6 +78,31 @@ test('preserves smart collateral shares and excludes imaginary reserves and debt
   await loadAdapter().ethereum.tvl(api)
   assert.equal(api.getBalances()[`ethereum:${ADDRESSES.ethereum.sUSDe}`], '250')
   assert.equal(api.getBalances()[`ethereum:${ADDRESSES.ethereum.USDT}`], '500')
+})
+
+test('preserves smart collateral precision above the safe integer limit', async () => {
+  const api = createApi([position('1', SMART_VAULT, '9007199254740993')], {
+    totalSupplyShares: '9007199254740995',
+    reserves: ['9007199254740997', '18014398509481995', '0', '0'],
+  })
+  await loadAdapter().ethereum.tvl(api)
+  assert.equal(api.getBalances()[`ethereum:${ADDRESSES.ethereum.sUSDe}`], '9007199254740994')
+  assert.equal(api.getBalances()[`ethereum:${ADDRESSES.ethereum.USDT}`], '18014398509481990')
+})
+
+test('rounds smart collateral down to whole token base units', async () => {
+  const api = createApi([position('1', SMART_VAULT, '25')], {
+    reserves: ['1003', '2003', '0', '0'],
+  })
+  await loadAdapter().ethereum.tvl(api)
+  assert.equal(api.getBalances()[`ethereum:${ADDRESSES.ethereum.sUSDe}`], '250')
+  assert.equal(api.getBalances()[`ethereum:${ADDRESSES.ethereum.USDT}`], '500')
+})
+
+test('does not add smart collateral when total supply shares are zero', async () => {
+  const api = createApi([position('1', SMART_VAULT, '25')], { totalSupplyShares: '0' })
+  await loadAdapter().ethereum.tvl(api)
+  assert.ok(Object.values(api.getBalances()).every(value => BigInt(value) === 0n))
 })
 
 test('handles owners with no Fluid positions', async () => {

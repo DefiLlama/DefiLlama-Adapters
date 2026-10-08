@@ -224,11 +224,11 @@ async function addFluidSmartCollateral(api, vault, positions) {
   const totalSupplyShares = BigInt(totalSupplySharesRaw) & BigInt('0xffffffffffffffffffffffffffffffff');
   const [token0Reserves, token1Reserves] = reserves;
   const totalPositionShares = positions.reduce((sum, p) => sum + BigInt(p.supply), 0n);
-  const ratio = Number(totalPositionShares) / Number(totalSupplyShares);
-  const token0Amount = Number(token0Reserves) * ratio;
-  const token1Amount = Number(token1Reserves) * ratio;
-  if (token0Amount > 0) api.add(vault.TOKEN0, token0Amount.toFixed(0));
-  if (token1Amount > 0) api.add(vault.TOKEN1, token1Amount.toFixed(0));
+  if (totalSupplyShares === 0n) return;
+  const token0Amount = BigInt(token0Reserves) * totalPositionShares / totalSupplyShares;
+  const token1Amount = BigInt(token1Reserves) * totalPositionShares / totalSupplyShares;
+  if (token0Amount > 0n) api.add(vault.TOKEN0, token0Amount.toString());
+  if (token1Amount > 0n) api.add(vault.TOKEN1, token1Amount.toString());
 }
 
 async function tvl(api) {
