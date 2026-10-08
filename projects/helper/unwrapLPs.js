@@ -693,6 +693,8 @@ const nativeTokenAliases = {
   polygon: '0x0000000000000000000000000000000000001010', // POL (MRC20)
   celo: '0x471ece3750da237f93b8e339c536989b8978a438', // CELO (GoldToken)
   metis: '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000', // METIS
+  arc: '0x3600000000000000000000000000000000000000', // USDC (6 decimals, native is 18)
+  stable: '0x779ded0c9e1022225f8e0630b35a9b54be713736', // USDT0 (6 decimals, native is 18)
 }
 /*
 tokensAndOwners [

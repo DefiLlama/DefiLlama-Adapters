@@ -3244,6 +3244,10 @@ const uniV2Configs = {
     methodology: 'Token balances held in every Unitflow v2.5 pair, enumerated from the factory.',
     arc: '0xFc1EC6761e246D5cb0c4C22669f8635098B22ba1',
   },
+  'architect-swap-v2': {
+    methodology: 'Value of the tokens held in the Architect Swap V2 pairs on Robinhood Chain, enumerated from the factory.',
+    robinhood: '0xfa6253ee74F7956b022998F7bfa271990C8A82a8',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
