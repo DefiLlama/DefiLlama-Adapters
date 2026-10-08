@@ -1,15 +1,35 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
 const { nullAddress } = require('../helper/tokenMapping')
-const { getMarketList } = require('../lista-lending/marketList')
 
 const NATIVE_PLACEHOLDER = ADDRESSES.GAS_TOKEN_2
+const MARKET_LIST_URL = 'https://api.lista.org/api/moolah/borrow/marketList?pageSize=200&page='
 
 const chains = ['bsc', 'ethereum']
 
+/** The API caps pageSize at 200 and ignores the chain filter, so page through every market once. */
+async function fetchMarketList() {
+  const list = []
+  let total = Infinity
+  for (let page = 1; list.length < total; page++) {
+    const { data } = await get(MARKET_LIST_URL + page)
+    total = data?.total ?? 0
+    const pageList = data?.list ?? []
+    if (!pageList.length) break
+    list.push(...pageList)
+  }
+  const unique = [...new Map(list.map((m) => [m.marketId, m])).values()]
+  // throw on a short list so getConfig keeps the last complete one
+  if (!unique.length || unique.length < total) throw new Error(`lista: fetched ${unique.length}/${total} markets`)
+  return { data: { list: unique } }
+}
+
 async function getSmartLendingMarketIds(api) {
-  const list = await getMarketList(api.chain)
-  return list
+  const { data } = await getConfig('lista-dex/marketList', undefined, { fetcher: fetchMarketList })
+  if (!data?.list?.length) throw new Error('lista: no market list')
+  return data.list
+    .filter((m) => m.chain === api.chain)
     .filter((m) => m.isSmartLending === true)
     .filter((m) => m.status === 1)
     .map((m) => m.marketId)
