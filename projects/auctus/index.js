@@ -27,12 +27,6 @@ async function tvl(api) {
     }),
     getLogs({
       api,
-      target: FACTORY,
-      fromBlock: START_BLOCK,
-      topic: 'NewAcoTokenData(address,address,bool,uint256,uint256,address,address,address)',
-    }),
-    getLogs({
-      api,
       target: POOLS_FACTORY,
       fromBlock: START_BLOCK,
       topic: 'NewAcoPool(address,address,bool,address,address)',
@@ -53,12 +47,6 @@ async function tvl(api) {
     acoOptionsAddresses.push(address)
   });
 
-  const logs2 = logsPromises[1];
-  logs2.forEach((log) => {
-    const address = getTokenAddressFromNewAcoTokenLogData(log.data);
-    acoOptionsAddresses.push(address)
-  });
-
   let collateralResult = await api.multiCall({ calls: acoOptionsAddresses, abi: abi.collateral, });
 
   let collateralAddressMap = {}
@@ -74,7 +62,7 @@ async function tvl(api) {
     api.add(colateralAddress, result)
   });
 
-  const newAcoPoolLogs = logsPromises[2];
+  const newAcoPoolLogs = logsPromises[1];
   const ownerTokens = []
 
   newAcoPoolLogs.forEach((log) => {
@@ -86,7 +74,7 @@ async function tvl(api) {
 
   await api.sumTokens({ ownerTokens })
 
-  const setVaultLog = logsPromises[3];
+  const setVaultLog = logsPromises[2];
 
   let acoVaultsAddresses = [];
   setVaultLog.forEach((log) => {
