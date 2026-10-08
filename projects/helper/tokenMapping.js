@@ -42,9 +42,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  pentagonchain: {
-    '0xaa3d9411dd08fda149d4545089e241e62ee87860': { coingeckoId: 'pentagon-chain', decimals: 18 },
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
