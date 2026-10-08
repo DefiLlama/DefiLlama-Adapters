@@ -71,18 +71,13 @@ const getMarket = async (api) => {
 // contract. Collateral is not attributable: morpho exposes no per-market total, only position(id, user),
 // so an excluded market's collateral stays counted when a valid market shares that token - measured at
 // ~$1k on ethereum, which is why netting the collateral logs per market is not worth the scan.
-const subtractExcludedMarkets = async (api, excludedMarkets) => {
+const subtractExcludedMarkets = async (api, excludedMarkets, morphoHeld) => {
   if (!excludedMarkets.length) return
   const { morphoBlue } = config[api.chain]
   const [marketInfos, marketDatas] = await Promise.all([
     api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.idToMarketParams, permitFailure: true }),
     api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market, permitFailure: true }),
   ])
-
-  // only ever debit against a balance we actually measured. sumTokens2 runs with permitFailure, so a
-  // requested token whose balanceOf failed is absent here - subtracting then would invent a negative.
-  const balances = api.getBalances()
-  const measured = new Map(Object.entries(balances).map(([key, value]) => [key.split(':')[1].toLowerCase(), { key, value }]))
 
   const idleByToken = new Map()
   marketDatas.forEach((data, i) => {
@@ -96,12 +91,25 @@ const subtractExcludedMarkets = async (api, excludedMarkets) => {
   })
 
   idleByToken.forEach((idle, token) => {
-    const entry = measured.get(token)
-    if (!entry) return
+    const held = morphoHeld.get(token)
+    if (!held) return
     // clamp: a market's accounting supply can exceed what the contract holds when interest is phantom
-    const balance = BigInt(entry.value)
-    api.add(entry.key.split(':')[1], (-(idle > balance ? balance : idle)).toString())
+    api.add(held.token, (-(idle > held.amount ? held.amount : idle)).toString())
   })
+}
+
+// what the shared morpho contract itself contributed, as the delta across its own sumTokens2 call.
+// api balances also carry vault-held assets, and a loan token can be present only because a valid vault
+// holds it unallocated - debiting that merged figure would remove assets the excluded market never held.
+const measureMorphoHeld = async (api, sumMorphoBalances) => {
+  const before = { ...api.getBalances() }
+  await sumMorphoBalances()
+  const held = new Map()
+  Object.entries(api.getBalances()).forEach(([key, value]) => {
+    const amount = BigInt(value) - BigInt(before[key] ?? 0)
+    if (amount > 0n) held.set(key.split(':')[1].toLowerCase(), { token: key.split(':')[1], amount })
+  })
+  return held
 }
 
 // exclude ethena deposits into markets where collateral is USDe
@@ -168,8 +176,8 @@ const tvl = async (api) => {
     })
   }
 
-  await sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true })
-  await subtractExcludedMarkets(api, excludedMarkets)
+  const morphoHeld = await measureMorphoHeld(api, () => sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true }))
+  await subtractExcludedMarkets(api, excludedMarkets, morphoHeld)
   return api.getBalances()
 }
 
