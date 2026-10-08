@@ -1,26 +1,15 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
 const { nullAddress } = require('../helper/tokenMapping')
+const { getMarketList } = require('../lista-lending/marketList')
 
 const NATIVE_PLACEHOLDER = ADDRESSES.GAS_TOKEN_2
 
-const config = {
-  bsc: {
-    marketListUrl:
-      'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=bsc',
-  },
-  ethereum: {
-    marketListUrl:
-      'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=ethereum',
-  },
-}
+const chains = ['bsc', 'ethereum']
 
 async function getSmartLendingMarketIds(api) {
-  const { marketListUrl } = config[api.chain]
-  const { data } = await getConfig('lista/marketList-' + api.chain, marketListUrl)
-  const list = data?.list ?? []
+  const list = await getMarketList(api.chain)
   return list
-    .filter((m) => m.chain === api.chain)
     .filter((m) => m.isSmartLending === true)
     .filter((m) => m.status === 1)
     .map((m) => m.marketId)
@@ -81,6 +70,6 @@ module.exports = {
     'TVL = sum of token0 and token1 balances in each smart lending market swapPool (two collateral assets). Data from Moolah market list + market basic info API.',
 }
 
-Object.keys(config).forEach((chain) => {
+chains.forEach((chain) => {
   module.exports[chain] = { tvl }
 })
