@@ -46,20 +46,27 @@ async function tvl(api) {
   ])
   const vaultBalances = await getTokenAccountBalances(vaults, { individual: true })
 
-  const data = pools.map(({ pubkey, account }, i) => {
+  const data = []
+  pools.forEach(({ pubkey, account }, i) => {
     const reserves = [0, 1].map((side) => {
       const vault = vaultBalances[2 * i + side]
+      if (vault?.amount === undefined) return null
       const accruedFees = OFFSETS_ACCRUED_FEES.reduce((sum, offsets) => sum + readU64(account.data, offsets[side]), 0n)
       const reserve = BigInt(vault.amount) - accruedFees
-      if (reserve < 0n) throw new Error(`deepswap: pool ${pubkey} owes more fees than its vault holds`)
-      return reserve.toString()
+      return reserve < 0n ? null : reserve.toString()
     })
-    return {
+    // A pool whose vault could not be read, or that would owe more fees than its vault holds
+    // (the program does not allow it), is left out instead of failing every other pool.
+    if (reserves.includes(null)) {
+      api.log(`deepswap: skipped pool ${pubkey}, its vault balances could not be used`)
+      return
+    }
+    data.push({
       token0: readPubkey(account.data, OFFSET_TOKEN_0_MINT),
       token1: readPubkey(account.data, OFFSET_TOKEN_1_MINT),
       token0Bal: reserves[0],
       token1Bal: reserves[1],
-    }
+    })
   })
 
   return transformDexBalances({ api, data })
