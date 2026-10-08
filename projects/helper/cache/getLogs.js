@@ -52,7 +52,7 @@ async function getLogs({ target,
 
   // if no new data nees to be fetched if the last fetched block is within 2 blocks of the current block
   if (!customCacheFunction && fetchNewData)
-    response = cache.logs.filter(i => i.blockNumber <= toBlock && i.blockNumber >= fromBlock)
+    response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
   else
     response = await fetchLogs()
 
