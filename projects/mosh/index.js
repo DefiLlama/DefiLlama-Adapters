@@ -2,8 +2,8 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { ethers } = require('ethers')
 
-// BUN is Mosh's own token. Bundles paired against BUN hold it as their pair asset, and that is
-// reported under staking instead of tvl.
+// BUN is Mosh's own token. Wherever it is counted (the pair asset of BUN-paired bundles, or the
+// launched-token side of the first bundle's ranges) it is reported under staking instead of tvl.
 const BUN = '0x07ebb29a38fbcb41563817e5e19f2cec619c90d2'
 
 // PonsSwarm factories, one per counter asset; each emits SwarmCreated for every bundle
@@ -36,8 +36,10 @@ function poolIdOf({ currency0, currency1, fee, tickSpacing, hooks }) {
 
 const SwarmCreated = 'event SwarmCreated(address indexed swarm, address indexed creator, uint256 index, bytes32 launchParamsHash)'
 
-// Sums the pair asset of every swarm whose pair asset is (ownToken) or is not (!ownToken) BUN
-async function pairAssetBalances(api, ownToken) {
+// Sums the swarms' and vaults' pair asset and both sides of the vaults' ranges, keeping only BUN
+// (ownToken) or everything but BUN (!ownToken)
+async function swarmBalances(api, ownToken) {
+  const counts = (token) => (token.toLowerCase() === BUN) === ownToken
   const created = []
   for (const target of FACTORIES) created.push(...await getLogs2({ api, target, eventAbi: SwarmCreated, fromBlock }))
   const allSwarms = [...new Set([...created.map(i => i.swarm.toLowerCase()), ...LEGACY_SWARMS])]
@@ -47,9 +49,8 @@ async function pairAssetBalances(api, ownToken) {
   const counters = await api.multiCall({ abi: 'address:counterAsset', calls: allSwarms, permitFailure: true })
   const allCounters = allSwarms.map((s, i) => (native[i] ?? LEGACY_SWARMS.includes(s)) ? nullAddress : counters[i])
   // a swarm whose counter asset did not read is skipped rather than allowed to fail the whole run
-  const keep = allSwarms.map((_, i) => Boolean(allCounters[i]) && (allCounters[i].toLowerCase() === BUN) === ownToken)
-  const swarms = allSwarms.filter((_, i) => keep[i])
-  const counterOf = allCounters.filter((_, i) => keep[i])
+  const swarms = allSwarms.filter((_, i) => Boolean(allCounters[i]))
+  const counterOf = allCounters.filter(Boolean)
   if (!swarms.length) return api.getBalances()
 
   const memecoins = await api.multiCall({ abi: 'address:memecoin', calls: swarms, permitFailure: true })
@@ -64,7 +65,8 @@ async function pairAssetBalances(api, ownToken) {
   // cash: the pair asset held by each swarm and each of its vaults
   const ownerTokens = swarms.map((s, i) => [[counterOf[i]], s])
   vaults.forEach((v, k) => ownerTokens.push([[counterOf[swarmOfVault[k]]], v]))
-  await sumTokens2({ api, ownerTokens })
+  const counted = ownerTokens.filter(([[token]]) => counts(token))
+  if (counted.length) await sumTokens2({ api, ownerTokens: counted })
 
   // Each vault's pool key for venue 0, the token's Pons pool
   const fees = await api.multiCall({ abi: 'uint24:v4Fee', calls: vaults, permitFailure: true })
@@ -84,7 +86,8 @@ async function pairAssetBalances(api, ownToken) {
   // ranges: the vaults' open v4 positions. A vault holds them in the PoolManager directly (keyed by
   // owner, ticks and a salt), not as position NFTs, so each is valued here from its liquidity and
   // ticks at its pool's current price. Venue 0 is the Pons pool; venue i > 0 is extraVenues(i - 1),
-  // a hookless pool on the same pair. Only the pair-asset side is counted.
+  // a hookless pool on the same pair. Both sides are counted, as for any liquidity manager's
+  // positions.
   const rangeCounts = await api.multiCall({ abi: 'uint256:openRangeCount', calls: vaults, permitFailure: true })
   const rangeCalls = vaults.flatMap((v, k) => Array.from({ length: Number(rangeCounts[k] ?? 0) }, (_, j) => ({ target: v, params: [j], vault: k })))
   // a range or venue that does not read is skipped, not allowed to fail the whole run
@@ -119,7 +122,8 @@ async function pairAssetBalances(api, ownToken) {
     else if (sp >= sb) amount1 = L * (sb - sa)
     else { amount0 = L * (sb - sp) / (sp * sb); amount1 = L * (sp - sa) }
     const i = swarmOfVault[rangeCalls[j].vault], counterIs0 = key.currency0 === counterOf[i]
-    api.add(counterOf[i], BigInt(Math.floor(counterIs0 ? amount0 : amount1)))
+    if (counts(counterOf[i])) api.add(counterOf[i], BigInt(Math.floor(counterIs0 ? amount0 : amount1)))
+    if (counts(memecoins[i])) api.add(memecoins[i], BigInt(Math.floor(counterIs0 ? amount1 : amount0)))
   })
 
   return api.getBalances()
@@ -128,9 +132,9 @@ async function pairAssetBalances(api, ownToken) {
 module.exports = {
   doublecounted: true,
   methodology:
-    "TVL is the pair asset (native ETH or the bundle's ERC20 pair asset) held by Mosh bundles on Robinhood Chain: by each bundle's swarm contract (open raises and backers' unclaimed fees), by its agent vaults, and on the pair-asset side of the vaults' open Uniswap v4 ranges. Bundles paired against BUN are reported under staking. Range liquidity is also Uniswap v4 TVL, so the listing is double counted.",
+    "TVL is the pair asset (native ETH or the bundle's ERC20 pair asset) held by Mosh bundles on Robinhood Chain, by each bundle's swarm contract (open raises and backers' unclaimed fees) and by its agent vaults, plus both sides of the vaults' open Uniswap v4 ranges. Launched tokens the vaults hold outside their ranges are not counted. BUN is reported under staking wherever it appears. Range liquidity is also Uniswap v4 TVL, so the listing is double counted.",
   robinhood: {
-    tvl: (api) => pairAssetBalances(api, false),
-    staking: (api) => pairAssetBalances(api, true),
+    tvl: (api) => swarmBalances(api, false),
+    staking: (api) => swarmBalances(api, true),
   },
 }
