@@ -47,7 +47,28 @@ const getMarket = async (api) => {
   }
   // union with morpho's own feed, never a replacement - the feed is a subset of the list above
   const excluded = new Set([...blacklistedMarketIds.map(i => i.toLowerCase()), ...await getExcludedMarketIds(api)])
-  return logs.map((i) => i.id.toLowerCase()).filter((id) => !excluded.has(id))
+  const all = logs.map((i) => i.id.toLowerCase())
+  return { markets: all.filter((id) => !excluded.has(id)), excludedMarkets: all.filter((id) => excluded.has(id)) }
+}
+
+// tvl sums the whole balance the shared morpho contract holds of each token, so dropping an excluded
+// market from the id list does nothing while a valid market uses the same token. Subtract what the
+// excluded market still physically holds: supply minus borrowed, since borrowed assets have left the
+// contract. Only for tokens we actually summed, or the subtraction would push the token negative.
+const subtractExcludedMarkets = async (api, excludedMarkets, countedTokens) => {
+  if (!excludedMarkets.length) return
+  const { morphoBlue } = config[api.chain]
+  const [marketInfos, marketDatas] = await Promise.all([
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.idToMarketParams, permitFailure: true }),
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market, permitFailure: true }),
+  ])
+  marketDatas.forEach((data, i) => {
+    if (!data || !marketInfos[i]) return
+    const loanToken = marketInfos[i].loanToken.toLowerCase()
+    if (!countedTokens.has(loanToken)) return
+    const idle = BigInt(data.totalSupplyAssets || 0) - BigInt(data.totalBorrowAssets || 0)
+    if (idle > 0n) api.add(loanToken, (-idle).toString())
+  })
 }
 
 // exclude ethena deposits into markets where collateral is USDe
@@ -88,7 +109,7 @@ const tvl = async (api) => {
   await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens, permitFailure: true })
 
 
-  const markets = await getMarket(api)
+  const { markets, excludedMarkets } = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress && !vaultSet.has(addr)))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
@@ -114,12 +135,15 @@ const tvl = async (api) => {
     })
   }
 
-  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true })
+  await sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true })
+  const blacklistedSet = new Set(blacklistedTokens.map(t => t.toLowerCase()))
+  await subtractExcludedMarkets(api, excludedMarkets, new Set(tokens.map(t => t.toLowerCase()).filter(t => !blacklistedSet.has(t))))
+  return api.getBalances()
 }
 
 const borrowed = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
-  const markets = await getMarket(api)
+  const { markets } = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
   const blackListLower = blackList.map(b => b.toLowerCase())
