@@ -5,6 +5,7 @@ const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getMorphoVaults } = require("../helper/curators");
 const { config } = require("./config");
+const { getExcludedMarketIds, getExcludedAssets, getExcludedVaults } = require("./exclusions");
 
 const eventAbis = {
   createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)'
@@ -44,7 +45,9 @@ const getMarket = async (api) => {
     ].filter(i => !existingIds.has(i)).map(id => ({ id })))
 
   }
-  return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
+  // union with morpho's own feed, never a replacement - the feed is a subset of the list above
+  const excluded = new Set([...blacklistedMarketIds.map(i => i.toLowerCase()), ...await getExcludedMarketIds(api)])
+  return logs.map((i) => i.id.toLowerCase()).filter((id) => !excluded.has(id))
 }
 
 // exclude ethena deposits into markets where collateral is USDe
@@ -75,10 +78,12 @@ const tvl = async (api) => {
 
   // vault share tokens (MetaMorpho / Vault V2) are already counted via their underlying assets, exclude them everywhere
   const vaultSet = new Set(morphoVaults.map(v => v.toLowerCase()))
-  const blacklistedTokens = [...blackList, ...morphoVaults]
+  const blacklistedTokens = [...blackList, ...morphoVaults, ...await getExcludedAssets(api)]
 
+  // excluded vaults stay blacklisted as tokens above, but their unallocated assets are not counted
+  const excludedVaults = new Set(await getExcludedVaults(api))
   const vaultTaO = vaultAssets
-    .map((asset, i) => asset ? [asset, morphoVaults[i]] : null)
+    .map((asset, i) => asset && !excludedVaults.has(morphoVaults[i].toLowerCase()) ? [asset, morphoVaults[i]] : null)
     .filter(Boolean)
   await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens, permitFailure: true })
 
@@ -118,6 +123,7 @@ const borrowed = async (api) => {
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
   const blackListLower = blackList.map(b => b.toLowerCase())
+  const excludedAssets = new Set(await getExcludedAssets(api)) // asset_usage is 'all', so loan or collateral side
 
   const priceByAddr = await fetchPriceMap(api, marketInfos.flatMap(m => [m.collateralToken, m.loanToken]))
   const chainHasPrices = Object.keys(priceByAddr).length > 0
@@ -126,6 +132,7 @@ const borrowed = async (api) => {
     const { collateralToken, loanToken } = marketInfos[idx];
     if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
     if (blackListLower.includes(loanToken.toLowerCase())) return;
+    if (excludedAssets.has(loanToken.toLowerCase()) || excludedAssets.has(collateralToken.toLowerCase())) return;
 
     if (chainHasPrices && collateralToken && collateralToken.toLowerCase() !== nullAddress) {
       if (!priceByAddr[collateralToken.toLowerCase()]) return;
