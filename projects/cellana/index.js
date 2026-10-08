@@ -1,47 +1,46 @@
+const { GraphQLClient } = require("graphql-request");
 const { function_view } = require("../helper/chain/aptos");
-const { sleep } = require("../helper/utils");
+const { sliceIntoChunks } = require("../helper/utils");
 const cellanaAddress = "0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1"
 
-const MAX_RETRIES = 5;
-
-async function callWithRetry(fn) {
-  for (let i = 0; i <= MAX_RETRIES; i++) {
-    try { return await fn() } catch (e) {
-      if (i === MAX_RETRIES) throw e;
-      // rate limits (429) need a long backoff before the quota window resets
-      const isRateLimit = e?.response?.status === 429 || /429/.test(e?.message ?? '')
-      await sleep(isRateLimit ? 10000 * (i + 1) : 200 * (i + 1));
-    }
+const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql");
+const FA_BALANCES_QUERY = `query CellanaPoolBalances($addresses: [String!]!, $limit: Int!, $offset: Int!) {
+  current_fungible_asset_balances(where: { owner_address: { _in: $addresses } }, order_by: { storage_id: asc }, limit: $limit, offset: $offset) {
+    amount
+    asset_type
   }
-}
-
-async function _getPools() {
-  return function_view({ functionStr: `${cellanaAddress}::liquidity_pool::all_pool_addresses`, type_arguments: [], args: [] })
-}
-
-async function _getPoolReserves(poolAddress) {
-  return function_view({ functionStr: `${cellanaAddress}::liquidity_pool::pool_reserves`, type_arguments: ['0x1::object::ObjectCore'], args: [poolAddress] })
-}
-
-async function _getTokenOfPool(poolAddress) {
-  return function_view({ functionStr: `${cellanaAddress}::liquidity_pool::supported_token_strings`, type_arguments: [], args: [poolAddress] })
-}
-
+}`
+const FA_CREATORS_QUERY = `query CellanaAssetCreators($assets: [String!]!) {
+  fungible_asset_metadata(where: { asset_type: { _in: $assets } }) {
+    asset_type
+    creator_address
+  }
+}`
 
 async function tvl(api) {
-  const pools = (await _getPools())
-
-  for (const pool of pools) {
-    const poolAddress = pool.inner
-    const reserves = await callWithRetry(() => _getPoolReserves(poolAddress));
-    const tokens = await callWithRetry(() => _getTokenOfPool(poolAddress));
-
-    if (!reserves || !tokens || tokens.length < 2)
-      throw new Error(`Invalid data for pool ${poolAddress}`);
-
-    api.add(tokens[0], reserves[0]);
-    api.add(tokens[1], reserves[1]);
-    await sleep(200);
+  const pools = await function_view({ functionStr: `${cellanaAddress}::liquidity_pool::all_pool_addresses`, type_arguments: [], args: [] })
+  // pool reserves sit in fungible stores owned by the pool objects; one indexer query per 50 pools
+  // instead of two rate-limited view calls per pool
+  const balances = {}
+  // the indexer silently truncates large responses (4 stores per pool), so page through each chunk
+  const limit = 100
+  for (const chunk of sliceIntoChunks(pools.map(p => p.inner), 50)) {
+    for (let offset = 0; ; offset += limit) {
+      const { current_fungible_asset_balances: rows } = await graphQLClient.request(FA_BALANCES_QUERY, { addresses: chunk, limit, offset })
+      rows.forEach(({ amount, asset_type }) => {
+        if (+amount > 0) balances[asset_type] = (balances[asset_type] ?? 0n) + BigInt(amount)
+      })
+      if (rows.length < limit) break
+    }
+  }
+  // legacy coins are held as cellana coin_wrapper FAs; get_original maps them back to the priceable coin type.
+  // only FAs created by the wrapper account need the lookup
+  const wrapperAddress = await function_view({ functionStr: `${cellanaAddress}::coin_wrapper::wrapper_address` })
+  const { fungible_asset_metadata: metadata } = await graphQLClient.request(FA_CREATORS_QUERY, { assets: Object.keys(balances) })
+  const wrapped = new Set(metadata.filter(m => m.creator_address === wrapperAddress).map(m => m.asset_type))
+  for (const [asset, amount] of Object.entries(balances)) {
+    const token = wrapped.has(asset) ? await function_view({ functionStr: `${cellanaAddress}::coin_wrapper::get_original`, args: [asset] }) : asset
+    api.add(token, amount.toString())
   }
 }
 
@@ -49,7 +48,7 @@ module.exports = {
   timetravel: false,
   isHeavyProtocol: true,
   methodology:
-    "Counts the lamports in each coin container in the Cellana contract account.",
+    "Counts the tokens held in every Cellana liquidity pool.",
   aptos: {
     tvl,
   }

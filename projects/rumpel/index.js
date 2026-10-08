@@ -8,7 +8,7 @@ const CONTRACTS = {
   MORPHO_BLUE: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
   ZIRCUIT_RESTAKING_POOL: "0xF047ab4c75cebf0eB9ed34Ae2c186f3611aEAfa6",
   FLUID_POSITION_RESOLVER: "0x3E3dae4F30347782089d398D462546eb5276801C",
-  FLUID_VAULT_RESOLVER: "0x77648C2FEda8D5f9f21A9FE91db0d102E49d3031",
+  FLUID_VAULT_RESOLVER: "0x8DD65DaDb217f73A94Efb903EB2dc7B49D97ECca",
   FLUID_DEX_RESOLVER: "0x71783F64719899319B56BdA4F27E1219d9AF9a3d",
   FLUID_DEX_RESERVES_RESOLVER: "0xC93876C0EEd99645DD53937b25433e311881A27C",
   // HyperEVM contracts
@@ -178,6 +178,59 @@ const FLUID_VAULTS = [
 const MORPHO_SUSDE_MARKET_ID =
   "0x39d11026eae1c6ec02aa4c0910778664089cdd97c3fd23f68f7cd05e2e95af48";
 
+async function getFluidPositions(api, owners) {
+  // Enumerate only Rumpel-owned NFTs; getAllVaultPositions scans the entire Fluid factory.
+  const ownerNftIds = await api.multiCall({
+    target: CONTRACTS.FLUID_VAULT_RESOLVER,
+    abi: 'function positionsNftIdOfUser(address) view returns (uint256[])',
+    calls: owners.map(owner => ({ params: [owner] })),
+  });
+  const nftIds = [...new Set(ownerNftIds.flat())];
+  const positionsByVault = new Map(FLUID_VAULTS.map(({ VAULT }) => [VAULT.toLowerCase(), []]));
+  if (!nftIds.length) return positionsByVault;
+
+  const vaults = await api.multiCall({
+    target: CONTRACTS.FLUID_VAULT_RESOLVER,
+    abi: 'function vaultByNftId(uint256) view returns (address)',
+    calls: nftIds.map(id => ({ params: [id] })),
+  });
+  const tracked = nftIds.map((id, i) => ({ id, vault: vaults[i].toLowerCase() }))
+    .filter(({ vault }) => positionsByVault.has(vault));
+  if (!tracked.length) return positionsByVault;
+
+  const positions = await api.multiCall({
+    target: CONTRACTS.FLUID_POSITION_RESOLVER,
+    abi: 'function getPositionsForNftIds(uint256[]) view returns ((uint256 nftId,address owner,uint256 supply,uint256 borrow)[])',
+    calls: tracked.map(({ id }) => ({ params: [[id]] })),
+    chunkSize: 25,
+  });
+  positions.forEach((result, i) => positionsByVault.get(tracked[i].vault).push(...result));
+  return positionsByVault;
+}
+
+async function addFluidSmartCollateral(api, vault, positions) {
+  const [totalSupplySharesRaw, reserves] = await Promise.all([
+    api.call({
+      target: CONTRACTS.FLUID_DEX_RESOLVER,
+      abi: 'function getTotalSupplySharesRaw(address dex_) view returns (uint)',
+      params: [vault.LP_TOKEN]
+    }),
+    api.call({
+      target: CONTRACTS.FLUID_DEX_RESERVES_RESOLVER,
+      abi: 'function getDexCollateralReserves(address) view returns (uint256,uint256,uint256,uint256)',
+      params: [vault.LP_TOKEN]
+    })
+  ]);
+  const totalSupplyShares = BigInt(totalSupplySharesRaw) & BigInt('0xffffffffffffffffffffffffffffffff');
+  const [token0Reserves, token1Reserves] = reserves;
+  const totalPositionShares = positions.reduce((sum, p) => sum + BigInt(p.supply), 0n);
+  if (totalSupplyShares === 0n) return;
+  const token0Amount = BigInt(token0Reserves) * totalPositionShares / totalSupplyShares;
+  const token1Amount = BigInt(token1Reserves) * totalPositionShares / totalSupplyShares;
+  if (token0Amount > 0n) api.add(vault.TOKEN0, token0Amount.toString());
+  if (token1Amount > 0n) api.add(vault.TOKEN1, token1Amount.toString());
+}
+
 async function tvl(api) {
   const owners = await getOwners(api);
 
@@ -231,45 +284,13 @@ async function tvl(api) {
   async function handleFluidPositions() {
     if (api.chain !== 'ethereum') return;
     
-    const positions = await api.multiCall({
-      target: CONTRACTS.FLUID_POSITION_RESOLVER,
-      abi: "function getAllVaultPositions(address) view returns ((uint256,address owner,uint256 supply,uint256)[])",
-      calls: FLUID_VAULTS.map(({ VAULT }) => ({ params: [VAULT] })),
-    });
-
-    for (let i = 0; i < positions.length; i++) {
-      const vaultPositions = positions[i];
-      const rumpelPositions = vaultPositions.filter(p => owners.includes(p.owner));
-
+    const positions = await getFluidPositions(api, owners);
+    for (const vault of FLUID_VAULTS) {
+      const rumpelPositions = positions.get(vault.VAULT.toLowerCase());
       if (rumpelPositions.length === 0) continue;
 
-      const vault = FLUID_VAULTS[i];
-
       if (vault.IS_SMART) {
-        const [totalSupplySharesRaw, reserves] = await Promise.all([
-          api.call({
-            target: CONTRACTS.FLUID_DEX_RESOLVER,
-            abi: 'function getTotalSupplySharesRaw(address dex_) view returns (uint)',
-            params: [vault.LP_TOKEN]
-          }),
-          api.call({
-            target: CONTRACTS.FLUID_DEX_RESERVES_RESOLVER,
-            abi: 'function getDexCollateralReserves(address) view returns (uint256,uint256,uint256,uint256)',
-            params: [vault.LP_TOKEN]
-          })
-        ]);
-
-        const totalSupplyShares = BigInt(totalSupplySharesRaw) & BigInt('0xffffffffffffffffffffffffffffffff');
-        const [token0Reserves, token1Reserves] = reserves;
-
-        const totalPositionShares = rumpelPositions.reduce((sum, p) => sum + BigInt(p.supply), 0n);
-        const ratio = Number(totalPositionShares) / Number(totalSupplyShares);
-
-        const token0Amount = Number(token0Reserves) * ratio;
-        const token1Amount = Number(token1Reserves) * ratio;
-
-        if (token0Amount > 0) api.add(vault.TOKEN0, token0Amount.toFixed(0));
-        if (token1Amount > 0) api.add(vault.TOKEN1, token1Amount.toFixed(0));
+        await addFluidSmartCollateral(api, vault, rumpelPositions);
       } else {
         api.add(vault.TOKEN, rumpelPositions.map(p => p.supply));
       }

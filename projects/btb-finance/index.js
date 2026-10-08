@@ -76,13 +76,21 @@ async function wallets(api, { factories }, toBlock) {
 // Base: a wallet only lets an NFT leave to its owner or to a farm that stakes it, so the gauges it staked into are
 // the voter's gauges among the contracts it sent NFTs to. Each of those gauges returns the wallet's staked ids.
 async function stakedFromLogs(api, nft, voter, owners, fromBlock, toBlock) {
-  // One query for all wallets: the sender topic matches any of them.
-  const logs = await getLogs({
-    api, target: nft, eventAbi: transferAbi, onlyArgs: true, fromBlock, toBlock,
-    topics: [TRANSFER, owners.map(o => '0x' + o.slice(2).padStart(64, '0'))],
-    extraKey: `btb-sent-${owners.length}`,
-  })
-  const pairs = [...new Set(logs.map(l => `${l.from.toLowerCase()}:${l.to.toLowerCase()}`))].map(p => p.split(':'))
+  // One query per wallet: the indexer filters on a single sender topic, not on a list of them.
+  const logs = []
+  for (const owner of owners) {
+    logs.push(...await getLogs({
+      api, target: nft, eventAbi: transferAbi, onlyArgs: true, fromBlock, toBlock,
+      topics: [TRANSFER, '0x' + owner.slice(2).toLowerCase().padStart(64, '0')],
+      extraKey: `btb-sent-${owner.toLowerCase()}`,
+    }))
+  }
+  // Keep only transfers sent by a BTB wallet, in case a log source ignores the sender topic. Without this every
+  // staker in the same gauges was counted (Base read $32M instead of about $600).
+  const ownerSet = new Set(owners.map(o => o.toLowerCase()))
+  const pairs = [...new Set(logs
+    .filter(l => ownerSet.has(l.from.toLowerCase()))
+    .map(l => `${l.from.toLowerCase()}:${l.to.toLowerCase()}`))].map(p => p.split(':'))
   const recipients = [...new Set(pairs.map(([, to]) => to))]
   if (!recipients.length) return []
   const isGauge = await api.multiCall({ abi: 'function isGauge(address) view returns (bool)', target: voter, calls: recipients })

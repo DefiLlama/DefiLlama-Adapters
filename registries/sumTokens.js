@@ -361,9 +361,30 @@ const configs = {
     },
   },
   "flooor-fun": {
-    "methodology": "TVL is the native ETH held in the flooor.fun auction contract on Base, comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). ETH exits the contract when sellToHighest() is called, distributing 99.5% to the NFT seller and 0.5% fee to the protocol.",
+    "methodology": "TVL is the native ETH held in the flooor.fun auction contracts on Base and Robinhood Chain (the current main contract, the legacy contract, and one auction contract per NFT collection), comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). When sellToHighest() is called, the winning bid is split: 95% is sent to the NFT seller and 0.5% to the protocol as a fee, while 4.5% stays in the contract as epoch pool rewards (poolAccrued) until signers claim it.",
     "base": {
-      "owner": "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF",
+      "owners": [
+        "0xD53292182A342953f446CD4D10Dc177776044306", // current
+        "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF", // legacy
+        "0xD3706917c71b1A81CeCc31311C6B41eac344DDb5", // loopers
+        "0x0c2d41b6896a7dde2641a0fe04165df180c43242", // warplets
+        "0x0DA60a9965e1059F2258d5e74c3839844FEF1Cf9", // gnars
+        "0x89350393e99f1df89D09376a02a99BAE9aBc8d8F", // based nouns
+        "0x0669583e7d5bE64967153dd276987415926b5e32", // based onchain dinos
+        "0x7b4A2c265dECE5A48e9c9232de1bd4940dfb6A0F", // base day one
+        "0xE0AB0cE2FF407f53b9384205258C037c22cB03A0" // ok computers
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "robinhood": {
+      "owners": [
+        "0x352E6e9EF7BA1BC4398C2c3784dFdF1930D0df32", // hashcats
+        "0x04ec8eDB287D20f29B834b47a44713d814b0788a", // stonkbrokers
+        "0xa14b6A3980C178D8f446F6a33Bad83a9aAa2D09D", // rh machines
+        "0xc347759352F8f2e556CE6A0Ea8048Fb48cfFca45" // quotrons
+      ],
       "tokens": [
         ADDRESSES.null
       ]
@@ -21416,12 +21437,17 @@ const configs = {
   },
   "paradex": {
     "ethereum": {
-      "owners": [
-        "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"
-      ],
-      "tokens": [
-        ADDRESSES.ethereum.USDC
-      ]
+      "tvl": {
+        "tokensAndOwners": [
+          [ADDRESSES.ethereum.USDC, "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"], // StarknetTokenBridge proxy (USDC + DIME)
+          [ADDRESSES.null, "0x45B79622C095ab834b9C8dC71013ed13B39F1B8D"], // native ETH (StarknetEthBridge)
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          ["0xb32E10022FFBeDfE10bc818a1C7e67D9d87e0fa7", "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"], // DIME
+        ]
+      }
     },
   },
   "parasset": {
@@ -27495,6 +27521,14 @@ const configs = {
       "tokens": [
         ADDRESSES.ethereum.USDC,
         "0x530824DA86689C9C17CdC2871Ff29B058345b44a"
+      ]
+    },
+  },
+  "taifoon": {
+    "methodology": "TVL is the ICP held on the ICP ledger by the tICP bridge custody canister (dkafq-4aaaa-aaaaj-a6ysq-cai, default account). It backs the tICP released on Base, Arc and Robinhood Chain.",
+    "icp": {
+      "owners": [
+        "dkafq-4aaaa-aaaaj-a6ysq-cai"
       ]
     },
   },

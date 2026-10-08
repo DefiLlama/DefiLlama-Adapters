@@ -76,13 +76,14 @@ const ARBITRUM_STAKING = [
   '0xC5a87664DCFD45B1bF646cFD209c5a54118B146B', // stakedTRNChef
   '0x536e9D7328276BAaE13Df7028dCF8d37bBa2F2Cd', // govAdapter
   '0x8B09F3B41203ec18Ec2E80eEc1bd57A91f21DB7D', // syrupBar
+  '0xCff7404874ffb1Ab1Cc62631bfE097C391b6491d', // TRN lock escrow, backs TRN released on Base, Arc and Robinhood Chain
 ]
 
 module.exports = {
     hallmarks:[
   ],
   methodology:
-    "t3rn TVL is the USD value of token balances in the bridge contracts and TRN tokens staked on Arbitrum.",
+    "t3rn TVL is the USD value of token balances in the bridge contracts. TRN staked on Arbitrum and TRN locked in the TRN lock escrow on Arbitrum (bridged to Base, Arc and Robinhood Chain) is the protocol's own token and is counted under staking.",
 }
 
 Object.keys(CONFIG).forEach(chain => module.exports[chain] = {

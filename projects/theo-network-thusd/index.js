@@ -8,13 +8,15 @@ const thBILL  = '0x5fa487bca6158c64046b2813623e20755091da0b' // 6 decimals, NAV 
 const RESERVE = '0xEc417Ccb6dD26868Cca993a92F37217b1D4b3c2f' // thUSD reserve wallet
 
 module.exports = {
+  start: '2026-04-09', // thUSD deployed 2026-04-08
   methodology:
     'thUSD TVL equals circulating thUSD supply, built from the reserve side. On-chain reserves held in the ' +
     'thUSD reserve wallet — thBILL (valued at thBILL contract NAV via convertToAssets, not market price), ' +
-    'USDC and USDT — are reported as those assets. The remainder of supply is backed by physical gold ' +
-    'purchased and leased through StoneX and Monetary Metals and hedged with CME gold futures, and is ' +
-    'reported as thUSD. thBILL held in the reserve is also tracked by the Theo Network thBILL adapter, ' +
-    'which is flagged doublecounted under the Theo Network parent.',
+    'USDC and USDT — are reported as those assets. The remainder of supply is backed by physical gold and silver ' +
+    'purchased and leased through StoneX and Monetary Metals, part of it tokenized as thGOLD and thSLVR held in the ' +
+    'reserve wallet, with the gold position hedged with CME gold futures, and is reported as thUSD. thBILL held in ' +
+    'the reserve is also tracked by the Theo Network thBILL adapter, which is flagged doublecounted under the Theo ' +
+    'Network parent.',
   hallmarks: [
     ['2026-04-27', 'thUSD reserve migrated to current reserve wallet'],
     ['2026-05-01', 'Gold carry strategy funded'],
@@ -41,7 +43,7 @@ module.exports = {
       })
       api.add(ADDRESSES.ethereum.USDC, thbillUsdc)
 
-      // 3. Off-chain gold reserves = the remainder of supply not covered by on-chain reserves.
+      // 3. Off-chain metal reserves = the remainder of supply not covered by on-chain reserves.
       //    Added unconditionally, as in projects/ethena, so the total is always exactly thUSD supply:
       //    were on-chain reserves ever to exceed supply, this residual goes negative and nets it back down.
       const onchainUsd = await api.getBalancesV2().getUSDValue()

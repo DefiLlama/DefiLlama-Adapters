@@ -137,6 +137,9 @@ const chains = [
 
 module.exports = {
   methodology: 'Counts assets escrowed in LayerZero OFT Adapter / ProxyOFT lockboxes on each chain, discovered from the LayerZero metadata API. Pure mint-and-burn OFTs hold no collateral and are not counted. Destination-chain escrows that hold a LayerZero-minted wrapper are excluded, since the collateral backing them is already counted at its canonical lockbox, escrows holding natively-issued assets are counted even where the metadata annotates them as pegged to another chain.',
+  hallmarks: [
+    ['2026-10-03', 'Record $4B daily bridged volume, driven by a single $3.6B WPAY transfer (Polygon to Arc)'],
+  ],
   tron: { tvl: tronTvl },
   solana: { tvl: solanaTvl },
 }

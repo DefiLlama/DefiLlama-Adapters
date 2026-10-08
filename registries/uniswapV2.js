@@ -24,6 +24,7 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'pentaswap': { pentagonchain: '0xC75C7E9352bC1475d7c308E65C0a21969DcEdEe7' },
   'bbbfi-swap-v2': {
     methodology: 'Value of reserves in BBBFi-owned V2 AMM pools on XDC and BSC, discovered from each factory. Uses the standard core-asset reserve valuation helper. Staked LP receipts are not added again; reward budgets and bridge reserves are excluded.',
     xdc: '0xFe536C6a76487563D4393a3Bd03ef2621546A198',
@@ -3243,6 +3244,10 @@ const uniV2Configs = {
   'unitflow-finance-v2': {
     methodology: 'Token balances held in every Unitflow v2.5 pair, enumerated from the factory.',
     arc: '0xFc1EC6761e246D5cb0c4C22669f8635098B22ba1',
+  },
+  'architect-swap-v2': {
+    methodology: 'Value of the tokens held in the Architect Swap V2 pairs on Robinhood Chain, enumerated from the factory.',
+    robinhood: '0xfa6253ee74F7956b022998F7bfa271990C8A82a8',
   },
 }
 
