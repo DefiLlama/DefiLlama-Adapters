@@ -1,12 +1,14 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const registryAddresses = [
-  '0xe44c35ec2896983accce2a38dc1668793e85956d', // Tournament 8
-  '0xc1f46adf341145369eee9fbe0d84fa1cb0c24706', // Tournament 12
+  '0xa6cf4Bf00feF8866e9F3f61C972bA7C687C6eDbF', // Erasure Agreements
+  '0x409EA12E73a10EF166bc063f94Aa9bc952835E93', // Erasure Escrows
+  '0x348FA9DcFf507B81C7A1d7981244eA92E8c6Af29' // Erasure Posts
 ];
 
 const tokenAddresses = [
   '0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671', // NMR
+  ADDRESSES.ethereum.DAI // DAI
 ]
 
 async function tvl(api) {
