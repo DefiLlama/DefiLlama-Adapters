@@ -1113,4 +1113,12 @@ module.exports = {
       "staking": { "__staking": [["0x5e63228add4390f77BbcDb364F6A7b42bA7Aa3ef", "0x5CB0Cb16cA019bcff4E494b32575848E4CdB5aF8"], "0xb9d3824149ad8ac984153ceec91d5a2405d1fb95"] }
     }
   },
+  "baibai": {
+    "methodology": "TVL is the WETH and USDC held by the BaibaiCustodian contract, which custodies the maker liquidity that BaiBai quotes and settles swaps against.",
+    "start": "2026-09-05",
+    "base": {
+      "owner": "0xAaC48FEB93c5C97E0fb3c7C57E1633922A4ACDa3",
+      "tokens": [ADDRESSES.base.WETH, ADDRESSES.base.USDC]
+    }
+  },
 }
