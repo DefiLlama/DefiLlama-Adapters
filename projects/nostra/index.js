@@ -172,9 +172,6 @@ async function borrowed(api) {
 module.exports = {
   methodology:
     "The TVL is calculated as a difference between supplied and borrowed assets.",
-  hallmarks: [
-    ["2026-09-17", "Exploit (~$3.5M)"],
-  ],
   starknet: {
     tvl,
     borrowed: () => ({}), // hacked
