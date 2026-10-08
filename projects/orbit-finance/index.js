@@ -22,7 +22,7 @@ async function tvl(api) {
  * read the aggregate total from the adapter's Streamflow indexer.
  */
 async function staking() {
-  const data = await get(`${ADAPTER_BASE}/api/v1/streamflow/vaults`);
+  const data = await get(`${ADAPTER_BASE}/api/v1/streamflow/vaults`, { timeout: 30000 });
   const cipherVault = (data.vaults ?? []).find((v) => v.tokenMint === CIPHER_MINT);
   if (!cipherVault?.total_staked_raw) return {};
   return { ["solana:" + CIPHER_MINT]: cipherVault.total_staked_raw };

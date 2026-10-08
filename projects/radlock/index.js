@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
 async function tvl(api) {
-  const tokensLockedInXrdList = await get('https://api.radlock.io/token/locked?format=list&lpOnly=true')
+  const tokensLockedInXrdList = await get('https://api.radlock.io/token/locked?format=list&lpOnly=true', { timeout: 30000 })
   return {
     'radix': tokensLockedInXrdList.reduce((acc, token) => acc + +token.xrd, 0)
   }
