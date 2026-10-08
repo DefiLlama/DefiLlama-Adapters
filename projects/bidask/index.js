@@ -1,39 +1,32 @@
-const { getConfig } = require('../helper/cache')
-const ADDRESSES = require('../helper/coreAssets.json')
-const { addTonBalances, addJettonBalances } = require('../helper/chain/ton')
-const { sleep } = require('../helper/utils')
+const { addTonBalances } = require('../helper/chain/ton')
+const { sliceIntoChunks } = require('../helper/utils')
+const { ton } = require('@defillama/sdk').chains
 
-const TON_ADDRESS = '0:0000000000000000000000000000000000000000000000000000000000000000'
+const FACTORY = 'EQAuBZGak9BdkxuCC9gWUsY4Em3jog94BI4eRzX-3_Bidask'
+const DEPLOY_POOL_OP = '0xb814c41a'
 
+// every pool is deployed by the factory via a message carrying state init
+async function getPools() {
+  const pools = new Set()
+  const limit = 1000
+  for (let offset = 0; ; offset += limit) {
+    const { messages } = await ton.toncenterGet({ path: 'messages', params: { source: FACTORY, limit, offset, sort: 'asc' } })
+    messages.filter(m => m.opcode === DEPLOY_POOL_OP && m.init_state).forEach(m => pools.add(m.destination))
+    if (messages.length < limit) break
+  }
+  return [...pools]
+}
 
 module.exports = {
-  misrepresentedTokens: true,
+  methodology: 'Pools are discovered from deploy messages sent by the Bidask factory; TVL is the TON and jetton balances held by those pools.',
   timetravel: false,
   ton: {
     tvl: async (api) => {
-      const response = await getConfig('bidask', 'https://bidask.finance/api/pools?size=1000&all=false')
-      const pools = response.result;
-
-      const tokenToPoolsMap = {}
-
-      pools.forEach(pool => {
-        const tokenXAddress = pool.tokens.token_x.address
-        const tokenYAddress = pool.tokens.token_y.address === TON_ADDRESS ? ADDRESSES.ton.TON : pool.tokens.token_y.address
-
-        tokenToPoolsMap[tokenXAddress] ??= []
-        tokenToPoolsMap[tokenXAddress].push(pool.address)
-
-        tokenToPoolsMap[tokenYAddress] ??= []
-        tokenToPoolsMap[tokenYAddress].push(pool.address)
-      })
-
-      for (const tokenAddress in tokenToPoolsMap) {
-        if (ADDRESSES.ton.TON === tokenAddress) {
-          await addTonBalances({ api, addresses: tokenToPoolsMap[tokenAddress] })
-        } else {
-          await addJettonBalances({ api, jettonAddress: tokenAddress, addresses: tokenToPoolsMap[tokenAddress] })
-        }
-        await sleep(1000)
+      const pools = await getPools()
+      await addTonBalances({ api, addresses: pools })
+      for (const chunk of sliceIntoChunks(pools, 100)) {
+        const wallets = await ton.getJettonWallets({ owner: chunk, excludeZeroBalance: true })
+        wallets.forEach(({ jetton, balance }) => api.add(ton.normalizeAddress(jetton), balance))
       }
     }
   }
