@@ -68,7 +68,7 @@ async function getExclusions() {
 
 // effective_from is inclusive, effective_to exclusive and empty while the exclusion is still active
 const isActive = (row, dateString) =>
-  (!row.effective_from || row.effective_from <= dateString) &&
+  isDate(row.effective_from) && row.effective_from <= dateString &&
   (!row.effective_to || row.effective_to > dateString)
 
 const getDateString = (api) =>
