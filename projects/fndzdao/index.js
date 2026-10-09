@@ -8,9 +8,7 @@ async function getVaults(api) {
   const block = await api.getBlock()
   if (block < deploymentBlock) return []
 
-  // This immutable Dispatcher only CREATEs VaultProxy contracts, starting at
-  // nonce 1. Read the nonce at the balance block so historical runs cannot
-  // include future vaults. Source: https://sourcify.dev/server/v2/contract/56/0x07036f5385AE6F4049f7788bD960f9Dd7fecC241?fields=sources
+  // the Dispatcher only CREATEs VaultProxy contracts, from nonce 1, so nonce - 1 at this block = vault count
   const nonce = await api.provider.getTransactionCount(dispatcher, block)
   if (!Number.isSafeInteger(nonce) || nonce < 1) throw new Error('Invalid FNDZ dispatcher nonce')
   const vaults = Array.from({ length: nonce - 1 }, (_, i) => getCreateAddress({ from: dispatcher, nonce: i + 1 }))
