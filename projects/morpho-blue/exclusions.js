@@ -13,21 +13,32 @@ const KINDS = {
   vaults: ['chain', 'vault_address', 'effective_from', 'effective_to'],
 }
 
+const isDate = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v)
+const isId = (v) => /^0x[0-9a-fA-F]+$/.test(v)
+
 // the feed is plain comma-separated with no quoting; reason is last, so any extra commas fold into it.
-// returns null when the header is missing the required columns, so the caller can keep the old cache
+// returns null when the header or any row is malformed, so the caller can keep the old cache: a
+// truncated file would otherwise read as a short but valid list and silently drop live exclusions
 function parseCsv(text, requiredColumns) {
   const lines = String(text).trim().split('\n').filter(Boolean)
   if (!lines.length) return null
   const header = lines[0].split(',').map(h => h.trim())
   if (!requiredColumns.every(c => header.includes(c))) return null
-  return lines.slice(1).map(line => {
+
+  const rows = []
+  for (const line of lines.slice(1)) {
     const parts = line.split(',')
+    if (parts.length < header.length) return null // truncated row
     const row = {}
     header.forEach((h, i) => {
       row[h] = (i === header.length - 1 ? parts.slice(i).join(',') : parts[i] || '').trim()
     })
-    return row
-  })
+    const [, idColumn] = requiredColumns
+    if (!row.chain || !isId(row[idColumn] || '')) return null
+    if (!isDate(row.effective_from) || (row.effective_to && !isDate(row.effective_to))) return null
+    rows.push(row)
+  }
+  return rows
 }
 
 // a header-only file is a valid empty list; a missing key means we never got a usable version of it

@@ -55,9 +55,8 @@ const getMarket = async (api) => {
   const excludedAssets = new Set(await getExcludedAssets(api))
   if (excludedAssets.size) {
     const candidates = all.filter((id) => !excluded.has(id))
-    const infos = await api.multiCall({ target: morphoBlue, calls: candidates, abi: abi.morphoBlueFunctions.idToMarketParams, permitFailure: true })
+    const infos = await api.multiCall({ target: morphoBlue, calls: candidates, abi: abi.morphoBlueFunctions.idToMarketParams })
     infos.forEach((info, i) => {
-      if (!info) return
       if (excludedAssets.has(info.loanToken.toLowerCase()) || excludedAssets.has(info.collateralToken.toLowerCase()))
         excluded.add(candidates[i])
     })
@@ -75,16 +74,12 @@ const subtractExcludedMarkets = async (api, excludedMarkets, morphoHeld) => {
   if (!excludedMarkets.length) return
   const { morphoBlue } = config[api.chain]
   const [marketInfos, marketDatas] = await Promise.all([
-    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.idToMarketParams, permitFailure: true }),
-    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market, permitFailure: true }),
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.idToMarketParams }),
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market }),
   ])
 
   const idleByToken = new Map()
   marketDatas.forEach((data, i) => {
-    if (!data || !marketInfos[i]) {
-      sdk.log(`morpho-blue: ${api.chain} could not read excluded market ${excludedMarkets[i]}, leaving its balance in tvl`)
-      return
-    }
     const loanToken = marketInfos[i].loanToken.toLowerCase()
     const idle = BigInt(data.totalSupplyAssets || 0) - BigInt(data.totalBorrowAssets || 0)
     if (idle > 0n) idleByToken.set(loanToken, (idleByToken.get(loanToken) ?? 0n) + idle)
