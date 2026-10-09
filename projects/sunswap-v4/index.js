@@ -1,4 +1,5 @@
 const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const { nullAddress } = require('../helper/tokenMapping')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -49,13 +50,8 @@ async function getTokens() {
   return [...tokens].map(t => (t === TRX_PLACEHOLDER ? nullAddress : t))
 }
 
-/**
- * TVL: on-chain balances of the pool tokens held by the SunSwap V4 PoolManager.
- * @param {object} api DefiLlama ChainApi for Tron
- * @returns {Promise<object>} token balances
- */
 async function tvl(api) {
-  const tokens = await getTokens()
+  const tokens = await getConfig('sunswap-v4', undefined, { fetcher: getTokens })
   // Query balances in small batches: a single multicall with all tokens can hit the Tron node's CPU time limit.
   return sumTokens2({ api, owner: POOL_MANAGER, tokens, sumChunkSize: 20 })
 }
