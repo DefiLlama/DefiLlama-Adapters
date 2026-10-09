@@ -18,7 +18,8 @@ const getMarket = async (api) => {
   const extraKey = 'reset-v2'
 
   let logs = [];
-  if (api.chain === 'tac') {
+  const chainsWithTroublePullingLogs = new Set(['tac', 'sei'])
+  if (chainsWithTroublePullingLogs.has(api.chain)) {
     try {
       logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
     } catch (e) {
