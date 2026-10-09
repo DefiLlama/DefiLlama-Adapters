@@ -1,0 +1,332 @@
+{
+ "about": "Proposed audits / audit_links values for ten DefiLlama listings. Data only, no adapter code. Each added link is the audit firm's own report page or the firm's report published on GitHub, and its title names the listed product. A link is removed only when it points to another version of the product, or when it failed two checks at least 12 hours apart.",
+ "current_values_read_from": "api.llama.fi/protocols, 2026-10-11T1125Z",
+ "links_opened_on": "2026-10-11",
+ "format": {
+  "audits": "string, as api.llama.fi serves it",
+  "audit_links": "array of URL strings"
+ },
+ "listings": {
+  "uniswap-v2": {
+   "name": "Uniswap V2",
+   "id": "2197",
+   "status": "ready",
+   "current": {
+    "audits": "2",
+    "audit_links": [
+     "https://github.com/Uniswap/uniswap-v3-core/tree/main/audits",
+     "https://github.com/Uniswap/uniswap-v3-periphery/tree/main/audits",
+     "https://github.com/ConsenSys/Uniswap-audit-report-2018-12"
+    ]
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": []
+   },
+   "remove": [
+    {
+     "url": "https://github.com/ConsenSys/Uniswap-audit-report-2018-12",
+     "reason": "report on Uniswap V1 (Vyper contracts), dated 11 Jan 2019"
+    },
+    {
+     "url": "https://github.com/Uniswap/uniswap-v3-core/tree/main/audits",
+     "reason": "Uniswap V3 audit folder"
+    },
+    {
+     "url": "https://github.com/Uniswap/uniswap-v3-periphery/tree/main/audits",
+     "reason": "Uniswap V3 audit folder"
+    }
+   ],
+   "add": [],
+   "note": "Remove all three links: the 2019 ConsenSys Diligence report covers Uniswap V1 (it describes Vyper contracts and is dated 11 Jan 2019), and the two folders are Uniswap V3's (v3-core/audits, v3-periphery/audits). We hold no V2 report to put in their place."
+  },
+  "uniswap-v3": {
+   "name": "Uniswap V3",
+   "id": "2198",
+   "status": "ready",
+   "current": {
+    "audits": "2",
+    "audit_links": [
+     "https://github.com/Uniswap/uniswap-v3-core/tree/main/audits",
+     "https://github.com/Uniswap/uniswap-v3-periphery/tree/main/audits",
+     "https://github.com/ConsenSys/Uniswap-audit-report-2018-12"
+    ]
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://github.com/Uniswap/uniswap-v3-core/tree/main/audits",
+     "https://github.com/Uniswap/uniswap-v3-periphery/tree/main/audits"
+    ]
+   },
+   "remove": [
+    {
+     "url": "https://github.com/ConsenSys/Uniswap-audit-report-2018-12",
+     "reason": "report on Uniswap V1 (Vyper contracts), dated 11 Jan 2019"
+    }
+   ],
+   "add": [],
+   "note": "Remove github.com/ConsenSys/Uniswap-audit-report-2018-12: it is the Jan 2019 report on Uniswap V1 (Vyper). Keep the two V3 audit folders."
+  },
+  "ssv-network": {
+   "name": "SSV Network",
+   "id": "6359",
+   "status": "ready",
+   "current": {
+    "audits": "2",
+    "audit_links": []
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://certificate.quantstamp.com/full/ssv-network/6682a4e0-872e-4cec-8b8d-4cd489a20b66/index.html"
+    ]
+   },
+   "remove": [],
+   "add": [
+    {
+     "firm": "Quantstamp",
+     "date": "2023-07-21",
+     "title": "SSV.Network",
+     "url": "https://certificate.quantstamp.com/full/ssv-network/6682a4e0-872e-4cec-8b8d-4cd489a20b66/index.html",
+     "opened": {
+      "at": "2026-10-11T11:26:12Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Add the Quantstamp report \"SSV.Network\"."
+  },
+  "layerzero-v2": {
+   "name": "LayerZero V2",
+   "id": "4867",
+   "status": "ready",
+   "current": {
+    "audits": null,
+    "audit_links": []
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Endpoint%20V2%20-%20EVM/EndpointV2/EndpointV2-Paladin-15DEC2023-Initial.pdf"
+    ]
+   },
+   "remove": [],
+   "add": [
+    {
+     "firm": "Paladin",
+     "date": "2023-12-15",
+     "title": "Smart Contract Security Assessment for LayerZero (V2)",
+     "url": "https://github.com/LayerZero-Labs/Audits/blob/main/audits/Endpoint%20V2%20-%20EVM/EndpointV2/EndpointV2-Paladin-15DEC2023-Initial.pdf",
+     "opened": {
+      "at": "2026-10-11T11:26:22Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Add Paladin's \"Smart Contract Security Assessment for LayerZero (V2)\" (EndpointV2, MessageLibManager), published in LayerZero's Audits repository."
+  },
+  "ether.fi-stake": {
+   "name": "ether.fi Stake",
+   "id": "2626",
+   "status": "ready",
+   "current": {
+    "audits": "0",
+    "audit_links": []
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://github.com/Zellic/publications/blob/master/EtherFi%20-%20Zellic%20Audit%20Report.pdf"
+    ]
+   },
+   "remove": [],
+   "add": [
+    {
+     "firm": "Zellic",
+     "date": "2024-03-13",
+     "title": "EtherFi Smart Contract Security Assessment",
+     "url": "https://github.com/Zellic/publications/blob/master/EtherFi%20-%20Zellic%20Audit%20Report.pdf",
+     "opened": {
+      "at": "2026-10-11T11:26:30Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Add Zellic's \"EtherFi Smart Contract Security Assessment\"."
+  },
+  "arbitrum-bridge": {
+   "name": "Arbitrum Bridge",
+   "id": "3777",
+   "status": "ready",
+   "current": {
+    "audits": "0",
+    "audit_links": []
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://certificate.quantstamp.com/full/arbitrum-token-bridge/01aa719e-9903-4c16-9478-ee241338c74e/index.html"
+    ]
+   },
+   "remove": [],
+   "add": [
+    {
+     "firm": "Quantstamp",
+     "date": "2021-08-04",
+     "title": "Arbitrum Token Bridge",
+     "url": "https://certificate.quantstamp.com/full/arbitrum-token-bridge/01aa719e-9903-4c16-9478-ee241338c74e/index.html",
+     "opened": {
+      "at": "2026-10-11T11:26:13Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Add the Quantstamp report \"Arbitrum Token Bridge\"."
+  },
+  "morpho-blue": {
+   "name": "Morpho Blue",
+   "id": "4025",
+   "status": "ready",
+   "current": {
+    "audits": "2",
+    "audit_links": [
+     "https://docs.morpho.org/morpho-blue/concepts/security/audits/"
+    ]
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://github.com/morpho-org/morpho-blue/blob/main/audits/2023-11-13-morpho-blue-cantina-managed-review.pdf"
+    ]
+   },
+   "remove": [
+    {
+     "url": "https://docs.morpho.org/morpho-blue/concepts/security/audits/",
+     "reason": "answers HTTP 404, checked 9 Oct and 10 Oct"
+    }
+   ],
+   "add": [
+    {
+     "firm": "Cantina",
+     "date": "2023-11-13",
+     "title": "Morpho Blue Security Review (Cantina managed review)",
+     "url": "https://github.com/morpho-org/morpho-blue/blob/main/audits/2023-11-13-morpho-blue-cantina-managed-review.pdf",
+     "opened": {
+      "at": "2026-10-11T11:26:34Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Replace the docs page with Cantina's \"Morpho Blue Security Review\" (managed review of the Morpho Blue core contracts), published in Morpho's morpho-blue repository."
+  },
+  "wbtc": {
+   "name": "WBTC",
+   "id": "2",
+   "status": "ready",
+   "current": {
+    "audits": "2",
+    "audit_links": [
+     "https://wbtc.network/dashboard/audit"
+    ]
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://www.chainsecurity.com/security-audit/wrapped-bitcoin-wbtc"
+    ]
+   },
+   "remove": [
+    {
+     "url": "https://wbtc.network/dashboard/audit",
+     "reason": "answers HTTP 404, checked 9 Oct and 10 Oct"
+    }
+   ],
+   "add": [
+    {
+     "firm": "ChainSecurity",
+     "date": "2018-10-11",
+     "title": "Wrapped Bitcoin (WBTC) Security Audit",
+     "url": "https://www.chainsecurity.com/security-audit/wrapped-bitcoin-wbtc",
+     "opened": {
+      "at": "2026-10-11T11:26:43Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Replace the dashboard page with ChainSecurity's \"Wrapped Bitcoin (WBTC) Security Audit\" (the WBTC token contracts on Ethereum)."
+  },
+  "sky-lending": {
+   "name": "Sky Lending",
+   "id": "118",
+   "status": "ready",
+   "current": {
+    "audits": "2",
+    "audit_links": [
+     "https://security.makerdao.com/"
+    ]
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://certificate.quantstamp.com/full/maker-dao-liquidations-2-0.pdf"
+    ]
+   },
+   "remove": [
+    {
+     "url": "https://security.makerdao.com/",
+     "reason": "the domain no longer resolves, checked 9 Oct and 10 Oct"
+    }
+   ],
+   "add": [
+    {
+     "firm": "Quantstamp",
+     "date": "2021-05-11",
+     "title": "MakerDAO Liquidations 2.0",
+     "url": "https://certificate.quantstamp.com/full/maker-dao-liquidations-2-0.pdf",
+     "opened": {
+      "at": "2026-10-11T11:26:15Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Replace security.makerdao.com with Quantstamp's \"MakerDAO Liquidations 2.0\" (the dss vault contracts Dog, Clipper and Abacus)."
+  },
+  "maple": {
+   "name": "Maple",
+   "id": "587",
+   "status": "ready",
+   "current": {
+    "audits": "2",
+    "audit_links": [
+     "https://github.com/maple-labs/maple-core#audit-reports"
+    ]
+   },
+   "proposed": {
+    "audits": "2",
+    "audit_links": [
+     "https://cantina.xyz/portfolio/ffedd548-be82-4f0e-ad3d-9fc5a3ea00c5"
+    ]
+   },
+   "remove": [
+    {
+     "url": "https://github.com/maple-labs/maple-core#audit-reports",
+     "reason": "maple-core README listing the v1.0 reports; Maple runs V2"
+    }
+   ],
+   "add": [
+    {
+     "firm": "Cantina",
+     "date": "2022-11-04",
+     "title": "Maple V2",
+     "url": "https://cantina.xyz/portfolio/ffedd548-be82-4f0e-ad3d-9fc5a3ea00c5",
+     "opened": {
+      "at": "2026-10-11T11:26:09Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Replace the maple-core README, which lists the v1.0 reports, with Cantina's \"Maple V2\" (repository maple-core-v2)."
+  }
+ }
+}
