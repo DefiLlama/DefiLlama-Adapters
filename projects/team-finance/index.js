@@ -59,7 +59,8 @@ async function tvl(api) {
     // `nfts` and `lastId` were added later, so a vault cached before that is rescanned once
     if (!cache.vaults[contract]?.nfts) cache.vaults[contract] = { tokens: [], nfts: {}, lastId: 0, }
     const cCache = cache.vaults[contract]
-    const deposits = await api.fetchList({ lengthAbi: contractABI.depositId, itemAbi: contractABI.getDepositDetails, target: contract, permitFailure: true, startFrom: cCache.lastId })
+    // deposit ids start at 1 and run up to depositId inclusive
+    const deposits = await api.fetchList({ lengthAbi: contractABI.depositId, itemAbi: contractABI.getDepositDetails, target: contract, permitFailure: true, startFromOne: true, startFrom: cCache.lastId + 1 })
     // stop at the first failed read so it is retried on the next run
     const failedAt = deposits.findIndex(i => !i)
     const read = failedAt === -1 ? deposits : deposits.slice(0, failedAt)
@@ -92,8 +93,7 @@ async function tvl(api) {
     await addV3Positions({ api, nftAddress, positions, whitelistedTokens, ...positionManagers[chain][nftAddress] })
 }
 
-// Counts only the core asset side of each position, doubled when the other side is the project's own
-// token. Positions without a core asset are skipped.
+// Values each position by its core asset side. Positions without a core asset are skipped.
 async function addV3Positions({ api, nftAddress, positions, whitelistedTokens, isAlgebra = false }) {
   // a position id outlives its lock, so count it only while the locker still owns it
   const owners = await api.multiCall({ abi: 'function ownerOf(uint256) view returns (address)', target: nftAddress, calls: positions.map(p => p.id), permitFailure: true })
@@ -116,27 +116,39 @@ async function addV3Positions({ api, nftAddress, positions, whitelistedTokens, i
     calls: pools,
   })
 
-  // core asset amount per pool; every position in a pool has the same pair, so the same multiplier
+  // Core asset amount per pool. When only one side is a core asset, the other side adds its value at the
+  // pool price, but never more than the core side, as with a V2 pair. So a position that is out of range
+  // and holds only the core asset counts once, and a project token can not be valued above its liquidity.
   const poolAmounts = {}
   infos.forEach((info, i) => {
     const { amount0, amount1 } = getPositionAmounts(info, sqrtPrices[i])
+    const price = (Number(sqrtPrices[i]) / 2 ** 96) ** 2 // token1 per token0
     const core0 = isCore(info.token0)
     const core1 = isCore(info.token1)
-    const multiplier = core0 && core1 ? 1 : 2
-    if (core0) addPoolAmount(pools[i], info.token0, amount0, multiplier)
-    if (core1) addPoolAmount(pools[i], info.token1, amount1, multiplier)
+    if (core0 && core1) {
+      addPoolAmount(pools[i], info.token0, amount0, 0)
+      addPoolAmount(pools[i], info.token1, amount1, 0)
+    } else if (core1) {
+      addPoolAmount(pools[i], info.token1, amount1, Math.min(amount0 * price || 0, amount1))
+    } else {
+      addPoolAmount(pools[i], info.token0, amount0, Math.min(amount1 / price || 0, amount0))
+    }
   })
 
-  // Positions with huge liquidity next to a range edge are very sensitive to rounding, so never count
-  // more than the pool holds
+  // Positions with huge liquidity next to a range edge are very sensitive to float precision, so never
+  // count more of a core asset than the pool holds
   const entries = Object.values(poolAmounts)
   const poolBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: entries.map(e => ({ target: e.token, params: e.pool })) })
-  entries.forEach((e, i) => api.add(e.token, Math.min(e.amount, +poolBalances[i]) * e.multiplier))
+  entries.forEach((e, i) => {
+    const scale = e.core > 0 ? Math.min(1, +poolBalances[i] / e.core) : 0
+    api.add(e.token, (e.core + e.other) * scale)
+  })
 
-  function addPoolAmount(pool, token, amount, multiplier) {
+  function addPoolAmount(pool, token, core, other) {
     const key = `${pool}-${token}`
-    if (!poolAmounts[key]) poolAmounts[key] = { pool, token, amount: 0, multiplier }
-    poolAmounts[key].amount += amount
+    if (!poolAmounts[key]) poolAmounts[key] = { pool, token, core: 0, other: 0 }
+    poolAmounts[key].core += core
+    poolAmounts[key].other += other
   }
 }
 
