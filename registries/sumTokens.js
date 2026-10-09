@@ -14381,7 +14381,8 @@ const configs = {
     "base": {
       "owner": "0x61c36AFF32Be348a3D1FE1E2B4745048f652770F",
       "resolveUniV3": true,
-      "resolveSlipstream": true
+      "resolveSlipstream": true,
+      "resolveSlipstreamV3": true
     },
     "arbitrum": {
       "owner": "0xD52170Ae01B9198246842D9a4Ad964AcD786ae91",
