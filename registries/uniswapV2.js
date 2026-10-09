@@ -2758,7 +2758,7 @@ const uniV2Configs = {
   },
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
-    arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", ADDRESSES.arbitrum.RAM] },
+    arbitrum: '0xAAA20D08e59F6561f242b08513D36266C5A29415',
   },
   'ramses-legacy-v2': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
