@@ -223,7 +223,7 @@ function validateHallmarks(hallmark) {
         try {
           await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
         } catch (e) {
-          failedKeys.push({ storedKey, error: e?.message ?? (e && typeof e === 'object' ? JSON.stringify(e).slice(0, 500) : String(e)) })
+          failedKeys.push({ storedKey, error: formatFailureError(e) })
           console.error(`Error pulling TVL for ${storedKey}:`, e)
           return;
         }
@@ -309,6 +309,14 @@ function validateHallmarks(hallmark) {
   process.exit(0);
 })().catch(handleError);
 
+
+function formatFailureError(e) {
+  if (e && e.message) return e.message
+  if (e && typeof e === 'object') {
+    try { return JSON.stringify(e).slice(0, 500) } catch { return String(e) }
+  }
+  return String(e)
+}
 
 function checkExportKeys(module, filePath, chains) {
   let _filePath = filePath
