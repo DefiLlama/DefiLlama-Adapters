@@ -18,36 +18,32 @@ const getUnderlyingAddressFromNewAcoPoolLogData = data => '0x' + data.substring(
 const getStrikeAssetAddressFromNewAcoPoolLogData = data => '0x' + data.substring(26, 66);
 
 async function tvl(api) {
-  var logsPromises = await Promise.all([
-    getLogs({
-      api,
-      target: FACTORY,
-      fromBlock: START_BLOCK,
-      topic: 'NewAcoToken(address,address,bool,uint256,uint256,address,address)',
-      extraKey: 'new-aco-token',
-    }),
-    getLogs({
-      api,
-      target: FACTORY,
-      fromBlock: START_BLOCK,
-      topic: 'NewAcoTokenData(address,address,bool,uint256,uint256,address,address,address)',
-      extraKey: 'new-aco-token-data',
-    }),
-    getLogs({
-      api,
-      target: POOLS_FACTORY,
-      fromBlock: START_BLOCK,
-      topic: 'NewAcoPool(address,address,bool,address,address)',
-    }),
-    getLogs({
-      api,
-      target: VAULTS,
-      fromBlock: START_BLOCK,
-      topic: 'AcoVault(address,bool)',
-    })
-  ])
-
-  const logs = logsPromises[0];
+  const logs = await getLogs({
+    api,
+    target: FACTORY,
+    fromBlock: START_BLOCK,
+    topic: 'NewAcoToken(address,address,bool,uint256,uint256,address,address)',
+    extraKey: 'new-aco-token',
+  })
+  const logs2 = await getLogs({
+    api,
+    target: FACTORY,
+    fromBlock: START_BLOCK,
+    topic: 'NewAcoTokenData(address,address,bool,uint256,uint256,address,address,address)',
+    extraKey: 'new-aco-token-data',
+  })
+  const newAcoPoolLogs = await getLogs({
+    api,
+    target: POOLS_FACTORY,
+    fromBlock: START_BLOCK,
+    topic: 'NewAcoPool(address,address,bool,address,address)',
+  })
+  const setVaultLog = await getLogs({
+    api,
+    target: VAULTS,
+    fromBlock: START_BLOCK,
+    topic: 'AcoVault(address,bool)',
+  })
 
   let acoOptionsAddresses = [];
   logs.forEach((log) => {
@@ -55,7 +51,6 @@ async function tvl(api) {
     acoOptionsAddresses.push(address)
   });
 
-  const logs2 = logsPromises[1];
   logs2.forEach((log) => {
     const address = getTokenAddressFromNewAcoTokenLogData(log.data);
     acoOptionsAddresses.push(address)
@@ -77,7 +72,6 @@ async function tvl(api) {
     api.add(colateralAddress, result)
   });
 
-  const newAcoPoolLogs = logsPromises[2];
   const ownerTokens = []
 
   newAcoPoolLogs.forEach((log) => {
@@ -88,8 +82,6 @@ async function tvl(api) {
   });
 
   await api.sumTokens({ ownerTokens })
-
-  const setVaultLog = logsPromises[3];
 
   let acoVaultsAddresses = [];
   setVaultLog.forEach((log) => {
