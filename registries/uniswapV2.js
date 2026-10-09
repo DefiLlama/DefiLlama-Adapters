@@ -2758,29 +2758,14 @@ const uniV2Configs = {
   },
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
-    arbitrum: '0xAAA20D08e59F6561f242b08513D36266C5A29415',
+    arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ['0xAAA343032aA79eE9a6897Dab03bef967c3289a06', ADDRESSES.arbitrum.RAM] },
   },
   'ramses-legacy-v2': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
-    methodology: 'Pool TVL is the value of tokens held in liquidity pools. HyperEVM staking is the RAM backing of xRAM deposited in VoteModule, including vault and protocol-owned stake, counted once.',
+    methodology: 'Pool TVL is the value of tokens held in liquidity pools. HyperEVM staking is the RAM balance held by xRAM.',
     hyperliquid: {
       factory: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
-      staking: async (api) => {
-        const ram = '0x555570a286F15EbDFE42B66eDE2f724Aa1AB5555'
-        const xRam = '0xAE6D5FcE541216BDA471D311425B5412D9f1DEb9'
-        const voteModule = '0x6736102621f7c0dbB0E2989e3ad7A8793e71930b'
-        // https://www.ramses.xyz/docs/xram: only staked xRAM's share of RAM backing counts.
-        const [ramBacking, xRamSupply, stakedXRam] = (await Promise.all([
-          api.call({ target: ram, abi: 'erc20:balanceOf', params: [xRam] }),
-          api.call({ target: xRam, abi: 'uint256:totalSupply' }),
-          api.call({ target: voteModule, abi: 'uint256:totalSupply' }),
-        ])).map(BigInt)
-        if (xRamSupply === 0n) {
-          if (stakedXRam !== 0n) throw new Error('Ramses: staked xRAM with zero total supply')
-          return
-        }
-        api.add(ram, (ramBacking * stakedXRam / xRamSupply).toString())
-      },
+      staking: ['0xAE6D5FcE541216BDA471D311425B5412D9f1DEb9', '0x555570a286F15EbDFE42B66eDE2f724Aa1AB5555'],
     },
     arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
