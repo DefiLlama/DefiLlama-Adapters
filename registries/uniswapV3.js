@@ -1919,6 +1919,11 @@ const uniV3Configs = {
     methodology: 'Value of the tokens held in the Architect Swap V3 pools on Robinhood Chain, discovered from factory PoolCreated events.',
     robinhood: { factory: '0x3FdaBf7AB5d871B89F1d9DA04Dc2E0733dB70CaF', fromBlock: 22361711 },
   },
+  'ouro-dex-v3': {
+    start: '2026-09-26', // factory deployed at block 72056673 (2026-09-25 07:42 UTC)
+    methodology: 'Value of the tokens held in the Ouro DEX V3 pools on Robinhood Chain, discovered from factory PoolCreated events. Position NFTs staked in the Ouro farms are not added again.',
+    robinhood: { factory: '0x9a8442cb89fE713ce7C2f22852e61fBFFeE97EcF', fromBlock: 72056673 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)

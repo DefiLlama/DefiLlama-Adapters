@@ -3249,6 +3249,11 @@ const uniV2Configs = {
     methodology: 'Value of the tokens held in the Architect Swap V2 pairs on Robinhood Chain, enumerated from the factory.',
     robinhood: '0xfa6253ee74F7956b022998F7bfa271990C8A82a8',
   },
+  'ouro-dex-v2': {
+    start: '2026-09-26', // factory deployed at block 72056067 (2026-09-25 07:41 UTC)
+    methodology: 'Value of the tokens held in the Ouro DEX V2 pairs on Robinhood Chain, enumerated from the factory. LP tokens staked in the Ouro farms are not added again.',
+    robinhood: '0xaf0660Fd4d96F4e925AE85eba7A90a74C727fA2F',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
