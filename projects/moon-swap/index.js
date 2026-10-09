@@ -4,7 +4,7 @@ const { toUSDTBalances } = require('../helper/balances');
 const baseUrl = "https://moonswap.fi/api/route/opt/swap/dashboard/global-data";
 
 async function tvl() {
-  const response = (await get(baseUrl)).data;
+  const response = (await get(baseUrl, { timeout: 30000 })).data;
   return toUSDTBalances(response.uniswapFactories[0].totalLiquidityUSD)
 }
 
