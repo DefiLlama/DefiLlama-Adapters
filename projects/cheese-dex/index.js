@@ -5,8 +5,14 @@ const USDT = '0x55d398326f99059ff775485246999027b3197955';
 const USDC = '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d';
 
 async function tvl(api) {
-  const usdtBalance = await api.call({ target: USDT, abi: 'erc20:balanceOf', params: [VAULT_ADDRESS] });
-  const usdcBalance = await api.call({ target: USDC, abi: 'erc20:balanceOf', params: [VAULT_ADDRESS] });
+  const [usdtBalance, usdcBalance] = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: [
+      { target: USDT, params: [VAULT_ADDRESS] },
+      { target: USDC, params: [VAULT_ADDRESS] },
+    ],
+  });
+
   const nchBalance = await api.provider.getBalance(VAULT_ADDRESS);
 
   api.add(ADDRESSES.ethereum.USDT, usdtBalance, { skipChain: true });

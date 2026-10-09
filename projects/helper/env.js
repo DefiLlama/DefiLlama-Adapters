@@ -44,6 +44,7 @@ const DEFAULTS = {
   REI_RPC: 'https://scan.rei.network/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
   CHEESE_RPC: 'https://cheeseblockchain.com/api/rpc',
+  CHEESE_WHITELISTED_RPC: 'https://cheeseblockchain.com/api/rpc',
   // dwellir throttles queryStorageAt bursts across both bifrost endpoints (same key) which stalled bifrost-dex; polkadot side moved to liebi
   // bifrost adapters read storage over HTTP JSON-RPC via helper/chain/substrate.js (the wss entries are kept for anything still on @polkadot/api)
   BIFROST_P_RPC: "wss://eu.bifrost-polkadot-rpc.liebi.com/ws",
