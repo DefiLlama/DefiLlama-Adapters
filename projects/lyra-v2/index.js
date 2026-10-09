@@ -36,5 +36,5 @@ chains.forEach(chain => {
 })
 
 module.exports.hallmarks = [
-  [1791417600, "Derive V3 migration completed, V2 bridge funds moved to L1"],
+  ['2026-10-08', "Derive V3 migration completed, V2 bridge funds moved to L1"],
 ]
