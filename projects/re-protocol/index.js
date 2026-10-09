@@ -56,7 +56,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Value of the tokens in the custodian wallets + value of the tokens in redemption reserves + off-chain assets tracked via oracle (tracked as USDC)',
-  start: 1737488963, // reUSD Deployment time (https://etherscan.io/tx/0x3094948b3dbe89f4824217e37b8667fbb4d89e18b0b426a453fe7377095c26ea)
+  start: '2025-01-21', // reUSD Deployment time (https://etherscan.io/tx/0x3094948b3dbe89f4824217e37b8667fbb4d89e18b0b426a453fe7377095c26ea)
 }
 
 Object.keys(config).forEach(chain => { module.exports[chain] = { tvl } })

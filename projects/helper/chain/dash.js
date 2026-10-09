@@ -1,12 +1,13 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('../http')
 const { PromisePool } = require('@supercharge/promise-pool')
 
-const url = addr => 'https://insight.dash.org/insight-api/addr/' + addr
+const { utxo } = sdk.chains
+const CHAIN = 'dash'
 
+// DASH balance in whole coins
 async function getBalance(addr) {
-  const { balance } = await get(url(addr))
-  return balance
+  const duffs = await utxo.getBalance({ chain: CHAIN, address: addr })
+  return utxo.fromBaseUnits(duffs, utxo.CHAINS[CHAIN].decimals)
 }
 
 async function sumTokens({ balances = {}, owners = [] }) {

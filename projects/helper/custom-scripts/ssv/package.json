@@ -11,6 +11,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.23.0",
   "dependencies": {
+    "@elastic/elasticsearch": "8.19.1",
     "stream": "^0.0.3",
     "stream-json": "^1.9.1"
   }

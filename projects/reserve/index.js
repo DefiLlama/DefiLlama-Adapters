@@ -113,16 +113,23 @@ async function tvl(api) {
   const creationLogs = await _getLogs(api, config);
 
   const mains = creationLogs.map((i) => i.main);
-  const rTokens = creationLogs.map((i) => i.rToken);
+  let rTokens = creationLogs.map((i) => i.rToken);
 
-  const backingManagers = await api.multiCall({
+  let backingManagers = await api.multiCall({
     abi: "address:backingManager",
     calls: mains,
+    permitFailure: true,
   });
-  const basketHandlers = await api.multiCall({
+  let basketHandlers = await api.multiCall({
     abi: "address:basketHandler",
     calls: mains,
+    permitFailure: true,
   });
+  // drop deprecated deployments whose main contract no longer responds
+  const live = rTokens.map((_, i) => i).filter((i) => backingManagers[i] && basketHandlers[i]);
+  rTokens = live.map((i) => rTokens[i]);
+  backingManagers = live.map((i) => backingManagers[i]);
+  basketHandlers = live.map((i) => basketHandlers[i]);
   const basketRes = await api.multiCall({
     abi: "function quote(uint192, uint8) view returns (address[], uint256[])",
     calls: basketHandlers.map((i) => ({ target: i, params: [0, 0] })),

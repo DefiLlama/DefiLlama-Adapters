@@ -12,14 +12,17 @@ module.exports = {
     "bsc": {
       "tvl": { "owners": ["0x3EedB0d9C95263778a62081F2A62FC77a392116d"], "tokens": [ADDRESSES.bsc.USDT] },
     },
+    "arc": {
+      "tvl": { "owners": ["0xc64e528c6439a204da1b519e78aa43f9e4b32f00"], "tokens": [ADDRESSES.arc.USDC] },
+    },
     "edgex": {
       "tvl": { "owners": ["0xc8B4cF96bBC915f11C4f8B6F7654eF46C7af3783"], "tokens": [ADDRESSES.edgex.USDC] },
     },
   },
   "gblin": {
-    "methodology": "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V6 Vault contract on Base.",
+    "methodology": "TVL is the WETH, cbBTC and USDC held by the GBLIN vault on Base, plus the balance still held by the previous index contract until its holders migrate.",
     "base": {
-      "tvl": { "owner": "0x36C81d7E1966310F305eA637e761Cf77F90852f0", "tokens": [ADDRESSES.optimism.WETH_1,ADDRESSES.ethereum.cbBTC,ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0xc2181d975c05c8c724b334bcED0764c0b86B1D53", "0x36C81d7E1966310F305eA637e761Cf77F90852f0"], "tokens": [ADDRESSES.optimism.WETH_1,ADDRESSES.ethereum.cbBTC,ADDRESSES.base.USDC] },
     },
   },
   "risq": {
@@ -30,21 +33,23 @@ module.exports = {
   "pred": {
     "methodology": "USDC held in ConditionalTokens contracts and NegRisk WrappedCollateral contracts (latest and legacy deployments).",
     "base": {
-      "tvl": { "owners": ["0x76c175e7ad7f794e2478345ee50d8290088a797d","0x4e9608d5cf77f22b2d5543b6c65a8c5417e8122c","0xc7e015b63d8226444a028c57fcaa1d30bfc3178c","0xa291d33e4670ab6bcd2c631231396ef12e138380","0xc83c5cca746d213d9cf63fe668e7eb8dee35314b","0xb365835f194e383354367572d0eb9d2dce46b693"], "tokens": [ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0x03C6c6fbdc0c719Dc878fCe24deBaBC31B2B4a27", "0x76c175e7ad7f794e2478345ee50d8290088a797d","0x4e9608d5cf77f22b2d5543b6c65a8c5417e8122c","0xc7e015b63d8226444a028c57fcaa1d30bfc3178c","0xa291d33e4670ab6bcd2c631231396ef12e138380","0xc83c5cca746d213d9cf63fe668e7eb8dee35314b","0xb365835f194e383354367572d0eb9d2dce46b693"], "tokens": [ADDRESSES.base.USDC] },
     },
   },
   "ethos-network": {
-    "methodology": "Measures the total amount of ETH stored in the Vouch contract. Each vouch represents a trust relationship backed by ETH.",
+    "methodology": "TVL is the ETH held in the v1 Vouch contract. Staking is the WHUF held in the EthosVouchV2 contract. Each vouch represents a trust relationship backed by ETH or WHUF.",
     "start": "2025-01-21",
     "base": {
       "tvl": { "owner": "0xD89E6B7687f862dd6D24B3B2D4D0dec6A89A6fdd", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x8B5Ef9c00152CaDBfedA4f59212EDB6e2e45de11"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "ethos-markets": {
-    "methodology": "Measures the total amount of ETH stored in the Reputation Markets contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
+    "methodology": "TVL is the ETH held in the v1 Reputation Markets contract. Staking is the WHUF held in the EthosMarket contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
     "start": "2025-01-21",
     "base": {
       "tvl": { "owner": "0xC26F339F4E46C776853b1c190eC17173DBe059Bf", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x27F49210bc000BEE3197aFB4397969df35810919"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "king-finance": {
@@ -388,6 +393,7 @@ module.exports = {
     },
   },
   "kinetix-derivatives-v2": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tvl": { "owners": ["0xB5CE30B6EBAA252bDEac2F768EF9b1e4Bdf8d120"], "tokens": [ADDRESSES.null,ADDRESSES.kava.USDt] },
     },
@@ -525,40 +531,6 @@ module.exports = {
       "tvl": { "tokensAndOwners": [[ADDRESSES.somnia.USDC,"0x47fD2f18426f67106DBaC82F6d21D446c5F2120b"],[ADDRESSES.somnia.USDC,"0xD53E3F3b73513F2147377ef8f573f649cF60100c"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd"],[ADDRESSES.somnia.WETH,"0xa936da11B57b50A344e1293AAaE5232885ea2bDE"],[ADDRESSES.somnia.WETH,"0x9653a7355849B7691802A6AA49fDe18eF5ba633d"]], "owners": ["0x035De7403eac6872787779CCA7CCF1b4CDb61379","0x68c8f6fb1EA19A28F25358Ff00b8Ed8E1216df30","0x47fD2f18426f67106DBaC82F6d21D446c5F2120b","0xD53E3F3b73513F2147377ef8f573f649cF60100c","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd","0xa936da11B57b50A344e1293AAaE5232885ea2bDE","0x9653a7355849B7691802A6AA49fDe18eF5ba633d"], "tokens": ["0x00000022dA000002656c64D9eA6011ea952D008A",ADDRESSES.null] },
     },
   },
-  "infinit": {
-    "methodology": "INFINIT helps user execute transactions and earn yields and rewards on protocols. INFINIT does not hold custody of user's assets thus, it does not have any TVL. See the yield dashboard for a list of INFINIT strategies.",
-    "bsc": {
-      "tvl": { "__empty": true },
-      "staking": { "owners": ["0xc8e6c14ccebed218a64df570025c5a1eeb0cdadc"], "tokens": ["0x61fac5f038515572d6f42d4bcb6b581642753d50"] },
-    },
-    "ethereum": {
-      "tvl": { "__empty": true },
-    },
-    "arbitrum": {
-      "tvl": { "__empty": true },
-    },
-    "base": {
-      "tvl": { "__empty": true },
-    },
-    "optimism": {
-      "tvl": { "__empty": true },
-    },
-    "sonic": {
-      "tvl": { "__empty": true },
-    },
-    "hyperliquid": {
-      "tvl": { "__empty": true },
-    },
-    "mantle": {
-      "tvl": { "__empty": true },
-    },
-    "plasma": {
-      "tvl": { "__empty": true },
-    },
-    "berachain": {
-      "tvl": { "__empty": true },
-    },
-  },
   "instrumental": {
     "methodology": "Instrumental can be LP'ed and LP can be staked or locked (pool2s). Plus STRM itself can be locked against veSTRM (staking). Vaults coming soon.",
     "ethereum": {
@@ -576,7 +548,7 @@ module.exports = {
   },
   "sparkdex-perps": {
     "flare": {
-      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,"0x12e605bc104e93B45e1aD99F9e555f659051c2BB",ADDRESSES.morph.USDT0,"0xad552a648c74d49e10027ab8a618a3ad4901c5be"] },
+      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,ADDRESSES.flare.sFLR,ADDRESSES.morph.USDT0,"0xad552a648c74d49e10027ab8a618a3ad4901c5be"] },
     },
   },
   "corex": {
@@ -631,9 +603,9 @@ module.exports = {
     },
   },
   "openoracle": {
-    "methodology": "TVL is the native ETH and USDC held by the openOracle contract on Base.",
+    "methodology": "TVL is the native ETH and USDC held by the openOracle contracts on Base.",
     "base": {
-      "tvl": { "owner": "0xa731450131bE0120420e211a35704A19382489fb", "tokens": [ADDRESSES.null,ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0xa731450131bE0120420e211a35704A19382489fb", "0x0cf849531f77E4bfE2d869db5b3F9Bca83d68626"], "tokens": [ADDRESSES.null,ADDRESSES.base.USDC] },
     },
   },
   "linehub-perps": {
@@ -741,11 +713,12 @@ module.exports = {
   "veil": {
     "methodology": "TVL counts assets held in Veil Cash privacy pools on Base, including the active WETH and USDC pools and the V13 multi-asset pool. Legacy pool addresses are retained solely for historical TVL. VEIL staking is reported separately.",
     "base": {
-      "tvl": { "tokensAndOwners": [[ADDRESSES.null,"0x6c206B5389de4e5a23FdF13BF38104CE8Dd2eD5f"],[ADDRESSES.null,"0xC53510D6F535Ba0943b1007f082Af3410fBeA4F7"],[ADDRESSES.null,"0x844bB2917dD363Be5567f9587151c2aAa2E345D2"],[ADDRESSES.null,"0xD3560eF60Dd06E27b699372c3da1b741c80B7D90"],[ADDRESSES.null,"0x9cCdFf5f69d93F4Fcd6bE81FeB7f79649cb6319b"],[ADDRESSES.base.USDC,"0xA4dB5eC5d0a2ee01CcD8D6e2e53224CF4E81A9b3"],[ADDRESSES.optimism.WETH_1,"0x293dcda114533ff8f477271c5ca517209ffdeee7"],[ADDRESSES.base.USDC,"0x5c50d58E49C59d112680c187De2Bf989d2a91242"],[ADDRESSES.base.cbBTC,"0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0x940181a94A35A4569E4529A3CDfB74e38FD98631","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0x22aF33FE49fD1Fa80c7149773dDe5890D3c76F3b","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"]] },
+      "tvl": { "tokensAndOwners": [[ADDRESSES.null,"0x6c206B5389de4e5a23FdF13BF38104CE8Dd2eD5f"],[ADDRESSES.null,"0xC53510D6F535Ba0943b1007f082Af3410fBeA4F7"],[ADDRESSES.null,"0x844bB2917dD363Be5567f9587151c2aAa2E345D2"],[ADDRESSES.null,"0xD3560eF60Dd06E27b699372c3da1b741c80B7D90"],[ADDRESSES.null,"0x9cCdFf5f69d93F4Fcd6bE81FeB7f79649cb6319b"],[ADDRESSES.base.USDC,"0xA4dB5eC5d0a2ee01CcD8D6e2e53224CF4E81A9b3"],[ADDRESSES.optimism.WETH_1,"0x293dcda114533ff8f477271c5ca517209ffdeee7"],[ADDRESSES.base.USDC,"0x5c50d58E49C59d112680c187De2Bf989d2a91242"],[ADDRESSES.base.cbBTC,"0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],[ADDRESSES.base.AERO,"0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0x22aF33FE49fD1Fa80c7149773dDe5890D3c76F3b","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"]] },
       "staking": { "owners": ["0x3225b5a7c842cC227C773636F5C574443C62bb86", "0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"], "tokens": ["0x767A739D1A152639e9Ea1D8c1BD55FDC5B217D7f"] },
     },
   },
   "stipend": {
+    deadFrom: "2023-08-01", // abandoned?
     "kava": {
       "tvl": { "owners": ["0xfc30fE377f7E333cC1250B7768107a7Da0277c44"], "tokens": [ADDRESSES.kava.WKAVA] },
     },
@@ -800,13 +773,6 @@ module.exports = {
     },
     "ethereum": {
       "tvl": { "owners": ["0x46363C31Be0c677Bd6F3eD429686753794ee8b97"], "tokens": [ADDRESSES.bitrock.BR] },
-    },
-  },
-  "kalmydas": {
-    "methodology": "TVL is the sum of tokens (USDC, WETH, KAL) held by the KalSwap liquidity pairs plus the USDC held by the five KalPool strategy vaults (deposits and platform reserve) on Base mainnet. USDC temporarily allocated to the on-chain operator (max 20% of each vault reserve) leaves the vaults while a trade is open and returns on close. KAL staked single-side and KAL locked in veKAL are reported under staking.",
-    "base": {
-      "tvl": { "owners": ["0x3315E6E788E2B30aF8f4c35124695E60D510c31B","0xEA071fa5a8aD4dEa8c672569da366D7d90E5924d","0x83c26f5C90B81adDf50845CCFCdcd02B819ADeB5","0x96869F08F5B5C52664c9620269394eFF4efd065b","0x6dd6e7A6154293b22Dcd5d07d8f61F446646B15d","0x9A9990fdFf702f7aEd10f873eeD2baB60e493038","0x03FEC25393C38cC5DE1F2D2DB620b8478cAC4Ae0","0x55F8D85749EA9C374b3aBFaEF7B07429546F6A97"], "tokens": [ADDRESSES.base.USDC,ADDRESSES.optimism.WETH_1,"0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
-      "staking": { "owners": ["0xF392A8F1B6c85f607F988B44EcAE2B4d652585f5","0x58CfcB5A67Aac6255cA13771EbdCFF45bAd5d605"], "tokens": ["0xe99556D5594faf533fcB346A8a9B11259D29afA8"] },
     },
   },
   "sfi": {
@@ -881,7 +847,7 @@ module.exports = {
     },
   },
   "astro-fun": {
-    methodology: "Counts the USDG held by the Astro BankrollVault on Robinhood Chain: the liquidity provided by LPs to the bankroll (ERC-4626 ASTROLP), the players\' withdrawable balances, and the stakes wagered in the round currently in play.",
+    methodology: "Counts the USDG held by the Astro BankrollVault on Robinhood Chain: the liquidity provided by LPs to the bankroll (ERC-4626 ASTROLP), the players' withdrawable balances, and the stakes wagered in the round currently in play.",
     "robinhood": {
       "tvl": { "owners": ["0x58D2f2D46af20C357885d540A9c02fDD791Ee1CF"], "tokens": [ADDRESSES.robinhood.USDG] },
     },
@@ -899,10 +865,292 @@ module.exports = {
       "tvl": { "owners": ["0xAF0Bf8593dC6CA973DF2132731B0F9B5F974FA9F", "0xa1bf9bb17C283CF17F01516f78f3127D2C84C79d"], "tokens": [ADDRESSES.base.USDC] },
     }
   },
+  "alfaclub-v2": {
+    "methodology": "USDG held by the AlfaClub V2 RoomKey contract on Robinhood Chain: bonding-curve reserves backing outstanding room keys, plus key-trading fees not yet claimed.",
+    "start": "2026-09-27",
+    "robinhood": {
+      "tvl": { "owners": ["0x64Fb2678cCe04A352a405eAa024eE02935f0ACb9"], "tokens": [ADDRESSES.robinhood.USDG] },
+    }
+  },
   "usdr": {
     "methodology": "TVL is the $M balance held by the USDR extension contract on RISE Chain, which is the collateral backing every minted USDR.",
     "rise": {
       "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
     }
+  },
+  "startale-earn": {
+    "methodology": "TVL is the USDSC held by the Startale Earn vault on Soneium.",
+    "start": "2025-11-25",
+    "soneium": {
+      "tvl": { "owners": ["0xfdeb7e9f59cad080d9158ff850ce79bcf6cdd5f0"], "tokens": ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a"] },
+    }
+  },
+  "veiledhood": {
+    "methodology": "TVL is the sum of USDG and WETH balances held by VeiledHood's Veiledhood and VeilSwap vault contracts on Robinhood Chain, read directly on-chain. Per-user balances are tracked off-chain via a Merkle-committed ledger, but the vault's aggregate token balances are public and require no private state to compute.",
+    "robinhood": {
+      "tvl": { "owners": ["0x8Ae2D8A767c3d59219556b83d4e8385514b6d72B", "0xa4B90fb94B2bBdf1D66A8191E883D0F57BbC6D0b"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH] },
+    }
+  },
+  "termix": {
+    "methodology": "TVL is USDC and USDT held across the escrow (funded jobs not yet settled), staking (provider stakes) and campaign-vault contracts on BSC and Base.",
+    "start": "2026-07-02",
+    "bsc": {
+      "tvl": { "owners": ["0x6A52ba4C84b348FaEAe13dDC7A97b4F6af23913C", "0xCE02f987D8b8AF694E13C8a843Db9c77caBF544c", "0x0Bd066f5113e6B8336b06F8Aa3EF90D37F7e65FC", "0x1DcafFB7275fa2650d480a4F939A0C0D5874750B", "0x5BaE7834B32a4b357F65dd20248068993466D294", "0x16261F2BCbE8Ee47065C5ecB4be32c1571289809"], "tokens": [ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT] }
+    },
+    "base": {
+      "tvl": { "owners": ["0xc3d963E0856A2c2d6F75C83C1355f680fd8F9f10", "0xFf3f7038c4919A420B30D7B3533cb386D5898189", "0x8320448539DcafdE9C26B4F538504BB180DE55B3", "0xeEf5672208EcE3Ba6B32f1FEC3c3802A6D2DBA8a", "0x97d14D248d956148a34E4fe636CDdBa8BB80E551", "0x911d5c2a20dDA9bE9daE53fE3AD9183e5b583D7f"], "tokens": [ADDRESSES.base.USDC, ADDRESSES.base.USDT] }
+    }
+  },
+  "openstock": {
+    "methodology": "Sums the settlement-stablecoin (USDT0) balance held directly by each OpenStock pre-IPO vault contract on Mantle.",
+    "mantle": {
+      "tvl": { "owners": ["0x41D4C067b82DA8357Dfc38e3f24F6033368aF4bb"], "tokens": [ADDRESSES.xlayer.USDT0]}
+    }
+  },
+  "jetbit": {
+    "methodology": "USDT locked in the Jetbit Vault (trader collateral), Pool (LP capital) and Reserve (insured slice of LP deposits) on BNB Smart Chain.",
+    "start": "2026-04-30",
+    "bsc": {
+      "tvl": { "owners": ["0x991e3e0A16D729a0872CA7A3B58EF31A19A64C7E", "0x075A553CC4E1F3EE70B21E1472E1c85c73d53B2C", "0x0bE292625D6d3b073BeBC40bd6F234095a2bb548"], "tokens": [ADDRESSES.bsc.USDT] },
+    }
+  },
+  "true-dex": {
+    "methodology": 'USDC deposited as perpetuals trading collateral, read from the verifier custody token account on Solana.',
+    "solana": {
+      "tvl": { "tokenAccounts": ["A5GTSUyjFSfsQWwRESSa1UtxciFY6g6guBvM12Tee1ag"], "tokens": [ADDRESSES.solana.USDC]}
+    }
+  },
+  "vortexo": {
+    "methodology": "TVL is the native token (ETH/BNB) held by the VortexoFunZK privacy pool contract on each chain, i.e. deposits that have not yet been withdrawn.",
+    "start": "2026-09-06",
+    "ethereum": {
+      "tvl": { "owners": ["0xcf75982da77A13d85919A00aEf290343cada5111"], "tokens": [ADDRESSES.null] }
+    },
+    "bsc": {
+      "tvl": { "owners": ["0x871F2479cFFddD0210bD2d7AcC21b44D6f9e4ca6"], "tokens": [ADDRESSES.null] }
+    },
+    "arbitrum": {
+      "tvl": { "owners": ["0x833Be2DC319b80365eB53C19932ad2f347c39cD9"], "tokens": [ADDRESSES.null] }
+    },
+    "base": {
+      "tvl": { "owners": ["0x833Be2DC319b80365eB53C19932ad2f347c39cD9"], "tokens": [ADDRESSES.null] }
+    }
+  },
+  "lotoworld": {
+    "methodology": "TVL is the USDT balance held in the Lotoworld lottery contract, representing the current prize pool awaiting the next draw.",
+    "start": "2026-09-08",
+    "arbitrum": {
+      "tvl": { "owners": ["0xdefcC8E8dB82D1D722045f704f8af29F94207439"], "tokens": [ADDRESSES.arbitrum.USDT] }
+    }
+  },
+  "ref-market": {
+    "methodology": "USDC held by the ref_market ReferralEscrow contracts on Base: rewards, protocol fees and dispute stakes escrowed for open offers and claims in flight, plus settled balances not yet withdrawn.",
+    "base": {
+      "tvl": { "owners": ["0xa9f96c74230810205023c3E3AFEe33d3151e5Ee8", "0xA4bFddBc6Bb8F589a92A4d4595c6902e95eb9a38", "0xe9339BecfB1F6F4d0A031e7132fCf745CEb6611A"], "tokens": [ADDRESSES.base.USDC] }
+    }
+  },
+  "hot-take": {
+    "methodology": "TVL is the USDC held by the Hot Take betting contract on Base: user protocol balances plus stakes locked in active bets.",
+    "start": "2026-06-29",
+    "base": {
+      "tvl": { "owners": ["0x64Be8f389E202a77b446C7E86B564F4122Cb5a66"], "tokens": [ADDRESSES.base.USDC]}
+    }
+  },
+  "solon-leverage": {
+    "methodology": "Counts leverage lending-pool underlying reserves, idle USDG/WETH and the underlying principal of Uniswap V3 LP positions held by Solon vaults on Robinhood Chain; the Morpho-curated solUSDG lending vault is tracked separately via the curators registry and is not counted again.",
+    "robinhood": {
+      tokensAndOwners: [
+        [ADDRESSES.robinhood.USDG, '0x59286206faCD48E002a4e0EaC106998567071Ef3'], // eUSDG
+        [ADDRESSES.robinhood.WETH, '0x2e3409b1d8068eB330437d89048b3d96D6379dac'], // eWETH
+      ],
+      tokens: [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH],
+      owners: [
+        '0x9Db7aDa64D1E8b856E15D916d886797501F28ce0', // UniV3DualVault
+        '0x9e100d524DFEa1Aa76286A7F00682e72F79aC3aE', // UniV3LeverageVault
+        '0xfd7Ab6A724f28cE958Ee29E7A9DfAE7b9efC6B91', // SolonRangeVault
+      ],
+      resolveUniV3: true,
+      uniV3WhitelistedTokens: [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH],
+      uniV3ExtraConfig: { nftAddress: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3' },
+    }
+  },
+  "ark-launch": {
+    "doublecounted": true, // gen2 positions sit in official Uniswap V3 pools, already counted as dex tvl
+    "methodology": 'Each launch on ARK seeds a Uniswap V3 USDC pool whose LP position is locked in the FeeLocker contract with no withdrawal function. TVL is the USDC in the positions held by the gen1 and gen2 FeeLockers. The launched tokens themselves are not counted.',
+    "start": '2026-09-16',
+    "arc": {
+      uniV3nftsAndOwners: [
+        ['0xF14cCC0f35ACA278B57722C2BAF48aCc0221c432', '0x4f260E5E9B475c36eE296E23b1818692408D9F4b'], // gen1 position manager, gen1 FeeLocker
+        ['0x39654A85A4C05127f5Fd6ED22CAeC077A0fB1377', '0x4982E02eF7a31a7a0cdD3a9935f3c856EffA5190'], // gen2 position manager, gen2 FeeLocker
+      ],
+      uniV3WhitelistedTokens: [ADDRESSES.arc.USDC],
+    }
+  },
+  "arclotls": {
+    "methodology": "Unpaid rent rewards held as USDC in the RentVault. Includes rewards not immediately claimable. These are NFT-holder rewards rather than refundable deposits. Excludes buyback funds, spent USDC, treasury and genesis reserves, liquidity pools, LOTL and NFT valuations.",
+    "start": "2026-09-17",
+    "arc": {
+      "owner": "0x18B156cc2aB7cF8173Ee837AcFe41D8A9943Aa2e",
+      "tokens": [
+        ADDRESSES.arc.USDC
+      ]
+    }
+  },
+  "pare": {
+    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain. Each vault holds the stock backing one series of principal (pToken) and yield (yToken) tokens until maturity.",
+    "start": "2026-09-02",
+    "robinhood": {
+      "tokensAndOwners": [
+        // audited build, 2026-09-18, maturity 2027-12-31
+        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
+        ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0xa0f77015E46e45c1A12B73466A08711a28Dac1A7"], // SPY-DEC27
+        ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0xAb8e536C9E7c76C1045EDEb6096e9B37B26B4372"], // QQQ-DEC27
+        ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x1aC9599B91973A3d5d75F7594a47382223FEC0F5"], // PFE-DEC27
+        ["0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5", "0x1d44BB0E2D09C35Cc116270E45F8782E7B51fF52"], // SGOV-DEC27
+        // launch build, 2026-09-02..04, still redeemable
+        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
+        ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0x38EAE2c04F65861cD17914100125826de2b735c7"], // SPY-MAR27
+        ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0x16daFbB03C4EF20967043185255532A8cadf79Ba"], // QQQ-MAR27
+        ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x0Fd9c2DCABf7780D051a519c654eb13Afec5a975"], // PFE-MAR28
+        ["0xd63ABB2C13d7a8421a8017a712802053568e3C1D", "0x3a6A3621C42A68fcA176AB907AB25896484EcCD8"], // SCHD-MAR27
+      ],
+    }
+  },
+  "antseed": {
+    "methodology": "TVL is the USDC deposited by buyers for inference payments plus the legacy USDC stake that remains locked by sellers during Antseed's staking migration. Protocol-owned funds and ANTS token staking are excluded.",
+    "base": {
+      "owners": [
+        "0x0F7a3a8f4Da01637d1202bb5443fcF7F88F99fD2", // AntseedDeposits: buyer prepaid credits
+        "0x3652E6B22919bd322A25723B94BB207602E5c8e6", // AntseedStaking: legacy seller stake
+      ],
+      "tokens": [
+        ADDRESSES.base.USDC
+      ]
+    }
+  },
+  "charity-billionaire": {
+    "methodology": "TVL is the CharityPrizeVault's aBasUSDC balance on Base — every USDC deposited by users, supplied to Aave v3 to earn interest. Deposits are never spent: only the interest is distributed each week (90% to one depositor drawn by Chainlink VRF, 5% to a rotating charity, 5% to operations), and depositors can withdraw their full principal at any time. Because the underlying position is supplied into Aave v3, this TVL is also counted by Aave and should be treated as double counted.",
+    "start": "2026-06-24",
+    "doublecounted": true,
+    "base": {
+      "owner": "0x3993bD557E0d4a1E5A8Ec09a005E7Eee3E032f70",
+      "tokens": [
+        "0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB"
+      ]
+    },
+  },
+  "arctide-launchpad": {
+    "methodology": "TVL is the USDC raised on Arctide bonding curves that have not graduated yet, held by the launch factory as Arc's native USDC until the sale reaches its goal and the raise is moved into its Arctide pool.",
+    "start": "2026-09-16",
+    "arc": {
+      "owner": "0xF7a20a20e18Fa7d4B6c68EE58dA16799382AbCe8", // ArctideLaunchFactory
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
+  "solon-stocks": {
+    "methodology": "TVL is the Robinhood Chain stock tokens (NVDA, AAPL, TSLA) held by the Solon ReserveVault, which backs the .sol stock tokens minted on Arc 1:1. The .sol tokens on Arc are not counted.",
+    "start": "2026-10-03",
+    "robinhood": {
+      "owner": "0x3504aA69ca9C5A5Bc3dA312a6c761e9633251cFc", // ReserveVault
+      "tokens": [
+        "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", // NVDA
+        "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", // AAPL
+        "0x322F0929c4625eD5bAd873c95208D54E1c003b2d", // TSLA
+      ]
+    },
+  },
+  "peddlequest": {
+    "methodology": "Reward pools that quest creators have deposited into the PeddlesQuestEscrow contract and that have not yet been claimed by winners or swept after the claim deadline. Counts the escrow's balance of the chain's gas token and of every allow-listed reward token. On Arc the gas token is USDC, so only the native balance is read.",
+    "start": "2026-10-02",
+    "base": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null, ADDRESSES.base.USDC]
+    },
+    "bsc": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC]
+    },
+    "robinhood": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null]
+    },
+    "arc": {
+      "owner": "0x16267bE6D067b3d411bf779B5aD041f9eba4CadE", // PeddlesQuestEscrow
+      "tokens": [ADDRESSES.null]
+    }
+  },
+  "zava": {
+    "methodology": "TVL is the AVAX held by the zAVA Mine contract.",
+    "avax": {
+      "owner": "0xB9D7517bC53D0F0F5e6E7C0030979Dd67de85128", // Mine
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
+  "nlyra-desk": {
+    "methodology": "TVL counts the ETH, WETH, USDG and USDe that users keep in the NLYRA Desk escrow contracts (grid, infinity, DCA, TWAP, martingale, ladder, copy-trading and sniper bots, the OTC desk and open Predict rounds). NLYRA held in the escrows is not counted. Staking counts the NLYRA held by Staking v1 and Real Yield Staking v2.",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0x9730274e9aB060eB2C9CC3417f85A323aeF7bB6C", // Ladder
+          "0x056A87cB9974f78fa4185BCe2e14807cBE357F8F", // Martingale v2
+          "0xad55Ab54B38F6eE5aB8408de627C0CE20aeF5Cef", // Martingale v1
+          "0xC0A3cE7e18FeE382432a18F750756E296D44dD4b", // Spot Grid v1
+          "0x994Cf0A4f0E876f52f3b76a2856D93924DA71511", // Spot Grid v3
+          "0xF8ef52605FBcc968B24b7FdBD7e93c752A659D5f", // Spot Grid v4
+          "0xdd13354cfE3E79a944d8F93476176F016f6311e4", // Spot Grid USDG
+          "0x5B8555f254AbD8c4B2a25ca6595Cc4025308584c", // Infinity Grid v1
+          "0x6C56f98FF2A3867B43aFf8Cad47EC2b6da81E1ab", // Infinity Grid v2
+          "0x177a8837c0444e18677b618624C2a853573d2D7D", // Infinity Grid v3
+          "0xBdC77e3D589D161489f7C986d8f654F30b88DDeb", // Infinity Grid v4
+          "0x551C66EF613c283FC439AE21DFa9C54c6f6b19a3", // Infinity Grid USDG
+          "0x07D52Ced2EA760187Fa83D5AA96A4B8174124a0d", // DCA v1
+          "0x630d58f9B8Cb55D8e246268F52596AFc3471fc1d", // DCA v2
+          "0xF8bE45D8da70745B9Df1CF17848dfcDD4b4C2309", // TWAP
+          "0xE26dd0A09Cd7bA2F7d0a31e4B625E983B0B1B3D2", // Shadow (copy trading)
+          "0x6B30B0946743eF8A2D323127c8CfaC9966b5C84c", // Sniper
+          "0x9656513aC910a9839B51dB7c92a6914ABB4F52e8", // OTC Desk
+          "0x688c265886776005eaF321c7121bF2D1b76676A1", // Predict
+        ],
+        "tokens": [ADDRESSES.null, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.USDe]
+      },
+      "staking": { "__staking": [["0x5e63228add4390f77BbcDb364F6A7b42bA7Aa3ef", "0x5CB0Cb16cA019bcff4E494b32575848E4CdB5aF8"], "0xb9d3824149ad8ac984153ceec91d5a2405d1fb95"] }
+    }
+  },
+  "baibai": {
+    "methodology": "TVL is the WETH and USDC held by the BaibaiCustodian contract, which custodies the maker liquidity that BaiBai quotes and settles swaps against.",
+    "start": "2026-09-05",
+    "base": {
+      "owner": "0xAaC48FEB93c5C97E0fb3c7C57E1633922A4ACDa3",
+      "tokens": [ADDRESSES.base.WETH, ADDRESSES.base.USDC]
+    }
+  },
+  "tacit": {
+    "methodology": "TVL is the ETH held by Tacit's shielded pools: the ETH wrapped into the ConfidentialPool on Ethereum, and the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain. Balances are read from the pool contracts.",
+    "start": "2026-09-17",
+    "ethereum": {
+      "owners": [
+        "0x000000000Ed1eabD231Be41d93b719056F7febFC",
+        "0x000000c2A20657CE25f2Ba99737933D031AFBEE9"
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "base": {
+      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "robinhood": {
+      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
   }
 }

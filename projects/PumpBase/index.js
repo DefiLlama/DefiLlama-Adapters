@@ -23,6 +23,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Counts ETH in bonding curves',
-  start: 1750043447,
+  start: '2025-06-16',
   base: { tvl }
 }

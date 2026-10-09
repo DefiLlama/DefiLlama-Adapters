@@ -108,6 +108,14 @@ const configs = {
     methodology: "Total SOL staked in the Phase Stake pool, read on chain from the stake pool account's totalLamports",
     solana: 'phasejkG1akKgqkLvfWzWY17evnH6mSWznnUspmpyeG',
   },
+  'japan-staked-sol': {
+    methodology: "Total SOL staked in the Japan Staked SOL (JapanSOL) stake pool, read on chain from the stake pool account's totalLamports",
+    solana: 'jHm8bwgfbaZgUv4mAGh29KthFGLTvoNF63oT5wpu4jk',
+  },
+  'raiku-staked-sol': {
+    methodology: "TVL is the total amount of SOL staked in the Raiku rkuSOL stake pool.",
+    solana: 'ERhozr6u9drmAANXGRNP1oh3quSqPKEwioKH5b8v9Kkt',
+  },
   // getStakedSol adapters
   'thevault': {
     solana: { type: 'staked', address: 'GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW' },
@@ -117,6 +125,14 @@ const configs = {
   },
   'blazestake': {
     solana: { type: 'staked', address: '6WecYymEARvjG5ZyqkrVQ6YkhPfujNzWpSPwNKXHCbV2' },
+  },
+  'forward-industries-sol': {
+    methodology: "TVL is the total amount of SOL staked in the Forward Industries fwdSOL stake pool.",
+    solana: '2iZHumJq19hyCYkD3xFoZ6dbiFbJ5nqbwALMdJBYQsJa',
+  },
+  'definity-staked-sol': {
+    methodology: "TVL is the total amount of SOL staked in the Definity definSOL stake pool.",
+    solana: 'Bvbu55B991evqqhLtKcyTZjzQ4EQzRUwtf9T4CcpMmPL',
   },
 }
 

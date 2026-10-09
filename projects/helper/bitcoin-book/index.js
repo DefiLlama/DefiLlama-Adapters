@@ -1,5 +1,4 @@
 const imports = [
-  ["wbtc", "./wbtc.js"],
   ["bitmex", "./bitmex.js"],
   ["kucoin", "./kucoin.js"],
   ["okex", "./okex.js"],
@@ -46,6 +45,8 @@ module.exports = {
   getBTCExport,
 
   hemiBTC: [
+    // Custody address from Hemi vault 0x58f7b8d7a7291AAEcE0febb39aa4e877387e61E4.
+    "1QDhzsteETKuw1M5kWHEjzaAmHSGhpH8zr",
     "16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo",
     "1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf",
     "bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj",
@@ -306,6 +307,11 @@ module.exports = {
     'bc1pyz7l3u2wdhvdwgej0n6myhp6wzrr0qa3982l7zq5v3k5f6fxgmyqg5vkxu'
   ],
   merlin: [
+    // Current reserve wallets and predecessor balances: https://merlinbitcoin.org/
+    "3EtJpUAgSgHgUYkTSG12tocDgYbc2TBHQ3", // Rotated from 3FYAoJau on 2026-09-16.
+    "1M1T6sUtZP4UdsnvMJvQA7BbTrV1Y5c1QR", // Rotated from 1DthDPh7 on 2026-09-16.
+    "3FYAoJauXw17sBn5BwqbS4kkzRGeXmbN6r",
+    "1DthDPh76r4vGbnJqTSyYGmFPoiXUpityn",
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
     "15zVuow5e9Zwj4nTrxSH3Rvupk32wiKEsr",
     "bc1q4gfsheqz7ll2wdgfwjh2l5hhr45ytc4ekgxaex",
@@ -441,6 +447,8 @@ module.exports = {
     "32qqF3w9W96S6br5x3cR75fgtFZwshjh4X",
     "3NnoMUQnURz29QLJcvQ5Xy6ztgJ4TYmqY3",
     "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
+    "3PSEjhkUQDGRNDPWqAcPhy9tEY6g6AHgPN", // add on 18/09/2026
+    "33FyMfJMRnqNvQiPDvE13L9cRHaEAXQziE", // add on 18/09/2026
   ],
   bitmake: [
     // wallet provide by a bitmake team
@@ -1131,7 +1139,10 @@ module.exports = {
     "14yyRRiEMJ5q5LmDCH4Nf6Emx7UKhoRfxR",
     "16pP3Pm2PEVZiMREQ6FJXieTWKE5ZMPfpU",
   ],
-  sodex: ["bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju"],
+  sodex: [
+    "bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju",
+    "bc1qj7nf62drtxgtssgslvyp6dyqrq7a3yfjj84zv4",
+  ],
   weex: [
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
     "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",

@@ -14,6 +14,24 @@ const almProxy = {
   xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
 }
 
+const almProxyFreezable = {
+  ethereum: '0xe5c6318456a7Cb6f74f93B4eee4616dB5fcef699',
+  base: '0x92d7B06e5844e67174AE9E86bdCb06428482DDF9',
+  arbitrum: '0x4eE67c8Db1BAa6ddE99d936C7D313B5d31e8fa38',
+  avax: '0x93c81ADc7F98FdBC8C7a15eCBeD312c8F6adbcB3',
+  robinhood: '0xAEa9f5dE56e6C20383a1fcC2C3629Dca0A92cE41',
+  xlayer: '0x9449ed367C60ea757544fd990B57e1C2D0Ec3A94',
+}
+
+const pauAlmProxies = {
+  ethereum: {
+    spusdc: '0x8D719A830b00e5571db00D173505CD56c0Ec224a'
+  },
+  xlayer: {
+    spusdc: '0xe6D5d041Fc5e7fDD0A53C13e78a1cc7e4ffCb667'
+  }
+}
+
 const mainnetAllocatorToTokens = {
   '0xAfA2DD8a0594B2B24B59de405Da9338C4Ce23437': [
     '0x4DEDf26112B3Ec8eC46e7E31EA5e123490B05B8B', // spDai
@@ -26,6 +44,7 @@ const mainnetAllocatorToTokens = {
     ADDRESSES.ethereum.USDe,
     ADDRESSES.ethereum.USDT,
     ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDG,
     '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
     '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // aEthUSDS
@@ -42,8 +61,12 @@ const mainnetAllocatorToTokens = {
     '0xb0c424116172B55CbB6dD3136F5989F7959e5B91', // morpho Spark Blue Chip USDT Vault v2
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
+    '0x8292bb45bf1ee4d140127049757c2e0ff06317ed', // rlUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
   ],
+  [pauAlmProxies.ethereum.spusdc]: [
+    ADDRESSES.ethereum.USDC,
+  ]
 }
 
 const baseAllocatorToTokens = {
@@ -84,6 +107,7 @@ const robinhoodAllocatorToTokens = {
 
 const xlayerAllocatorToTokens = {
   [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
+  [pauAlmProxies.xlayer.spusdc]: [ADDRESSES.xlayer.USDC]
 }
 
 const CONFIG = {
@@ -96,6 +120,12 @@ const CONFIG = {
   robinhood: robinhoodAllocatorToTokens,
   xlayer: xlayerAllocatorToTokens,
 }
+
+// each freezable proxy holds the same asset set as the ALM proxy it succeeds
+Object.entries(almProxyFreezable).forEach(([chain, freezable]) => {
+  const tokens = CONFIG[chain][almProxy[chain]]
+  if (tokens) CONFIG[chain][freezable] = tokens
+})
 
 async function tvl(api) {
   const tokenRecords = CONFIG[api.chain]
@@ -120,6 +150,8 @@ async function tvl(api) {
     api.addBalances(anchorageBalance)
   }
 }
+
+module.exports.methodology = 'Counts the assets held by the Spark Liquidity Layer allocators (ALM Proxy, freezable ALM Proxy and PSM3) on each chain. Sky-minted USDS, sUSDS and DAI are excluded, and their SparkLend and Morpho positions are counted only to the extent third parties have borrowed against them; other supplied assets such as PYUSD, USDT and USDC are counted in full. spWETH is excluded as it backs Spark Savings ETH, which is counted under spark-savings. The Anchorage custody allocation is sourced off-chain.'
 
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }

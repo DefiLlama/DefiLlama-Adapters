@@ -60,11 +60,12 @@ async function grvtVaultTvl(api) {
 function txBridgeExportFn(chainConfigs) {
   const result = {}
   Object.entries(chainConfigs).forEach(([chain, config]) => {
-    const { chainId, target, additionalBridges, extraTokens, extraTvl } = config
+    const { chainId, target, additionalBridges, extraTokens, extraTvl, blacklistedTokens = [] } = config
     result[chain] = {
       tvl: async (api) => {
         await txBridgeTvlV2(api, { chainId, target, additionalBridges, extraTokens })
         if (extraTvl) await extraTvl(api)
+        blacklistedTokens.forEach(token => api.removeTokenBalance(token))
         return api.getBalances()
       },
     }

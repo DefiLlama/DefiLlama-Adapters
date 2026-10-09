@@ -14,7 +14,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'counts the number of CYBER tokens staked in the stCYBER contract.',
-  start: 1718322729,
+  start: '2024-06-14',
   cyeth: {
     tvl,
   }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 // Spiral Stake opens leveraged positions on Morpho Blue in a single transaction: flash-borrow the
@@ -67,7 +68,7 @@ async function getPositions(api) {
   }))
 }
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 
 // Only the user's own margin is new value in the underlying Morpho market — the leveraged portion is
 // flash-borrowed and immediately repaid out of the Morpho borrow — so the debt is netted off here

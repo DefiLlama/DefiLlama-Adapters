@@ -27,6 +27,7 @@ module.exports = {
         '0xF98b660AdF2ed7d9d9D9dAACC2fb0CAce4F21835', // SIS
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
         '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+        '0x9287f86434412518b99e5Ab908e4AdDD9BaC6651', // QUAI
         // '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,  - counted at source - bitcoin
         // '0xaa036928c9c0Df07d525B55ea8EE690Bb5a628C1', // EVAA - excluded not user deposits
       ],
@@ -181,7 +182,7 @@ module.exports = {
         'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
       ],
       holders: [
-        'TVgY3ayqTGUoe7th84ZNL5peVfRNdLFDjf' // portal
+        'TNu3QZx8U2YAZTUsB3csii1L8QVgUAY3no' // portal
       ]
     },
     {
@@ -499,6 +500,15 @@ module.exports = {
       name: 'monad',
       tokens: [
         '0x754704Bc059F8C67012fEd69BC8A327a5aafb603', // USDC
+        '0xe7cd86e13AC4309349F30B3435a9d337750fC82D', // USDT0
+        '0x111111d2bf19e43C34263401e0CAd979eD1cdb61', // USD1
+        '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a', // AUSD
+        '0xEE8c0E9f1BFFb4Eb878d8f15f368A02a35481242', // WETH
+        '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', // WBTC
+        '0x10Aeaf63194db8d453d4D85a06E5eFE1dd0b5417', // wstETH
+        '0xaE4EFbc7736f963982aACb17EFA37fCBAb924cB3', // solvBTC
+        '0x01bFF41798a0BcF287b996046Ca68b395DbC1071', // xAUT0
+        '0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A', // WMON
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
@@ -541,6 +551,15 @@ module.exports = {
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
-    }
+    },
+    {
+      name: 'arc',
+      tokens: [
+        '0x3600000000000000000000000000000000000000', // USDC
+      ],
+      holders: [
+        '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal
+      ]
+    },
   ]
 }

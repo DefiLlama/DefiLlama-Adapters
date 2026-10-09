@@ -17,7 +17,7 @@ module.exports = {
         "0x259c0cf00f8710b473457314420114ae4c87cee5"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0x259c0cf00f8710b473457314420114ae4c87cee5"
       ],
       [
@@ -65,7 +65,7 @@ module.exports = {
         "0xa55568847c5c5be3b6c59c6e57e74677591d900d"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0xa55568847c5c5be3b6c59c6e57e74677591d900d"
       ],
       [
@@ -101,7 +101,7 @@ module.exports = {
         "0xab8ac08c597fb090b36eb514ba3f3a8b4a78aed1"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0xab8ac08c597fb090b36eb514ba3f3a8b4a78aed1"
       ],
       [
@@ -133,7 +133,7 @@ module.exports = {
         "0xead77cdfeb1fe4672704ba322d63a3d2bdca2025"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0xead77cdfeb1fe4672704ba322d63a3d2bdca2025"
       ],
       [
@@ -227,7 +227,7 @@ module.exports = {
         "0x28939911a862bd4e6b10e281f233a5e060114e0b"
       ],
       [
-        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+        ADDRESSES.bsc.CAKE,
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [
@@ -267,7 +267,7 @@ module.exports = {
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [
-        "0xe02df9e3e622debdd69fb838bb799e3f168902c5",
+        ADDRESSES.bsc.bake,
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [

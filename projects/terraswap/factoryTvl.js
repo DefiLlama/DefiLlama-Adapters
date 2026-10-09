@@ -16,13 +16,38 @@ function getAssetInfo(asset) {
   return [extractTokenInfo(asset), Number(asset.amount)]
 }
 
+const MAX_START_AFTER_LEN = 1500
+
+function assetInfoBytes(info) {
+  return info.native_token?.denom ?? info.token?.contract_addr ?? info.native ?? ''
+}
+
+// shortest string that sorts strictly after `str` (bump the first bumpable ascii char and cut there)
+function nextKeyAfter(str) {
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i)
+    if (code < 0x7e) return str.slice(0, i) + String.fromCharCode(code + 1)
+  }
+  return str + '~'
+}
+
+// spam pairs with multi-KB denoms make the LCD GET url exceed its limit (414) when used as start_after,
+// so replace them with a short synthetic bound that the factory orders right after the spam pair key.
+// the factory pair key is the byte-sorted concat of the asset infos, so bumping the smaller one is enough.
+function getStartAfter(pair) {
+  const infos = pair.asset_infos
+  if (JSON.stringify(infos).length <= MAX_START_AFTER_LEN) return infos
+  const smallest = infos.map(assetInfoBytes).sort((a, b) => Buffer.compare(Buffer.from(a), Buffer.from(b)))[0]
+  return [{ native_token: { denom: nextKeyAfter(smallest) } }]
+}
+
 async function getAllPairs(factory, chain, { blacklistedPairs = [], extraPairs = [] } = {}) {
   const blacklist = new Set(blacklistedPairs)
   let allPairs = []
   let currentPairs;
   const limit = factory === 'terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r' ? 29 : 30 // some weird native token issue at one of the pagination query
   do {
-    const queryStr = `{"pairs": { "limit": ${limit} ${allPairs.length ? `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}` : ""} }}`
+    const queryStr = `{"pairs": { "limit": ${limit} ${allPairs.length ? `,"start_after":${JSON.stringify(getStartAfter(allPairs[allPairs.length - 1]))}` : ""} }}`
     currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
     allPairs.push(...currentPairs.filter(pair => !blacklist.has(pair.contract_addr)))
   } while (currentPairs.length > 0)

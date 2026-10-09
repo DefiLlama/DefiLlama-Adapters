@@ -31,7 +31,7 @@ module.exports = {
   },
   "bulk-trade": {
     "timetravel": false,
-    "methodology": "Counts USDC deposited into the Bulk Trade Season 1 pre-deposits.",
+    "methodology": "Counts USDC held in BULK's Solana mainnet custody vault, which backs collateral deposited for trading and margin.",
     "solana": { "tokenAccounts": ["HwdwwKH1tMXo7ggTKcA5cdQrpcgqSoVib2eQh3BiyEQL"] }
   },
   "stakenova": {
@@ -548,6 +548,7 @@ module.exports = {
     }
   },
   "privcash": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         // KAVA: 100 / 1000 / 10000 / 100000 / 1000000
@@ -579,6 +580,7 @@ module.exports = {
     }
   },
   "mirrosset": {
+    deadFrom: '2026-09-30',
     "kava": {
       "tokensAndOwners": [
         ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0x587Abb291379Ea84AcE583aB07A13109b9B3F347"], // USDC @ InsurancePool
@@ -720,6 +722,11 @@ module.exports = {
     "methodology": "TVL is the USDC collateral held in Pascal's vault token account on Solana.",
     "solana": { "tokenAccounts": ["5vRGRcwN4iYaiQdso1vgWbTDFYbS8GQNUDRMMKE2ycZS"] }
   },
+  megapump: {
+    megaeth: { owner: '0xB6bC3988d62D2979b3ab7AABCcf3c9443f7dAbc4', // MegaPump, UUPS proxy: holds the ETH of every active bonding curve
+      token: ADDRESSES.null,      },
+      methodology: "Value of eth on the contract",
+  },
   "n1-exchange-bridge": {
     "methodology": "Counts the USDC held in the N1 Exchange bridge custody wallet on Solana.",
     "solana": {
@@ -729,13 +736,48 @@ module.exports = {
   },
   "satrush": {
     "timetravel": false,
-    "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault.",
-    "solana": { "tokenAccounts": ["2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9"] }
+    "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault. Staking counts RUSH received from mining held in the Rush Vault and RUSH staked in the SatRush staking program.",
+    "solana": {
+      "tvl": {
+        "tokenAccounts": [
+          "2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9", // Sats Vault cbBTC
+        ]
+      },
+      "staking": {
+        "tokenAccounts": [
+          "G9iBFqhbu3rPCtTEnHzZmn8UDqy3t5d7VLqbnU8faYdT", // Rush Vault RUSH
+          "7c3iepAJkw8MRF6Rm5LyxB1Vbkxgq4EAAkGy7LNQtFfV", // Staking treasury staked RUSH
+        ]
+      }
+    }
   },
   "tessera-v": {
     "methodology": "TVL is the value of SPL and Token-2022 balances held in Tessera V vaults controlled by its Solana authority account.",
     "solana": {
       "owner": "8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF"
+    }
+  },
+  "arcpad": {
+    // every launch opens a Uniswap V3 token/USDC pool (1% tier) and the LP NFT is locked forever in ArcFeeLocker
+    // https://arcpad.meme/docs#contracts
+    "methodology": "USDC held in the locked Uniswap V3 launch positions owned by the ArcPad fee locker",
+    "doublecounted": true, // already counted as uniswap v3 tvl
+    "start": "2026-09-03", // first launch position locked, block 19015290
+    "arc": {
+      "owners": ["0x69A615DD32B89fE40D87b2e3123baE4162f2d450"],
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.arc.USDC],
+    }
+  },
+  "popdex-bridge": {
+    "methodology": "TVL is the USDT held by the PopDEX cross-chain bridge contracts on Arbitrum and Morph",
+    "arbitrum": {
+      "owners": ["0x0B15D6cF5e843C88034f64664D7fE66E5F79C5f2"],
+      "tokens": [ADDRESSES.arbitrum.USDT]
+    },
+    "morph": {
+      "owners": ["0x71FB3a05d02B48d358E4DEB55D0D461Dcb7cF71d"],
+      "tokens": [ADDRESSES.morph.USDT0]
     }
   },
 }

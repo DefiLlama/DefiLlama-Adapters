@@ -1,50 +1,43 @@
-const {getConfig} = require("../helper/cache");
+const { getConfig } = require("../helper/cache");
 const { getTokenSupplies } = require("../helper/solana");
 
-async function tvl_ethereum(api) {
-  const vaults = await getConfig('nest-vaults', "https://api.nest.credit/v1/vaults");
+const minTvl = 10_000;
+const includedStatuses = ["active", "hidden"];
 
-  const ethereumVaults = (
-      vaults?.data
-          ?.filter(vault => vault.symbol !== "pUSD")
-          .filter(vault => vault.chain.mainnet)
-          .map(vault => vault.vaultAddress) ?? []
-  ).filter(Boolean);
+async function getIncludedVaults() {
+  const responses = await Promise.all(
+    includedStatuses.map(status =>
+      getConfig(
+        `nest-vaults-${status}`,
+        `https://api.nest.credit/v1/vaults/details?status=${status}`
+      )
+    )
+  );
 
-  const details = await api.multiCall({ abi: 'erc20:totalSupply', calls: ethereumVaults })
-  api.add(ethereumVaults, details)
+  return responses.flatMap(response => response?.data ?? [])
+    .filter(vault => vault.tvl > minTvl);
 }
 
-async function tvl_plume(api) {
-  const vaults = await getConfig('nest-vaults', "https://api.nest.credit/v1/vaults");
-
-  const plumeVaults = (
-      vaults?.data
-          ?.filter(vault => vault.symbol !== "pUSD")
-          ?.filter(vault => vault.chain.plume)
-          ?.map(vault => vault.vaultAddress) ?? []
-  ).filter(Boolean);
-
-  const details = await api.multiCall({ abi: 'erc20:totalSupply', calls: plumeVaults })
-  api.add(plumeVaults, details)
+function evmTvl(chain) {
+  return async function tvl(api) {
+    const vaults = await getIncludedVaults();
+    const addresses = vaults.filter(vault => vault.chain?.[chain]).map(vault => vault.vaultAddress);
+    const supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: addresses });
+    api.add(addresses, supplies);
+  }
 }
 
 async function tvl_solana(api) {
-    const vaults = await getConfig('nest-vaults', "https://api.nest.credit/v1/vaults");
-
-    const solanaVaults = (
-      vaults?.data
-          ?.filter(vault => vault.symbol !== "pUSD")
-          ?.filter(vault => vault.solana?.mintAddress)
-          ?.map(vault => vault.solana.mintAddress) ?? []
-    ).filter(Boolean);
-
-    await getTokenSupplies(solanaVaults, { api });
+  const vaults = await getIncludedVaults();
+  const mints = vaults.filter(vault => vault.solana?.mintAddress).map(vault => vault.solana.mintAddress);
+  await getTokenSupplies(mints, { api });
 }
 
 module.exports = {
-    methodology: "TVL is calculated from the value of Nest tokens, which represent user shares in vaults backed by yield-generating assets.",
-    ethereum: { tvl: tvl_ethereum },
-    plume_mainnet: { tvl: tvl_plume },
-    solana: { tvl: tvl_solana },
+  methodology: "TVL is calculated from the value of Nest tokens, which represent user shares in vaults backed by yield-generating assets.",
+  ethereum: { tvl: evmTvl("mainnet") },
+  plume_mainnet: { tvl: evmTvl("plume") },
+  bsc: { tvl: evmTvl("bsc") },
+  avax: { tvl: evmTvl("avalanche") },
+  solana: { tvl: tvl_solana },
 }

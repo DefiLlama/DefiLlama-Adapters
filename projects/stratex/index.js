@@ -59,5 +59,5 @@ module.exports = {
     tvl: createTvl(VAULTS_FLARE),
   },
   methodology: "Stratex TVL is calculated by calling totalAssets() on each ERC4626 vault, which returns the total amount of underlying assets including both idle funds and capital deployed in DeFi strategies (QuickSwap V4, Compound V3, and AAVE V3).",
-  start: 1752060572,
+  start: '2025-07-09',
 };

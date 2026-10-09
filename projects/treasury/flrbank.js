@@ -17,7 +17,7 @@ module.exports = {
            ENOSYS_LP, // ENOSYS V2 LP (BANK/WFLR)
            '0xAd552A648C74D49E10027AB8a618A3ad4901c5bE', // FXRP
            '0x4C18Ff3C89632c3Dd62E796c0aFA5c07c4c1B2b3', // stXRP
-           '0x12e605bc104e93b45e1ad99f9e555f659051c2bb', // sFLR
+           ADDRESSES.flare.sFLR, // sFLR
            '0x6Cd3a5Ba46FA254D4d2E3C2B37350ae337E94a0F', // CDP
           ],
         resolveLP: true,

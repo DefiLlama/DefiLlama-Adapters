@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const vaults_bsc = [
   {
     "stakingToken": {
       "symbol": "CAKE",
-      "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+      "address": ADDRESSES.bsc.CAKE,
     },
     "contractAddress": "0xCd59d44E94Dec10Bb666f50f98cD0B1593dC3a3A",
     "masterchef": "0x73feaa1eE314F8c655E354234017bE2193C9E24E",
@@ -10,7 +11,7 @@ const vaults_bsc = [
   {
     "stakingToken": {
       "symbol": "BAKE",
-      "address": "0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5",
+      "address": ADDRESSES.bsc.bake,
     },
     "contractAddress": "0xBB7ac3eB02c6d012cc8e2d916678De8843Eb8A56",
     "masterchef": "0x20eC291bB8459b6145317E7126532CE7EcE5056f",
@@ -26,7 +27,7 @@ const vaults_bsc = [
   {
     "stakingToken": {
       "symbol": "BAKE",
-      "address": "0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5",
+      "address": ADDRESSES.bsc.bake,
     },
     "contractAddress": "0x6dAc44A858Cb51e0d4d663A6589D2535A746607A",
     "masterchef": "0x6a8DbBfbB5a57d07D14E63E757FB80B4a7494f81",
@@ -44,7 +45,7 @@ const choco_pools_bsc = [
   {
     "stakingToken": {
       "symbol": "CAKE",
-      "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+      "address": ADDRESSES.bsc.CAKE,
     },
     "contractAddress": "0xCded81aa5Ab3A433CadF77Fd5aC8B6fD973906e1",
     "isCLP": true,
@@ -165,14 +166,14 @@ const choco_pools_bsc = [
   {
     "stakingToken": {
       "symbol": "BSW",
-      "address": "0x965F527D9159dCe6288a2219DB51fc6Eef120dD1",
+      "address": ADDRESSES.bsc.BSW,
     },
     "contractAddress": "0x2a1Bf8e04633e397207d63F234d281fEf781B6F5",
   },
   {
     "stakingToken": {
       "symbol": "CAKE",
-      "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+      "address": ADDRESSES.bsc.CAKE,
     },
     "contractAddress": "0x7C454456fc9E86EA1cF1e524FF8B8EbA613189E5",
   }
@@ -189,7 +190,7 @@ const choco_pools_polygon = [
   {
     "stakingToken": {
       "symbol": "QUICK",
-      "address": "0x831753dd7087cac61ab5644b308642cc1c33dc13",
+      "address": ADDRESSES.polygon.QUICK_2,
     },
     "contractAddress": "0xDeC7950840a32010410dcfFDC735911151604Ba5",
     "isCLP": true,
@@ -198,7 +199,7 @@ const choco_pools_polygon = [
   {
     "stakingToken": {
       "symbol": "QUICK",
-      "address": "0x831753dd7087cac61ab5644b308642cc1c33dc13",
+      "address": ADDRESSES.polygon.QUICK_2,
     },
     "contractAddress": "0x4b68bA327Cad4d8C4d0Bc783d686d08CFAa5C5D3",
     "isCLP": true,

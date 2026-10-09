@@ -11,6 +11,7 @@ async function staking(api) {
 }
 
 module.exports = {
+  deadFrom: '2026-09-30',
   methodology: 'TVL counts staked FUNB coins on the platform itself.',
   kava: {
     tvl: () => 0,

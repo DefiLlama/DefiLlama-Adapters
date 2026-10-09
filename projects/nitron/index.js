@@ -1,8 +1,9 @@
 const { get } = require("../helper/http")
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
+const { getCarbonTokenInfo } = require('../helper/chain/carbon')
 
-async function getTotalSupplied() { 
+async function getTotalSupplied() {
   const modAddress = 'swth1wq9ts6l7atfn45ryxrtg4a2gwegsh3xh7w83xl'
   const debtInfos = (await get('https://api.carbon.network/carbon/cdp/v1/token_debt')).debt_infos_all
   const modBalances = (await get(`https://api.carbon.network/carbon/coin/v1/balances/${modAddress}`)).token_balances
@@ -16,30 +17,10 @@ async function getTotalSupplied() {
   return allAssets
 }
 
-async function getTokenInfo() {
-  const { result: { gecko } } = await get('https://api-insights.carbon.network/info/denom_gecko_map')
-  const tokenMap = {}
-  let skip = 0
-  let data
-  const size = 100
-  const url = () => `https://api.carbon.network/carbon/coin/v1/tokens?pagination.limit=${size}&pagination.offset=${skip}`
-  do {
-    data = await get(url())
-    skip += size
-    for (const token of data.tokens) {
-      const denom = token.denom
-      if (!gecko[denom]) continue;
-      token.geckoId = gecko[token.denom]
-      tokenMap[denom] = token
-    }
-  } while (data.tokens.length)
-  return tokenMap
-}
-
 async function tvl() {
   const balances = {}
   const [tokenData, assets] = await Promise.all([
-    getTokenInfo(),
+    getCarbonTokenInfo(),
     getTotalSupplied()
   ])
 

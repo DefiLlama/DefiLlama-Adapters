@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require("../helper/cache");
 const { getUniqueAddresses } = require('../helper/utils')
 const { sumTokens2 } = require("../helper/unwrapLPs");
@@ -22,7 +23,7 @@ const DUET = '0x95EE03e1e2C5c4877f9A298F1C0D6c98698FAB7B'
 async function getEBCakeTvl(api) {
   const EBCAKE_READER_CONTRACT = "0x243F8da5893E534CBd25220b6E277420dd9dE77B";
   const ret = await api.call({ abi: abis.extendableBondGroupInfo, target: EBCAKE_READER_CONTRACT, params: ["yearly"] });
-  api.add('0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', ret.allEbStacked)
+  api.add(ADDRESSES.bsc.CAKE, ret.allEbStacked)
 }
 
 const bscTvl = async (api) => {

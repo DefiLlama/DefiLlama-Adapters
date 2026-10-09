@@ -27,7 +27,13 @@ async function getMarkets (lower_bound) {
 }
 
 async function getTokenPrices () {
-  return get("https://api.protonchain.com/v1/chain/tokens") 
+  // /v1/chain/tokens is gone - map exchange-rates/info to the old shape
+  const rates = await get("https://api.protonchain.com/v1/chain/exchange-rates/info")
+  return rates.map(({ contract, symbol, rates }) => ({
+    account: contract,
+    symbol,
+    price: { usd: rates?.find((r) => r.counterCurrency === 'USD')?.price ?? 0 },
+  }))
 }
 
 async function marketsWithPrices () {  

@@ -22,8 +22,8 @@ async function getPermissionlessPsms(api) {
   const usmList = await api.call({ target: usmRegistry, abi: "address[]:getUsmList" });
   if (!usmList.length) return [];
 
-  const accessModes = await api.multiCall({ calls: usmList, abi: "uint8:getAccessMode" });
-  return usmList.filter((_, i) => Number(accessModes[i]) === 0);
+  const accessModes = await api.multiCall({ calls: usmList, abi: "uint8:getAccessMode", permitFailure: true });
+  return usmList.filter((_, i) => accessModes[i] !== null && Number(accessModes[i]) === 0);
 }
 
 async function tvl(api) {

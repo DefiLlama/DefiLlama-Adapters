@@ -1,22 +1,14 @@
 /** I created this file to get around circular dependency issues */
 
-const { getEnv } = require("./env")
+require("./env") // seeds process.env with the adapter defaults before the sdk reads <CHAIN>_RPC
+const { chains } = require('@defillama/sdk')
 
-const endpoint = (isClient) => {
-  if (isClient) return getEnv('SOLANA_RPC_CLIENT') ?? getEnv('SOLANA_RPC')
-  return getEnv('SOLANA_RPC')
-}
+const endpoint = (isClient) => chains.svm.getEndpoint({ chain: 'solana', isClient: !!isClient })
 
-const endpointMap = {
-  solana: endpoint,
-  renec: () => getEnv('RENEC_RPC'),
-  eclipse: () => getEnv('ECLIPSE_RPC'),
-  soon: () => getEnv('SOON_RPC'),
-  soon_base: () => getEnv('SOON_BASE_RPC'),
-  soon_bsc: () => getEnv('SOON_BSC_RPC'),
-  fogo: () => getEnv('FOGO_RPC'),
-  cookiechain: () => getEnv('COOKIECHAIN_RPC'),
-}
+const endpointMap = {}
+chains.svm.svmChains.forEach(chain => {
+  endpointMap[chain] = (isClient) => chains.svm.getEndpoint({ chain, isClient: !!isClient })
+})
 const svmChains = Object.keys(endpointMap)
 
 module.exports = {

@@ -31,57 +31,9 @@ async function staking() {
 async function adaTvl() {
     let totalAda = 0
 
-    // fetch the prices of each traded token first
-    const adaPrices = new Map(Object.entries((await fetchURL("https://api.muesliswap.com/defillama/prices")).data))
-
-   /*  // then first accumulate over the legacy orderbook
-    const orderbookV1 = (await fetchURL("https://orders.muesliswap.com/all-orderbooks")).data
-    const vOrderbookV1 = orderbookV1.map(ob => {
-        if (ob.fromToken === ".") {
-            const totalBuy = ob.buy.map(o => parseFloat(o.totalPrice)).reduce((p, c) => p + c, 0)
-            const totalSell = ob.sell.map(o => parseFloat(o.amount)).reduce((p, c) => p + c, 0)
-            // Find the price (we need to convert the tokenname to hex first for this)
-            const policyId = ob.toToken.split('.')[0]
-            const name = Buffer.from(ob.toToken.split('.', 2)[1]).toString('hex').toLowerCase()
-            const price = (adaPrices.get(policyId + '.' + name)?.bidPrice ?? 0) / 1e6
-            return (totalBuy + totalSell * price)
-        } else {
-            const totalBuy = ob.buy.map(o => parseFloat(o.totalPrice)).reduce((p, c) => p + c, 0)
-            const totalSell = ob.sell.map(o => parseFloat(o.amount)).reduce((p, c) => p + c, 0)
-            // Find the price (we need to convert the tokenname to hex first for this)
-            const fromPolicyId = ob.fromToken.split('.')[0]
-            const fromName = Buffer.from(ob.fromToken.split('.', 2)[1]).toString('hex').toLowerCase()
-            const fromPrice = (adaPrices.get(fromPolicyId + '.' + fromName)?.bidPrice ?? 0) / 1e6
-            const toPolicyId = ob.toToken.split('.')[0]
-            const toName = Buffer.from(ob.toToken.split('.', 2)[1]).toString('hex').toLowerCase()
-            const toPrice = (adaPrices.get(toPolicyId + '.' + toName)?.bidPrice ?? 0) / 1e6
-            return (totalBuy * fromPrice + totalSell * toPrice)
-        }
-    })
-    totalAda += vOrderbookV1.reduce((p, c) => p + c, 0) */
-
-    // then accumulate over the orderbooks
-    const orderbookV2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
-    const vOrderbookV2 = orderbookV2
-        .map(ob => {
-            if (ob.fromToken === ".") {
-                const totalBuy = ob.orders
-                    .filter(o => !o.providers.includes("muesliswapAMM"))
-                    .map(o => parseInt(o.fromAmount)).reduce((p, c) => p + c, 0)
-                return totalBuy
-            } else {
-                const price = adaPrices.get(ob.fromToken)?.bidPrice ?? 0
-                const totalAmountOtherToken = ob.orders
-                    .filter(o => !o.providers.includes("muesliswapAMM"))
-                    .map(o => parseInt(o.fromAmount)).reduce((p, c) => p + c, 0)
-                const totalSell = totalAmountOtherToken * price
-                return totalSell
-            }
-        })
-    totalAda += vOrderbookV2.reduce((p, c) => p + c, 0) / 1e6
-
-    // and add pool TVLs
-    const pools = (await fetchURL("https://api.muesliswap.com/liquidity/pools?providers=muesliswap,muesliswap_clp,muesliswap_v2&only-verified=n")).data
+    // old api.muesliswap.com / onchain.muesliswap.com hosts are gone and api-v2 has no all-orderbooks/prices
+    // equivalent, so open orders can no longer be valued; only AMM pools are counted
+    const pools = (await fetchURL("https://api-v2.muesliswap.com/liquidity/pools?providers=muesliswap-v1,muesliswap-v2,muesliswap-clp&only-verified=n")).data
     const vPools = pools.map(p => {
         const amountA = parseInt(p.tokenA.amount) * parseFloat(p.tokenA.priceAda)
         const amountB = parseInt(p.tokenB.amount) * parseFloat(p.tokenB.priceAda)
@@ -97,7 +49,7 @@ async function adaTvl() {
 module.exports = {
     misrepresentedTokens: true,
     timetravel: false,
-    methodology: "The factory addresses are used to find the LP pairs on Smart BCH and Milkomeda. For Cardano we calculate the tokens on resting orders on the order book contracts. TVL is equal to the liquidity on the AMM plus the open orders in the order book",
+    methodology: "The factory addresses are used to find the LP pairs on Smart BCH and Milkomeda. For Cardano TVL is equal to the liquidity on the MuesliSwap AMM pools",
     cardano: {
         tvl: adaTvl,
         // staking

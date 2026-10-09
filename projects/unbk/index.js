@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const fyields = [
     {
-      yieldBearingAsset: "0x82f0b8b456c1a451378467398982d4834b6829c1", //MIM
+      yieldBearingAsset: ADDRESSES.fantom.MIM, //MIM
       yieldProxy: "0xf730167FC2aF7a02db63d3e8CE54179A70Ea72b7",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
@@ -62,7 +62,7 @@ const fyields = [
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE", //BOO
+      yieldBearingAsset: ADDRESSES.fantom.BOO, //BOO
       yieldProxy: "0xfd2Dc038796318A661c97285d94298BFF6EA2F5A",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },

@@ -6,6 +6,22 @@ const sdk = require('@defillama/sdk')
 
 const abi = { getQualifiedUserInfo: 'function getQualifiedUserInfo(address _user) view returns ((bool locked, string depositAddress, string withdrawalAddress) info)' }
 
+const bs58 = require('bs58').default || require('bs58')
+const crypto = require('crypto')
+const sha256 = b => crypto.createHash('sha256').update(b).digest()
+
+function isValidBitcoinAddress(addr) {
+  if (typeof addr !== 'string') return false
+  if (/^bc1[02-9ac-hj-np-z]{6,87}$/.test(addr)) return true
+  try {
+    const decoded = Buffer.from(bs58.decode(addr))
+    if (decoded.length !== 25) return false
+    return sha256(sha256(decoded.subarray(0, 21))).subarray(0, 4).equals(decoded.subarray(21))
+  } catch (e) {
+    return false
+  }
+}
+
 module.exports = {
   btcfi_cdp: async () => {
     const target = "0x0000000000000000000000000000000000000100";
@@ -52,6 +68,28 @@ module.exports = {
     const userInfos = await api.multiCall({ abi: abi.getQualifiedUserInfo, target: '0xbee335BB44e75C4794a0b9B54E8027b111395943', calls: users })
     userInfos.forEach(i => staticAddresses.push(i.depositAddress))
     return Array.from(new Set(staticAddresses))
+  },
+
+  wbtc: async () => {
+    const owners = await getConfig('wbtc/custody-addresses', undefined, {
+      fetcher: async () => {
+        const { data: { natives } } = await get('https://openapi.wbtc.network/public/v1/chains')
+        const addresses = new Set()
+        for (const { chainKey } of natives) {
+          try {
+            const { result } = await get(`https://wbtc.network/api/chain/${chainKey}/token/wbtc/addresses`)
+            result.filter(i => i.chain === 'btc' && i.type === 'custodial' && isValidBitcoinAddress(i.address))
+              .forEach(i => addresses.add(i.address))
+          } catch (e) {
+            sdk.log('wbtc: skipping chain', chainKey, e.message)
+          }
+        }
+        if (!addresses.size) throw new Error('wbtc: feed returned no custody addresses')
+        return [...addresses]
+      }
+    })
+    if (!owners.length) throw new Error('wbtc: no custody addresses available')
+    return owners
   },
 
   b14g: async () => {
@@ -378,5 +416,25 @@ module.exports = {
       'https://www.coinbase.com/cbltc/proof-of-reserves.json'
     )
     return reserveAddresses.map(r => r.address).filter(Boolean)
+  },
+  bitsafeCBTC: async () => {
+    // BitSafe publishes the CBTC (Canton) reserve addresses through its public API. Balances are NOT read
+    // from that API: the addresses are only enumerated here and their BTC is read from the Bitcoin chain.
+    const API_URL = 'https://api.mainnet.bitsafe.finance/cbtc/v1/address-calculation-data'
+    const owners = await getConfig('bitsafe/cbtc-reserve-addresses', undefined, {
+      fetcher: async () => {
+        const data = await get(API_URL)
+        if (data?.status !== 'ready' || data.bitcoin_network !== 'bitcoin')
+          throw new Error('bitsafe cbtc: address feed is not ready for bitcoin mainnet')
+        const chain = (data.chains ?? []).find(c => c.chain === 'canton-mainnet')
+        const addresses = (chain?.addresses ?? []).map(a => a.address_for_verification)
+        if (!addresses.length) throw new Error('bitsafe cbtc: feed returned no reserve addresses')
+        // a partial reserve list would understate TVL, so one bad entry fails the whole fetch
+        if (!addresses.every(isValidBitcoinAddress)) throw new Error('bitsafe cbtc: feed returned an invalid bitcoin address')
+        return [...new Set(addresses)]
+      }
+    })
+    if (!Array.isArray(owners) || !owners.length) throw new Error('bitsafe cbtc: no reserve addresses available')
+    return owners
   },
 }

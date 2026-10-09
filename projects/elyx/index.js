@@ -1,19 +1,16 @@
-const DHEDGE_V2_VAULT_SUMMARY_ABI =
-  "function getFundSummary() view returns (tuple(string name, uint256 totalSupply, uint256 totalFundValue))";
+const VAULT = "0x39F39D48cF4C89D591Fc890f0fF531B0B67c31BC"; // dHEDGE PoolLogic
 
+// getFundSummary() reverts with "Price get failed" (the vault's price oracle is down), so the
+// vault's supported assets are read from its PoolManagerLogic and their balances summed directly
 const tvl = async (api) => {
-  const target = "0x39F39D48cF4C89D591Fc890f0fF531B0B67c31BC";
-  const summary = await api.call({ abi: DHEDGE_V2_VAULT_SUMMARY_ABI, target, })
-  const totalValueLocked = summary?.totalFundValue ?? 0;
-  return {
-    tether: totalValueLocked / 1e18,
-  };
+  const managerLogic = await api.call({ abi: 'address:poolManagerLogic', target: VAULT })
+  const assets = await api.call({ abi: 'function getSupportedAssets() view returns (tuple(address asset, bool isDeposit)[])', target: managerLogic })
+  return api.sumTokens({ owner: VAULT, tokens: assets.map(i => i.asset) })
 };
 
 module.exports = {
   nibiru: {
     tvl,
   },
-  misrepresentedTokens: true,
   methodology: "Aggregates total value of Elyx' Nibiru vault (based on dHEDGE)",
 };

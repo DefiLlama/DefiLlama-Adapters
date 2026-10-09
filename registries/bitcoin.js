@@ -36,6 +36,10 @@ const configs = {
     bitcoin: 'bitgetBtc',
     methodology: "bgBTC, BitGet Wrapped Bitcoin",
   },
+  "bitsafe-cbtc": {
+    bitcoin: 'bitsafeCBTC',
+    methodology: "TVL is the BTC held in the CBTC reserve addresses that BitSafe publishes through its public address API, read from the Bitcoin blockchain at run time. CBTC is BitSafe's Bitcoin-backed token on the Canton Network.",
+  },
   "btnx": {
     bitcoin: 'btnx',
     timetravel: false,

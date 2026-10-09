@@ -174,9 +174,6 @@ module.exports = {
     "The TVL is calculated as a difference between supplied and borrowed assets.",
   starknet: {
     tvl,
-    borrowed,
+    borrowed: () => ({}), // hacked
   },
-  hallmarks: [
-    ['2023-10-18', "Nostra Money Market launch"]
-  ]
 };

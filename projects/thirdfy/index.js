@@ -103,6 +103,6 @@ async function getIchiVaultsData() {
 
 module.exports = {
   methodology: "TVL: Total value of all coins held in the smart contracts of the protocol",
-  start: 1752451200,
+  start: '2025-07-14',
   [BASE_CHAIN]: { tvl },
 };

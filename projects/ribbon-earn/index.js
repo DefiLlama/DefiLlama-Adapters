@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk")
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 // Ribbon Earn vaults
@@ -11,18 +10,9 @@ const tokensAndOwners = [
   [ADDRESSES.ethereum.STETH, rearnstETH],
 ]
 
-async function borrowed(api) {
-  const cloneApi = new sdk.ChainApi({ block: api.block, chain: api.chain });
-  await cloneApi.sumTokens({ tokensAndOwners })
-  const bals = await api.multiCall({ abi: 'uint256:totalBalance', calls: tokensAndOwners.map(i => i[1]) })
-  const tokens = tokensAndOwners.map(i => i[0])
-  api.add(tokens, bals)
-  api.getBalancesV2().subtract(cloneApi.getBalances())
-}
-
 module.exports = {
   ethereum: {
     tvl: sumTokensExport({ tokensAndOwners }),
-    borrowed,
+    borrowed: () => ({}),
   },
 }

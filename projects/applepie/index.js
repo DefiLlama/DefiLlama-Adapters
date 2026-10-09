@@ -10,7 +10,7 @@ module.exports = {
     tvl: sumTokensExport({
       tokensAndOwners: [
         [ADDRESSES.null, '0xBc4719D9F347EB1d9551d71862d2Cb4db99916f9'],
-        ['0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', '0x4356c2d63e9376024e7E953e18cfC7125e643eE5'],
+        [ADDRESSES.bsc.CAKE, '0x4356c2d63e9376024e7E953e18cfC7125e643eE5'],
         [ADDRESSES.bsc.USDT, '0x6E8e3F4C058C5e0422E971CE27B0fc91175F4018'],
       ]
     }),

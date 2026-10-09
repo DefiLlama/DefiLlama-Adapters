@@ -64,7 +64,7 @@ Object.keys(config).forEach(chain => {
         params: [factory]
       });
       let tokens = a.concat(b).map(g => g.poolData.listedTokens).flat().map(i => '0x' + i.slice(2 + 24))
-      return sumTokens2({ owner: vault, tokens, api, blacklistedTokens, })
+      return sumTokens2({ owner: vault, tokens, api, blacklistedTokens, permitFailure: true })
     }
   }
 })

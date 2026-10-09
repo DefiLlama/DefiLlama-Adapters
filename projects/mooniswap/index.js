@@ -12,7 +12,7 @@ const ethTvl = async (api) => {
   const pools = await api.call({ abi: abi.getAllPools, target: factoryContract, })
   const res = await api.multiCall({ abi: abi.getTokens, calls: pools, })
   const ownerTokens = res.map((r, i) => [r, pools[i]])
-  return sumTokens2({ ownerTokens, api })
+  return sumTokens2({ ownerTokens, api, permitFailure: true }) // paused tokens (BTC++ etc.) revert balanceOf
 };
 
 module.exports = {

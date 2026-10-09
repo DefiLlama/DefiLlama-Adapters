@@ -40,6 +40,7 @@ const getMinerAssets = (agents) => {
 };
 
 module.exports = {
+  hallmarks: [['2026-08-23', 'Project sunset']],
   filecoin: {
     tvl: async (api) => {
       const [tvlComponents, activeAgents] = await Promise.all([

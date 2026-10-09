@@ -6,5 +6,6 @@ const contract = "0x638B06F80FB28F109E65C9d5cC585aDf9A0c3f9f"
 const usdcToken = "0xfa9343c3897324496a05fc75abed6bac29f8a40f"
 
 module.exports = {
+  deadFrom: '2026-09-30',
     kava: { tvl: sumTokensExport({ owner: contract, tokens: [usdcToken]}) },
 }

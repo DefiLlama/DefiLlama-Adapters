@@ -175,5 +175,5 @@ module.exports = {
     tvl: sumTokensExport({ owners: [SONIC_VAULT], tokens: [ADDRESSES.sonic.LBTC] }),
   },
 
-  methodology: 'TVL = assets in vaults + positions in DeFi protocols.',
+  methodology: 'Bitcoin Earn distributes exposure across a set of isolated sub-vaults run by independent managers, each with its own strategy and risk profile. TVL = assets in vaults + positions in DeFi protocols.',
 }

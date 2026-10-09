@@ -7,7 +7,7 @@ const hexal = "0x57612d60b415ad812da9a7cf5672084796a4ab81";
 const treasuryTokens = [
     [ADDRESSES.bsc.BUSD, false],
     [ADDRESSES.bsc.USDC, false],
-    ["0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", false],
+    [ADDRESSES.bsc.CAKE, false],
     [ADDRESSES.bsc.DAI, false],
     [ADDRESSES.bsc.USDT, false],
     [ADDRESSES.bsc.WBNB, false],

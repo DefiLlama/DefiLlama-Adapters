@@ -25,7 +25,7 @@ async function baseTvl(api) {
 
 module.exports = {
   methodology: 'TVL is calculated as the sum of all tokens (USDT on BSC, USDC on Base) held in the main protocol betting contracts. Only active market pots are included - settled markets with paid out funds are excluded from TVL.',
-  start: 1712016000, // April 1, 2024 timestamp
+  start: '2024-04-02', // April 1, 2024 timestamp
   bsc: {
     tvl: bscTvl,
   },

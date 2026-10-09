@@ -1,6 +1,6 @@
-const {getExports} = require('../helper/heroku-api')
+const { lending } = require('../helper/acala/lending')
 
 module.exports = {
-    timetravel: false,
-    ...getExports("karura-lending", ['karura'])
+  timetravel: false,
+  karura: { tvl: () => lending('karura') },
 }

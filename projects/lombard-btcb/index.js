@@ -26,6 +26,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  methodology: 'BTC.b is a 1:1 representation of Bitcoin, redeemable for native BTC. TVL counts the native BTC in Lombard and Avalanche BTC.b deposit addresses, minus the LBTC staking vault base balance reported by the Lombard ledger, since that portion is counted by the lombard adapter.',
   doublecounted: true,
   timetravel: false,
   isHeavyProtocol: true,

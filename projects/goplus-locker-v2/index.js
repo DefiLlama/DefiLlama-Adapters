@@ -46,14 +46,7 @@ async function tvl(api) {
   for (const { address: contract } of contracts) {
     const lockInfos = await api.fetchList({ lengthAbi: abi.nextLockId, itemAbi: abi.locks, target: contract })
     const tokens = lockInfos.filter(i => i.isLpToken).map(i => i.token)
-    const balance = await vestingHelper({
-      cache: {},
-      useDefaultCoreAssets: true,
-      owner: contract,
-      tokens: [...new Set(tokens)],
-      block: api.block, chain: api.chain,
-    })
-    api.addBalances(balance)
+    await vestingHelper({ api, useDefaultCoreAssets: true, owner: contract, tokens: [...new Set(tokens)], })
   }
 }
 

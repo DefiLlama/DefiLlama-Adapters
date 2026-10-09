@@ -1,5 +1,5 @@
 /**
- * Endur is a liquid staking solution for STRK
+ * Endur is a liquid staking solution for STRK and BTC assets
  */
 
 const ADDRESSES = require('../helper/coreAssets.json');
@@ -56,11 +56,15 @@ const tBTC = ADDRESSES.starknet.tBTC
 const LBTC = "0x036834a40984312f7f7de8d31e3f6305b325389eaeea5b1c0664b2fb936461a4"
 const solvBTC = "0x0593e034dda23eea82d2ba9a30960ed42cf4a01502cc2351dc9b9881f9931a68"
 
-// todo: change BTC variant addresses when defillama support kicks in
 const LSTDATA = [
-    { //data of an LST contract; currently only xSTRK
+    {
         address: "0x28d709c875c0ceac3dce7065bec5328186dc89fe254527084d1689910954b0a", // address of xSTRK vault contract
         token: ADDRESSES.starknet.STRK
+    },
+    {
+        // strkBTC
+        address: "0x047751b3532fabca89b0f2e35ca1cb45e5a7b11d5e3d3663dfa1f4406b45fd88",
+        token: ADDRESSES.starknet.STRKBTC
     },
     {
         address: "0x6a567e68c805323525fe1649adb80b03cddf92c23d2629a6779f54192dffc13",
@@ -91,14 +95,14 @@ async function tvl(api) {
     });
     // the balance of the tokens will be xTOKEN 
     // considering all 1 TOKEN = 1xTOKEN
-    // eg for now we have xSTRK, xtBTC, xLBTC, xsolvBTC
+    // e.g. xSTRK, xstrkBTC, xWBTC, xtBTC, xLBTC and xsBTC
 
     api.addTokens(LSTDATA.map(c => c.token), totalAssets);
 }
 
 module.exports = {
     doublecounted: true,
-    methodology: "The TVL is the total staked STRK managed by Endur's LST",
+    methodology: "The TVL is the total value of all underlying STRK and BTC assets managed by Endur's LST vaults.",
     starknet: {
         tvl,
     },

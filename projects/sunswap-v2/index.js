@@ -1,3 +1,3 @@
-const {getExports} = require('../helper/heroku-api')
+const indexExports = require('./api')
 
-module.exports = getExports("sunswap-v2", ['tron'])
+module.exports = indexExports

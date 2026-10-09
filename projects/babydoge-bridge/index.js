@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/chain/ton");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { sumTokens2 } = require("../helper/solana");
 
-const BSC_TOKEN = "0xc748673057861a797275CD8A068AbB95A902e8de"; // BabyDoge
+const BSC_TOKEN = ADDRESSES.bsc.babydoge; // BabyDoge
 
 const BSC_BASE_BRIDGE = "0x9F0d4f965F8d7503046093F1BdA6052eFE6948b8";
 const BSC_TON_BRIDGE = "0x1d09d3458Cc150016F0Fd7B079aF41E17Ce65909";

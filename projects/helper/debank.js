@@ -17,6 +17,7 @@ const debankToLlamaChain = {
   frax: 'fraxtal',
   mnt: 'mantle',
   gno: 'xdai',
+  hood: 'robinhood',
 }
 
 function getLlamaChain(debankChain) {
@@ -104,4 +105,5 @@ async function sumTokensDebank(api, owners, { blacklistedTokens = [], blackliste
 
 module.exports = {
   sumTokensDebank,
+  getLlamaChain,
 }

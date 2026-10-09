@@ -1,15 +1,17 @@
-const { transformBalances } = require('../portedTokens');
-const { getAPI, addTokenBalance } = require('./api')
+// Loans.TotalPositions: map Twox64Concat CurrencyId => Position { collateral: Balance, debit: Balance }, read over HTTP JSON-RPC
+const sdk = require('@defillama/sdk')
+const { getStorageEntries, stripHasher, ScaleReader } = require('../chain/substrate')
+const { decodeCurrencyId, currencyName } = require('./currency')
+const { transformBalances } = require('../portedTokens')
 
-async function lending(chain){
-  const api = await getAPI(chain)
-
-  const data = await api.query.loans.totalPositions.entries();
+async function lending(chain) {
+  const entries = await getStorageEntries(chain, { pallet: 'Loans', item: 'TotalPositions' })
   const balances = {}
 
-  for (let i = 0; i < data.length; i++) {
-    const [_token, amount] = data[i];
-    addTokenBalance({ balances, chain, tokenArg: _token.args[0], amount: amount.collateral })
+  for (const { rest, value } of entries) {
+    const currency = decodeCurrencyId(stripHasher(rest, 'Twox64Concat'))
+    const collateral = new ScaleReader(value).u128()
+    sdk.util.sumSingleBalance(balances, currencyName(chain, currency), collateral.toString())
   }
 
   return transformBalances(chain, balances)

@@ -1,15 +1,23 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 
-const MANAGERS = [
-  {
-    target: '0x64f8be47a011df0fab47319d5de258d18e93f4ef',
-    fromBlock: 44952928,
-  },
-  {
-    target: '0xe34cd3682af9c04303386499fba215b38eff6106',
-    fromBlock: 45354975,
-  },
-]
+const MANAGERS = {
+  base: [
+    {
+      target: '0x64f8be47a011df0fab47319d5de258d18e93f4ef',
+      fromBlock: 44952928,
+    },
+    {
+      target: '0xe34cd3682af9c04303386499fba215b38eff6106',
+      fromBlock: 45354975,
+    },
+  ],
+  bsc: [
+    {
+      target: '0xe34cd3682af9c04303386499fba215b38eff6106',
+      fromBlock: 118008288,
+    },
+  ],
+}
 
 const VAULT_CREATED =
   'event VaultCreated(uint256 indexed vaultId, address indexed vaultAddress, address indexed lpTokenAddress, uint8 curatorId)'
@@ -18,7 +26,7 @@ async function tvl(api) {
   const block = await api.getBlock()
 
   const logs = await Promise.all(
-    MANAGERS.filter(({ fromBlock }) => fromBlock <= block).map(
+    MANAGERS[api.chain].filter(({ fromBlock }) => fromBlock <= block).map(
       ({ target, fromBlock }) =>
         getLogs2({
           api,
@@ -50,7 +58,8 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL is the sum of the latest settled total asset value of all vaults registered by ElfomoFi's Base VaultsManager contracts, read on-chain in each vault's reference token.",
+    "TVL is the sum of the latest settled total asset value of all vaults registered by ElfomoFi's Base and BSC VaultsManager contracts, read on-chain in each vault's reference token.",
   doublecounted: true,
   base: { tvl },
+  bsc: { tvl },
 }

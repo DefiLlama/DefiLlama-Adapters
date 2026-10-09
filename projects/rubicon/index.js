@@ -67,7 +67,7 @@ const CLASSIC_TOKENS = {
     ADDRESSES.arbitrum.ARB,
     ADDRESSES.arbitrum.LINK,
     ADDRESSES.arbitrum.GMX,
-    '0x93b346b6bc2548da6a1e7d98e9a421b42541425b', // LUSD
+    ADDRESSES.arbitrum.LUSD, // LUSD
     '0x7dff72693f6a4149b17e7c6314655f6a9f7c8b33', // GHO
     '0xec70dcb4a1efa46b8f2d97c310c9c4790ba5ffa8', // rETH
     '0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8', // PENDLE
@@ -87,7 +87,7 @@ const CLASSIC_TOKENS = {
     ADDRESSES.base.cbETH,
     ADDRESSES.base.wstETH,
     '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b', // VIRTUAL
-    '0x940181a94a35a4569e4529a3cdfb74e38fd98631', // AERO
+    ADDRESSES.base.AERO, // AERO
     '0xb3836098d1e94ec651d74d053d4a0813316b2a2f', // RUBI
   ],
 }

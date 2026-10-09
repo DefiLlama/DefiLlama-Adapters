@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const axios = require('axios')
+const { getCarbonTokenInfo } = require('../helper/chain/carbon')
 
 const getPerpPools = async () => {
   const pools = [];
@@ -31,30 +32,7 @@ const getPools = async () => {
   return pools
 }
 
-const getTokenInfo = async () => {
-  const { data } = await axios('https://api-insights.carbon.network/info/denom_gecko_map')
-  const { gecko } = data.result
-  const tokenMap = {}
-  const size = 100
-
-  for (let skip = 0; ; skip += size) {
-    const api = `https://api.carbon.network/carbon/coin/v1/tokens?pagination.limit=${size}&pagination.offset=${skip}`
-    const res = await axios(api)
-    const data = res.data
-    const tokens = data.tokens || []
-
-    for (const token of tokens) {
-      const denom = token.denom
-      if (!gecko[denom]) continue
-      token.geckoId = gecko[denom]
-      tokenMap[denom] = token
-    }
-
-    if (tokens.length < size) break
-  }
-
-  return tokenMap
-}
+const getTokenInfo = getCarbonTokenInfo
 
 async function tvl() {
   const balances = {}

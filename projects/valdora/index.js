@@ -1,9 +1,15 @@
 const { queryContract, endPoints } = require('../helper/chain/cosmos');
 const { transformBalances } = require('../helper/portedTokens');
 const { get } = require('../helper/http');
+const { getConfig } = require('../helper/cache');
 
 const VALDORA_STAKER_CONTRACT = 'zig18nnde5tpn76xj3wm53n0tmuf3q06nruj3p6kdemcllzxqwzkpqzqk7ue55';
 const VAULTS_API = 'https://valdora.finance/api/vaults';
+const FALLBACK_VAULTS = [
+  'zig1h3au5n3lsyqm32ydz3usgy7r9z7wpx4gttcxmypfecz29adtu64svluenp',
+  'zig1mayx7wkzensav40j3qc8c5lh6s884jlhsu0c0js058t4u9xcg0mql58gkq',
+  'zig1m526fltgrf70qdsufx9k9fdl4x07usjlydcn32jn83fs6za9c5cswd9grk',
+];
 
 async function fetchStakerAUM() {
   const { funds_raised } = await queryContract({
@@ -35,15 +41,10 @@ async function tvl(api) {
   const balances = api.getBalances();
 
   const stakerAum = await fetchStakerAUM();
-  if (stakerAum) balances['zigchain:uzig'] = stakerAum;
+  if (stakerAum) balances['zigchain:azig'] = stakerAum;
 
-  let vaults = [];
-  try {
-    const payload = await get(VAULTS_API);
-    vaults = Array.isArray(payload) ? payload : [];
-  } catch (_) {
-    vaults = [];
-  }
+  const payload = await getConfig('valdora/vaults', VAULTS_API);
+  const vaults = Array.isArray(payload) && payload.length ? payload : FALLBACK_VAULTS.map(address => ({ address }));
   const results = await Promise.all(
     vaults.map(v => fetchVaultBalance(v.address).catch(() => null))
   );

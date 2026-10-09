@@ -8,6 +8,7 @@ const kavaKMX = '0x599b05875866ceB7378452D9F432d5377825F44B';
 const kavaKMXKAVAPool = '0xA08848E7A4dbaEeE8eeAb93a05F437ed9Efa2162'
 
 module.exports = {
+  deadFrom: '2026-09-30',
   kava: {
     staking: sumTokensExport({ owner: kmexStaking, tokens: [kavaKMX],lps: [kavaKMXKAVAPool], useDefaultCoreAssets: true, }),
     tvl: gmxExports({ vault: kmexVault, })

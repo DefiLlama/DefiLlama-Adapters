@@ -55,9 +55,7 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (api) => { 
-        await dex[chain].tvl(api)
-        await stakingTvl(api)
-    },
+    tvl: dex[chain].tvl,
+    staking: stakingTvl
   }
 })

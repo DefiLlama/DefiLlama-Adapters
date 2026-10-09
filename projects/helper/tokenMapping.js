@@ -25,7 +25,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
 ]
 const caseSensitiveChains = [...ibcChains, ...svmChains, 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', 'aleo',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash', 'qubic', 'constellation', 'supra',
-  'kaspa', 'bsv', 'arweave', 'pi',
+  'kaspa', 'bsv', 'arweave', 'pi', 'zcash',
 ]
 
 const transformTokens = {
@@ -46,6 +46,11 @@ const fixBalancesTokens = {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
+  },
+  // ZIGChain v5 migrates the native denom from uzig (6 decimals) to azig (18 decimals);
+  // azig is not priced under zigchain:azig by the coins service yet
+  zigchain: {
+    azig: { coingeckoId: 'zignaly', decimals: 18 },
   },
 }
 

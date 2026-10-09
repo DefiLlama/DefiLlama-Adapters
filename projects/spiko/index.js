@@ -3,6 +3,7 @@ const { decodeStrKey, SOROBAN_RPC_URL } = require("../helper/chain/stellar");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { post } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
+const { getTokenSupplies } = require("../helper/solana");
 
 const rawConfig = {
   ethereum: [
@@ -15,6 +16,7 @@ const rawConfig = {
     "0x0990b149e915cb08e2143a5c6f669c907eddc8b0", //eurSAFO
     "0xc273986a91e4bfc543610a5cb5860b7cfefb6cc0", //gbpSAFO
     "0x18b5c15e5196a38a162b1787875295b76e4313fb", //chfSAFO
+    "0x8513fcdd66e148e4b5e4940be21f50c20d112731", //eurUKTBL
   ],
   polygon: [
     "0xe4880249745eAc5F1eD9d8F7DF844792D560e750", //USTBL
@@ -26,6 +28,7 @@ const rawConfig = {
     "0x272ea767712cc4839f4a27ee35eb73116158c8a2", //eurSAFO
     "0x4fe515c67eeeadb3282780325f09bb7c244fe774", //gbpSAFO
     "0x9de2b2dcdcf43540e47143f28484b6d15118f089", //chfSAFO
+    "0x7a16df1c2cd8b9eeb9ed9942c82c2e7c90bb93db", //eurUKTBL
   ],
   arbitrum: [
     "0x021289588cd81dC1AC87ea91e91607eEF68303F5", //USTBL
@@ -37,6 +40,8 @@ const rawConfig = {
     "0x1412632f2b89e87bfa20c1318a43ced25f1d7b76", //eurSAFO
     "0xbe023308ac2ef7e1c3799f4e6a3003ee6d342635", //gbpSAFO
     "0x97e7962bcd091e7ecfb583fc96289b1e1553ac6e", //chfSAFO
+    "0x72f9e2dfa5eed8a6f1bf4fe1edea896849ff1e9a", //eurSAFOd
+    "0xd7d3e185ff6fb01e984a5379d8e4af616c4aa31e", //SAFOd
   ],
   base: [
     "0xe4880249745eAc5F1eD9d8F7DF844792D560e750", //USTBL
@@ -66,8 +71,8 @@ const rawConfig = {
     "0x0153d6e0462080bb2842109e9b64f589ef5aa06bb32b26bbdb894aca92674395", //UKTBL
     "0x04bade88e79a6120f893d64e51006ac6853eceeefa1a50868d19601b1f0a567d", //SPKCC
     "0x06472cabc51a3805975b9c60c7dec63897c9a287f2db173a1d6c589d18dd1e07", //eurSPKCC
-    "0x0128f41ef8017ab56140ffad6439305a3196ed862841ba61ff4d78e380c346a6", //SAFO
-    "0x035bdc17f7a7d09c45d31ab476a576d4f7aad916676b2948fe172c3bcb33725a", //eurSAFO
+    "0x0128f41ef8017ab56140ffad6439305a3196ed862841ba61ff4d78e380c346a6", //eurSAFO
+    "0x035bdc17f7a7d09c45d31ab476a576d4f7aad916676b2948fe172c3bcb33725a", //SAFO
     "0x06e8a99926ff6d56f4cb93c37b63286d736cd1f81740d53f88b4875b4cbe7f49", //gbpSAFO
     "0x06723dcb428eddb160c5adfc2d0a5e5adc184bf6a7298780c3cbf3fa764f709b", //chfSAFO
   ],
@@ -115,6 +120,44 @@ const config = {
     }, // gbpSAFO
     {
       contract: "CAJD2IBSP7VO2VYJQUYJSOGPJINTUYV7MQITINXVPTIH3CCLCUENNMW4",
+      target: "0x18b5c15e5196a38a162b1787875295b76e4313fb",
+    }, // chfSAFO
+  ],
+  solana: [
+    {
+      mint: "3E2qphMMBQtH3HZH2ZSg7CkbF8gSLePuoy7yVpkDxHGn",
+      target: "0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
+    }, // USTBL
+    {
+      mint: "6rS8E5CQHLHmLenNNevUdJ9APzKNairr1kfWAM3EhDX3",
+      target: "0xa0769f7A8fC65e47dE93797b4e21C073c117Fc80",
+    }, // EUTBL
+    {
+      mint: "DEtiguzuMC72hRkMHETcsXeKrJ6Djb6tMebQqjZoBSgt",
+      target: "0xf695Df6c0f3bB45918A7A82e83348FC59517734E",
+    }, // UKTBL
+    {
+      mint: "14Rg7TaptSo1Ndkz1ngBw2rE4EuFhQd2PzCrkyjGdsL1",
+      target: "0x4f33aCf823E6eEb697180d553cE0c710124C8D59",
+    }, // SPKCC
+    {
+      mint: "H99pu9fKt15asYk3Mcs8rajaRX3aYx3kDwXy6pY3n6My",
+      target: "0x3868D4e336d14D38031cf680329d31e4712e11cC",
+    }, // eurSPKCC
+    {
+      mint: "BYwEFWHUQp7Biqye6TvcjSF1ZYbL1StE5BuFRkKejexo",
+      target: "0xcbade7d9bdee88411cb6cbcbb29952b742036992",
+    }, // SAFO
+    {
+      mint: "6ALgseJyDVHbXVep9hcqEB92xNUZJFLQ66PWoHbGu4P7",
+      target: "0x0990b149e915cb08e2143a5c6f669c907eddc8b0",
+    }, // eurSAFO
+    {
+      mint: "7fnYygJyxQ2RsFJymjnRRa4wptPhUkfo6RT2j4BU4qhP",
+      target: "0xc273986a91e4bfc543610a5cb5860b7cfefb6cc0",
+    }, // gbpSAFO
+    {
+      mint: "6Gst8o3L5uNtkUvhEg23HpDLpYRdNQTgdn1Bc7jnCM5c",
       target: "0x18b5c15e5196a38a162b1787875295b76e4313fb",
     }, // chfSAFO
   ],
@@ -188,6 +231,15 @@ Object.keys(config).forEach((chain) => {
   const assets = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
+      if (chain === "solana") {
+        if (api.timestamp < 1782399513) return {}; // first Spiko Solana mint set up 2026-06-25
+        const supplies = await getTokenSupplies(assets.map(({ mint }) => mint));
+        assets.forEach(({ mint, target }) => {
+          if (supplies[mint] === undefined) throw new Error(`Missing Solana mint ${mint}`);
+          api.add(`ethereum:${target}`, supplies[mint], { skipChain: true });
+        });
+        return api.getBalances();
+      }
       if (chain === "stellar") {
         const supplies = await Promise.all(
           assets.map(({ contract }) => fetchStellarSupply(contract))
@@ -211,3 +263,8 @@ Object.keys(config).forEach((chain) => {
     },
   };
 });
+
+module.exports.methodology =
+  "Sums the totalSupply of every Spiko tokenized fund share class natively issued on Ethereum, Polygon, Arbitrum, Base, Etherlink, Starknet, Stellar and Solana. Stellar and Solana supplies are priced through the Ethereum address of the same share class. Shares are valued at fund NAV.";
+module.exports.start = "2024-04-19";
+module.exports.timetravel = false;

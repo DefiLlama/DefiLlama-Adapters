@@ -1,9 +1,10 @@
-const sdk = require("@defillama/sdk");
 const { lendingMarket } = require("./methodologies");
-const { sumTokens2 } = require('./unwrapLPs') 
+const { sumTokens2 } = require('./unwrapLPs')
 
 module.exports = {
-  compoundV3Exports: config => {
+  // config: { [chain]: { markets: [...] } }
+  // getMarkets (optional): async () => ({ [chain]: [...] }) — dynamic market list, merged over the static config
+  compoundV3Exports: (config, { getMarkets } = {}) => {
     const abi = {
       numAssets: 'uint8:numAssets',
       getAssetInfo: "function getAssetInfo(uint8 i) view returns (tuple(uint8 offset, address asset, address priceFeed, uint64 scale, uint64 borrowCollateralFactor, uint64 liquidateCollateralFactor, uint64 liquidationFactor, uint128 supplyCap))",
@@ -13,25 +14,34 @@ module.exports = {
       methodology: `${lendingMarket}. TVL is calculated by getting the market addresses from comptroller and calling the totalsCollaterals() on-chain method to get the amount of tokens locked in each of these addresses, then we get the price of each token from coingecko.`,
     };
     Object.keys(config).forEach(chain => {
-      const { markets } = config[chain]
+
+      async function resolveMarkets() {
+        const set = new Set((config[chain].markets ?? []).map(m => m.toLowerCase()))
+        if (getMarkets) {
+          const dynamic = await getMarkets()
+          ;(dynamic?.[chain] ?? []).forEach(m => set.add(m.toLowerCase()))
+        }
+        return [...set]
+      }
 
       async function borrowed(api) {
-        const balances = {}
+        const markets = await resolveMarkets()
         const tokens = await api.multiCall({ abi: 'address:baseToken', calls: markets })
         const bals = await api.multiCall({ abi: 'uint256:totalBorrow', calls: markets })
-        bals.forEach((v, i) => sdk.util.sumSingleBalance(balances, tokens[i], v, api.chain))
-        return balances
+        api.add(tokens, bals)
       }
 
       async function tvl(api) {
+        const markets = await resolveMarkets()
         const toa = []
-        await Promise.all(markets.map(async (m, i) => {
+        for (const m of markets) {
           const items = await api.fetchList({ lengthAbi: abi.numAssets, itemAbi: abi.getAssetInfo, target: m })
           const tokens = items.map(i => i.asset)
           const baseToken = await api.call({ abi: 'address:baseToken', target: m })
           tokens.push(baseToken)
           toa.push([tokens, m])
-        }))
+        }
+
         return sumTokens2({ api, ownerTokens: toa })
       }
       exportsObj[chain] = { tvl, borrowed }
@@ -39,4 +49,3 @@ module.exports = {
     return exportsObj
   }
 };
-

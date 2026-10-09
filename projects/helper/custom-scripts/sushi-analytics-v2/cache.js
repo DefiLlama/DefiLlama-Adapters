@@ -26,7 +26,7 @@ async function writeToElastic({ project, tvlKey, chain, balances }) {
 }
 
 
-async function readFromElastic({ tvlKey, timestamp, range = 8 * 3600 * 1000, project, throwIfMissing = false }) {
+async function readFromElastic({ tvlKey, timestamp, range = 24 * 3600 * 1000, project, throwIfMissing = false }) {
   const startTime = timestamp - range;
   const endTime = timestamp + range;
   const response = await sdk.elastic.search({

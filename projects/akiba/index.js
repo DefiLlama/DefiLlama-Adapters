@@ -16,6 +16,7 @@ const Contracts = {
 };
 
 module.exports = {
+  deadFrom: '2026-09-30',
   kava: {
     tvl: sumTokensExport({ owner: Contracts.kava.bank, tokens: [Contracts.kava.wkava, nullAddress] }),
     staking: sumTokensExport({ owner: Contracts.kava.multiFeeDistribution, tokens: [Contracts.kava.akiba], useDefaultCoreAssets: true, lps: Contracts.kava.lps}),

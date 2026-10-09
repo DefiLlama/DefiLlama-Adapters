@@ -6,7 +6,7 @@ const treasuryTokens = [
     [ADDRESSES.bsc.DAI, false], // DAI
     [ADDRESSES.bsc.BUSD, false], // BUSD
     [ADDRESSES.bsc.WBNB, false], // WBNB
-    ["0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", false], // CAKE
+    [ADDRESSES.bsc.CAKE, false], // CAKE
     [ADDRESSES.bsc.USDT, false], // USDT
     ["0xE119c951b68555d50eB6Aa54b5Cf0b854715CB2c", true], // ASGARD-WBNB CAKE LP
     ["0x11ceddd7a64ec79212d8ae9c8b46d23b8b750db0", true], // ASGARD-BUSD CAKE LP

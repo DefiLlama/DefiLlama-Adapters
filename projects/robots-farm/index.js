@@ -18,7 +18,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  start:1688923873, 
+  start: '2023-07-09', 
   methodology: 'TVL includes tokens staked in our contracts',
   base: { tvl, staking },
 };

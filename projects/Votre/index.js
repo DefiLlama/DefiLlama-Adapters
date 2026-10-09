@@ -91,7 +91,7 @@ async function borrowed(_, _1, _2, { api }) {
 module.exports = {
   methodology:
     "TVL includes cbBTC and WETH locked in escrow contracts, and USDC held in both provider and taker contracts. Balances are fetched via on-chain `balanceOf` calls.",
-  start: 1714608000,
+  start: '2024-05-02',
   timetravel: true,
   base: {
     tvl,

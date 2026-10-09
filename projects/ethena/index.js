@@ -5,7 +5,10 @@ const USDe = ADDRESSES.ethereum.USDe
 module.exports = {
     ethereum: {
         tvl: async (api) => {
-            const supply = await api.call({ abi: 'erc20:totalSupply', target: USDe })
+            const PREMINT = '0xD7fCaDe52aFb60FbF0E1E5F72A683F43820f56A0'
+            const totalSupply = await api.call({ abi: 'erc20:totalSupply', target: USDe })
+            const premintBal = await api.call({ abi: 'erc20:balanceOf', target: USDe, params: PREMINT })
+            const supply = totalSupply - premintBal
             await sumTokens2({
                 api,
                 owners: [

@@ -2,7 +2,7 @@ const { queryContract } = require('../helper/chain/cosmos');
 const BigNumber = require('bignumber.js');
 
 const redBanks = [
-  'zig1s3frrzltqaxvuzffvxg89uuad6nkcyqe3ucvrahynznaek3mhe4s75puyu', // Main market
+  // 'zig1s3frrzltqaxvuzffvxg89uuad6nkcyqe3ucvrahynznaek3mhe4s75puyu', // Main market - migrated to a residual-sweeper after the hack, bank balance is empty
   'zig1smfzazs6eg86vz23p8t7dk3gr4nnwr5m40yae9cl2m7erx3rnm2sxecuyc', // BTC market
 ];
 
@@ -55,9 +55,6 @@ module.exports = {
   methodology: "Sum token balances by querying the total deposit amount for each asset across the Main and Solv red banks.",
   zigchain: {
     tvl,
-    borrowed
+    borrowed,
   },
-  hallmarks: [
-    ['2025-11-16', 'Launch on ZigChain'],
-  ],
 };

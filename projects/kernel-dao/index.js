@@ -14,7 +14,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Calculates total TVL.',
-  start: 1733817000,
+  start: '2024-12-10',
   bsc: {
     tvl,
   }

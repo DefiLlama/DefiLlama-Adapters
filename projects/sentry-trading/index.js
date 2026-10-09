@@ -1,6 +1,7 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
-const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { baseReserve } = require('./positionMath')
 
 // TVL is the liquidity held in those launch pools. Two generations exist
 // and both are live, so both are counted:
@@ -56,6 +57,7 @@ const ZERO_SALT = '0x' + '0'.repeat(64)
 async function v3Tvl(api, config) {
   const ownerTokens = []
   for (const [factory, fromBlock] of config.v3Factories) {
+    if (api.block < fromBlock) continue
     const logs = await getLogs2({
       api,
       target: factory,
@@ -76,6 +78,7 @@ async function v4Tvl(api, config) {
   //    lookup below has to stay grouped by the factory that owns them.
   const launches = []
   for (const [factory, fromBlock] of config.v4Factories) {
+    if (api.block < fromBlock) continue
     const logs = await getLogs2({
       api,
       target: factory,
@@ -125,23 +128,14 @@ async function v4Tvl(api, config) {
     const s = slot0[i]
     if (!s || !s.sqrtPriceX96 || s.sqrtPriceX96 === '0') return
 
-    const liquidity = Number(vaultLiq[i]?.liquidity || 0) + Number(factoryLiq[i]?.liquidity || 0)
+    const liquidity = BigInt(vaultLiq[i]?.liquidity || 0) + BigInt(factoryLiq[i]?.liquidity || 0)
     if (!liquidity) return
 
     const tokenIsCurrency0 = l.token.toLowerCase() < l.baseToken.toLowerCase()
-    const [token0, token1] = tokenIsCurrency0 ? [l.token, l.baseToken] : [l.baseToken, l.token]
-
-    // Add full position then drop the launch token's side
-    addUniV3LikePosition({
-      api,
-      token0,
-      token1,
-      liquidity,
-      tickLower: l.tickLower,
-      tickUpper: l.tickUpper,
-      tick: Number(s.tick),
-    })
-    api.removeTokenBalance(l.token)
+    // slot0.tick is rounded down. Use sqrtPriceX96 directly, especially
+    // near a range boundary where rounding can erase the small base reserve.
+    const baseAmount = baseReserve(liquidity, BigInt(s.sqrtPriceX96), l.tickLower, l.tickUpper, tokenIsCurrency0)
+    api.add(l.baseToken, baseAmount.toString())
   })
 }
 
@@ -154,7 +148,6 @@ async function tvl(api) {
 module.exports = {
   methodology: "TVL is the base-asset liquidity held in the pools created by the Sentry Launch Factory, across both live generations, on Robinhood Chain and Ink. v3 launches hold liquidity in a Uniswap V3 pool contract whose LP NFT is permanently locked in the factory, so the WETH balance of each pool is counted directly. v4 launches have no per-pool contract: funds sit in the Uniswap V4 PoolManager singleton and the position is owned by the factory or by the immutable SentryLPVault, so each position's base-asset reserve is derived from its liquidity, tick range and the pool's current price. Both WETH-paired and tokenized-stock-paired launches are included. The launched token's own side of the pair is excluded, since its only market is the pool being measured.",
   doublecounted: true,
-  start: '2026-07-02',
-  robinhood: { tvl },
-  ink: { tvl },
+  robinhood: { tvl, start: '2026-07-02' },
+  ink: { tvl, start: '2026-03-13' },
 }

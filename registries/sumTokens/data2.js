@@ -130,7 +130,7 @@ module.exports = {
       "staking": { "owners": ["0x2Fe5E5D341cFFa606a5d9DA1B6B646a381B0f7ec", "0x1416E1378682b5Ca53F76656549f7570ad0703d9"], "tokens": ["0x6626c47c00f1d87902fc13eecfac3ed06d5e8d8a"] }
     },
     "bsc": {
-      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.bsc.WBNB, ADDRESSES.bsc.ETH, ADDRESSES.bsc.BTCB, "0x4691937a7508860F876c9c0a2a617E7d9E945D4B", ADDRESSES.bsc.USDT, ADDRESSES.bsc.BUSD, "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"] },
+      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.bsc.WBNB, ADDRESSES.bsc.ETH, ADDRESSES.bsc.BTCB, "0x4691937a7508860F876c9c0a2a617E7d9E945D4B", ADDRESSES.bsc.USDT, ADDRESSES.bsc.BUSD, ADDRESSES.bsc.CAKE] },
       "staking": { "owners": ["0x2AEab1a338bCB1758f71BD5aF40637cEE2085076", "0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13"], "tokens": ["0x4691937a7508860f876c9c0a2a617e7d9e945d4b"] }
     },
     "avax": {
@@ -154,7 +154,7 @@ module.exports = {
       "staking": { "owners": ["0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13"], "tokens": ["0x4691937a7508860F876c9c0a2a617E7d9E945D4B"] }
     },
     "era": {
-      "tvl": { "owner": "0xE656d70bc3550e3EEE9dE7dC79367A44Fd13d975", "tokens": [ADDRESSES.era.WETH, ADDRESSES.era.ZK, ADDRESSES.era.USDC, "0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4"] }
+      "tvl": { "owner": "0xE656d70bc3550e3EEE9dE7dC79367A44Fd13d975", "tokens": [ADDRESSES.era.WETH, ADDRESSES.era.ZK, ADDRESSES.era.USDC, ADDRESSES.era.USDC_CIRCLE] }
     },
     "polygon_zkevm": {
       "tvl": { "owner": "0xF5d215d9C84778F85746D15762DaF39B9E83a2d6", "tokens": [ADDRESSES.polygon_zkevm.WETH, ADDRESSES.polygon_zkevm.USDC] }
@@ -240,7 +240,7 @@ module.exports = {
     "era": {
       "tvl": {
         "owners": ["0x7F5e085981C93C579c865554B9b723B058AaE4D3", "0xbD82E5503461913a70566E66a454465a46F5C903"],
-        "tokens": [ADDRESSES.era.WETH, "0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4", ADDRESSES.era.USDT]
+        "tokens": [ADDRESSES.era.WETH, ADDRESSES.era.USDC_CIRCLE, ADDRESSES.era.USDT]
       }
     },
     "mantle": {
@@ -1060,7 +1060,7 @@ module.exports = {
   "fake-wallstreet": {
     methodology: "Value of the Tokenized Stocks on the Pool",
     "robinhood": {
-      "tvl": { owner: '0xf2B967494BbdD37cDfbE585E3b84B85461C7Da37', fetchBlockscoutTokens: true, blacklistedTokens: [ADDRESSES.null] }
+      "tvl": { owner: '0xf2B967494BbdD37cDfbE585E3b84B85461C7Da37', fetchCoValentTokens: true, blacklistedTokens: [ADDRESSES.null] }
     }
   },
   "xo-bridge": {
@@ -1068,5 +1068,25 @@ module.exports = {
     "base": {
       "tvl": { owner: '0x54716A535c3B5616e3f0d4D5005Fc4bB660cDF5F', tokens: [ADDRESSES.base.USDC] },
     },
+  },
+  "float": {
+    methodology: "Counts the stake tokens (BANK, FLOAT and their ETH sLPs) held in the multiplier pools; old pool phases still holding TVL are included.",
+    "ethereum": {
+      "tokensAndOwners": [
+        ["0x24A6A37576377F63f194Caa5F518a60f45b42921", "0x52eadaFf8E3d816CE205691D1D703e08d369F576"],
+        ["0xb05097849BCA421A3f51B249BA6CCa4aF4b97cb9", "0x432573cf5b10eb9A160624ca2725199DC1b56e3e"],
+        // BANK/ETH sLP
+        ["0x938625591ADb4e865b882377e2c965F9f9b85E34", "0x726FF99C3f2aa0B0debadE809D2Ac75C5DfA3736"],
+        // FLOAT/ETH sLP
+        ["0x481DdaF90C59d91F3e480E6793122E62612CA5A9", "0xE73cf1bBC792c796826f9E57263483fd3DD38d50"],
+        // BANK-ETH sLPPhase2Pool
+        ["0x938625591ADb4e865b882377e2c965F9f9b85E34", "0xd04F4759A2cc28A5AE33287534CAA4dfcE90B9C3"],
+        // BANK-ETH sLPPhase4Pool
+        ["0x938625591ADb4e865b882377e2c965F9f9b85E34", "0x08D7e47Beb0470fc683bbdE7d836c5dcd48754F2"],
+        // FLOAT-ETH sLPPhase4Pool
+        ["0x481DdaF90C59d91F3e480E6793122E62612CA5A9", "0xCD817491872bdB33e0D21589bd92DbfF43387CA4"],
+      ],
+      "resolveLP": true
+    }
   }
 }

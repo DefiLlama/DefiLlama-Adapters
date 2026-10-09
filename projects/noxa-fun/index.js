@@ -25,11 +25,11 @@ const config = {
     nftManager: '0x447bbA8E0151aC3De815D7f5d48c312e363b4b74',
     whitelistedTokens: [ADDRESSES.intuition.WTRUST], // WTRUST
   },
-  // arc: {
-  //   locker: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4',
-  //   nftManager: '0x39654a85a4c05127f5fd6ed22caec077a0fb1377',
-  //   whitelistedTokens: [ADDRESSES.arc.USDC], // USDC (arc has no wrapped native)
-  // },
+  arc: {
+    locker: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4',
+    nftManager: '0x39654a85a4c05127f5fd6ed22caec077a0fb1377',
+    whitelistedTokens: [ADDRESSES.arc.USDC], // USDC (arc has no wrapped native)
+  },
   robinhood: {
     locker: '0x7F03effbd7ceB22A3f80Dd468f67eF27826acD85',
     nftManager: '0x73991a25c818bf1f1128deaab1492d45638de0d3',
