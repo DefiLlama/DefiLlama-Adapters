@@ -223,7 +223,7 @@ function validateHallmarks(hallmark) {
         try {
           await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
         } catch (e) {
-          failedKeys.push({ storedKey, error: e && e.message ? e.message : String(e) })
+          failedKeys.push({ storedKey, error: e?.message ?? (e && typeof e === 'object' ? JSON.stringify(e).slice(0, 500) : String(e)) })
           console.error(`Error pulling TVL for ${storedKey}:`, e)
           return;
         }
@@ -324,8 +324,10 @@ function checkExportKeys(module, filePath, chains) {
           || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
         )))
 
-  )
-    process.exit(0)
+  ) {
+    console.error(`Not an adapter path, nothing tested: ${_filePath} (expected projects/<adapter>/index.js)`)
+    process.exit(2)
+  }
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
