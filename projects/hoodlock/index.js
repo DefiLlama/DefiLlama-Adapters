@@ -3,13 +3,15 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 /* HoodLock, a token locker, liquidity locker and vesting protocol on Robinhood Chain.
  *
- * Token lockers are tracked under vesting, so tvl is zero. Locked value is what
- * the contracts hold right now, read with balanceOf. A withdrawn
+ * tvl: tokens locked in the token locker plus Uniswap V3/V4 positions locked in
+ * the Liquidity Locker. vesting: tokens held by the vesting contract.
+ *
+ * Value is what the contracts hold right now, read with balanceOf. A withdrawn
  * lock leaves its record behind with a `withdrawn` flag, so summing records
  * would keep counting tokens that already left. The records are read only to
  * discover WHICH tokens each contract holds.
  *
- * HoodLock's own token, LOCK, is reported under staking rather than vesting.
+ * HoodLock's own token, LOCK, is reported under staking.
  *
  * Burns are excluded on purpose: burned supply sits at the dead address and is
  * no longer held by any HoodLock contract, so it is not counted.
@@ -38,28 +40,25 @@ const abi = {
 /** Ids run 1..n inclusive: both contracts pre-increment their counter. */
 const idCalls = (target, n) => Array.from({ length: Number(n) }, (_, i) => ({ target, params: i + 1 }))
 
-async function vesting(api) {
-  const [lockCount, scheduleCount] = await Promise.all([
-    api.call({ abi: abi.totalLocks, target: LOCKER }),
-    api.call({ abi: abi.totalSchedules, target: VESTING }),
-  ])
+const notLock = t => t.toLowerCase() !== LOCK_TOKEN.toLowerCase()
 
-  /* Ids 1..n all exist, so a failed record read is an infrastructure problem,
-   * not an expected revert. Let it throw instead of dropping the record: a
-   * short list would understate TVL with nothing visible to say so. */
-  const [locks, schedules] = await Promise.all([
-    api.multiCall({ abi: abi.locks, calls: idCalls(LOCKER, lockCount) }),
-    api.multiCall({ abi: abi.getSchedule, calls: idCalls(VESTING, scheduleCount) }),
-  ])
-
-  const notLock = t => t.toLowerCase() !== LOCK_TOKEN.toLowerCase()
-  const ownerTokens = [
-    [getUniqueAddresses(locks.filter(l => !l.withdrawn && l.amount > 0).map(l => l.token)).filter(notLock), LOCKER],
-    [getUniqueAddresses(schedules.filter(s => s.total > s.claimed).map(s => s.token)).filter(notLock), VESTING],
-  ]
-  await sumTokens2({ api, ownerTokens })
+/* Ids 1..n all exist, so a failed record read is an infrastructure problem,
+ * not an expected revert. Let it throw instead of dropping the record: a
+ * short list would understate TVL with nothing visible to say so. */
+async function tvl(api) {
+  const lockCount = await api.call({ abi: abi.totalLocks, target: LOCKER })
+  const locks = await api.multiCall({ abi: abi.locks, calls: idCalls(LOCKER, lockCount) })
+  const tokens = getUniqueAddresses(locks.filter(l => !l.withdrawn && l.amount > 0).map(l => l.token)).filter(notLock)
+  await sumTokens2({ api, owner: LOCKER, tokens })
   await addLockedPositions(api, (l) => !pairsLock(l))
   return api.getBalances()
+}
+
+async function vesting(api) {
+  const scheduleCount = await api.call({ abi: abi.totalSchedules, target: VESTING })
+  const schedules = await api.multiCall({ abi: abi.getSchedule, calls: idCalls(VESTING, scheduleCount) })
+  const tokens = getUniqueAddresses(schedules.filter(s => s.total > s.claimed).map(s => s.token)).filter(notLock)
+  return sumTokens2({ api, owner: VESTING, tokens })
 }
 
 const pairsLock = (l) => [l.token0, l.token1].some(t => t.toLowerCase() === LOCK_TOKEN.toLowerCase())
@@ -92,13 +91,13 @@ const staking = (api) => sumTokens2({ api, owners: [LOCKER, VESTING], tokens: [L
 
 module.exports = {
   methodology:
-    'HoodLock is a token locker, so locked value is reported as vesting and tvl is zero by design. ' +
-    'Vesting counts the ERC-20 balances held by the HoodLock locker and vesting contracts on Robinhood Chain, ' +
+    'TVL counts the ERC-20 balances held by the HoodLock token locker on Robinhood Chain, ' +
     'plus the Uniswap V3 and V4 positions locked in the HoodLock Liquidity Locker, valued by the tokens each position holds. ' +
+    'Tokens held by the HoodLock vesting contract are reported as vesting. ' +
     'Lock and vesting records are read on chain to find which tokens each contract holds, then every ' +
     'balance is read with balanceOf, so withdrawn locks and fully claimed vesting stop counting ' +
     'automatically. HoodLock\'s own LOCK token held by the contracts is reported as staking, and locked positions ' +
     'that pair LOCK as pool2. Burned supply ' +
     'is excluded because it is sent to the dead address and is no longer held by any HoodLock contract.',
-  robinhood: { tvl: () => ({}), vesting, staking, pool2 },
+  robinhood: { tvl, vesting, staking, pool2 },
 }
