@@ -1190,7 +1190,7 @@ const configs = {
   },
   "solon": {
     config: {
-      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon on Robinhood Chain.',
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon on Robinhood Chain and Arc.',
       blockchains: {
         robinhood: {
           morphoVaultOwners: [
@@ -1198,6 +1198,14 @@ const configs = {
           ],
           morpho: [
             '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault (explicit fallback)
+          ],
+        },
+        arc: {
+          morphoVaultOwners: [
+            '0xdD43ee6f3fc4786c62D0727F07F4c668EE9F4F13', // Solon curator/owner on Arc - auto-tracks current & future vaults
+          ],
+          morpho: [
+            '0xD02ece663C03D2786033140c77BB71d85f552b0c', // SolonLend USDC Vault (explicit fallback)
           ],
         },
       }

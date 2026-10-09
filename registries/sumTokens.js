@@ -992,6 +992,32 @@ const configs = {
       ]
     },
   },
+  "alcor-bridge": {
+    "methodology": "Assets locked in the AlcorVault contract on each EVM chain (Ethereum, BNB Chain, Polygon): native ETH/BNB/POL, USDC and USDT backing the tokens minted on Telos and WAX.",
+    "ethereum": {
+      "owner": "0x3e447d533321ad6a8412f97034ac295a9ff8d858",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT
+      ]
+    },
+    "bsc": {
+      "owner": "0x53F18eaa8Bf8099b5bA21Bb7E11ed311b677690e",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.bsc.USDT,
+        ADDRESSES.bsc.USDC
+      ]
+    },
+    "polygon": {
+      "owner": "0x15bbd21148f98c4daeb30450eb05666f7859993d",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.polygon.USDC_CIRCLE
+      ]
+    },
+  },
   "alkemi": {
     "methodology": "TVL consists of Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn, Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn Open, and does NOT currently consider assets borrowed",
     "start": "2020-12-31",
@@ -14381,7 +14407,8 @@ const configs = {
     "base": {
       "owner": "0x61c36AFF32Be348a3D1FE1E2B4745048f652770F",
       "resolveUniV3": true,
-      "resolveSlipstream": true
+      "resolveSlipstream": true,
+      "resolveSlipstreamV3": true
     },
     "arbitrum": {
       "owner": "0xD52170Ae01B9198246842D9a4Ad964AcD786ae91",
