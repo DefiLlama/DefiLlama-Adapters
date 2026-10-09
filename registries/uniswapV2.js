@@ -238,6 +238,9 @@ const uniV2Configs = {
   'biokript': {
     bsc: '0x795802cb01a7be4be2f7f114b232a83b3adce64a',
   },
+  'bitcoin-swap': {
+    btcwchain: '0x453F946CB371a2039137453BAafFb83FF4ccf9f7',
+  },
   'bitgenie-dex': {
     merlin: '0xEa51E2E458aE7Cb921d47fC463Ac4fED7ae65a41',
   },
