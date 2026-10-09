@@ -41705,17 +41705,25 @@ const configs = {
   },
   "yieldcore": {
     "start": "2026-02-06",
-    "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds & Krystal vault",
+    "methodology": "Counts USDT held by the YieldCore bond contracts (v3, v4.3.1, v4.3.2) and USDT plus PancakeSwap/Uniswap V3 LP positions held by the protocol's Krystal vaults.",
     "bsc": {
       "tokens": [
         ADDRESSES.bsc.USDT
       ],
       "owners": [
-        "0x2375Fcc2a256425228aA94d7100093230761639e",
+        "0x2375Fcc2a256425228aA94d7100093230761639e", // v3
         "0x6D6CDf89Cc565A04f0Ba99A1Dc13d43d0d005E4E", // v4.3.1
         "0x903407687486b3ae60746622D06b2eD3D75EaCAb", // v4.3.2
-        "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7"
-      ]
+        // Krystal PrivateVaults owned by the protocol wallet
+        "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7",
+        "0x5e910c45611b401c6bbd6d9c85e4a228b4f5fac1",
+        "0xde5da338479e1c5751e7243eb1bd750ec4e5a91f",
+        "0x9fd253eeca51aa8cef55d8eb2fedd22b72fab3fd",
+        "0x3322a1084b905cad729abcc6f02c52bbfbcbdf55",
+        "0xad0d5df9316ca451707fae2ea3e079d368e80ba3",
+        "0x4f84d1f9ae79363008870dacf7d50e4385166c9f"
+      ],
+      "resolveUniV3": true
     },
   },
   "yieldwars": {
