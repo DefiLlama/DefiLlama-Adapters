@@ -8,7 +8,7 @@ module.exports = {
   timetravel: false,
   ethereum: {
     tvl: async () => {
-      const data = await get("https://api.exchange.coinbase.com/wrapped-assets/CBETH")
+      const data = await get("https://api.exchange.coinbase.com/wrapped-assets/CBETH", { timeout: 30000 })
       // Convert circulating cbETH to the amount of underlying ETH backing the wrapper
       const circulatingSupply = new BigNumber(data.circulating_supply || 0)
       const conversionRate = new BigNumber(data.conversion_rate || 0)
