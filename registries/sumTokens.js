@@ -17164,6 +17164,20 @@ const configs = {
       ]
     },
   },
+  "kyorai": {
+    "methodology": "Kyorai is a swap front end with no pools of its own, so TVL is empty. Pool2 is the KAMIRAI-WBNB PancakeSwap V2 LP staked in the Kyorai farm.",
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "__pool2": [
+          "0xceA42138b022014BdeA7C4EFc1CAF9A9e719b6D0", // farm
+          "0xBD92961CA33E137270Bf5Bcd902ed1BAEf9A38e0" // KAMIRAI-WBNB Cake-LP
+        ]
+      }
+    },
+  },
   "kyan-blue": {
     "arbitrum": {
       "owner": "0x9AdCbEd09f911060Ef36570dC411196A86Ffb644",
