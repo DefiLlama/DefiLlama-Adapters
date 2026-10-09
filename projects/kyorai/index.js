@@ -11,7 +11,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'counts the KAMIRAI-WBNB LP tokens staked in the Kyorai farm on BNB Smart Chain.',
+  methodology: 'counts the LP tokens of the KAMIRAI WBNB pair staked in the Kyorai farm on BNB Smart Chain.',
   bsc: {
     tvl,
   },
