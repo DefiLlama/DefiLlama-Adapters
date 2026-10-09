@@ -1304,6 +1304,7 @@ const configs = {
             '0xBEEff02DE231f8B08c627C769edC73e7AcE47264', // Steakhouse Morpho V2
             '0xBEEFFFe68dFc2D3BD1ABdAd37c70634973b16478', // USDC Turbo
             '0xBeEfF0be997Cca5B1c13A7433c2004637975739e', // Ethena x Steakhouse USDC (deployed via a factory wrapper, missed by the owner filter)
+            '0x01afD5fa7E69Ce5f506C166D2fcbfb12488412AF', // Steakhouse USDC High Yield SUHY (V2, owner==curator 0x1b0448bf6bD7eF8165A6350191d7338F5c2464f4, owner not in registry)
           ],
         },
         corn: {
@@ -1326,6 +1327,7 @@ const configs = {
           morpho: [
             '0xBEEFFF13dD098De415e07F033daE65205B31A894', // USDC Turbo
             '0xBEEFFFFE0E9b26bBe3B5cE851539366991C3BF39', // XAUT0 Turbo
+            '0x02641594dd0710f9eCBab6f5D37da121620D38a0', // Steakhouse USDC High Yield SPL (V2, owner==curator 0xe8F1527089B595DbDD82Cd21581D4fd20dA30714, owner not in registry)
           ],
         },
         katana: {
