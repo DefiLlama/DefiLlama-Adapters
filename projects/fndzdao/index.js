@@ -3,23 +3,26 @@ const { getCreateAddress } = require('ethers')
 const getTrackedAssetsAbi = "address[]:getTrackedAssets"
 const dispatcher = '0x07036f5385AE6F4049f7788bD960f9Dd7fecC241'
 const deploymentBlock = 18879113
+const zero = '0x0000000000000000000000000000000000000000'
 
 async function getVaults(api) {
   const block = await api.getBlock()
   if (block < deploymentBlock) return []
 
-  // the Dispatcher only CREATEs VaultProxy contracts, from nonce 1, so nonce - 1 at this block = vault count
-  const nonce = await api.provider.getTransactionCount(dispatcher, block)
-  if (!Number.isSafeInteger(nonce) || nonce < 1) throw new Error('Invalid FNDZ dispatcher nonce')
-  const vaults = Array.from({ length: nonce - 1 }, (_, i) => getCreateAddress({ from: dispatcher, nonce: i + 1 }))
-  const deployers = await api.multiCall({
-    target: dispatcher,
-    abi: 'function getFundDeployerForVaultProxy(address) view returns (address)',
-    calls: vaults,
-  })
-  if (deployers.length !== vaults.length || deployers.some(address => address === '0x0000000000000000000000000000000000000000'))
-    throw new Error('Incomplete FNDZ vault discovery')
-  return vaults
+  // the Dispatcher registers every VaultProxy it CREATEs (nonce 1 onward) and never clears it, so registered addresses form a prefix
+  const vaults = []
+  for (let nonce = 1; ; nonce += 100) {
+    const batch = Array.from({ length: 100 }, (_, i) => getCreateAddress({ from: dispatcher, nonce: nonce + i }))
+    const deployers = await api.multiCall({
+      target: dispatcher,
+      abi: 'function getFundDeployerForVaultProxy(address) view returns (address)',
+      calls: batch,
+    })
+    const count = deployers.findIndex(address => address === zero)
+    if (count === -1) { vaults.push(...batch); continue }
+    if (deployers.slice(count).some(address => address !== zero)) throw new Error('Incomplete FNDZ vault discovery')
+    return vaults.concat(batch.slice(0, count))
+  }
 }
 
 async function tvl(api) {
