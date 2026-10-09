@@ -2758,11 +2758,15 @@ const uniV2Configs = {
   },
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
-    arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", ADDRESSES.arbitrum.RAM] },
+    arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ['0xAAA343032aA79eE9a6897Dab03bef967c3289a06', ADDRESSES.arbitrum.RAM] },
   },
   'ramses-legacy-v2': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
-    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+    methodology: 'Pool TVL is the value of tokens held in liquidity pools. HyperEVM staking is the RAM balance held by xRAM.',
+    hyperliquid: {
+      factory: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+      staking: ['0xAE6D5FcE541216BDA471D311425B5412D9f1DEb9', '0x555570a286F15EbDFE42B66eDE2f724Aa1AB5555'],
+    },
     arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
     robinhood: '0x43B2Bf9f33036a02fC7A00935571c2A6b0108e66',
