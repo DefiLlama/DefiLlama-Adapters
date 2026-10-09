@@ -37,9 +37,10 @@ const RESERVE_MIN_LEN = SLOTS_PER_YEAR_OFFSET + 8
 const FIXED_POINT_SCALE = 10n ** 18n
 const BPS = 10_000n
 
-// bCOOK has no price feed, so collateral is valued as the native COOK it redeems for:
-// the BakeYourStake SPL stake pool's totalLamports / poolTokenSupply, the same account the
-// bakeyourstake adapter reads. Both mints have 9 decimals.
+// bCOOK has no price feed, so collateral is valued in COOK at the BakeYourStake SPL stake
+// pool's exchange rate, totalLamports / poolTokenSupply, the same account the bakeyourstake
+// adapter reads. This is the gross rate: Aera's own oracle also deducts the pool's withdrawal
+// fee (~2% today) before lending against it. Both mints have 9 decimals.
 const BCOOK = 'EkPafx58mgwkEnGwo62jXhXDAdJ37Z8G8MFBRPsr9uhz'
 const STAKE_POOL = new PublicKey('GxbNKNYdtNXQkhDkpHdLDAMX64GxaECgANqdfp6cUGH4')
 const STAKE_POOL_MINT_OFFSET = 162
@@ -138,6 +139,6 @@ async function borrowed(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is the tokens held in the liquidity vault of every Aera reserve on Cookie Chain: COOK supplied by lenders and not lent out, plus bCOOK posted as collateral. bCOOK is valued as the native COOK it redeems for, using the BakeYourStake stake pool exchange rate (totalLamports / poolTokenSupply). Borrowed is the outstanding COOK debt including interest accrued up to the current slot (borrowed_principal x borrow_index, with the index advanced by the reserve interest-rate curve since its last update).',
+  methodology: 'TVL is the tokens held in the liquidity vault of every Aera reserve on Cookie Chain: COOK supplied by lenders and not lent out, plus bCOOK posted as collateral. bCOOK is valued in COOK at the BakeYourStake stake-pool exchange rate (totalLamports / poolTokenSupply), as the bakeyourstake adapter does, before the pool withdrawal fee that Aera\'s own oracle deducts. Borrowed is the outstanding COOK debt: borrowed_principal x borrow_index, with the stored index (updated only when a transaction touches the reserve) advanced to the current slot along the reserve interest-rate curve, so interest not yet written on-chain is included.',
   cookiechain: { tvl, borrowed },
 }
