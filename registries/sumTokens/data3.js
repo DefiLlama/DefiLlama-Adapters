@@ -1152,5 +1152,12 @@ module.exports = {
         ADDRESSES.null
       ]
     },
-  }
+  },
+  "wager-predict": {
+    "methodology": "USDW held by the Wager Predict market contracts on BSC: trader collateral in SpotEngine, LP deposits in the Vault and resolution bonds in the ResolutionModule.",
+    "start": "2026-10-05",
+    "bsc": {
+      "tvl": { "owners": ["0x76b91e83f2A12dc52E33f856eeA300E5B3A62c0c", "0x88d163d40D6BFe0Ad2b17f4a90A03053fEbf3014", "0xdfc40D309C0D8f4Cc42863991C8e606eD330e1E8"], "tokens": ["0xe5eBE2AE0a036C955bfF58291826C50F7d670D43"] },
+    }
+  },
 }
