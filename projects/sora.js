@@ -1,25 +1,38 @@
-const { post } = require('./helper/http')
+const { getStorageEntries, ScaleReader } = require('./helper/chain/substrate')
 
+const XOR = '0x0200000000000000000000000000000000000000000000000000000000000000'
+
+// PoolXYK.Reserves: double map (Blake2_128Concat base, Blake2_128Concat target) -> (baseReserve: u128, targetReserve: u128)
+// every SORA asset uses 18 decimals
 async function tvl(api) {
-  const { data: { data: { edges } } } = await post('https://api.subquery.network/sq/sora-xor/sora-prod', { "operationName": "SubqueryPoolsQuery", "query": "query SubqueryPoolsQuery($after: Cursor, $filter: PoolXYKFilter) {\n  data: poolXYKs(after: $after, filter: $filter) {\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n    edges {\n      node {\n        baseAssetId\n        targetAssetId\n        baseAssetReserves\n        targetAssetReserves\n        priceUSD\n        liquidityUSD\n        strategicBonusApy\n      }\n    }\n  }\n}", "variables": { "after": "", "filter": { "baseAssetReserves": { "greaterThan": "0" }, "targetAssetId": { "in": ["0x0200000000000000000000000000000000000000000000000000000000000000", "0x0200040000000000000000000000000000000000000000000000000000000000", "0x0200050000000000000000000000000000000000000000000000000000000000", "0x02000c0000000000000000000000000000000000000000000000000000000000", "0x02000a0000000000000000000000000000000000000000000000000000000000", "0x0200080000000000000000000000000000000000000000000000000000000000", "0x0200090000000000000000000000000000000000000000000000000000000000", "0x0200060000000000000000000000000000000000000000000000000000000000", "0x0200070000000000000000000000000000000000000000000000000000000000", "0x02000b0000000000000000000000000000000000000000000000000000000000", "0x02000d0000000000000000000000000000000000000000000000000000000000", "0x02000e0000000000000000000000000000000000000000000000000000000000", "0x02000f0000000000000000000000000000000000000000000000000000000000", "0x006a271832f44c93bd8692584d85415f0f3dccef9748fecd129442c8edcb4361"] }, "targetAssetReserves": { "greaterThan": "0" } } } })
-  edges.forEach(i => api.addUSDValue(+i.node.liquidityUSD > 0 ? +i.node.liquidityUSD : 0))
+  const entries = await getStorageEntries('sora', { pallet: 'PoolXYK', item: 'Reserves' })
+  const pools = entries.map(({ rest, value }) => {
+    const key = Buffer.from(rest)
+    const reader = new ScaleReader(value)
+    return {
+      base: '0x' + key.subarray(16, 48).toString('hex'),
+      target: '0x' + key.subarray(64, 96).toString('hex'),
+      baseReserve: Number(BigInt(reader.u128())) / 1e18,
+      targetReserve: Number(BigInt(reader.u128())) / 1e18,
+    }
+  })
+
+  // non-XOR base assets (XSTUSD, KUSD, TBCD) have no price feed and are depegged, so price them in XOR via their XOR pool
+  const xorPrice = { [XOR]: 1 }
+  for (const { base, target, baseReserve, targetReserve } of pools)
+    if (base === XOR && targetReserve > 0) xorPrice[target] = baseReserve / targetReserve
+
+  let xorTotal = 0
+  for (const { base, baseReserve } of pools) {
+    if (!xorPrice[base]) continue
+    xorTotal += 2 * baseReserve * xorPrice[base]
+  }
+  api.addCGToken('sora-2', xorTotal)
 }
 
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
-  methodology: "All pools from https://polkaswap.io launched on SORA network are included in TVL. Data comes from https://polkaview.io",
+  methodology: "All XYK pools from https://polkaswap.io on SORA, read on-chain. Each pool is valued at twice its base-asset reserve; non-XOR base assets are priced in XOR through their XOR pool.",
   sora: { tvl },
 };
-
-
-// on-chain
-/* 
-const { getExports } = require('./helper/heroku-api')
-
-module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
-  ...getExports("stackswap", ['stacks']),
-}
- */

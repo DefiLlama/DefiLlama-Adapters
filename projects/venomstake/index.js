@@ -2,7 +2,7 @@ const { post, get } = require('../helper/http')
 const BigNumber = require('bignumber.js')
 
 async function fetchTvl() {
-  const { data: { tvl } } = await get('https://api.venomstake.com/v1/strategies/main');
+  const { data: { tvl } } = await get('https://api.venomstake.com/v1/strategies/main', { timeout: 30000 });
   return { venom: BigNumber(tvl).div(1e9) };
 }
 
