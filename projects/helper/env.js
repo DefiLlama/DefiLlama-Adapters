@@ -40,6 +40,7 @@ const DEFAULTS = {
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   SHIDO_RPC: 'https://shidoscan.net/api/eth-rpc',
+  ACE_RPC: 'https://explorer-endurance.fusionist.io/api/eth-rpc',
   BITKUB_RPC: 'https://www.kubscan.com/api/eth-rpc',
   REI_RPC: 'https://scan.rei.network/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',

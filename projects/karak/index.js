@@ -26,7 +26,7 @@ const karak_v1_tvl = async (api, { factory }) => {
 }
 
 const karak_v2_tvl = async (api, { factory, block }) => {
-  const logs = await getLogs2({ api, target: factory, fromBlock: block, eventAbi })
+  const logs = await getLogs2({ api, target: factory, fromBlock: block, eventAbi, onlyUseExistingCache: api.chain === 'mantle'  })
   const vaults = logs.map(log => log[1])
   const tokens = logs.map(log => log[2])
   return sumTokens2({ api, tokensAndOwners2: [tokens, vaults], ...getSumTokens(api) })
@@ -42,3 +42,5 @@ Object.keys(config).forEach(chain => {
   const factories = config[chain]
   module.exports[chain] = { tvl: (api) => tvl(api, factories) }
 })
+
+module.exports.karak.tvl = () => ({}) // the chain is killed?

@@ -104,6 +104,7 @@ Object.keys(escrows).forEach(chain => {
 module.exports.evmos = { tvl: () => ({}) }
 module.exports.kujira = { tvl: () => ({}) }
 module.exports.migaloo = { tvl: () => ({}) }
+module.exports.carbon = { tvl: () => ({}) }
 
 module.exports.timetravel = false;
 

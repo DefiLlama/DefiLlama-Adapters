@@ -57,6 +57,10 @@ async function _setCache(project, chain, json) {
     await setCache(project, chain, json)
 }
 
+function isHtml(data) {
+  return typeof data === 'string' && /^\s*<(!doctype html|html)/i.test(data)
+}
+
 async function getConfig(project, endpoint, { fetcher } = {}) {
   resetCache()
   if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
@@ -76,6 +80,13 @@ async function getConfig(project, endpoint, { fetcher } = {}) {
       if (!json) throw new Error('Invalid data')
 
 
+      // an html page (parked domain, cloudflare error, etc.) should never replace a non-html cache
+      if (isHtml(json)) {
+        const currentCache = await getCache(key, project)
+        if (!isHtml(currentCache))
+          throw new Error('Fetched html config, keeping the old cache: ' + project)
+      }
+
       // check if the the response is a proper json, if not we might have an endpoint issue and we should keep the old cache instead of overwriting it with bad data
       try {
         if (typeof json === 'string') {
@@ -83,10 +94,10 @@ async function getConfig(project, endpoint, { fetcher } = {}) {
         }
       } catch (e) {
         // not json, maybe csv or something else, we just cache it as is
-        const currentCache = await getCache(project, key)
+        const currentCache = await getCache(key, project)
         if (typeof currentCache !== 'string' && Object.keys(currentCache).length > 0) {
           sdk.log(project, 'fetched non-json config, but we have valid json cache, so we keep the old cache')
-          throw new Error('Fetched non-json config, but we have valid json cache, so we keep the old cache: ' + projects)
+          throw new Error('Fetched non-json config, but we have valid json cache, so we keep the old cache: ' + project)
         }
       }
 

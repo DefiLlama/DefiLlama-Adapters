@@ -24,10 +24,8 @@ function validateFeed(feed, caller) {
 async function getPools(caller) {
   const feed = await get(TVL_URL, FETCH_OPTS)
   validateFeed(feed, caller)
-  for (const pool of feed.pools)
-    if (!pool.coingeckoId)
-      throw new Error(`alpend: no coingecko id for ${pool.asset}`)
-  return feed.pools
+  // Newly listed assets (e.g. USDXLR) can appear before CCTools maps a coingecko id; skip them.
+  return feed.pools.filter(pool => pool.coingeckoId)
 }
 
 // Amounts are already decimal-adjusted; do not scale them again.
