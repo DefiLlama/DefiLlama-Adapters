@@ -19,13 +19,13 @@ module.exports = {
   kava: [
     {
       contract: "0xa9ec655dac35d989c0c8be075b1106dcd32502d6",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   polygon: [
     {
       contract: "0x3eF7442dF454bA6b7C1deEc8DdF29Cfb2d6e56c7",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
     {
       contract: "0x586c21a779c24efd2a8af33c9f7df2a2ea9af55c",
@@ -45,19 +45,19 @@ module.exports = {
   arbitrum: [
     {
       contract: "0xE0B0D2021293Bee9715e1Db3be31b55C00F72A75",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   base: [
     {
       contract: "0x4f0fd563be89ec8c3e7d595bf3639128c0a7c33a",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   fantom: [
     {
       contract: "0xccebbe9e2b8f46c2c6862238e60a396af790b63e",
-      contractABI: abi_v2,
+      contractABI: abi,
       blacklist: ["0xc2995a065106b5c5c738b2320387460ebd12c12d"], // KyberSwap LP WFTM-DOA
     },
   ],
@@ -65,6 +65,10 @@ module.exports = {
     {
       contract: "0x05b711Df32d73ECaa877d45a637a2eB415e7995f",
       contractABI: abi_v2,
+    },
+    {
+      contract: "0x4f0fd563be89ec8c3e7d595bf3639128c0a7c33a",
+      contractABI: abi,
     },
   ],
   /* etherlink: [
@@ -77,7 +81,7 @@ module.exports = {
   blast: [
     {
       contract: "0x624a4cb48a52a29d97eb1127bd0585ea1e02143c",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
 /*   zksync: [
@@ -89,50 +93,80 @@ module.exports = {
   mantle: [
     {
       contract: "0xd03450a71b81d408fc3d4f4bf928ca4da5328b14",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   pulse: [
     {
       contract: "0xe2fe530c047f2d85298b07d9333c05737f1435fb",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   odyssey: [
     {
       contract: "0x5dd3d67af1b31823dd3eee8548bdc070640c14b8",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   flare: [
     {
       contract: "0x93ff61ac1ab23c5847c422d03be359c2b6c723c7",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   klaytn: [
     {
       chain: "klaytn",
       contract: "0xb5c902ee211bae91ddb5c30b502c7ac6dfcd73f7",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   lukso: [
     {
       contract: "0x7c2aa307c3542d8346bea3290385359c78778934",
-      contractABI: abi_v2,
+      contractABI: abi,
     },
   ],
   berachain: [
     {
       contract: "0x5dd3d67af1b31823dd3eee8548bdc070640c14b8",
-      contractABI: abi_v2,
+      contractABI: abi,
+    },
+  ],
+  xlayer: [
+    {
+      contract: "0xf5cf29567350ebad9854ea22f3281d508ef1b96c",
+      contractABI: abi,
+    },
+  ],
+  unichain: [
+    {
+      contract: "0xfee008747a9c216e1edf4157fe0176bd32560efe",
+      contractABI: abi,
+    },
+  ],
+  monad: [
+    {
+      contract: "0x3a7de5f29557405f5d9fd06b570a53b966a78e8e",
+      contractABI: abi,
+    },
+  ],
+  robinhood: [
+    {
+      contract: "0x3a7de5f29557405f5d9fd06b570a53b966a78e8e",
+      contractABI: abi,
+    },
+  ],
+  arc: [
+    {
+      contract: "0x154479ca34d77a176e74c038b70df102d9be9935",
+      contractABI: abi,
     },
   ],
   bsc: [
     {
       contract: "0x0c89c0407775dd89b12918b9c0aa42bf96518820",
-      contractABI: abi_v2,
+      contractABI: abi,
       blacklist: [
         "0x6c7c87d9868b1db5a0f62d867baa90e0adfa7cfd", //TNNS
         "0xf2619476bd0ca0eda08744029c66b62a904c2bf8", //JRIT
