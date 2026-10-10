@@ -69,12 +69,12 @@ async function tvl(api) {
   const strategies = strategyLists.flat()
 
   const positions = strategies.length
-    ? await api.multiCall({ abi: 'address:positionToken', calls: strategies.map(target => ({ target })) })
+    ? await api.multiCall({ abi: 'address:positionToken', calls: strategies.map(target => ({ target })), permitFailure: true })
     : []
 
   const tokensAndOwners = [
     ...reserves.map(r => [r.token, r.wrapper]),
-    ...strategies.map((s, i) => [positions[i], s]),
+    ...strategies.map((s, i) => [positions[i], s]).filter(([p]) => p),
   ]
   // ftUSD backing that the Delta-Neutral strategies supply into Lend is counted
   // here only. flying-tulip-ftusd skips those strategies, so it is counted once.
