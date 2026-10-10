@@ -845,6 +845,18 @@ const configs = {
       }
     },
   },
+  "metronome-vaults": {
+    config: {
+      methodology: 'Count all assets deposited in Metronome-curated Morpho V2 vaults (msETH Vault, Metronome msUSD).',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0xdf826ff6518e609e4cee86299d40611c148099d5', // Metronome deployer (initial owner + curator of both vaults)
+          ],
+        },
+      }
+    },
+  },
   "monarq": {
     config: {
       methodology: 'Count FXRP managed by the Monarq XRP Yield Vault through its on-chain getTotalAssets value.',
