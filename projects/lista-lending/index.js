@@ -1,14 +1,11 @@
 const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
+
+const MARKET_LIST_URL = 'https://api.lista.org/api/moolah/borrow/marketList?pageSize=200&page='
 
 const config = {
-  bsc: {
-    vault: '0x8F73b65B4caAf64FBA2aF91cC5D4a2A1318E5D8C',
-    marketListUrl: 'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=bsc',
-  },
-  ethereum: {
-    vault: '0xf820fB4680712CD7263a0D3D024D5b5aEA82Fd70',
-    marketListUrl: 'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=ethereum',
-  },
+  bsc: { vault: '0x8F73b65B4caAf64FBA2aF91cC5D4a2A1318E5D8C' },
+  ethereum: { vault: '0xf820fB4680712CD7263a0D3D024D5b5aEA82Fd70' },
 }
 
 const abi = {
@@ -18,11 +15,27 @@ const abi = {
     'function market(bytes32) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)',
 }
 
+/** The API caps pageSize at 200 and ignores the chain filter, so page through every market once. */
+async function fetchMarketList() {
+  const list = []
+  let total = Infinity
+  for (let page = 1; list.length < total; page++) {
+    const { data } = await get(MARKET_LIST_URL + page)
+    total = data?.total ?? 0
+    const pageList = data?.list ?? []
+    if (!pageList.length) break
+    list.push(...pageList)
+  }
+  const unique = [...new Map(list.map((m) => [m.marketId, m])).values()]
+  // throw on a short list so getConfig keeps the last complete one
+  if (!unique.length || unique.length < total) throw new Error(`lista: fetched ${unique.length}/${total} markets`)
+  return { data: { list: unique } }
+}
+
 async function getMarketList(api) {
-  const { marketListUrl } = config[api.chain]
-  const { data } = await getConfig('lista/marketList-' + api.chain, marketListUrl)
-  const list = data?.list ?? []
-  return list.filter((m) => m.chain === api.chain)
+  const { data } = await getConfig('lista-lending/marketList', undefined, { fetcher: fetchMarketList })
+  if (!data?.list?.length) throw new Error('lista: no market list')
+  return data.list.filter((m) => m.chain === api.chain)
 }
 
 /** Market IDs for TVL: all markets (Smart Lending collateral is in lista-dex swap pools, but loanToken supply is still in vault). */

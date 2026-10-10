@@ -5,6 +5,7 @@ const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getMorphoVaults } = require("../helper/curators");
 const { config } = require("./config");
+const { getExcludedMarketIds, getExcludedAssets, getExcludedVaults } = require("./exclusions");
 
 const eventAbis = {
   createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)'
@@ -18,7 +19,8 @@ const getMarket = async (api) => {
   const extraKey = 'reset-v2'
 
   let logs = [];
-  if (api.chain === 'tac') {
+  const chainsWithTroublePullingLogs = new Set(['tac', 'sei'])
+  if (chainsWithTroublePullingLogs.has(api.chain)) {
     try {
       logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
     } catch (e) {
@@ -44,7 +46,66 @@ const getMarket = async (api) => {
     ].filter(i => !existingIds.has(i)).map(id => ({ id })))
 
   }
-  return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
+  // union with morpho's own feed, never a replacement - the feed is a subset of the list above
+  const excluded = new Set([...blacklistedMarketIds.map(i => i.toLowerCase()), ...await getExcludedMarketIds(api)])
+  const all = logs.map((i) => i.id.toLowerCase())
+
+  // asset_usage is 'all', so a market with an excluded asset on either leg is excluded too - same rule
+  // the fees adapter applies. Without this a market excluded only by its collateral keeps its loan
+  // balance in tvl, even though borrowed already drops it.
+  const excludedAssets = new Set(await getExcludedAssets(api))
+  if (excludedAssets.size) {
+    const candidates = all.filter((id) => !excluded.has(id))
+    const infos = await api.multiCall({ target: morphoBlue, calls: candidates, abi: abi.morphoBlueFunctions.idToMarketParams })
+    infos.forEach((info, i) => {
+      if (excludedAssets.has(info.loanToken.toLowerCase()) || excludedAssets.has(info.collateralToken.toLowerCase()))
+        excluded.add(candidates[i])
+    })
+  }
+  return { markets: all.filter((id) => !excluded.has(id)), excludedMarkets: all.filter((id) => excluded.has(id)) }
+}
+
+// tvl sums the whole balance the shared morpho contract holds of each token, so dropping an excluded
+// market from the id list does nothing while a valid market uses the same token. Subtract what the
+// excluded market still physically holds: supply minus borrowed, since borrowed assets have left the
+// contract. Collateral is not attributable: morpho exposes no per-market total, only position(id, user),
+// so an excluded market's collateral stays counted when a valid market shares that token - measured at
+// ~$1k on ethereum, which is why netting the collateral logs per market is not worth the scan.
+const subtractExcludedMarkets = async (api, excludedMarkets, morphoHeld) => {
+  if (!excludedMarkets.length) return
+  const { morphoBlue } = config[api.chain]
+  const [marketInfos, marketDatas] = await Promise.all([
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.idToMarketParams }),
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market }),
+  ])
+
+  const idleByToken = new Map()
+  marketDatas.forEach((data, i) => {
+    const loanToken = marketInfos[i].loanToken.toLowerCase()
+    const idle = BigInt(data.totalSupplyAssets || 0) - BigInt(data.totalBorrowAssets || 0)
+    if (idle > 0n) idleByToken.set(loanToken, (idleByToken.get(loanToken) ?? 0n) + idle)
+  })
+
+  idleByToken.forEach((idle, token) => {
+    const held = morphoHeld.get(token)
+    if (!held) return
+    // clamp: a market's accounting supply can exceed what the contract holds when interest is phantom
+    api.add(held.token, (-(idle > held.amount ? held.amount : idle)).toString())
+  })
+}
+
+// what the shared morpho contract itself contributed, as the delta across its own sumTokens2 call.
+// api balances also carry vault-held assets, and a loan token can be present only because a valid vault
+// holds it unallocated - debiting that merged figure would remove assets the excluded market never held.
+const measureMorphoHeld = async (api, sumMorphoBalances) => {
+  const before = { ...api.getBalances() }
+  await sumMorphoBalances()
+  const held = new Map()
+  Object.entries(api.getBalances()).forEach(([key, value]) => {
+    const amount = BigInt(value) - BigInt(before[key] ?? 0)
+    if (amount > 0n) held.set(key.split(':')[1].toLowerCase(), { token: key.split(':')[1], amount })
+  })
+  return held
 }
 
 // exclude ethena deposits into markets where collateral is USDe
@@ -75,15 +136,17 @@ const tvl = async (api) => {
 
   // vault share tokens (MetaMorpho / Vault V2) are already counted via their underlying assets, exclude them everywhere
   const vaultSet = new Set(morphoVaults.map(v => v.toLowerCase()))
-  const blacklistedTokens = [...blackList, ...morphoVaults]
+  const blacklistedTokens = [...blackList, ...morphoVaults, ...await getExcludedAssets(api)]
 
+  // excluded vaults stay blacklisted as tokens above, but their unallocated assets are not counted
+  const excludedVaults = new Set(await getExcludedVaults(api))
   const vaultTaO = vaultAssets
-    .map((asset, i) => asset ? [asset, morphoVaults[i]] : null)
+    .map((asset, i) => asset && !excludedVaults.has(morphoVaults[i].toLowerCase()) ? [asset, morphoVaults[i]] : null)
     .filter(Boolean)
   await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens, permitFailure: true })
 
 
-  const markets = await getMarket(api)
+  const { markets, excludedMarkets } = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress && !vaultSet.has(addr)))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
@@ -109,19 +172,18 @@ const tvl = async (api) => {
     })
   }
 
-  // the gas token and this ERC-20 read the same balance on these chains, so count only one of them
-  const gasTokenTwin = { stable: ADDRESSES.stable.USDT0, arc: ADDRESSES.arc.USDC }
-  if (gasTokenTwin[api.chain] && tokens.includes(ADDRESSES.null))
-    blacklistedTokens.push(gasTokenTwin[api.chain])
-  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true })
+  const morphoHeld = await measureMorphoHeld(api, () => sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true }))
+  await subtractExcludedMarkets(api, excludedMarkets, morphoHeld)
+  return api.getBalances()
 }
 
 const borrowed = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
-  const markets = await getMarket(api)
+  const { markets } = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
   const blackListLower = blackList.map(b => b.toLowerCase())
+  const excludedAssets = new Set(await getExcludedAssets(api)) // asset_usage is 'all', so loan or collateral side
 
   const priceByAddr = await fetchPriceMap(api, marketInfos.flatMap(m => [m.collateralToken, m.loanToken]))
   const chainHasPrices = Object.keys(priceByAddr).length > 0
@@ -130,6 +192,7 @@ const borrowed = async (api) => {
     const { collateralToken, loanToken } = marketInfos[idx];
     if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
     if (blackListLower.includes(loanToken.toLowerCase())) return;
+    if (excludedAssets.has(loanToken.toLowerCase()) || excludedAssets.has(collateralToken.toLowerCase())) return;
 
     if (chainHasPrices && collateralToken && collateralToken.toLowerCase() !== nullAddress) {
       if (!priceByAddr[collateralToken.toLowerCase()]) return;

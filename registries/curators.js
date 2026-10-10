@@ -1102,6 +1102,11 @@ const configs = {
             '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
           ],
         },
+        arc: {
+          morpho: [
+            '0xabb75DcDAC72ff9a4a3603119B1e6d060f212ECA', // Aerie x Plume USDC Core (Morpho V2)
+          ],
+        },
       }
     },
     _meta: {
@@ -1185,7 +1190,7 @@ const configs = {
   },
   "solon": {
     config: {
-      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon on Robinhood Chain.',
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon on Robinhood Chain and Arc.',
       blockchains: {
         robinhood: {
           morphoVaultOwners: [
@@ -1193,6 +1198,14 @@ const configs = {
           ],
           morpho: [
             '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault (explicit fallback)
+          ],
+        },
+        arc: {
+          morphoVaultOwners: [
+            '0xdD43ee6f3fc4786c62D0727F07F4c668EE9F4F13', // Solon curator/owner on Arc - auto-tracks current & future vaults
+          ],
+          morpho: [
+            '0xD02ece663C03D2786033140c77BB71d85f552b0c', // SolonLend USDC Vault (explicit fallback)
           ],
         },
       }
@@ -1220,6 +1233,10 @@ const configs = {
       methodology: 'Count all assets are deposited in all vaults curated by Steakhouse Financial.',
       blockchains: {
         ethereum: {
+          excludedVaults: [ // Waterline's vaults (Morpho lists Waterline as curator), counted under waterline
+            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC (V1)
+            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC (V1)
+          ],
           morphoVaultOwners: [
             '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
             '0x255c7705e8BB334DfCae438197f7C4297988085a',
@@ -1254,12 +1271,6 @@ const configs = {
             '0xBEEFFFC57A26fD8D3b693Ba025ead597DbECEBfe', // USDC High Yield Term
             '0xBEEf3f3A04e28895f3D5163d910474901981183D', // 3F Ecosystem Vault
             '0xBeefF08dF54897e7544aB01d0e86f013DA354111', // Steakhouse Prime
-            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC
-            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC
-            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Waterline Reservoir USDC
-            '0xAb5955EB671d150527f8E61A42B703832F86616C', // M1 USDC
-            '0xbeEFF75262b2eC16a3C62a807F02EE7627654931', // Waterline InfiniFi USDC
-            '0x7d4741ba166B21cf3168A9A0ea71388531C52FF7', // Tenbin USDC
             '0x6f48cE6380693808682E43140E3Eeb877a096Aa1', // USDC T-Prime Instant
             '0xBEEFFF4716a49418D69c251cab8759bB107e57C8', // USDC Turbo
             '0xBEEFFFDE1CABD3d8A3cd4fd5e04DbA51B9D4Ac39', // XAUT Turbo
@@ -1620,12 +1631,6 @@ const configs = {
       methodology: 'Count all assets are deposited in all vaults curated by Vault Bridge and its partners.',
       blockchains: {
         ethereum: {
-          morpho: [
-            '0xBEefb9f61CC44895d8AEc381373555a64191A9c4',
-            '0xc54b4E08C1Dcc199fdd35c6b5Ab589ffD3428a8d',
-            '0x31A5684983EeE865d943A696AAC155363bA024f9',
-            '0x812B2C6Ab3f4471c0E43D4BB61098a9211017427',
-          ],
           erc4626: [
             '0x3DD459dE96F9C28e3a343b831cbDC2B93c8C4855',
           ],
@@ -1670,12 +1675,6 @@ const configs = {
             '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
             '0x50B75d586929Ab2F75dC15f07E1B921b7C4Ba8fA',
             '0x75a1253432356f90611546a487b5350CEF08780D',
-          ],
-          turtleclub_erc4626: [
-            '0xF470EB50B4a60c9b069F7Fd6032532B8F5cC014d',
-            '0xA5DaB32DbE68E6fa784e1e50e4f620a0477D3896',
-            '0xe1Ac97e2616Ad80f69f705ff007A4bbb3655544a',
-            '0x77570CfEcf83bc6bB08E2cD9e8537aeA9F97eA2F',
           ],
         },
         base: {

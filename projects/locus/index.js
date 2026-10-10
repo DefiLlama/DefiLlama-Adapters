@@ -11,7 +11,7 @@ const CONFIG = {
   arbitrum: {
     vaults: {
       v1: ['0x515f3533a17E2EEFB13313D9248f328C94dBe641'],
-      v2: ['0x6318938F825F57d439B3a9E25C38F04EF97987D8'],
+      // v2: ['0x6318938F825F57d439B3a9E25C38F04EF97987D8'],
     },
     staking: {
       token: '0xe1d3495717f9534db67a6a8d4940dd17435b6a9e',

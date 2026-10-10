@@ -3,7 +3,6 @@ const { getLogs2 } = require('../helper/cache/getLogs');
 const { nullAddress } = require("../helper/tokenMapping");
 const { getEnv } = require("../helper/env");
 const { cachedGraphQuery } = require("../helper/cache");
-const ADDRESSES = require('../helper/coreAssets.json')
 
 // from https://docs.uniswap.org/contracts/v4/deployments
 const config = {
@@ -54,27 +53,18 @@ const config = {
   arc: { factory: "0x8366a39cc670b4001a1121b8f6a443a643e40951", fromBlock: 1946500 },
 }
 const subgraphs = {
-  xlayer: {endpoint: '2fc6nFafrPs4xybzHMnmD48qgUYoHTizhDk1mCJJUDjD', factory: '0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32' }
-}
-
-// On Arc, USDC is the gas token and the ERC-20 at 0x3600... reads the same balance as the native coin.
-// A pool quoted in native USDC and one quoted in the ERC-20 would count the PoolManager's USDC twice,
-// so read native through the ERC-20 and let the token set dedupe it.
-function normalizeCurrency(api, token) {
-  if (api.chain === 'arc' && token.toLowerCase() === nullAddress) return ADDRESSES.arc.USDC
-  return token
+  // the xlayer subgraph has no price for xStocks, so their pools read $0 TVL there and the $100 filter drops them
+  xlayer: {endpoint: '2fc6nFafrPs4xybzHMnmD48qgUYoHTizhDk1mCJJUDjD', factory: '0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32', noTvlFilter: true }
 }
 
 function processResult(api, results, factory, blacklistedTokens = []) {
     const tokenSet = new Set()
     const ownerTokens = []
     results.forEach(pool => {
-      const token0 = normalizeCurrency(api, pool.token0)
-      const token1 = normalizeCurrency(api, pool.token1)
-      tokenSet.add(token0)
-      tokenSet.add(token1)
+      tokenSet.add(pool.token0)
+      tokenSet.add(pool.token1)
       if (pool.hooks !== nullAddress) {
-        ownerTokens.push([[token0, token1], pool.hooks])
+        ownerTokens.push([[pool.token0, pool.token1], pool.hooks])
       }
     })
     ownerTokens.push([Array.from(tokenSet), factory])
@@ -82,13 +72,14 @@ function processResult(api, results, factory, blacklistedTokens = []) {
 }
 
 Object.keys(subgraphs).forEach(chain => {
-  const { endpoint, factory } = subgraphs[chain]
+  const { endpoint, factory, noTvlFilter } = subgraphs[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       if (!getEnv('IS_RUN_FROM_CUSTOM_JOB')) throw new Error('This job is not meant to be run directly, please use the custom job feature')
+      const tvlFilter = noTvlFilter ? '' : 'totalValueLockedUSD_gt: 100'
       const query = `
         query poolQuery($lastId: String, $block: Int) {
-          pools(block: { number: $block} first: 1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}   subgraphError: allow) {
+          pools(block: { number: $block} first: 1000 where: {id_gt: $lastId ${tvlFilter}}   subgraphError: allow) {
             id
             token0 {
               id

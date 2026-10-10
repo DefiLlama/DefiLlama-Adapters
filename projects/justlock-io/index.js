@@ -6,7 +6,7 @@ module.exports = {
 }
 
 async function tvl(api) {
-  const { tvl_usd } = await get('https://api.justlock.io/tvl_by_types')
+  const { tvl_usd } = await get('https://api.justlock.io/tvl_by_types', { timeout: 30000 })
   api.addUSDValue(tvl_usd["FungibleResource-NativePoolUnit"])
   api.addUSDValue(tvl_usd["NonFungibleResource-PrecisionPool"])
   api.addUSDValue(tvl_usd["NonFungibleResource-QuantaSwap"])

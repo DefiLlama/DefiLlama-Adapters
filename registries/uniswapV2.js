@@ -24,6 +24,7 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'pentaswap': { pentagonchain: '0xC75C7E9352bC1475d7c308E65C0a21969DcEdEe7' },
   'bbbfi-swap-v2': {
     methodology: 'Value of reserves in BBBFi-owned V2 AMM pools on XDC and BSC, discovered from each factory. Uses the standard core-asset reserve valuation helper. Staked LP receipts are not added again; reward budgets and bridge reserves are excluded.',
     xdc: '0xFe536C6a76487563D4393a3Bd03ef2621546A198',
@@ -2757,11 +2758,15 @@ const uniV2Configs = {
   },
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
-    arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", ADDRESSES.arbitrum.RAM] },
+    arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ['0xAAA343032aA79eE9a6897Dab03bef967c3289a06', ADDRESSES.arbitrum.RAM] },
   },
   'ramses-legacy-v2': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
-    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+    methodology: 'Pool TVL is the value of tokens held in liquidity pools. HyperEVM staking is the RAM balance held by xRAM.',
+    hyperliquid: {
+      factory: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+      staking: ['0xAE6D5FcE541216BDA471D311425B5412D9f1DEb9', '0x555570a286F15EbDFE42B66eDE2f724Aa1AB5555'],
+    },
     arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
     robinhood: '0x43B2Bf9f33036a02fC7A00935571c2A6b0108e66',
@@ -3243,6 +3248,15 @@ const uniV2Configs = {
   'unitflow-finance-v2': {
     methodology: 'Token balances held in every Unitflow v2.5 pair, enumerated from the factory.',
     arc: '0xFc1EC6761e246D5cb0c4C22669f8635098B22ba1',
+  },
+  'architect-swap-v2': {
+    methodology: 'Value of the tokens held in the Architect Swap V2 pairs on Robinhood Chain, enumerated from the factory.',
+    robinhood: '0xfa6253ee74F7956b022998F7bfa271990C8A82a8',
+  },
+  'ouro-dex-v2': {
+    start: '2026-09-26', // factory deployed at block 72056067 (2026-09-25 07:41 UTC)
+    methodology: 'Value of the tokens held in the Ouro DEX V2 pairs on Robinhood Chain, enumerated from the factory. LP tokens staked in the Ouro farms are not added again.',
+    robinhood: '0xaf0660Fd4d96F4e925AE85eba7A90a74C727fA2F',
   },
 }
 

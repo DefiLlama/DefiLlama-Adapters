@@ -361,9 +361,30 @@ const configs = {
     },
   },
   "flooor-fun": {
-    "methodology": "TVL is the native ETH held in the flooor.fun auction contract on Base, comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). ETH exits the contract when sellToHighest() is called, distributing 99.5% to the NFT seller and 0.5% fee to the protocol.",
+    "methodology": "TVL is the native ETH held in the flooor.fun auction contracts on Base and Robinhood Chain (the current main contract, the legacy contract, and one auction contract per NFT collection), comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). When sellToHighest() is called, the winning bid is split: 95% is sent to the NFT seller and 0.5% to the protocol as a fee, while 4.5% stays in the contract as epoch pool rewards (poolAccrued) until signers claim it.",
     "base": {
-      "owner": "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF",
+      "owners": [
+        "0xD53292182A342953f446CD4D10Dc177776044306", // current
+        "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF", // legacy
+        "0xD3706917c71b1A81CeCc31311C6B41eac344DDb5", // loopers
+        "0x0c2d41b6896a7dde2641a0fe04165df180c43242", // warplets
+        "0x0DA60a9965e1059F2258d5e74c3839844FEF1Cf9", // gnars
+        "0x89350393e99f1df89D09376a02a99BAE9aBc8d8F", // based nouns
+        "0x0669583e7d5bE64967153dd276987415926b5e32", // based onchain dinos
+        "0x7b4A2c265dECE5A48e9c9232de1bd4940dfb6A0F", // base day one
+        "0xE0AB0cE2FF407f53b9384205258C037c22cB03A0" // ok computers
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "robinhood": {
+      "owners": [
+        "0x352E6e9EF7BA1BC4398C2c3784dFdF1930D0df32", // hashcats
+        "0x04ec8eDB287D20f29B834b47a44713d814b0788a", // stonkbrokers
+        "0xa14b6A3980C178D8f446F6a33Bad83a9aAa2D09D", // rh machines
+        "0xc347759352F8f2e556CE6A0Ea8048Fb48cfFca45" // quotrons
+      ],
       "tokens": [
         ADDRESSES.null
       ]
@@ -968,6 +989,32 @@ const configs = {
         ADDRESSES.bsc.USDT,
         ADDRESSES.bsc.WBNB,
         ADDRESSES.bsc.BUSD
+      ]
+    },
+  },
+  "alcor-bridge": {
+    "methodology": "Assets locked in the AlcorVault contract on each EVM chain (Ethereum, BNB Chain, Polygon): native ETH/BNB/POL, USDC and USDT backing the tokens minted on Telos and WAX.",
+    "ethereum": {
+      "owner": "0x3e447d533321ad6a8412f97034ac295a9ff8d858",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT
+      ]
+    },
+    "bsc": {
+      "owner": "0x53F18eaa8Bf8099b5bA21Bb7E11ed311b677690e",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.bsc.USDT,
+        ADDRESSES.bsc.USDC
+      ]
+    },
+    "polygon": {
+      "owner": "0x15bbd21148f98c4daeb30450eb05666f7859993d",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.polygon.USDC_CIRCLE
       ]
     },
   },
@@ -14360,7 +14407,8 @@ const configs = {
     "base": {
       "owner": "0x61c36AFF32Be348a3D1FE1E2B4745048f652770F",
       "resolveUniV3": true,
-      "resolveSlipstream": true
+      "resolveSlipstream": true,
+      "resolveSlipstreamV3": true
     },
     "arbitrum": {
       "owner": "0xD52170Ae01B9198246842D9a4Ad964AcD786ae91",
@@ -17114,6 +17162,20 @@ const configs = {
       "tokens": [
         ADDRESSES.berachain.USDC
       ]
+    },
+  },
+  "kyorai": {
+    "methodology": "Kyorai is a swap front end with no pools of its own, so TVL is empty. Pool2 is the KAMIRAI-WBNB PancakeSwap V2 LP staked in the Kyorai farm.",
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "__pool2": [
+          "0xceA42138b022014BdeA7C4EFc1CAF9A9e719b6D0", // farm
+          "0xBD92961CA33E137270Bf5Bcd902ed1BAEf9A38e0" // KAMIRAI-WBNB Cake-LP
+        ]
+      }
     },
   },
   "kyan-blue": {
@@ -21416,12 +21478,17 @@ const configs = {
   },
   "paradex": {
     "ethereum": {
-      "owners": [
-        "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"
-      ],
-      "tokens": [
-        ADDRESSES.ethereum.USDC
-      ]
+      "tvl": {
+        "tokensAndOwners": [
+          [ADDRESSES.ethereum.USDC, "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"], // StarknetTokenBridge proxy (USDC + DIME)
+          [ADDRESSES.null, "0x45B79622C095ab834b9C8dC71013ed13B39F1B8D"], // native ETH (StarknetEthBridge)
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          ["0xb32E10022FFBeDfE10bc818a1C7e67D9d87e0fa7", "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"], // DIME
+        ]
+      }
     },
   },
   "parasset": {
@@ -27495,6 +27562,14 @@ const configs = {
       "tokens": [
         ADDRESSES.ethereum.USDC,
         "0x530824DA86689C9C17CdC2871Ff29B058345b44a"
+      ]
+    },
+  },
+  "taifoon": {
+    "methodology": "TVL is the ICP held on the ICP ledger by the tICP bridge custody canister (dkafq-4aaaa-aaaaj-a6ysq-cai, default account). It backs the tICP released on Base, Arc and Robinhood Chain.",
+    "icp": {
+      "owners": [
+        "dkafq-4aaaa-aaaaj-a6ysq-cai"
       ]
     },
   },
@@ -41644,17 +41719,25 @@ const configs = {
   },
   "yieldcore": {
     "start": "2026-02-06",
-    "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds & Krystal vault",
+    "methodology": "Counts USDT held by the YieldCore bond contracts (v3, v4.3.1, v4.3.2) and USDT plus PancakeSwap/Uniswap V3 LP positions held by the protocol's Krystal vaults.",
     "bsc": {
       "tokens": [
         ADDRESSES.bsc.USDT
       ],
       "owners": [
-        "0x2375Fcc2a256425228aA94d7100093230761639e",
+        "0x2375Fcc2a256425228aA94d7100093230761639e", // v3
         "0x6D6CDf89Cc565A04f0Ba99A1Dc13d43d0d005E4E", // v4.3.1
         "0x903407687486b3ae60746622D06b2eD3D75EaCAb", // v4.3.2
-        "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7"
-      ]
+        // Krystal PrivateVaults owned by the protocol wallet
+        "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7",
+        "0x5e910c45611b401c6bbd6d9c85e4a228b4f5fac1",
+        "0xde5da338479e1c5751e7243eb1bd750ec4e5a91f",
+        "0x9fd253eeca51aa8cef55d8eb2fedd22b72fab3fd",
+        "0x3322a1084b905cad729abcc6f02c52bbfbcbdf55",
+        "0xad0d5df9316ca451707fae2ea3e079d368e80ba3",
+        "0x4f84d1f9ae79363008870dacf7d50e4385166c9f"
+      ],
+      "resolveUniV3": true
     },
   },
   "yieldwars": {

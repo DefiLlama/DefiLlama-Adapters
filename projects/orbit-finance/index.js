@@ -1,12 +1,10 @@
-const { sumTokens2 } = require("../helper/solana");
-const { get } = require("../helper/http");
+const { sumTokens2, getConnection, getProvider } = require("../helper/solana");
 const { Program } = require("@coral-xyz/anchor");
-const { getProvider } = require("../helper/solana");
-
-const ADAPTER_BASE = "https://orbit-dex.api.cipherlabsx.com";
+const { PublicKey } = require("@solana/web3.js");
 
 // CIPHER native token mint
 const CIPHER_MINT = "Ciphern9cCXtms66s8Mm6wCFC27b2JProRQLYmiLMH3N";
+const STAKING_PROGRAM = new PublicKey("STAKEvGqQTtzJZH6BWDcbpzXXn2BBerPAgQ3EGLN2GH");
 
 async function tvl(api) {
   const provider = getProvider();
@@ -16,23 +14,24 @@ async function tvl(api) {
   return sumTokens2({ api, tokenAccounts, blacklistedTokens: [CIPHER_MINT] });  // exclude projects own token from the tvl
 }
 
-/**
- * Staking TVL: total CIPHER locked in Streamflow staking streams.
- * Staked CIPHER is distributed across per-user escrow accounts so we
- * read the aggregate total from the adapter's Streamflow indexer.
- */
-async function staking() {
-  const data = await get(`${ADAPTER_BASE}/api/v1/streamflow/vaults`);
-  const cipherVault = (data.vaults ?? []).find((v) => v.tokenMint === CIPHER_MINT);
-  if (!cipherVault?.total_staked_raw) return {};
-  return { ["solana:" + CIPHER_MINT]: cipherVault.total_staked_raw };
+async function staking(api) {
+  // Streamflow StakePool layout: mint at 10, staking vault at 139; reward pools are separate accounts.
+  // https://github.com/streamflow-finance/js-sdk/blob/fb236fff325ab02d7ff5d0ff5e393be8934cda9d/packages/staking/solana/descriptor/idl/stake_pool.json
+  const pools = await getConnection().getProgramAccounts(STAKING_PROGRAM, {
+    filters: [
+      { memcmp: { offset: 0, bytes: "MGAteRdkWBD" } }, // StakePool discriminator
+      { memcmp: { offset: 10, bytes: CIPHER_MINT } },
+    ],
+  });
+  const tokenAccounts = pools.map(({ account: { data } }) => new PublicKey(data.subarray(139, 171)));
+  return sumTokens2({ api, tokenAccounts });
 }
 
 module.exports = {
   timetravel: false,
   solana: { tvl, staking },
   methodology:
-    "TVL is the sum of all token balances in CipherDLMM pool vaults (base + quote) on Solana. Staking TVL separately counts CIPHER locked in the Streamflow staking pool.",
+    "TVL is the sum of token balances in CipherDLMM pool vaults (base + quote) on Solana, excluding CIPHER. Staking separately counts CIPHER balances held in Streamflow stake pool vaults discovered on-chain, excluding reward and vesting accounts.",
 };
 
 

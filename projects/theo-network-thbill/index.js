@@ -19,6 +19,7 @@ const STEAKUSDT = '0xbeef003c68896c7d2c3c60d363e8d71a49ab2bf9' // Morpho Steakho
 const ULTRA_ARB    = '0xc26af85ede9cc25d449bcebef866bb85afd5d346'
 const GTUSDCP_BASE = '0x050ce30b927da55177a4914ec73480238bad56f0' // Morpho Gauntlet USDC Prime (Base)
 const aMonUSDC     = '0x35a73bacb179d3740395a3cecc87ff2e581d6042' // Aave v3 on Monad
+const STABLEEARN   = '0xb7Df8db22A5DBBFA9ebeb94b3910aec6a4f05c08' // Morpho StableEarn vault on Stable (ERC4626, USDT0)
 
 // Solana
 const ULTRA_TOKEN_ACCOUNT = '6fk5UwZXF1Zs327zV5Fbmay2xTYCqg7eM5QeNQyyu7ae'
@@ -33,12 +34,19 @@ async function solanaTvl(api) {
   }
 }
 
+// Only the backing wallet's share of the vault; the shared erc4626 helper would count every depositor.
+async function stableTvl(api) {
+  const shares = await api.call({ abi: 'erc20:balanceOf', target: STABLEEARN, params: BACKING })
+  const assets = await api.call({ abi: 'function convertToAssets(uint256 shares) view returns (uint256)', target: STABLEEARN, params: shares })
+  api.add(ADDRESSES.stable.USDT0, assets)
+}
+
 module.exports = {
   doublecounted: true,
   methodology:
     'thBILL TVL is the value of the reserve assets held in the thBILL backing wallets: tokenized Treasury ' +
     'fund shares (ULTRA, FILQ-A), stablecoins, and stablecoin lending positions (Aave v3, Morpho vaults) ' +
-    'across Ethereum, Arbitrum, Base, Monad and Solana. About 96% of thBILL supply is held as reserve by ' +
+    'across Ethereum, Arbitrum, Base, Monad, Stable and Solana. About 96% of thBILL supply is held as reserve by ' +
     'thUSD (see Theo Network thUSD), so this adapter is flagged doublecounted under the Theo Network parent.',
   hallmarks: [
     ['2025-11-20', 'Reserve rotated into ULTRA on Ethereum, Arbitrum and Solana'],
@@ -65,6 +73,9 @@ module.exports = {
   },
   monad: {
     tvl: sumTokensExport({ owner: BACKING, tokens: [aMonUSDC, ADDRESSES.monad.USDC] }),
+  },
+  stable: {
+    tvl: stableTvl,
   },
   solana: {
     tvl: solanaTvl,

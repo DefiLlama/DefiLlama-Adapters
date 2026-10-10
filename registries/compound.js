@@ -472,7 +472,7 @@ const configs = {
     base: { comptroller: '0x1DB2466d9F5e10D7090E7152B68d62703a2245F0' },
   },
   'moonwell': {
-    hallmarks: [['2022-08-01', 'Nomad Bridge Exploit']],
+    hallmarks: [['2022-08-01', 'Nomad Bridge Exploit'], ['2026-08-27', 'MAMO oracle exploit on Base']],
     moonbeam: {
       comptroller: '0x8E00D5e02E65A19337Cdba98bbA9F84d4186a180',
       cether: '0x091608f4e4a15335145be0a279483c0f8e4c7955',
@@ -481,6 +481,8 @@ const configs = {
     base: {
       comptroller: '0xfBb21d0380beE3312B33c4353c8936a0F13EF26C',
       staking: ['0xe66E3A37C3274Ac24FE8590f7D84A2427194DC17', '0xa88594d404727625a9437c3f886c7643872296ae'],
+      // 2026-08-27 MAMO oracle exploiter, ~$9.5M of debt against worthless mMAMO collateral
+      excludedBorrowers: ['0x719eae70d4a83f35bf82a2740699f5db84be919d'],
     },
     optimism: { comptroller: '0xCa889f40aae37FFf165BccF69aeF1E82b5C511B9' },
     ethereum: { comptroller: '0xdec80bB934397575594E91970b37baf65f5b21bE' },

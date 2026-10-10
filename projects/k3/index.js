@@ -1,5 +1,4 @@
-const { getCuratorExport } = require("../helper/curators");
-const { mergeExports } = require("../helper/utils");
+const { getCuratorExport, getCuratorTvl } = require("../helper/curators");
 
 const configs = {
   methodology:
@@ -114,13 +113,17 @@ const configs = {
 // Pre-sunset these vaults count under projects/euler-dao, from the sunset date
 // onward they are attributed to K3.
 // https://forum.euler.finance/t/sunsetting-of-dao-managed-market-and-vaults/1828
-const eulerSunsetConfigs = getCuratorExport({
-  start: "2026-05-06",
-  blockchains: {
-    monad: {
-      eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
-    },
-  },
-});
+const EULER_SUNSET = Math.floor(new Date("2026-05-06").getTime() / 1000);
+const EULER_SUNSET_OWNER = "0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1";
 
-module.exports = mergeExports([getCuratorExport(configs), eulerSunsetConfigs]);
+module.exports = getCuratorExport(configs);
+
+// The handed-over vaults are read together with K3's own Monad vaults, so that the shares K3's Earn
+// vaults hold of them are netted once.
+module.exports.monad = {
+  tvl: async (api) => {
+    const monad = configs.blockchains.monad;
+    const owners = api.timestamp >= EULER_SUNSET ? [...monad.eulerVaultOwners, EULER_SUNSET_OWNER] : monad.eulerVaultOwners;
+    return getCuratorTvl(api, { ...monad, eulerVaultOwners: owners });
+  },
+};
