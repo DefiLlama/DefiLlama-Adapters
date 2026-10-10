@@ -12,6 +12,11 @@ const RESERVES = [
 ]
 const coder = new BorshAccountsCoder(kaminoIdl)
 
+/**
+ * Load Nysa's reserves and reject missing or mismatched on-chain accounts.
+ * @param {object} api DefiLlama chain API used for Solana account reads.
+ * @returns {Promise<object[]>} Decoded reserves with verified program, market, and mint.
+ */
 async function getReserves(api) {
   const accounts = await getMultipleAccounts(RESERVES.map(([address]) => address), { api })
   return RESERVES.map(([address, mint], i) => {
@@ -26,11 +31,21 @@ async function getReserves(api) {
   })
 }
 
+/**
+ * Sum underlying tokens held in the reserves' liquidity supply vaults.
+ * @param {object} api DefiLlama chain API receiving raw token balances.
+ * @returns {Promise<object>} Vault balances, excluding borrowed-out tokens.
+ */
 async function tvl(api) {
   const reserves = await getReserves(api)
   return sumTokens2({ api, tokenAccounts: reserves.map(reserve => reserve.liquidity.supplyVault.toString()) })
 }
 
+/**
+ * Add outstanding debt in raw token units, truncating sub-atomic Q60 dust.
+ * @param {object} api DefiLlama chain API receiving borrowed token balances.
+ * @returns {Promise<void>} Resolves after adding debt for each validated reserve.
+ */
 async function borrowed(api) {
   const reserves = await getReserves(api)
   for (const reserve of reserves) {

@@ -15,12 +15,24 @@ const USDY_VAULT = 'AVxf9dXFj5M7xCM7SU6cRM2FnUtZyeWcqHSJVt5Fbdsk'
 const USDC_VAULT = '68YwkFhagT33k8485VtX1MhMYpab97c1MjpWcXFuTYea'
 const Q60 = 1n << 60n
 
+/**
+ * Write a public key into an account fixture at the specified byte offset.
+ * @param {Buffer} data Mutable account data.
+ * @param {number} offset Start of the 32-byte public key field.
+ * @param {string} value Base58-encoded public key.
+ * @returns {void}
+ */
 function pubkey(data, offset, value) {
   new PublicKey(value).toBuffer().copy(data, offset)
 }
 
-// Independent binary fixtures use the on-chain Reserve and SPL Token layouts.
-// Keep the real IDL decoder, token decoder, balance helpers, and ChainApi in use.
+/**
+ * Build a binary Kamino Reserve fixture for decoding with the real on-chain IDL.
+ * @param {string} mint Underlying token mint.
+ * @param {string} vault Liquidity supply vault address.
+ * @param {bigint} available Cached available liquidity in raw token units.
+ * @returns {object} Account data and Kamino program owner for the mocked RPC.
+ */
 function reserve(mint, vault, available) {
   const data = Buffer.alloc(8624)
   createHash('sha256').update('account:Reserve').digest().copy(data, 0, 0, 8)
@@ -33,6 +45,12 @@ function reserve(mint, vault, available) {
   return { data, owner: PROGRAM }
 }
 
+/**
+ * Build an initialized SPL Token fixture for the real token account decoder.
+ * @param {string} mint Underlying token mint.
+ * @param {bigint} amount Vault balance in raw token units.
+ * @returns {object} Account data and SPL Token program owner for the mocked RPC.
+ */
 function tokenAccount(mint, amount) {
   const data = Buffer.alloc(165)
   pubkey(data, 0, mint)
@@ -42,6 +60,12 @@ function tokenAccount(mint, amount) {
   return { data, owner: sdk.chains.svm.TOKEN_PROGRAM_ID }
 }
 
+/**
+ * Set a reserve fixture's unsigned 128-bit Q60 borrowed amount.
+ * @param {object} account Mutable Reserve account fixture.
+ * @param {bigint} value Debt in Q60-scaled raw token units.
+ * @returns {void}
+ */
 function setDebt(account, value) {
   account.data.writeBigUInt64LE(value & ((1n << 64n) - 1n), 232)
   account.data.writeBigUInt64LE(value >> 64n, 240)
@@ -72,6 +96,11 @@ beforeEach((t) => {
   })
 })
 
+/**
+ * Run an adapter bucket using the real ChainApi and mocked RPC accounts.
+ * @param {string} bucket Adapter handler to invoke: tvl or borrowed.
+ * @returns {Promise<object>} Raw balances keyed by chain-prefixed token mint.
+ */
 async function balances(bucket) {
   const api = new sdk.ChainApi({ chain: 'solana', timestamp: Math.floor(Date.now() / 1000) })
   await adapter.solana[bucket](api)
