@@ -54,11 +54,12 @@ async function swarmBalances(api, ownToken) {
   if (!swarms.length) return api.getBalances()
 
   const memecoins = await api.multiCall({ abi: 'address:memecoin', calls: swarms, permitFailure: true })
-  const vaultCounts = await api.multiCall({ abi: 'uint256:vaultCount', calls: swarms, permitFailure: true })
+  // counts say how many vaults exist: a failed read must fail the run, not read as zero vaults
+  const vaultCounts = await api.multiCall({ abi: 'uint256:vaultCount', calls: swarms })
   // the launched token is only needed to build a range's pool key
   const hasPair = (i) => Boolean(memecoins[i]) && memecoins[i] !== nullAddress
 
-  const vaultCalls = swarms.flatMap((s, i) => Array.from({ length: Number(vaultCounts[i] ?? 0) }, (_, j) => ({ target: s, params: [j], swarm: i })))
+  const vaultCalls = swarms.flatMap((s, i) => Array.from({ length: Number(vaultCounts[i]) }, (_, j) => ({ target: s, params: [j], swarm: i })))
   const vaults = await api.multiCall({ abi: 'function vaults(uint256) view returns (address)', calls: vaultCalls.map(({ target, params }) => ({ target, params })) })
   const swarmOfVault = vaults.map((_, k) => vaultCalls[k].swarm)
 
@@ -88,8 +89,9 @@ async function swarmBalances(api, ownToken) {
   // ticks at its pool's current price. Venue 0 is the Pons pool; venue i > 0 is extraVenues(i - 1),
   // a hookless pool on the same pair. Both sides are counted, as for any liquidity manager's
   // positions.
-  const rangeCounts = await api.multiCall({ abi: 'uint256:openRangeCount', calls: vaults, permitFailure: true })
-  const rangeCalls = vaults.flatMap((v, k) => Array.from({ length: Number(rangeCounts[k] ?? 0) }, (_, j) => ({ target: v, params: [j], vault: k })))
+  // same for open ranges: a failed count must not drop the vault's liquidity silently
+  const rangeCounts = await api.multiCall({ abi: 'uint256:openRangeCount', calls: vaults })
+  const rangeCalls = vaults.flatMap((v, k) => Array.from({ length: Number(rangeCounts[k]) }, (_, j) => ({ target: v, params: [j], vault: k })))
   // a range or venue that does not read is skipped, not allowed to fail the whole run
   const ranges = rangeCalls.length ? await api.multiCall({ abi: RANGE_ABI, calls: rangeCalls.map(({ target, params }) => ({ target, params })), permitFailure: true }) : []
   const extraKeys = [...new Set(rangeCalls.map((r, j) => ranges[j] && Number(ranges[j].venue) > 0 ? `${r.vault}:${Number(ranges[j].venue)}` : null).filter(Boolean))]
