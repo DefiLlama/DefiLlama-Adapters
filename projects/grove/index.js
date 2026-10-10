@@ -49,6 +49,7 @@ const morphoVaultConfigs = {
   base: [
     '0xBeEf2d50B428675a1921bC6bBF4bfb9D8cF1461A', // grove-bbqUSDC
     '0xbeef0e0834849aCC03f0089F01f4F1Eeb06873C9', // steakUSDC-V2
+    '0xbeef0786756810478b88982DE00F3CD7fdB8e7c7', // Grove x Steakhouse USDC
   ],
   robinhood: [
     '0xBEEff039907422219Fb367e525954DDC092854d9', // Grove x Steakhouse USDG
