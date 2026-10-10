@@ -1,14 +1,16 @@
-const { uniV4HookOnChainExport } = require('../helper/uniswapV4')
+const { uniV4HookOnChainExport, uniV4HookExport } = require('../helper/uniswapV4')
 
 // Peddles (https://peddles.xyz): every launch is one Uniswap v4 pool carrying PeddlesFeeHook, with the
 // launch liquidity locked in it. Pools are found from the PoolManager Initialize logs filtered to the hook
 // and valued on chain from tick liquidity via StateView.
 // Each chain has its own hook (CREATE2 against per-chain constructor arguments), so nothing is shared.
 const hooks = {
-  base: '0xAB8E39207718f519865D6f0d52eFB31b231D40cc',
   robinhood: '0xfe055282E3cD471A8b2cd922d31E75ECd3bBc0CC',
   bsc: '0x39D760601731025e0F02A3e5D232445797fAC0CC',
   arc: '0x317e34De0298F23bd41bf9A853289e227E9cC0CC',
+}
+const subgraphHooks = {
+  base: '0xAB8E39207718f519865D6f0d52eFB31b231D40cc',
 }
 
 module.exports = {
@@ -19,4 +21,8 @@ module.exports = {
 
 Object.keys(hooks).forEach((chain) => {
   module.exports[chain] = { tvl: uniV4HookOnChainExport({ hook: hooks[chain] }) }
+})
+
+Object.keys(subgraphHooks).forEach((chain) => {
+  module.exports[chain] = { tvl: uniV4HookExport({ hook: subgraphHooks[chain] }) }
 })
