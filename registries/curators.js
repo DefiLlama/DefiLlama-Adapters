@@ -1478,6 +1478,20 @@ const configs = {
       }
     },
   },
+  "trezor": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults created by Trezor\'s verified initial deployment owners (Steakhouse-curated USDC/USDT Prime vaults).',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x07e3af579e114b30c8bd5bc0865dca4a6bb05099', // Trezor Steakhouse USDC Prime
+            '0xdcfb21798b450af02ca760c8473f476ccd876d82', // Trezor Steakhouse USDT Prime
+            '0x70fdb75d2d6eaa6bc276e2e8a9abe845b1f726ae', // Trezor Steakhouse ETH Prime
+          ],
+        },
+      }
+    },
+  },
   "trinity-protocol": {
     config: {
       methodology: 'Tracks USDC in the Trinity Protocol MetaMorpho vault on Morpho Blue.',
