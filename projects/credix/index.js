@@ -50,22 +50,11 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  methodology: 'TVL is the USDC balance of the two Credix pool signing authorities. No borrowed figure is reported: the on-chain poolOutstandingCredit ledger ($10.6M) is unrecoverable phantom — inflated by the Aug 2025 admin-wallet exploit (unbacked-mint borrows, SlowMist) and the team has since vanished (CertiK, suspected exit scam), so it is excluded per the post-exploit bad-debt doctrine.',
   solana: {
     tvl,
-    borrowed,
   },
 };
-
-async function borrowed(api) {
-  
-  const provider = getProvider();
-  const program = constructProgram(provider);
-  const states = await program.account.globalMarketState.all();
-
-  states.forEach(({ account }) => {
-    api.add(account.baseTokenMint.toBase58(), account.poolOutstandingCredit.toString())
-  })
-}
 
 async function tvl1(api) {
   
