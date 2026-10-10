@@ -3,6 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const MINT_AND_REDEEM = {
   ethereum: '0xaa48ecbc843cf7e9a29155d112b8cb27902bd23c',
   sonic: '0x0c6f8ec81c3ea5bff06f6cd0791780f9f050ee31',
+  bsc: '0x7d73863178a3ecb9767f0be1bf50f55305a52743',
 }
 
 const COLLATERAL_INFO_ABI =
@@ -23,31 +24,34 @@ async function tvl(api) {
     lengthAbi: 'uint256:numberOfStrategies',
     itemAbi: 'function strategies(uint256) view returns (address)',
   })))
-  const flat = strategyLists.flatMap((strats, i) => strats.map(strategy => ({ strategy, wrapper: wrappers[i] })))
+  const flat = strategyLists.flatMap((strats, i) => strats.map(strategy => ({ strategy, collateral: collaterals[i] })))
 
   const [positions, underlyings] = await Promise.all([
     api.multiCall({ abi: 'address:positionToken', calls: flat.map(s => ({ target: s.strategy })), permitFailure: true }),
     api.multiCall({ abi: 'address:token',         calls: flat.map(s => ({ target: s.strategy })), permitFailure: true }),
   ])
 
-  // positionToken != token -> external (aToken, spToken)
-  // positionToken == token -> ft strategy (e.g. ftDNS-USDC)
-  // deprecated strategies revert both calls - skip them
-  const tokensAndOwners = flat
-    .map((s, i) => {
-      if (!positions[i] || !underlyings[i]) return null
-      return positions[i].toLowerCase() !== underlyings[i].toLowerCase()
-        ? [positions[i], s.strategy]
-        : [s.strategy, s.wrapper]
-    })
-    .filter(Boolean)
+  // idle collateral held by each wrapper and by each of its strategies
+  const tokensAndOwners = [
+    ...collaterals.map((c, i) => [c, wrappers[i]]),
+    ...flat.map(s => [s.collateral, s.strategy]),
+  ]
+  // external yield receipts (aToken, spToken): positionToken != token.
+  // Flying Tulip Delta-Neutral strategies supply into Flying Tulip Lend, which the
+  // flying-tulip-lend adapter already counts, so their shares are skipped here.
+  // Deprecated strategies revert both calls and are skipped too.
+  flat.forEach((s, i) => {
+    if (!positions[i] || !underlyings[i]) return
+    if (positions[i].toLowerCase() !== underlyings[i].toLowerCase()) tokensAndOwners.push([positions[i], s.strategy])
+  })
 
   return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
   methodology:
-    'Sums collateral backing ftUSD by enumerating each MintAndRedeem-registered ftYieldWrapperV2 and reading positionToken() on each of their strategies. External-receipt strategies (Aave, Spark) contribute the receipt balance at the strategy address. Other strategies (Flying Tulip Delta-Neutral) contribute their strategy shares held by the parent wrapper, priced server-side at 1:1 with the underlying asset.',
+    'Sums the collateral backing ftUSD that sits outside Flying Tulip Lend: idle collateral held by each MintAndRedeem-registered ftYieldWrapperV2 and its strategies, plus external yield receipts (Aave, Spark) held by the wrapper strategies. Backing that the Flying Tulip Delta-Neutral strategies supply into Flying Tulip Lend is counted once, under flying-tulip-lend.',
   ethereum: { tvl },
   sonic: { tvl },
+  bsc: { tvl },
 }
