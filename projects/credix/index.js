@@ -1,11 +1,9 @@
-const ADDRESSES = require("../helper/coreAssets.json");
 const { PublicKey } = require("@solana/web3.js");
 const { Program, utils,} = require("@project-serum/anchor");
-const { getProvider, sumTokens2, } = require("../helper/solana");
+const { getProvider, getMultipleAccounts, sumTokens2, } = require("../helper/solana");
 
 const MARKET_SEED_FINTECH = "credix-marketplace";
 const MARKET_SEED_RECEIVABLES = "receivables-factoring";
-const USDC = ADDRESSES.solana.USDC;
 const programId = new PublicKey("CRDx2YkdtYtGZXGHZ59wNv1EwKHQndnRc1gT4p8i2vPX");
 const encodeSeedString = (seedString) =>
   Buffer.from(utils.bytes.utf8.encode(seedString));
@@ -23,49 +21,34 @@ const findGlobalMarketStatePDA = async (globalMarketSeed) => {
   return findPDA([seed]);
 };
 
-const findSigningAuthorityPDA = async (globalMarketSeed) => {
-  const globalMarketStatePDA = await findGlobalMarketStatePDA(globalMarketSeed);
-  const seeds = [globalMarketStatePDA[0].toBuffer()];
-  return findPDA(seeds);
-};
+// treasuryPoolTokenAccount sits at byte 80 in GlobalMarketState: discriminator(8) +
+// baseTokenMint(32) + lpTokenMint(32) + poolOutstandingCredit(8). Read straight from the
+// market states: getTokenAccountsByOwner discovery is heavily throttled on public RPCs,
+// while getMultipleAccounts + balance reads on known accounts are not.
+const TREASURY_OFFSET = 80;
 
-async function tvl() {
-  // Fintech pool
-  const [signingAuthorityKeyFintech] = await findSigningAuthorityPDA(
-    MARKET_SEED_FINTECH
+async function tvl(api) {
+  const [fintechState] = await findGlobalMarketStatePDA(MARKET_SEED_FINTECH);
+  const [receivablesState] = await findGlobalMarketStatePDA(MARKET_SEED_RECEIVABLES);
+  const accounts = await getMultipleAccounts(
+    [fintechState.toString(), receivablesState.toString()],
+    { api },
   );
-
-  // Receivables factoring pool
-  const [signingAuthorityKeyReceivables] = await findSigningAuthorityPDA(
-    MARKET_SEED_RECEIVABLES
-  );
-  const tokens = await sumTokens2({
-    tokensAndOwners: [
-      [USDC, signingAuthorityKeyFintech],
-      [USDC, signingAuthorityKeyReceivables],
-    ],
+  const tokenAccounts = accounts.map((account, i) => {
+    if (!account) throw new Error(`credix: missing market state ${i}`)
+    if (account.owner.toString() !== programId.toString()) throw new Error(`credix: unexpected program owner for market state ${i}`)
+    return new PublicKey(account.data.slice(TREASURY_OFFSET, TREASURY_OFFSET + 32)).toString();
   });
-  return tokens;
+  return sumTokens2({ api, tokenAccounts });
 }
 
 module.exports = {
   timetravel: false,
+  methodology: 'TVL is the USDC balance of the Credix pool treasuries (treasury accounts read from the two on-chain market states). No borrowed figure is reported: the on-chain poolOutstandingCredit ledger ($10.6M) is unrecoverable phantom — inflated by the Aug 2025 admin-wallet exploit (unbacked-mint borrows, SlowMist) and the team has since vanished (CertiK, suspected exit scam), so it is excluded per the post-exploit bad-debt doctrine.',
   solana: {
     tvl,
-    borrowed,
   },
 };
-
-async function borrowed(api) {
-  
-  const provider = getProvider();
-  const program = constructProgram(provider);
-  const states = await program.account.globalMarketState.all();
-
-  states.forEach(({ account }) => {
-    api.add(account.baseTokenMint.toBase58(), account.poolOutstandingCredit.toString())
-  })
-}
 
 async function tvl1(api) {
   
