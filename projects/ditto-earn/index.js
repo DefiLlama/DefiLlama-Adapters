@@ -12,15 +12,28 @@ const RECEIVERS = [
   '0x73e97D42f341713e2ED10E55964C066d924a8106', // V2, Ethereum
 ];
 const ZERO = '0x0000000000000000000000000000000000000000';
+/** Deduplicate custody addresses case-insensitively and exclude the zero address. */
 const unique = addresses => [...new Set(addresses.map(address => address.toLowerCase()))].filter(address => address !== ZERO);
 
-// A genuine pre-deployment zero, not permitFailure masking an unavailable RPC.
+/**
+ * Select contracts deployed at the requested historical block.
+ * A genuine pre-deployment zero is allowed; provider failures propagate.
+ * @param {object} api DeFiLlama chain API pinned to the requested block.
+ * @param {string[]} addresses Public deployment roots to check.
+ * @returns {Promise<string[]>} Roots with deployed bytecode at that block.
+ */
 async function deployed(api, addresses) {
   const block = await api.getBlock();
   const code = await Promise.all(addresses.map(address => api.provider.getCode(address, block)));
   return addresses.filter((_, index) => code[index] !== '0x');
 }
 
+/**
+ * Count settled MUSD/mUSDC cash across vaults and their on-chain custody links.
+ * Excludes posted NAV, queue liabilities and transfers in flight.
+ * @param {object} api DeFiLlama Mezo API pinned to the requested block.
+ * @returns {Promise<object>} Underlying asset balances without duplicate owners.
+ */
 async function mezoTvl(api) {
   const vaults = await deployed(api, MUSD_VAULTS);
   if (!vaults.length) return api.getBalances();
@@ -36,6 +49,12 @@ async function mezoTvl(api) {
   return api.sumTokens({ tokens: [ADDRESSES.mezo.MUSD, ADDRESSES.mezo.mUSDC], owners, skipDuplicates: true });
 }
 
+/**
+ * Count Yield Split underlying, registered external strategy exposure and cash.
+ * Excludes intra-Ditto receipts and avoids counting pending claims twice.
+ * @param {object} api DeFiLlama Ethereum API pinned to the requested block.
+ * @returns {Promise<object>} Settled underlying asset balances.
+ */
 async function ethereumTvl(api) {
   const yieldSplit = await deployed(api, [YIELD_SPLIT]);
   if (yieldSplit.length) await api.erc4626Sum({ calls: yieldSplit, isOG4626: true });
