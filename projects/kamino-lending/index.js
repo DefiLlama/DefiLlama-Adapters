@@ -79,7 +79,9 @@ async function subtractEthenaKVaultDeposits(api, connection) {
     if (!totalReceiptSupply) continue;
     // ethena's underlying share = (ethena receipts / total receipts) * kVault's kToken holdings, treated 1:1 with underlying
     const underlyingToSubtract = (ethenaReceiptAmount / totalReceiptSupply) * kTokenInVault;
-    api.add(p.underlying, -underlyingToSubtract);
+    // the share is backed mostly by borrowed-out funds absent from this available-only leg, so cap the subtraction at the leg balance (floors the leg at zero; system-wide ethena still counts the full backing)
+    const currentBalance = Math.max(0, +(api.getBalances()[p.underlying] ?? 0));
+    api.add(p.underlying, -Math.min(underlyingToSubtract, currentBalance));
   }
 }
 
