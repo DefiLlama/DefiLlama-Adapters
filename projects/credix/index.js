@@ -44,7 +44,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is the USDC balance of the two Credix pool signing authorities. No borrowed figure is reported: the on-chain poolOutstandingCredit ledger ($10.6M) is unrecoverable phantom — inflated by the Aug 2025 admin-wallet exploit (unbacked-mint borrows, SlowMist) and the team has since vanished (CertiK, suspected exit scam), so it is excluded per the post-exploit bad-debt doctrine.',
+  methodology: 'TVL is the USDC balance of the Credix pool treasuries (treasury accounts read from the two on-chain market states). No borrowed figure is reported: the on-chain poolOutstandingCredit ledger ($10.6M) is unrecoverable phantom — inflated by the Aug 2025 admin-wallet exploit (unbacked-mint borrows, SlowMist) and the team has since vanished (CertiK, suspected exit scam), so it is excluded per the post-exploit bad-debt doctrine.',
   solana: {
     tvl,
   },
