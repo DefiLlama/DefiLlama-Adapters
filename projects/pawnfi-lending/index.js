@@ -17,16 +17,6 @@ async function getPawnNFTTokens(api) {
   return logs.map(log => log.pieceToken)
 }
 
-async function borrowed(api) {
-  const blacklistedTokens = await getPawnNFTTokens(api)
-  const items = await api.call({ abi: ABI.cTokenMetadataAll, target: Lending, params: [LendCToken], })
-  items.forEach((v) => {
-    if (blacklistedTokens.includes(v.underlyingAssetAddress)) return
-    api.add(v.underlyingAssetAddress, v.totalBorrows)
-  })
-}
-
-
 async function tvl(api) {
   const blacklistedTokens = await getPawnNFTTokens(api)
   const items = await api.call({ abi: ABI.cTokenMetadataAll, target: Lending, params: [LendCToken], })
@@ -35,7 +25,7 @@ async function tvl(api) {
 
 
 module.exports = mergeExports([{
-  ethereum: { tvl, borrowed },
+  ethereum: { tvl },
 }, nftTvl])
 
 module.exports.hallmarks = [
