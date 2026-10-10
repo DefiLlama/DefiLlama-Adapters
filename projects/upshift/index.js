@@ -67,6 +67,9 @@ async function getVaultsConfig() {
   for (const vault of vaults) {
     // Filter out vaults where is_visible is false
     if (vault.status !== "active") continue;
+    // Wrapper vaults deposit into another Upshift vault (underlying_vault_address),
+    // so their assets are already counted in that underlying vault's TVL.
+    if (vault.underlying_vault_address) continue;
     
     const chainName = chainIdToName[vault.chain];
     if (!chainName) continue; // Skip unsupported chains
@@ -102,7 +105,7 @@ async function sumV2Vaults(api, vaults) {
 const solanaVaultsTvl = async (api) => {
   const vaults = await getConfig('upshift/vaults', vaultsApiEndpoint);
   const addresses = vaults
-    .filter(v => v.status === 'active' && v.chain === SOLANA_CHAIN_ID)
+    .filter(v => v.status === 'active' && v.chain === SOLANA_CHAIN_ID && !v.underlying_vault_address)
     .map(v => v.address);
   if (!addresses.length) return;
 
