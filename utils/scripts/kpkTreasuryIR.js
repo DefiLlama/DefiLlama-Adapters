@@ -340,10 +340,15 @@ const CURATED_VAULTS = {
     "0x9178eBE0691593184c1D785a864B62a326cc3509": "Morpho",  // v1 USDC Yield
     "0xdaD4e51d64c3B65A9d27aD9F3185B09449712065": "Morpho",  // v1 USDT Prime
     "0x870F0BF29A25A40E7CC087cD5C53e70C11F2C8A8": "Morpho",  // v2 USDT Prime
+    "0xb5ce3CA2C774b72955C25875022FdD91f7a7B938": "Morpho",  // v2 wARS Yield
+    "0x6251482812cE95d11b3E447FE6888b1a1bE66C25": "Morpho",  // v2 EURe Yield
+    "0x7a72bcD2c3F7F7e4D6679170a0625bAB15D7DDa1": "Morpho",  // v2 USDC Yield RWA
     "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245": "Euler",   // kpk USDC Prime RWA (Euler Earn)
     "0xB6D6D89ad4b4D61C15a293e28b74f77F6817fF48": "Euler",   // kpk ETH Yield Term (Euler Earn)
+    "0x8BcD746976885b5832bAD07B4921E3f2dD1D3703": "Symbiotic", // kpk USDC RWA Liquidity (Symbiotic v2 Liquid Lane)
     "0x9396dcbf78fc526bb003665337c5e73b699571ef": "Gearbox", // Gearbox ETH
     "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64": "Gearbox", // Gearbox wstETH
+    "0xBd8Ec7444dB271635584Cc38F5d06C72eAB762f5": "Gearbox", // Gearbox frxUSD
     "0x9477df934574d47f240e18cd232e013118666690": "Aleph",   // kpk Aleph rETH
     "0xf857caa91ea4007ec26aee2d039e870eb0fa91bf": "Aleph",   // kpk Aleph stETH
     "0x6cbcc646d7422b734c6fc0954a1c3ca87b1b4ceb": "Aleph",   // kpk Aleph osETH
@@ -351,6 +356,14 @@ const CURATED_VAULTS = {
   arbitrum: {
     "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d": "Morpho",  // USDC Yield
     "0x5837e4189819637853a357aF36650902347F5e73": "Morpho",  // USDC Yield v2
+  },
+  base: {
+    "0x392B3CCf36C8adB8094F45573346B457414cD752": "Morpho",  // v2 USDC Yield
+  },
+  // arc is not a ZODIAC_CHAIN, so the on-chain sweep never reads this entry; it is
+  // here so the DeBank view's CURATED tag covers the vault if a mandate ever holds it
+  arc: {
+    "0xF0943081f646f21cF5BFBa8e0F670C4248ab0ba5": "Morpho",  // v2 wARS Yield
   },
 }
 
