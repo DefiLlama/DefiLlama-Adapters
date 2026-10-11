@@ -27,6 +27,9 @@ const STATE_VIEW = '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b'
 const RANGE_ABI = 'function ranges(uint256) view returns (uint8 venue, int24 tickLower, int24 tickUpper, uint128 liquidity, bytes32 salt)'
 const EXTRA_VENUE_ABI = 'function extraVenues(uint256) view returns (uint24 fee, int24 tickSpacing)'
 const GET_SLOT0_ABI = 'function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)'
+// Uniswap's V4Quoter on Robinhood Chain (developers.uniswap.org/docs/protocols/v4/deployments)
+const QUOTER = '0x8dc178efb8111bb0973dd9d722ebeff267c98f94'
+const QUOTE_ABI = 'function quoteExactInputSingle(((address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) poolKey, bool zeroForOne, uint128 exactAmount, bytes hookData) params) view returns (uint256 amountOut, uint256 gasEstimate)'
 
 // keccak256(abi.encode(PoolKey)): Uniswap v4's pool id
 function poolIdOf({ currency0, currency1, fee, tickSpacing, hooks }) {
@@ -126,13 +129,40 @@ async function swarmBalances(api, ownToken) {
     if (counts(memecoins[i])) api.add(memecoins[i], BigInt(Math.floor(counterIs0 ? amount1 : amount0)))
   })
 
+  // idle inventory: the launched token the vaults hold outside their ranges. Each swarm's idle balance
+  // is counted only at what selling all of it in one swap into its Pons pool would return (V4Quoter)
+  const idleSwarms = swarms.map((_, i) => i).filter(i => hasPair(i) && counts(memecoins[i]))
+  const idleVaults = vaults.map((v, k) => ({ v, k })).filter(({ k }) => idleSwarms.includes(swarmOfVault[k]))
+  if (idleVaults.length) {
+    const idleBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: idleVaults.map(({ v, k }) => ({ target: memecoins[swarmOfVault[k]], params: [v] })) })
+    const idleOf = new Map()
+    const keyOf = new Map()
+    idleVaults.forEach(({ k }, j) => {
+      const i = swarmOfVault[k]
+      idleOf.set(i, (idleOf.get(i) ?? 0n) + BigInt(idleBalances[j]))
+      if (!keyOf.has(i) && ponsKeyOf(k)) keyOf.set(i, ponsKeyOf(k))
+    })
+    // a swarm whose token has not graduated has no Pons pool to sell into
+    const sells = [...idleOf].filter(([i, idle]) => idle > 0n && keyOf.has(i)).map(([i, idle]) => ({ i, idle, key: keyOf.get(i) }))
+    for (const { i, idle, key } of sells) {
+      const memeIs0 = key.currency0 !== counterOf[i]
+      const poolKey = [key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks]
+      const { amountOut } = await api.call({ abi: QUOTE_ABI, target: QUOTER, params: [[poolKey, memeIs0, idle.toString(), '0x']] })
+      const { sqrtPriceX96 } = await api.call({ abi: GET_SLOT0_ABI, target: STATE_VIEW, params: poolIdOf(key) })
+      const sp = Number(sqrtPriceX96) / 2 ** 96
+      const spotValue = Number(idle) * (memeIs0 ? sp * sp : 1 / (sp * sp)) // in pair-asset base units
+      const fraction = Math.min(1, Number(amountOut) / spotValue)
+      api.add(memecoins[i], BigInt(Math.floor(Number(idle) * fraction)))
+    }
+  }
+
   return api.getBalances()
 }
 
 module.exports = {
   doublecounted: true,
   methodology:
-    "TVL is the pair asset (native ETH or the bundle's ERC20 pair asset) held by Mosh bundles on Robinhood Chain, by each bundle's swarm contract (open raises and backers' unclaimed fees) and by its agent vaults, plus both sides of the vaults' open Uniswap v4 ranges. Launched tokens the vaults hold outside their ranges are not counted. BUN is reported under staking wherever it appears. Range liquidity is also Uniswap v4 TVL, so the listing is double counted.",
+    "TVL is the pair asset (native ETH or the bundle's ERC20 pair asset) held by Mosh bundles on Robinhood Chain, by each bundle's swarm contract (open raises and backers' unclaimed fees) and by its agent vaults, plus both sides of the vaults' open Uniswap v4 ranges. Launched tokens the vaults hold idle, outside their ranges, are counted only when DefiLlama prices them and at no more than what selling all of them in one swap into their Pons pool would return, read from the Uniswap v4 quoter. BUN is reported under staking wherever it appears. Range liquidity is also Uniswap v4 TVL, so the listing is double counted.",
   robinhood: {
     tvl: (api) => swarmBalances(api, false),
     staking: (api) => swarmBalances(api, true),
