@@ -1,5 +1,6 @@
 const { getConnection, sumTokens2 } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
+const { sleep } = require('../helper/utils')
 
 // Vaultex (https://vaultex.fun): Solana meme coin launchpad built on Meteora's
 // Dynamic Bonding Curve. Coins can be paired with several quote assets (SOL,
@@ -33,6 +34,8 @@ async function tvl(api) {
 
   const tokenAccounts = []
   for (const { pubkey } of configs) {
+    // one getProgramAccounts per config; spaced so public RPCs don't rate-limit (429)
+    await sleep(1200)
     const pools = await connection.getProgramAccounts(DBC_PROGRAM, {
       filters: [
         { memcmp: { offset: 0, bytes: VIRTUAL_POOL_DISC } },
