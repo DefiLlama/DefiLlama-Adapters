@@ -21,7 +21,9 @@
    },
    "proposed": {
     "audits": "2",
-    "audit_links": []
+    "audit_links": [
+     "https://dapp.org.uk/reports/uniswapv2.html"
+    ]
    },
    "remove": [
     {
@@ -37,8 +39,19 @@
      "reason": "Uniswap V3 audit folder"
     }
    ],
-   "add": [],
-   "note": "Remove all three links: the 2019 ConsenSys Diligence report covers Uniswap V1 (it describes Vyper contracts and is dated 11 Jan 2019), and the two folders are Uniswap V3's (v3-core/audits, v3-periphery/audits). We hold no V2 report to put in their place."
+   "add": [
+    {
+     "firm": "dapp.org",
+     "date": "2020-05-06",
+     "title": "Uniswap V2 Audit Report",
+     "url": "https://dapp.org.uk/reports/uniswapv2.html",
+     "opened": {
+      "at": "2026-10-11T12:11:19Z",
+      "http": 200
+     }
+    }
+   ],
+   "note": "Remove all three links: the 2019 ConsenSys Diligence report covers Uniswap V1 (it describes Vyper contracts and is dated 11 Jan 2019), and the two folders are Uniswap V3's (v3-core/audits, v3-periphery/audits). Add dapp.org's \"Uniswap V2 Audit Report\" (review and formal verification of uniswap-v2-core at commit 8160750 and of uniswap-v2-periphery, 8 Jan to 30 Apr 2020, last updated 6 May 2020)."
   },
   "uniswap-v3": {
    "name": "Uniswap V3",
