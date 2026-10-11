@@ -9,7 +9,7 @@ const { getConfig } = require('../helper/cache')
 
 const KAMINO_FARMS_PROGRAM_ID = 'FarmsPZpWu9i7Kky8tPN37rs2TpmMrAZrC7S7vJa91Hr';
 
-// Ethena positions held via Kamino KVaults — subtracted since these deposits are already counted in ethena's TVL.
+// Ethena positions held via Kamino KVaults - subtracted since these deposits are already counted in ethena's TVL.
 // Ethena holds the KVault receipt token, mostly staked in a Kamino farm. We compute Ethena's pro-rata share of the
 // KVault's kToken holdings (farm stake / farm total stake + any unstaked wallet balance) and treat 1:1 with the underlying.
 const ETHENA_KVAULT_POSITIONS = [
