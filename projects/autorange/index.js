@@ -32,6 +32,12 @@ const config = {
   ],
 };
 
+// Uniswap V3 NonfungiblePositionManager on chains the shared helper has no
+// built-in default for.
+const nftAddresses = {
+  avax: '0x655C406EBFa14EE2006250925e54ec43AD184f8B',
+};
+
 async function tvl(api) {
   const factories = config[api.chain];
 
@@ -48,7 +54,10 @@ async function tvl(api) {
 
   const ownerTokens = vaults.map((v, i) => [[token0s[i], token1s[i]], v]);
 
-  await sumTokens2({ api, ownerTokens, owners: vaults, resolveUniV3: true });
+  const nftAddress = nftAddresses[api.chain];
+  const uniV3ExtraConfig = nftAddress ? { nftAddress } : undefined;
+
+  await sumTokens2({ api, ownerTokens, owners: vaults, resolveUniV3: true, uniV3ExtraConfig });
 }
 
 module.exports = {
