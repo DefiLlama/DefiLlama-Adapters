@@ -149,10 +149,9 @@ async function swarmBalances(api, ownToken) {
       const poolKey = [key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks]
       const { amountOut } = await api.call({ abi: QUOTE_ABI, target: QUOTER, params: [[poolKey, memeIs0, idle.toString(), '0x']] })
       const { sqrtPriceX96 } = await api.call({ abi: GET_SLOT0_ABI, target: STATE_VIEW, params: poolIdOf(key) })
-      const sp = Number(sqrtPriceX96) / 2 ** 96
-      const spotValue = Number(idle) * (memeIs0 ? sp * sp : 1 / (sp * sp)) // in pair-asset base units
-      const fraction = Math.min(1, Number(amountOut) / spotValue)
-      api.add(memecoins[i], BigInt(Math.floor(Number(idle) * fraction)))
+      const s2 = BigInt(sqrtPriceX96) ** 2n, q192 = 1n << 192n
+      const spotEquivalent = memeIs0 ? BigInt(amountOut) * q192 / s2 : BigInt(amountOut) * s2 / q192
+      api.add(memecoins[i], spotEquivalent < idle ? spotEquivalent : idle)
     }
   }
 
