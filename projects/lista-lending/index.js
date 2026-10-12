@@ -20,7 +20,7 @@ async function fetchMarketList() {
   const list = []
   let total = Infinity
   for (let page = 1; list.length < total; page++) {
-    const { data } = await get(MARKET_LIST_URL + page)
+    const { data } = await get(MARKET_LIST_URL + page, { timeout: 30000 })
     total = data?.total ?? 0
     const pageList = data?.list ?? []
     if (!pageList.length) break
