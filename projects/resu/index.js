@@ -42,6 +42,7 @@ module.exports = {
         'EQC-EijLoFEAy-pMuvxjlRtQ4yqmKO62ZnptY0J3VvAgVwdE', // tsUSDe pool
       ],
       tokens: [ADDRESSES.ton.tsTON, ADDRESSES.ton.tsUSDe],
+      onlyWhitelistedTokens: true,
     }),
   },
 }
