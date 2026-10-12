@@ -21,6 +21,7 @@ const helpers = {
   "zilliqa": require("./chain/zilliqa"),
   "near": require("./chain/near"),
   "bitcoin": require("./chain/bitcoin"),
+  "bitcoincash": require("./chain/bitcoincash"),
   "litecoin": require("./chain/litecoin"),
   "dash": require("./chain/dash"),
   "kaspa": require("./chain/kaspa"),
