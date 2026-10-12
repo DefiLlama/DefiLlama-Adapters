@@ -14,6 +14,9 @@ const SERVERS = [
 ]
 const PORT = 50002
 
+// 1MB: a 36-line batch is ~2KB; anything larger is a pathological peer
+const MAX_BUF = 1 << 20
+
 const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 function base58Decode(s) {
   let n = 0n
@@ -71,14 +74,20 @@ function queryServer(host, scripthashes) {
       socket.write(batch)
     })
     let buf = ''
+    let finished = false
     const done = (err, result) => {
+      if (finished) return
+      finished = true
       socket.destroy()
       err ? reject(err) : resolve(result)
     }
     socket.setTimeout(20000, () => done(new Error(`bitcoincash: timeout from ${host}`)))
     socket.on('error', (e) => done(new Error(`bitcoincash: ${host}: ${e.message}`)))
+    // clean EOF mid-batch fails over now instead of waiting out the timeout
+    socket.on('close', () => { if (!finished) done(new Error(`bitcoincash: ${host}: connection closed mid-batch`)) })
     socket.on('data', (chunk) => {
       buf += chunk.toString()
+      if (buf.length > MAX_BUF) return done(new Error(`bitcoincash: ${host}: response too large`))
       // TCP chunks need not end on message boundaries: only newline-terminated
       // lines are complete responses; the trailing fragment stays buffered
       const parts = buf.split('\n')
@@ -97,6 +106,10 @@ function queryServer(host, scripthashes) {
           const validAmount = (v) => typeof v === 'number' && Number.isFinite(v) && v >= 0 && Number.isInteger(v)
           if (!res || !validAmount(res.confirmed) || typeof res.unconfirmed !== 'number' || !Number.isFinite(res.unconfirmed))
             throw new Error(`bitcoincash: ${host}: malformed result for request ${response.id}`)
+          // exactly one response per requested id: duplicates/unknown ids
+          // would otherwise publish a wrong nonzero total instead of failing
+          if (!Number.isInteger(response.id) || response.id < 0 || response.id >= scripthashes.length || byId[response.id] !== undefined)
+            throw new Error(`bitcoincash: ${host}: unexpected response id ${response.id}`)
           byId[response.id] = res
         }
         let total = 0
