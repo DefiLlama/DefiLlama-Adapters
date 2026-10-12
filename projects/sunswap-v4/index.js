@@ -31,7 +31,7 @@ async function getTokens() {
   const seenPools = new Set()
   // Fetch one page past MAX_PAGES: it must be empty, otherwise the list was cut off and TVL would be partial.
   for (let pageNo = 1; pageNo <= MAX_PAGES + 1; pageNo++) {
-    const { data } = await get(`${POOL_LIST_API}&pageNo=${pageNo}&pageSize=${PAGE_SIZE}`)
+    const { data } = await get(`${POOL_LIST_API}&pageNo=${pageNo}&pageSize=${PAGE_SIZE}`, { timeout: 30000 })
     if (!Array.isArray(data)) throw new Error(`sunswap-v4: unexpected pool list response for page ${pageNo}`)
     if (!data.length) break // an empty page is the end of the list
     if (pageNo > MAX_PAGES) throw new Error(`sunswap-v4: pool list has more than ${MAX_PAGES} pages`)

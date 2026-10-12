@@ -1183,9 +1183,5 @@ module.exports = {
 };
 
 imports.forEach(([key, file]) => {
-  try {
-    module.exports[key] = require(file);
-  } catch (e) {
-    console.error(`Error importing ${key} from ${file}:`, e);
-  }
+  module.exports[key] = require(file);
 });
