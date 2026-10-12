@@ -58,7 +58,7 @@ function getAllData() {
         const PER_PAGE = 100
         while (true) {
           sdk.log('fetching page', page)
-          const data = await get(`https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=${PER_PAGE}&page=${page}`)
+          const data = await get(`https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=${PER_PAGE}&page=${page}`, { timeout: 30000 })
           const allWallets = Object.values(data.wallets ?? {}).flat()
           if (!allWallets.length) break // empty page => no more wallets
 

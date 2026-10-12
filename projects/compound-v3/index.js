@@ -41,7 +41,7 @@ async function fetchMarkets() {
   const cached = await getCache('config-cache', CACHE_PROJECT)
   Object.entries(cached ?? {}).forEach(([chain, markets]) => Array.isArray(markets) && markets.forEach(m => add(chain, m)))
 
-  const res = await get(MARKETS_API)
+  const res = await get(MARKETS_API, { timeout: 30000 })
   res.forEach(({ chain_id, comet }) => {
     const chain = chainIdToName[chain_id]
     if (!chain) return sdk.log(`compound-v3: unknown chain id ${chain_id} in markets API`)
