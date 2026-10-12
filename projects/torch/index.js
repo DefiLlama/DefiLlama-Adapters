@@ -6,24 +6,12 @@ const DEX_V1 = 'EQCaEOMOR2SRcXTVSolw--rY62ghCoCRjn4Is3bBdnqYwIVZ' // DEX V1 Rout
 const YIELD_ROUTER = 'EQDYU6gxBxFT3arWR-N9RFTfqAoQKyWk4JMgTBNOM2KL18Dw' // Yield Router Contract
 
 async function tvl(api) {
-  let yieldTvl = 0
-  let dexV2Tvls = { tvl: 0 }
-
-  try {
-    const tokenTvl = await get('https://yield-api.torch.finance/tvl') // Yield API
-    yieldTvl = tokenTvl.reduce((acc, data) => {
-      acc += Number(data.tvl) / 1e9
-      return acc
-    }, 0)
-  } catch (e) {
-    console.log("Failed to fetch yield TVL, defaulting to 0:", e.message)
-  }
-
-  try {
-    dexV2Tvls = await get('http://api.torch.finance/metrics/tvl') // DEX V2 API
-  } catch (e) {
-    console.log("Failed to fetch DEX V2 TVL, defaulting to 0:", e.message)
-  }
+  const tokenTvl = await get('https://yield-api.torch.finance/tvl', { timeout: 30000 }) // Yield API
+  const yieldTvl = tokenTvl.reduce((acc, data) => {
+    acc += Number(data.tvl) / 1e9
+    return acc
+  }, 0)
+  const dexV2Tvls = await get('http://api.torch.finance/metrics/tvl', { timeout: 30000 }) // DEX V2 API
 
   const totalTvl = yieldTvl + dexV2Tvls.tvl
 
