@@ -27,8 +27,15 @@ const config = {
 };
 
 
+// TVL temporarily hidden while the protocol stays listed; set to false to re-enable
+const HIDE_TVL = true
+
 Object.keys(config).forEach((chain) => {
   const vaults = config[chain];
+  if (HIDE_TVL) {
+    module.exports[chain] = { tvl: () => ({}), borrowed: () => ({}) };
+    return;
+  }
   module.exports[chain] = {
     tvl: async (api) => {
       for (const { vault, vaultFromBlock } of vaults) {

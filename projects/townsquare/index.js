@@ -7,7 +7,7 @@ const pools = {
     "0x7821ba4e39c86ac4bdd2482e853f9c7ba57d01d0": ADDRESSES.monad.USDT,
     "0x0394728ef18258ca21f782ce37ebf1a16799d7ef": ADDRESSES.monad.WETH,
     "0xd636d6ab7072483de6ddc067f9147f8c1e512f18": ADDRESSES.monad.WBTC,
-    "0x7f5996865e952bd7892366712d319de59b9ecc6b": ADDRESSES.mantle.AUSD ,// AUSD
+    "0x7f5996865e952bd7892366712d319de59b9ecc6b": ADDRESSES.mantle.AUSD,// AUSD
     "0x3249df5ca0b825e7c3e7d84a4bb11c2eacd8c0f6": "0x111111d2bf19e43C34263401e0CAd979eD1cdb61", // USD1
     "0x09cd0233ad57bac4f916ca7aa08321b96effbaf2": "0x336D414754967C6682B5A665C7DAF6F1409E63e8", //MUBOND
     "0xaa3f243731d724f2195271a9c3f5c744f0d0b948": "0x4917a5ec9fCb5e10f47CBB197aBe6aB63be81fE8", //AZND
@@ -29,23 +29,23 @@ const pools = {
 
 const tvl = async ({ api }) => {
     const [totalDeposit, totalBorrowed] = await Promise.all([
-     api.multiCall({
-        abi: 'function getDepositData() view returns(tuple(uint16 optimalUtilisationRatio, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
-        calls: Object.keys(pools).map(target => ({
-            target,
-        }))
-    }), 
-    
-    api.multiCall({
-        abi: 'function getVariableBorrowData() view returns(tuple(uint32 vr0, uint32 vr1, uint32 vr2, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
-        calls: Object.keys(pools).map(target => ({
-            target,
-        }))
-    })
-])
-     Object.values(pools).forEach((pool, i) => {
+        api.multiCall({
+            abi: 'function getDepositData() view returns(tuple(uint16 optimalUtilisationRatio, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
+            calls: Object.keys(pools).map(target => ({
+                target,
+            }))
+        }),
+
+        api.multiCall({
+            abi: 'function getVariableBorrowData() view returns(tuple(uint32 vr0, uint32 vr1, uint32 vr2, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
+            calls: Object.keys(pools).map(target => ({
+                target,
+            }))
+        })
+    ])
+    Object.values(pools).forEach((pool, i) => {
         api.add(pool, totalDeposit[i].totalAmount - totalBorrowed[i].totalAmount)
-     })
+    })
 }
 
 
@@ -65,9 +65,10 @@ async function borrowed({ api }) {
 
 
 module.exports = {
-    methodology: "Counts the total amount deposited in all TownSquare Lending pools",
+    // methodology: "Counts the total amount deposited in all TownSquare Lending pools",
+    // TVL temporarily hidden while the protocol stays listed; swap back to { tvl, borrowed } to re-enable
     monad: {
-        tvl,
-        borrowed
+        tvl: () => ({}),
+        borrowed: () => ({}),
     }
 }
