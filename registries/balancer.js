@@ -153,6 +153,10 @@ const configs = {
     _options: { helperType: 'v3' },
     bsc: { vault: '0xb61cb1E8EF4BB1b74bB858B8B60d82d79488F13D', fromBlock: 60471472 },
   },
+  'bush': {
+    _options: { helperType: 'v3' },
+    robinhood: { vault: '0xB055000fbE3cc9bDE7742C583a86cc6283E3fF85', fromBlock: 24180135 },
+  },
 
   // ===== Balancer V1 (v1Tvl) =====
   'valueliquid': {
