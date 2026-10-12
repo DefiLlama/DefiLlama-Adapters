@@ -182,6 +182,17 @@ const tvl = async (api) => {
     allIBTBalances[ibt] = (allIBTBalances[ibt] || 0) + balance;
   }
 
+  if (api.chain === 'avax') {
+    // mevUSDC and its wrapper have faulty valuations on Avalanche.
+    const excludedIBTs = new Set([
+      '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8',
+      '0x92fbb58342164546325602588599b05802c69bbe',
+    ])
+    for (const ibt of Object.keys(allIBTBalances)) {
+      if (excludedIBTs.has(ibt.toLowerCase())) delete allIBTBalances[ibt]
+    }
+  }
+
   const assets = await api.multiCall({ calls: Object.keys(allIBTBalances).map((ibt) => ({ target: ibt })), abi: abi.vault.asset })
   const assetsBalances = await api.multiCall({ calls: Object.entries(allIBTBalances).map(([ibt, balance]) => ({ target: ibt, params: [BigInt(balance)] })), abi: abi.vault.convertToAsset, permitFailure :true })
 
