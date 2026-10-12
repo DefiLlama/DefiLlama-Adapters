@@ -6,12 +6,17 @@ const pool = '0xde16e61171ca80c169ecb82e9328118ae5958369'
 const fromBlock = 50634768
 const zeroAddress = '0x0000000000000000000000000000000000000000'
 
+/**
+ * Value deposited NFTs still in pool custody using the oracle at the requested block.
+ * @param {object} api DefiLlama ChainApi for Base.
+ * @returns {Promise<void>} Adds the aggregate USD appraisal to the API balances.
+ */
 async function tvl(api) {
   // Pin even current runs: logs, custody and valuation must use the same block.
   const toBlock = await api.getBlock()
   if (toBlock < fromBlock) return
 
-  const logs = await getLogs2({
+  const logOptions = {
     api,
     target: pool,
     eventAbi: 'event Staked(address indexed collection, uint256 indexed tokenId, address indexed staker)',
@@ -20,7 +25,12 @@ async function tvl(api) {
     onlyArgs: true,
     // Preserve the RPC-backed behavior used by the historical replay harness.
     useIndexer: false,
-  })
+  }
+  const logs = await getLogs2(logOptions)
+  // The helper's cached path excludes toBlock and may reuse a cache one block behind.
+  // Read that block without touching the historical cache; token deduplication below
+  // also covers the overlap when a cold fetch already included it.
+  logs.push(...await getLogs2({ ...logOptions, fromBlock: toBlock, skipCache: true }))
   // stakeFor also emits Staked. Re-staking a token must not count it twice.
   const tokens = [...new Map(logs.map(({ collection, tokenId }) => {
     collection = collection.toLowerCase()
