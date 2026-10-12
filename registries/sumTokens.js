@@ -3563,6 +3563,16 @@ const configs = {
       ]
     },
   },
+  "capsulepull": {
+    "methodology": "TVL is the USDG balance of the CapsuleLend contract on Robinhood Chain. That balance is principal still held by a funded loan. It drops when the owner withdraws the principal, the loan is repaid, or the loan defaults and the stablecoin leaves the contract. The Solana card vault and the Robinhood treasury wallet are not counted.",
+    "start": 1791718674,
+    "robinhood": {
+      "owner": "0xa7F89DE1FE71Aa4D37A9179231787b2aC1a4DcFc", // CapsuleLend
+      "tokens": [
+        ADDRESSES.robinhood.USDG
+      ]
+    },
+  },
   "carbon": {
     "misrepresentedTokens": true,
     "methodology": "Counts as TVL the ETH asset deposited through StakingETH Contract, and we count Staking and Pool2 parts in the same way",
