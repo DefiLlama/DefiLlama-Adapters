@@ -15510,7 +15510,7 @@ const configs = {
     },
   },
   "gondi": {
-    "methodology": "Counts the floor value of all deposited NFTs with Chainlink price feeds.",
+    "methodology": "Counts the floor value of the NFTs held as loan collateral by GONDI's escrow (MultiSourceLoan) and user vault contracts, priced with DefiLlama's NFT collection prices. Collections without a DefiLlama price are not counted.",
     "ethereum": {
       "owners": [
         "0xCa5a494Ca20483e21ec1E41FE1D9461Da77595Bd"
@@ -15519,7 +15519,7 @@ const configs = {
     },
   },
   "gondi-v2": {
-    "methodology": "Counts the floor value of all deposited NFTs with Chainlink price feeds.",
+    "methodology": "Counts the floor value of the NFTs held as loan collateral by GONDI's escrow (MultiSourceLoan) and user vault contracts, priced with DefiLlama's NFT collection prices. Collections without a DefiLlama price are not counted.",
     "ethereum": {
       "owners": [
         "0x478f6F994C6fb3cf3e444a489b3AD9edB8cCaE16",
@@ -15529,12 +15529,13 @@ const configs = {
     },
   },
   "gondi-v3": {
-    "methodology": "Counts the floor value of all deposited NFTs with Chainlink price feeds.",
+    "methodology": "Counts the floor value of the NFTs held as loan collateral by GONDI's escrow (MultiSourceLoan) and user vault contracts, priced with DefiLlama's NFT collection prices. Collections without a DefiLlama price are not counted.",
     "ethereum": {
       "owners": [
         "0xf65b99ce6dc5f6c556172bcc0ff27d3665a7d9a8",
         "0x823de2c44369e94cac3da789ad4b6493e27e4bfe",
-        "0xf41b389e0c1950dc0b16c9498eae77131cc08a56"
+        "0xf41b389e0c1950dc0b16c9498eae77131cc08a56",
+        "0xe365ff3cad44d19cb7aba81df8ffd6818a66ac0a"
       ],
       "resolveNFTs": true
     },
