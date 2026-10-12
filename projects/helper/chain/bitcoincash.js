@@ -79,7 +79,10 @@ function queryServer(host, scripthashes) {
     socket.on('error', (e) => done(new Error(`bitcoincash: ${host}: ${e.message}`)))
     socket.on('data', (chunk) => {
       buf += chunk.toString()
-      const lines = buf.split('\n').filter(Boolean)
+      // TCP chunks need not end on message boundaries: only newline-terminated
+      // lines are complete responses; the trailing fragment stays buffered
+      const parts = buf.split('\n')
+      const lines = parts.slice(0, -1).filter(Boolean)
       if (lines.length < scripthashes.length) return
       try {
         // attribute by id: servers may answer out of order
