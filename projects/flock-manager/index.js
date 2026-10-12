@@ -11,13 +11,15 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 //   the LP the vaults have staked, unwrapped to its two underlying tokens
 // + the idle underlying sitting in each borrowable (lender supply not lent)
 //
-// and the collateral contracts are never summed.
+// and the collateral contracts are never summed. Vault LP that pairs with RVH,
+// the parent protocol's token, is reported under pool2 instead of tvl.
 //
 // The Ravenhood lending vaults (rvhUSDG/rvhWETH/rvhUP) are deliberately
 // absent: they are depositors INTO the borrowables, so their balances are
 // already inside the borrowable figures above.
 const LEND_FACTORY = '0x8F50BCb1f34D22adAe05955E1994b0153603cB16'
 const VAULT_FACTORY = '0x4c2302416bf50B4F11dDEE7A8feA2D1BA96d8EfE'
+const RVH = '0x96765066f6a040a21EB027167D2315B707c82633'
 
 const abi = {
   allVaultsLength: 'uint256:allVaultsLength',
@@ -26,7 +28,9 @@ const abi = {
   allLendingPools: 'function allLendingPools(uint256) view returns (address)',
   getLendingPool: 'function getLendingPool(address) view returns (bool initialized, uint24 lendingPoolId, address collateral, address borrowable0, address borrowable1)',
   underlying: 'address:underlying',
-  totalBalance: 'uint256:totalBalance',
+  gauge: 'address:gauge',
+  token0: 'address:token0',
+  token1: 'address:token1',
   totalBorrows: 'function totalBorrows() view returns (uint112)',
 }
 
@@ -38,69 +42,69 @@ async function getBorrowables(api) {
     itemAbi: abi.allLendingPools,
     target: LEND_FACTORY,
   })
-  const poolData = await api.multiCall({
-    target: LEND_FACTORY,
-    abi: abi.getLendingPool,
-    calls: pools,
-    permitFailure: true,
-  })
+  const poolData = await api.multiCall({ target: LEND_FACTORY, abi: abi.getLendingPool, calls: pools })
   const borrowables = []
   poolData.forEach((pool) => {
-    if (pool && pool.initialized) borrowables.push(pool.borrowable0, pool.borrowable1)
+    if (pool.initialized) borrowables.push(pool.borrowable0, pool.borrowable1)
   })
   return borrowables
 }
 
-async function tvl(api) {
-  // Vault side. totalBalance is the LP the vault has staked in the gauge, so
-  // it is not held by the vault address and owner-based discovery would miss
-  // it. resolveLP then turns each LP into its two underlying tokens.
+// The vaults stake their LP in the DEX gauge, so the LP is not held by the
+// vault address. Read each vault's gauge balance, then let resolveLP unwrap it.
+async function addVaultLp(api, isPool2) {
   const vaults = await api.fetchList({
     lengthAbi: abi.allVaultsLength,
     itemAbi: abi.allVaults,
     target: VAULT_FACTORY,
   })
-  const [vaultLps, vaultStaked] = await Promise.all([
-    api.multiCall({ abi: abi.underlying, calls: vaults, permitFailure: true }),
-    api.multiCall({ abi: abi.totalBalance, calls: vaults, permitFailure: true }),
-  ])
-  vaultLps.forEach((lp, i) => {
-    if (lp && vaultStaked[i]) api.add(lp, vaultStaked[i])
+  const lps = await api.multiCall({ abi: abi.underlying, calls: vaults })
+  const gauges = await api.multiCall({ abi: abi.gauge, calls: vaults })
+  const token0s = await api.multiCall({ abi: abi.token0, calls: lps })
+  const token1s = await api.multiCall({ abi: abi.token1, calls: lps })
+  const staked = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: vaults.map((vault, i) => ({ target: gauges[i], params: vault })),
   })
+
+  const isRvh = (token) => token.toLowerCase() === RVH.toLowerCase()
+  lps.forEach((lp, i) => {
+    const hasRvh = isRvh(token0s[i]) || isRvh(token1s[i])
+    if (hasRvh === isPool2) api.add(lp, staked[i])
+  })
+  return sumTokens2({ api, resolveLP: true })
+}
+
+async function tvl(api) {
+  await addVaultLp(api, false)
 
   // Lending side. Only the idle balance: anything lent out is reported under
   // borrowed instead, so the two never overlap.
   const borrowables = await getBorrowables(api)
-  const [lendTokens, lendCash] = await Promise.all([
-    api.multiCall({ abi: abi.underlying, calls: borrowables, permitFailure: true }),
-    api.multiCall({ abi: abi.totalBalance, calls: borrowables, permitFailure: true }),
-  ])
-  lendTokens.forEach((token, i) => {
-    if (token && lendCash[i]) api.add(token, lendCash[i])
-  })
+  const tokens = await api.multiCall({ abi: abi.underlying, calls: borrowables })
+  return sumTokens2({ api, tokensAndOwners: tokens.map((token, i) => [token, borrowables[i]]) })
+}
 
-  return sumTokens2({ api, resolveLP: true })
+async function pool2(api) {
+  return addVaultLp(api, true)
 }
 
 async function borrowed(api) {
   const borrowables = await getBorrowables(api)
-  const [tokens, debts] = await Promise.all([
-    api.multiCall({ abi: abi.underlying, calls: borrowables, permitFailure: true }),
-    api.multiCall({ abi: abi.totalBorrows, calls: borrowables, permitFailure: true }),
-  ])
-  tokens.forEach((token, i) => {
-    if (token && debts[i]) api.add(token, debts[i])
-  })
+  const tokens = await api.multiCall({ abi: abi.underlying, calls: borrowables })
+  const debts = await api.multiCall({ abi: abi.totalBorrows, calls: borrowables })
+  api.add(tokens, debts)
   return api.getBalances()
 }
 
 module.exports = {
   timetravel: true,
+  doublecounted: true,
   // Both factories went live on 2026-10-01 (blocks 77687484 and 77687985) and
   // the first market followed at 77688034. Starting on the 2nd rather than
   // the 1st so no historical query lands on a block where the factories have
   // no code yet, which would revert rather than report zero.
   start: '2026-10-02',
-  methodology: 'TVL is the LP staked by the Flock Manager auto-compounding vaults, unwrapped into its underlying tokens, plus the idle underlying supplied to each Flock Lend borrowable. Collateral contracts are not counted because they hold only vault shares, a wrapper around LP already counted. Borrowed is the outstanding debt of each borrowable and is reported separately, not included in TVL.',
-  robinhood: { tvl, borrowed },
+  methodology: 'TVL is the up-v2 LP staked by the Flock Manager auto-compounding vaults, read from each vault\'s gauge balance and unwrapped into its underlying tokens, plus the idle underlying held by each Flock Lend borrowable. Vault LP paired with RVH, the protocol\'s token, is reported as pool2. Collateral contracts are not counted because they hold only vault shares, a wrapper around LP already counted. The LP is also counted by the up-v2 listing, so the protocol is marked as double counted. Borrowed is the outstanding debt of each borrowable and is reported separately, not included in TVL.',
+  robinhood: { tvl, pool2, borrowed },
 }
