@@ -1,4 +1,4 @@
-const { getConnection, sumTokens2 } = require('../helper/solana')
+const { getConnection } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 const { sleep } = require('../helper/utils')
 
@@ -15,11 +15,12 @@ const POOL_CONFIG_DISC = '5RKzUGPpkkA' // PoolConfig
 const VIRTUAL_POOL_DISC = 'cmrfVvtHrjd' // VirtualPool
 
 // PoolConfig: 8 disc | 32 quote_mint | 32 fee_claimer | ...
+const CONFIG_QUOTE_MINT_OFFSET = 8
 const CONFIG_FEE_CLAIMER_OFFSET = 40
-// VirtualPool: 8 disc | 64 volatility_tracker | 32 config | 32 creator |
-//              32 base_mint | 32 base_vault | 32 quote_vault | ...
+// VirtualPool: config pubkey @72, quote_reserve u64 @240, is_migrated u8 @305
 const POOL_CONFIG_OFFSET = 72
-const POOL_QUOTE_VAULT_OFFSET = 200
+const QUOTE_RESERVE_OFFSET = 240
+const IS_MIGRATED_OFFSET = 305
 
 async function tvl(api) {
   const connection = getConnection()
@@ -29,11 +30,11 @@ async function tvl(api) {
       { memcmp: { offset: 0, bytes: POOL_CONFIG_DISC } },
       { memcmp: { offset: CONFIG_FEE_CLAIMER_OFFSET, bytes: VAULTEX_FEE_CLAIMER } },
     ],
-    dataSlice: { offset: 0, length: 0 },
+    dataSlice: { offset: CONFIG_QUOTE_MINT_OFFSET, length: 32 },
   })
 
-  const tokenAccounts = []
-  for (const { pubkey } of configs) {
+  for (const { pubkey, account } of configs) {
+    const quoteMint = new PublicKey(account.data).toBase58()
     // one getProgramAccounts per config; spaced so public RPCs don't rate-limit (429)
     await sleep(1200)
     const pools = await connection.getProgramAccounts(DBC_PROGRAM, {
@@ -41,17 +42,20 @@ async function tvl(api) {
         { memcmp: { offset: 0, bytes: VIRTUAL_POOL_DISC } },
         { memcmp: { offset: POOL_CONFIG_OFFSET, bytes: pubkey.toBase58() } },
       ],
-      dataSlice: { offset: POOL_QUOTE_VAULT_OFFSET, length: 32 },
+      dataSlice: { offset: QUOTE_RESERVE_OFFSET, length: IS_MIGRATED_OFFSET - QUOTE_RESERVE_OFFSET + 1 },
     })
-    for (const { account } of pools) tokenAccounts.push(new PublicKey(account.data).toBase58())
+    for (const { account: { data } } of pools) {
+      // migration moves the reserve to DAMM v2 but leaves quote_reserve unchanged
+      if (data.readUInt8(IS_MIGRATED_OFFSET - QUOTE_RESERVE_OFFSET) !== 0) continue
+      // quote_reserve excludes the unclaimed protocol, partner and creator fees that sit in the same quote vault
+      api.add(quoteMint, data.readBigUInt64LE(0).toString())
+    }
   }
-
-  return sumTokens2({ api, tokenAccounts })
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    'TVL is the quote asset (SOL, USDC, PUMP and others) held in the quote vaults of Vaultex bonding curves on Meteora Dynamic Bonding Curve. Vaultex pools are the pools created against DBC configs whose partner fee claimer is the Vaultex treasury. Launched tokens are not counted. After graduation the liquidity moves to Meteora DAMM v2 and is counted there.',
+    'TVL is the quote asset (SOL, USDC, PUMP and others) held as reserves in Vaultex bonding curves on Meteora Dynamic Bonding Curve. Vaultex pools are the pools created against DBC configs whose partner fee claimer is the Vaultex treasury. Launched tokens and unclaimed trading fees are not counted. Graduated curves are excluded: their liquidity moves to Meteora DAMM v2 and is counted there.',
   solana: { tvl },
 }
