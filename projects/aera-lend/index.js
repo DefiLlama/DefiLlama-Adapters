@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js')
 const { getConnection, getTokenAccountBalances } = require('../helper/solana')
 
@@ -37,17 +36,6 @@ const RESERVE_MIN_LEN = SLOTS_PER_YEAR_OFFSET + 8
 const FIXED_POINT_SCALE = 10n ** 18n
 const BPS = 10_000n
 
-// bCOOK has no price feed, so collateral is valued in COOK at the BakeYourStake SPL stake
-// pool's exchange rate, totalLamports / poolTokenSupply, the same account the bakeyourstake
-// adapter reads. This is the gross rate: Aera's own oracle also deducts the pool's withdrawal
-// fee (~2% today) before lending against it. Both mints have 9 decimals.
-const BCOOK = 'EkPafx58mgwkEnGwo62jXhXDAdJ37Z8G8MFBRPsr9uhz'
-const STAKE_POOL = new PublicKey('GxbNKNYdtNXQkhDkpHdLDAMX64GxaECgANqdfp6cUGH4')
-const STAKE_POOL_MINT_OFFSET = 162
-const TOTAL_LAMPORTS_OFFSET = 258
-const POOL_TOKEN_SUPPLY_OFFSET = 266
-const COOK = ADDRESSES.solana.SOL // native COOK
-
 const readU128 = (data, offset) => data.readBigUInt64LE(offset) + (data.readBigUInt64LE(offset + 8) << 64n)
 const readU16 = (data, offset) => BigInt(data.readUInt16LE(offset))
 
@@ -78,12 +66,10 @@ function currentDebt(data, principal, slot) {
 }
 
 async function getReserves(connection) {
-  const [accounts, slot] = await Promise.all([
-    connection.getProgramAccounts(PROGRAM, {
-      filters: [{ memcmp: { offset: 0, bytes: RESERVE_DISCRIMINATOR_B58 } }],
-    }),
-    connection.getSlot(),
-  ])
+  const accounts = await connection.getProgramAccounts(PROGRAM, {
+    filters: [{ memcmp: { offset: 0, bytes: RESERVE_DISCRIMINATOR_B58 } }],
+  })
+  const slot = await connection.getSlot()
   const reserves = []
   for (const { pubkey, account } of accounts) {
     const data = account.data
@@ -101,44 +87,24 @@ async function getReserves(connection) {
   return reserves
 }
 
-// Returns a function that adds `amount` of `mint`, converting bCOOK into native COOK.
-async function getAdder(connection, api) {
-  const acc = await connection.getAccountInfo(STAKE_POOL)
-  if (!acc || acc.data.length < POOL_TOKEN_SUPPLY_OFFSET + 8)
-    throw new Error('aera-lend: bCOOK stake pool account missing or malformed')
-  const poolMint = new PublicKey(acc.data.subarray(STAKE_POOL_MINT_OFFSET, STAKE_POOL_MINT_OFFSET + 32)).toBase58()
-  if (poolMint !== BCOOK) throw new Error(`aera-lend: stake pool mint is ${poolMint}, expected bCOOK`)
-  const totalLamports = acc.data.readBigUInt64LE(TOTAL_LAMPORTS_OFFSET)
-  const poolTokenSupply = acc.data.readBigUInt64LE(POOL_TOKEN_SUPPLY_OFFSET)
-  if (poolTokenSupply === 0n) throw new Error('aera-lend: bCOOK stake pool has no supply')
-
-  return (mint, amount) => {
-    amount = BigInt(amount)
-    if (amount === 0n) return
-    if (mint === BCOOK) api.add(COOK, ((amount * totalLamports) / poolTokenSupply).toString())
-    else api.add(mint, amount.toString())
-  }
-}
-
 async function tvl(api) {
   const connection = getConnection(api.chain)
   const reserves = await getReserves(connection)
-  const add = await getAdder(connection, api)
   // No `allowError`: every vault comes out of a live Reserve and is never closed, so a
   // missing vault is an RPC or layout fault that must fail rather than under-report.
   const balances = await getTokenAccountBalances(reserves.map(r => r.vault), { chain: api.chain })
-  for (const [mint, amount] of Object.entries(balances)) add(mint, amount)
+  for (const [mint, amount] of Object.entries(balances)) api.add(mint, amount)
 }
 
 async function borrowed(api) {
   const connection = getConnection(api.chain)
   const reserves = await getReserves(connection)
-  const add = await getAdder(connection, api)
-  for (const { mint, borrowed } of reserves) add(mint, borrowed)
+  for (const { mint, borrowed } of reserves) api.add(mint, borrowed.toString())
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
-  methodology: 'TVL is the tokens held in the liquidity vault of every Aera reserve on Cookie Chain: COOK supplied by lenders and not lent out, plus bCOOK posted as collateral. bCOOK is valued in COOK at the BakeYourStake stake-pool exchange rate (totalLamports / poolTokenSupply), as the bakeyourstake adapter does, before the pool withdrawal fee that Aera\'s own oracle deducts. Borrowed is the outstanding COOK debt: borrowed_principal x borrow_index, with the stored index (updated only when a transaction touches the reserve) advanced to the current slot along the reserve interest-rate curve, so interest not yet written on-chain is included.',
+  methodology: 'TVL is the tokens held in the liquidity vault of every Aera reserve on Cookie Chain: COOK supplied by lenders and not lent out, plus bCOOK posted as collateral. bCOOK is BakeYourStake\'s liquid staking token, and the COOK backing it is already counted in BakeYourStake\'s TVL, so this listing is marked doublecounted. Borrowed is the outstanding COOK debt: borrowed_principal x borrow_index, with the stored index (updated only when a transaction touches the reserve) advanced to the current slot along the reserve interest-rate curve, so interest not yet written on-chain is included.',
   cookiechain: { tvl, borrowed },
 }
