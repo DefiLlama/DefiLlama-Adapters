@@ -3890,7 +3890,7 @@ const configs = {
         "0x0d45b129dc868963025Db79A9074EA9c9e32Cae4",//sUSDp v1
         "0xd3a452B305C8285c0Dd7b8537665c734d3D279eF"//sUSDp v2
       ],
-      owners: ["0x25Fc7ffa8f9da3582a36633d04804F0004706F9b", "0x3De64eed7A43C40E33dc837dec1119DcA0a677b4"],
+      owners: ["0x25Fc7ffa8f9da3582a36633d04804F0004706F9b"],
       ownTokens: ["0x6c0aeceeDc55c9d55d8B99216a670D85330941c3", "0x90b831fa3bebf58e9744a14d638e25b4ee06f9bc"]
     },
     fantom: {
@@ -3898,7 +3898,7 @@ const configs = {
         nullAddress,
         "0x04068da6c83afcfa0e13ba15a6696662335d5b75"
       ],
-      owners: ["0x174162ddecE9d0b7B68fd945e38c3372C4C818ba", "0xA67FC89D5312812D3413A83418fc75ff78148a7E"],
+      owners: ["0x174162ddecE9d0b7B68fd945e38c3372C4C818ba"],
       ownTokens: ["0x1d1764f04de29da6b90ffbef372d1a45596c4855",],
     },
     hyperliquid: {
@@ -3907,13 +3907,21 @@ const configs = {
         "0xBE65F0F410A72BeC163dC65d46c83699e957D588",
         "0x9B3a8f7CEC208e247d97dEE13313690977e24459"
       ],
-      owners: ["0x5C1232b4F5fdb34d487C934ADF5d4e5c01fE34be"],
+      owners: ["0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95"],
       ownTokens: []
     },
     ink: {
       tokens: [
         nullAddress,
         "0x9eE1963f05553eF838604Dd39403be21ceF26AA4"
+      ],
+      owners: ["0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95"],
+      ownTokens: []
+    },
+    linea: {
+      tokens: [
+        nullAddress,
+        "0x8fCf9118fdD359f6277cDd143c2Da206e64140F3"
       ],
       owners: ["0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95"],
       ownTokens: []
@@ -3932,7 +3940,7 @@ const configs = {
         ADDRESSES.polygon.USDC,
         "0x1250304F66404cd153fA39388DDCDAec7E0f1707"
       ],
-      owners: ["0x2046c0416A558C40cb112E5ebB0Ca764c3C5c32a", "0x6fb6a0a35b33e230d0149d49858e1a313a2ad4a7"],
+      owners: ["0x2046c0416A558C40cb112E5ebB0Ca764c3C5c32a"],
       ownTokens: ["0x7790dd69aa10eD3f1271E41CD7222D2a7d2D5948", "0xadac33f543267c4d59a8c299cf804c303bc3e4ac"]
     },
     scroll: {
