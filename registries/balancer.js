@@ -59,7 +59,7 @@ function balV2Chain(fromBlock) {
 const configs = {
   // ===== Balancer V2 (onChainTvl) =====
   'balancer': {
-    hallmarks: [['2026-10-30', 'Balancer pools move to withdrawals-only']],
+    hallmarks: [['2026-10-30', 'Balancer pausable pools move to withdrawals-only']],
     ethereum: balV2Chain(12272146),
     polygon: balV2Chain(15832990),
     arbitrum: balV2Chain(222832),
