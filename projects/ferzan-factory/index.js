@@ -66,7 +66,9 @@ const QUOTE_RESERVE_OFFSET = 240 // u64, wSOL backing the curve
 const IS_MIGRATED_OFFSET = 305 // u8, 1 = moved to a DAMM pool
 
 // Solana, Ferzan's own curve program (site launches before the Meteora switch). State account is
-// 172 bytes: byte 0 = 1 (initialised), real_sol u64 at 137, status u8 at 161 (2 = pooled on Raydium).
+// 172 bytes: byte 0 = 1 (initialised), real_sol u64 at 137, status u8 at 161: 0 = trading, 1 = full (buys stop,
+// waiting for migrate), 2 = pooled on Raydium. A status 1 curve still holds its SOL in the program until migrate moves
+// it to the pool (and zeroes real_sol), so it is counted; the Tron curves' `complete` state is handled the same way.
 // Source: https://github.com/donwonfosho/ferzan-factory/blob/main/contracts/solana/ferzan-curve/src/lib.rs
 const FERZAN_PROGRAM = new PublicKey('G7n5XBB7pjvKS7JfC6esgQGGAyPku5cposdiHfVAUxnJ')
 const STATE_LEN = 172
