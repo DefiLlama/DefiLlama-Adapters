@@ -1,5 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { ASSET_STATE_ABI, isSharedReserve, getSharedAllocation } = require('../flying-tulip-ftusd/shared')
 
 const RESERVES = {
   sonic: [
@@ -21,37 +22,32 @@ const RESERVES = {
     { token: ADDRESSES.ethereum.WSTETH, wrapper: '0x01980BD1B58313bD3767f6adc75Af8b6464f3db7' }, // wstETH -> ftWstETH (stakedNative)
     // { token: '0xF7D85EC4E7710f71992752eac2111312e73E9C9C', wrapper: '0xc67D966f761e8cf13Faa0a1E774425290c8453d9' }, // ftUSD -> ftFtUSD - excluded to prevent flying-tulip-ftusd double count
   ],
+  bsc: [
+    { token: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', wrapper: '0x39285FA9992A3A87e1C2e1476C1404E2cfdD1931' }, // USDC
+    { token: '0x55d398326f99059fF775485246999027B3197955', wrapper: '0xFe040BEeF432FB924f871e9C76180b557a13533c' }, // USDT
+    { token: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', wrapper: '0xa07adCaFc7709685836CF357Fa537AE2B3061156' }, // WBNB
+    { token: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409', wrapper: '0x41CB54680d1Baa26b85bc97641854E59964dBe38' }, // FDUSD
+    { token: '0x77734e70b6E88b4d82fE632a168EDf6e700912b6', wrapper: '0x2D3587Fbd9A8fD4d4dD76e0102BC0063776E5BF6' }, // asBNB
+    { token: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', wrapper: '0x5625ad05ED1031dCEFf37B3383fDd17b202A4f74' }, // ETH
+    { token: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', wrapper: '0x440BE5Cb3663c8d33FD29D5FcF1ad78D684e4DCd' }, // BTCB
+    { token: '0xa2E3356610840701BDf5611a53974510Ae27E2e1', wrapper: '0xfCcE797c51dA526156B14FAa6a9d0e44AF570a62' }, // wBETH
+    { token: '0x205812CdBed920aFf76C6580abD681a46D11efc7', wrapper: '0xee62f248C22F279A39252727E0A17052D85ac7f6' }, // QQQB
+  ],
 }
 
 const LENDING_LENS = {
   sonic: '0x3682168023e6ba8d1f995fda1d920827c5a8a43e',
   ethereum: '0x3682168023e6ba8d1f995fda1d920827c5a8a43e', // CREATE2 deterministic, same as Sonic
+  bsc: '0xc374d2aE274f31bf53C561d0b4024136cC692f48',
 }
-
-const ASSET_STATE_ABI =
-  'function assetState(address) view returns (uint256 cash, uint256 borrows, uint256 reserves, uint256 utilWad)'
-
-const FTUSD_DEDUP_SONIC = {
-  positionManager: '0xbe4050a73a7Fb384c65E885a15C33461A4B20055',
-  user: '0x6EC218FC45aC0C7B83D16557befABB62ed7455Ae', // ftDNS-USDC strategy
-}
-const GET_BALANCE_ABI = 'function getBalance(address,address) view returns (uint256)'
 
 async function tvl(api) {
   const reserves = RESERVES[api.chain] || []
 
-  // Total supplied per reserve = cash + borrows.
-  //
-  // `cash` is the idle liquidity that still sits in the system, split between:
-  //   - underlying held at the ftYieldWrapperV2 (not deployed yet)
-  //   - yield receipt (aToken, spToken, ...) held at each of the wrapper's strategies
-  //
-  // `borrows` is the outstanding debt: tokens lent out to borrowers that have
-  // left the wrapper. We have to add this back via LendingLens.assetState
-  // otherwise the adapter under-reports TVL by the entire borrow book.
-
-  // 1) cash side
-  const strategyLists = await Promise.all(reserves.map(({ wrapper: target }) => api.fetchList({
+  // Shared reserve cash is allocated to ftUSD first. Other reserves retain
+  // their wrapper/receipt accounting; borrowed funds remain a separate metric.
+  const otherReserves = reserves.filter(r => !isSharedReserve(api.chain, r.token))
+  const strategyLists = await Promise.all(otherReserves.map(({ wrapper: target }) => api.fetchList({
     target,
     lengthAbi: 'uint256:numberOfStrategies',
     itemAbi: 'function strategies(uint256) view returns (address)',
@@ -63,16 +59,15 @@ async function tvl(api) {
     : []
 
   const tokensAndOwners = [
-    ...reserves.map(r => [r.token, r.wrapper]),
+    ...otherReserves.map(r => [r.token, r.wrapper]),
     ...strategies.map((s, i) => [positions[i], s]),
   ]
   await sumTokens2({ api, tokensAndOwners })
 
-  // Sonic only: subtract ftDNS-USDC's lend exposure (already tracked by flying-tulip-ftusd)
-  if (api.chain === 'sonic') {
-    const { positionManager, user } = FTUSD_DEDUP_SONIC
-    const bal = await api.call({ target: positionManager, abi: GET_BALANCE_ABI, params: [user, ADDRESSES.sonic.USDC_e] })
-    api.add(ADDRESSES.sonic.USDC_e, -BigInt(bal))
+  for (const { token } of reserves) {
+    if (!isSharedReserve(api.chain, token)) continue
+    const allocation = await getSharedAllocation(api, token)
+    api.add(token, allocation.lend)
   }
 }
 
@@ -88,7 +83,8 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    'TVL: for each Lend reserve, sums the underlying balance held at its ftYieldWrapperV2 plus the yield receipt (aToken, spToken, etc.) held by each of the wrapper\'s strategies. ftDNS-USDC\'s USDC balance is subtracted to prevent doublecounting with flying-tulip-ftusd. Borrowed: sums outstanding debt per reserve via LendingLens.assetState.borrows.',
+    'TVL: independent reserves sum wrapper underlying plus external strategy receipts. For USDC/USDT reserves shared with ftUSD, LendingLens cash is assigned to ftUSD up to its strategy claim and only the residual is assigned to Lend. Borrowed is outstanding debt reported separately via LendingLens.assetState.borrows.',
   sonic: { tvl, borrowed },
   ethereum: { tvl, borrowed },
+  bsc: { tvl, borrowed },
 }
