@@ -52,7 +52,7 @@ async function getBalance(addr) {
   let lastErr
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const res = await get(`https://sochain.com/api/v3/balance/${CHAIN}/${addr}`)
+      const res = await get(`https://sochain.com/api/v3/balance/ZEC/${addr}`)
       const confirmed = res && res.data && res.data.confirmed
       const amount = typeof confirmed === 'string' ? Number(confirmed) : NaN
       if (res && res.status === 'success' && Number.isFinite(amount) && amount >= 0) return amount
