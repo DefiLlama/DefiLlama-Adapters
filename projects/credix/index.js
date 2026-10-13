@@ -5,6 +5,7 @@ const { getProvider, sumTokens2, } = require("../helper/solana");
 
 const MARKET_SEED_FINTECH = "credix-marketplace";
 const MARKET_SEED_RECEIVABLES = "receivables-factoring";
+const PRODUCTION_MARKET_SEEDS = new Set([MARKET_SEED_FINTECH, MARKET_SEED_RECEIVABLES]);
 const USDC = ADDRESSES.solana.USDC;
 const programId = new PublicKey("CRDx2YkdtYtGZXGHZ59wNv1EwKHQndnRc1gT4p8i2vPX");
 const encodeSeedString = (seedString) =>
@@ -50,31 +51,27 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  methodology:
+    "TVL is the USDC held by the two production pool signing authorities (credix-marketplace and receivables-factoring) on Solana. Borrowed is poolOutstandingCredit on those same two markets; test/simulation markets and the protocol treasury are excluded.",
   solana: {
     tvl,
     borrowed,
   },
+  hallmarks: [
+    ["2025-08-04", "CrediX acUSDC key compromise on Sonic; team went dark afterwards"],
+  ],
 };
 
 async function borrowed(api) {
-  
+
   const provider = getProvider();
   const program = constructProgram(provider);
   const states = await program.account.globalMarketState.all();
 
   states.forEach(({ account }) => {
+    if (!PRODUCTION_MARKET_SEEDS.has(account.seed)) return
     api.add(account.baseTokenMint.toBase58(), account.poolOutstandingCredit.toString())
   })
-}
-
-async function tvl1(api) {
-  
-  const provider = getProvider();
-  const program = constructProgram(provider);
-  const states = await program.account.globalMarketState.all();
-
-  const tokenAccounts = states.map(({ account }) => account.treasuryPoolTokenAccount.toBase58())
-  return sumTokens2({ tokenAccounts })
 }
 
 const idl = {
