@@ -12,7 +12,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is the ProYield vault\'s totalAssets() on HyperEVM (chain id 999), denominated in USDC: idle USDC held by the vault plus USDC the vault has allocated to its registered yield strategies. The vault is a capped guarded beta, so TVL is deliberately small while deposit caps are low. No borrowed or double-counted balances; the protocol has no token counted in TVL.',
+    'TVL is the ProYield vault\'s reported accounting value on HyperEVM (chain id 999), read from the vault\'s totalAssets() and denominated in USDC: idle USDC held by the vault plus USDC the vault has allocated to its registered yield strategies, including any returned amounts still recorded on-chain as in-flight. If USDC returned from a strategy remains recorded on-chain as in-flight without being credited, the reported amount may overstate the vault\'s backing. The vault is a capped guarded beta, so TVL is deliberately small while deposit caps are low. The protocol has no token counted in TVL.',
   hyperliquid: {
     tvl,
   },
