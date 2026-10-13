@@ -21,6 +21,22 @@ const PUMPER = '0xd86800D5b021F5D79350C2F742Bbb1ecc010Bf82'
 const USDT0 = '0x779Ded0c9e1022225f8E0630b35a9b54bE713736'
 const WGUSDT = '0x817997Ca8394E26CCE3dE3A076a4889b27DbF9dE'
 const QUOTE_TOKENS = [USDT0, WGUSDT]
+const NATIVE = '0x0000000000000000000000000000000000000000'
+
+// Report every stablecoin as USDT0. On Stable, USDT0 held by a contract is read
+// as the native gas balance (18dp, same money as the 6dp ERC-20 view), and
+// WgUSDT is an 18dp 1:1 wrapper of USDT0.
+function toUsdt0(api) {
+  const balances = api.getBalances()
+  let extra = 0
+  // the same token can appear under differently-cased keys (checksummed vs lowercase)
+  const keys = [NATIVE, WGUSDT].map((t) => `stable:${t.toLowerCase()}`)
+  for (const key of Object.keys(balances).filter((k) => keys.includes(k.toLowerCase()))) {
+    extra += Number(balances[key]) / 1e12
+  }
+  for (const token of [NATIVE, WGUSDT]) api.removeTokenBalance(token)
+  if (extra) api.add(USDT0, extra)
+}
 
 // PUMPER LP NFTs parked to fund staker rewards
 const PUMPER_LP_GAUGES = [
@@ -70,17 +86,19 @@ async function tvl(api) {
     permitFailure: true,
   })
   const escrows = [V4_POOL_MANAGER, ...v4Launchpads, ...vaults.filter((v) => v && !/^0x0+$/.test(v))]
-  return sumTokens2({
+  await sumTokens2({
     api,
     owners: [...v3Launchpads, ...escrows],
     tokens: QUOTE_TOKENS,
     resolveUniV3: true,
     uniV3WhitelistedTokens: QUOTE_TOKENS,
   })
+  toUsdt0(api)
 }
 
 async function pool2(api) {
-  return sumTokens2({ api, owners: PUMPER_LP_GAUGES, resolveUniV3: true })
+  await sumTokens2({ api, owners: PUMPER_LP_GAUGES, resolveUniV3: true })
+  toUsdt0(api)
 }
 
 async function staking(api) {
@@ -89,6 +107,6 @@ async function staking(api) {
 
 module.exports = {
   doublecounted: true, // V3 launch liquidity is also stableswap DEX TVL
-  methodology: 'TVL is the stablecoin side (USDT0 / WgUSDT) of the liquidity of every token launched through Pumper: the Uniswap V3 LP positions held by the V3 launchpads, the liquidity in Pumper\'s Uniswap V4 PoolManager used by the V4 and Lock launchpads, and curve raises escrowed by the Lock launchpads before migration. Launches are taken from PumperProtocolRegistry. Pool2 is the PUMPER LP parked in Pumper\'s reward gauges. Staking is PUMPER staked in the PUMPER reward lockers.',
+  methodology: 'TVL is the USDT0 side of the liquidity of every token launched on Pumper Launchpad (WgUSDT counted as USDT0, 1:1): the Uniswap V3 LP positions held by the V3 launchpads, the liquidity in Pumper\'s Uniswap V4 PoolManager used by the V4 and Lock launchpads, and curve raises escrowed by the Lock launchpads before migration. Launches are taken from PumperProtocolRegistry. Pool2 is the PUMPER/USDT0 LP parked in the Pumper Staking Pool gauge. Staking is PUMPER staked in the Pumper Staking Pool (PUMPER reward lockers). Launched tokens\' own Pumper Launchpad staking pools are not counted, since launched tokens have no price.',
   stable: { tvl, pool2, staking },
 }
