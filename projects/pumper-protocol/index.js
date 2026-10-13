@@ -60,9 +60,13 @@ async function getLaunches(api) {
       calls: Array.from({ length: 100 }, (_, i) => page + i),
       permitFailure: true,
     })
-    const found = batch.filter(Boolean)
-    tokens.push(...found)
-    if (found.length < batch.length) break
+    // past the end every call fails; a failure followed by a valid index is
+    // an RPC error, not the end of the list, so fail instead of dropping launches
+    const end = batch.findIndex((t) => !t)
+    if (end === -1) { tokens.push(...batch); continue }
+    if (batch.slice(end).some(Boolean)) throw new Error(`registry allTokens read failed at index ${page + end}`)
+    tokens.push(...batch.slice(0, end))
+    break
   }
   const records = await api.multiCall({
     abi: 'function tokens(address) view returns (address creator, address pool, address launchpad)',
