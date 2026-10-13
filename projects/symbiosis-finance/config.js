@@ -182,7 +182,7 @@ module.exports = {
         'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
       ],
       holders: [
-        'TNu3QZx8U2YAZTUsB3csii1L8QVgUAY3no' // portal
+        'TD4tamFrCq7KvQEB1LArNXr9sKFC6GaAmt' // portal
       ]
     },
     {
