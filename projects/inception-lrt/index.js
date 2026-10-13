@@ -34,7 +34,7 @@ const eventAbis = {
 const tvl = async (api) => {
   for (const vault of symbioticVaults) {
     const depositedLogs = await getLogs({ api, extraKey: `deposited-${vault}`, fromBlock: 20126194, target: vault, eventAbi: eventAbis.deposit, onlyArgs: true })
-    const withdrawLogs = await getLogs({ api, extrakey: `withdraw-${vault}`, fromBlock: 20126194, target: vault, eventAbi: eventAbis.withdraw, onlyArgs: true })
+    const withdrawLogs = await getLogs({ api, extraKey: `withdraw-${vault}`, fromBlock: 20126194, target: vault, eventAbi: eventAbis.withdraw, onlyArgs: true })
     
     depositedLogs.forEach(e => api.add(wstETH, e[2]));
     withdrawLogs.forEach(e => api.add(wstETH, -e[3]));
