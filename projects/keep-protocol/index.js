@@ -4,9 +4,14 @@ const ADDRESSES = require("../helper/coreAssets.json");
 
 const PROGRAM_ID = new PublicKey("ETVtC29T7ExxYyWSkpzKPxzrL3SRyrGPRhZe3FwXmFAo");
 
-// Robinhood Chain production deployment (2026-07-15). Each project is an
-// independent Launchpad clone that directly holds refundable Paxos USDG.
-const RH_FACTORY = "0x032EAfc08388283e94E44Fb0eA26A004D44ba40d";
+// Robinhood Chain production deployments. Each project is an independent
+// Launchpad clone that directly holds refundable Paxos USDG. Keep both the
+// original production factory and the current metadata-v1 factory so TVL
+// remains continuous across the factory migration.
+const RH_FACTORIES = [
+  "0x032EAfc08388283e94E44Fb0eA26A004D44ba40d", // original production factory
+  "0xC3f2831429F51aCe9243aCe75819488e3566CA7b", // metadata-v1 factory, block 86016310
+];
 
 // Anchor account discriminator for LaunchpadState (base58 of the first 8 bytes).
 const LAUNCHPAD_DISC = "VgW83Wf4icd";
@@ -38,11 +43,12 @@ async function tvl(api) {
 }
 
 async function robinhoodTvl(api) {
-  const launchpads = await api.fetchList({
-    target: RH_FACTORY,
+  const launchpadLists = await Promise.all(RH_FACTORIES.map((target) => api.fetchList({
+    target,
     lengthAbi: "uint64:nextProjectId",
     itemAbi: "function launchpadOf(uint64) view returns (address)",
-  });
+  })));
+  const launchpads = [...new Set(launchpadLists.flat())];
 
   await api.sumTokens({ owners: launchpads, tokens: [ADDRESSES.robinhood.USDG] });
 }
