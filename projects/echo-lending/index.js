@@ -32,6 +32,7 @@ async function getData() {
         item.balance -= +aTokenBalance - +variableDebt
         item.debt -= +variableDebt
       }
+      item.balance = Math.max(0, item.balance)
     }
     return resources.filter(i => i.uToken);
   }

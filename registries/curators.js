@@ -1274,6 +1274,14 @@ const configs = {
             '0x6f48cE6380693808682E43140E3Eeb877a096Aa1', // USDC T-Prime Instant
             '0xBEEFFF4716a49418D69c251cab8759bB107e57C8', // USDC Turbo
             '0xBEEFFFDE1CABD3d8A3cd4fd5e04DbA51B9D4Ac39', // XAUT Turbo
+            '0xbeef04cCAfe3FB25dEc704afe592e846B8C7fd06', // Steakhouse ARSs
+            '0xBEEFFF9291CB0898ae42626C662f3175d4B69F7F', // Steakhouse High Yield Turbo USDT
+            '0xbeef0A65206ba55319851836c91f3Fd8864a2E39', // Project Nexus Prime Alpha Vault
+            '0xbeef06DB5Aad37A31a99Ae8aE3120618845c5A23', // Grove x Steakhouse USDG
+            '0xbeef05061FE51eA482BD1b68041353490b3a5934', // Grove x Steakhouse USDG
+            '0xbeef0819C768893e9E29189429C25339DFbE7BA5', // Grove x Steakhouse USDG
+            '0xBeEff4fD39F8e48b6a6e475445D650cb11e9599F', // Grove x Steakhouse RLUSD
+            '0xbeef08Db223ad823164A4B13CBD6bd8b5d507b41', // Grove x Steakhouse PYUSD
           ],
           mellow: [
             '0xBEEF69Ac7870777598A04B2bd4771c71212E6aBc',
@@ -1304,6 +1312,10 @@ const configs = {
             '0xBEEff02DE231f8B08c627C769edC73e7AcE47264', // Steakhouse Morpho V2
             '0xBEEFFFe68dFc2D3BD1ABdAd37c70634973b16478', // USDC Turbo
             '0xBeEfF0be997Cca5B1c13A7433c2004637975739e', // Ethena x Steakhouse USDC (deployed via a factory wrapper, missed by the owner filter)
+            '0xbeef0786756810478b88982DE00F3CD7fdB8e7c7', // Grove x Steakhouse USDC
+            '0xbeef0Eb37DdB8f88BDf167c498c6429676fF7947', // Grove x Steakhouse USDC
+            '0xbeef0e6B6EC67b1E56bb938782f445473441bf15', // Techblock x Steakhouse USDC
+            '0x34ddDAb96C40788FC94eabeEFF71e2082d85Fc0E', // Ethena USDC Turbo
           ],
         },
         corn: {
@@ -1314,6 +1326,7 @@ const configs = {
         unichain: {
           morphoVaultOwners: [
             '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+            '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
           ],
         },
         arbitrum: {
@@ -1326,6 +1339,9 @@ const configs = {
           morpho: [
             '0xBEEFFF13dD098De415e07F033daE65205B31A894', // USDC Turbo
             '0xBEEFFFFE0E9b26bBe3B5cE851539366991C3BF39', // XAUT0 Turbo
+            '0xbeeFf72B77e7584a450E887125F25E8D8819016a', // Steakhouse USDG Pro
+            '0xbeeff96dD606189562dDBBdE0cdB1c13f984680b', // Steakhouse High Yield USDC
+            '0xbeefff50b7Bb6D1a6c6A9b97b60b5cAa24B6b5CC', // Steakhouse High Yield USDT
           ],
         },
         katana: {
@@ -1346,6 +1362,8 @@ const configs = {
           morpho: [
             '0xBEEF0C61DA39F7EA2bFa7B0f9d6338A3a2DD2fF0', // Steakhouse USDC
             '0xBEEF067C9D2591aCCAB7d1C336a41ca3bd45b8f5', // Steakhouse mUSD
+            '0x7f8DC4d700964ce0a288A10cE1D904a1300354Be', // Steakhouse USDC Reserved
+            '0x7c3Bfb0FD70e6591d1747d12EAFCf329C904f35F', // Steakhouse mUSD Reserved
           ],
         },
         polygon: {
@@ -1363,6 +1381,14 @@ const configs = {
             '0xbEeFF0fb1Dc19344A87b8479dAb60A2e16160737', // Ethena x Steakhouse USDG
             '0xBEEff039907422219Fb367e525954DDC092854d9', // Grove x Steakhouse USDG
             '0xbeEfFF136E3684273e6aA75A1669B784B373A4FD', // Steakhouse Turbo USDG
+            '0xB97a135C344862bbacbB585A3B0Db051698CF905', // Ethena USDG Turbo
+          ],
+        },
+        arc: {
+          morpho: [
+            '0xbeef0016cb2Fd5C352ea7CA08a9f54739DFa7298', // Steakhouse Prime USDC
+            '0xbeef0007d5A04246F5382957035Df34f7e82102e', // Steakhouse Prime USDC
+            '0xbeef00be37BdE921BAE06fad223125BAB16c41D1', // Steakhouse Prime EURC
           ],
         },
         solana: {
