@@ -247,6 +247,7 @@ const configs = {
             '0xBf29043164660C60A2a72Cd15FFe2304e87B6838',
             '0x500aE64100D7DbDb640531085C2F5d40cDC8930D',
             '0x3d5EcCb62974178236A768A7ef14D3ce468Fbe91',
+            '0xcf609F8327E68b42AF54F9D529b9f65d68038435',
           ],
         },
       },
