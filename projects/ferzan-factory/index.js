@@ -30,6 +30,11 @@ const EVM = {
   tron: { factories: ['TSxKr97AGGL6nEZNFYRnGfN48VjB9fi5AN', 'TPS1aM5TwfmJHjzuA1XMy6wWme2LYqZ1BN'], fromBlock: 82000000 },
 }
 
+/**
+ * EVM + Tron TVL: finds every Ferzan curve from the factories' CurveLaunched logs and adds the native coin
+ * each one has raised (realEth) while it has not graduated.
+ * @param {object} api DefiLlama ChainApi for the chain being measured
+ */
 async function evmTvl(api) {
   const { factories, fromBlock, native, nativeDiv = 1n } = EVM[api.chain]
   const curves = []
@@ -75,6 +80,11 @@ const STATE_LEN = 172
 const REAL_SOL_OFFSET = 137
 const STATUS_OFFSET = 161
 
+/**
+ * Solana TVL: wSOL backing Ferzan's Meteora DBC curves that have not migrated, plus SOL held by curves of
+ * Ferzan's own curve program that have not been pooled yet.
+ * @param {object} api DefiLlama ChainApi for Solana
+ */
 async function solanaTvl(api) {
   const connection = getConnection()
   for (const config of FERZAN_DBC_CONFIGS) {
