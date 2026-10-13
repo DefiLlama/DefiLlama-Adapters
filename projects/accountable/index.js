@@ -13,6 +13,7 @@ const FACTORIES = {
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
         '0xB4082B8126AF8B5345CfB159AC5d4b4F05F54bC5',
         '0xC0f778b51bF9751BBccBF4e78A107026aDaDbe43', // yield factory
+        '0xcC2Af6B6B3a888D96166205B9bA27d7dba3a67DE', // collateral fixed term factory
     ],
     arbitrum: [
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
@@ -33,11 +34,13 @@ const FACTORIES = {
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
         '0xB4082B8126AF8B5345CfB159AC5d4b4F05F54bC5',
         '0xC0f778b51bF9751BBccBF4e78A107026aDaDbe43', // yield factory
+        '0xcC2Af6B6B3a888D96166205B9bA27d7dba3a67DE', // collateral fixed term factory
     ],
     bsc: [
         '0xd51FaCdE443729A8302A8138f3e050e831Db413D',
         '0x6E659cD796aAB41419C70def7748Fff37Bf3967a',
         '0xdBdbb4F6B80CA00B2a8B1f929C1957eCecd1BAaB', // yield factory
+        '0xF9a0197f9dB6bd8171EBa53D21cb098597D23871', // collateral fixed term factory
     ],
     pharos: [
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
