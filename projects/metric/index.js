@@ -38,3 +38,9 @@ Object.keys(config).forEach(chain => {
 })
 
 module.exports.methodology = 'TVL is the sum of token0 and token1 balances held by every pool created by the Metric pool factory. Pools are discovered on-chain from the factory PoolCreated events.'
+
+// The first-generation factory was decommissioned on 2026-10-07: its pools were
+// drained (TVL went from ~$1.0M to ~$3.7k by 2026-10-08) and their price
+// providers switched off. The live Metric pools belong to the factory tracked
+// by projects/metric-v1.
+module.exports.deadFrom = '2026-10-08'
