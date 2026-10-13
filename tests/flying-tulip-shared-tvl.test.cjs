@@ -132,6 +132,48 @@ test('BSC Lend values an independent reserve from held receipt tokens', async ()
   assert.equal(balances[wbnb.toLowerCase()], 125n)
 })
 
+test('BSC Lend does not read wrappers before their deployment blocks', async () => {
+  const historicalBlock = 123848543 // 2026-09-25, before ETH/BTCB/wBETH/QQQB wrapper deployments
+  const listedWrappers = []
+  const isolatedLend = loadLendWithMockSumTokens(async ({ tokensAndOwners }) => {
+    assert.equal(tokensAndOwners.length, 3) // WBNB, FDUSD, asBNB
+  })
+  const api = {
+    chain: 'bsc', block: historicalBlock,
+    getBalances: () => ({}),
+    add() {},
+    async fetchList({ target }) { listedWrappers.push(target.toLowerCase()); return [] },
+    async multiCall({ abi, calls }) {
+      if (abi.includes('assetState')) {
+        assert.equal(calls.length, 5) // only the five markets already deployed
+        return calls.map(() => ({ borrows: 0n }))
+      }
+      return []
+    },
+    async call({ abi }) {
+      if (abi.includes('getBalance')) return [0n, 0n]
+      if (abi.includes('assetState')) return { cash: 0n }
+      throw new Error(`Unexpected ABI: ${abi}`)
+    },
+  }
+  await isolatedLend.bsc.tvl(api)
+  assert.equal(listedWrappers.length, 3)
+  await isolatedLend.bsc.borrowed(api)
+})
+
+test('BSC Lend is empty before its first wrapper deployment', async () => {
+  const isolatedLend = loadLendWithMockSumTokens(async () => { throw new Error('Unexpected token read') })
+  const api = {
+    chain: 'bsc', block: 115757611,
+    getBalances: () => ({}),
+    async fetchList() { throw new Error('Unexpected wrapper read') },
+    async multiCall() { throw new Error('Unexpected reserve read') },
+    async call() { throw new Error('Unexpected shared-cash read') },
+  }
+  assert.deepEqual(await isolatedLend.bsc.tvl(api), {})
+  assert.deepEqual(await isolatedLend.bsc.borrowed(api), {})
+})
+
 test('BSC ftUSD counts wrapper and strategy idle assets plus its capped Lend cash', async () => {
   const tokens = [BSC_USDC, BSC_USDT]
   const wrappers = ['0x0000000000000000000000000000000000000001', '0x0000000000000000000000000000000000000002']
@@ -174,6 +216,15 @@ test('BSC ftUSD counts wrapper and strategy idle assets plus its capped Lend cas
   await ftusd.bsc.tvl(api)
   assert.equal(balances[BSC_USDC.toLowerCase()], 68n)
   assert.equal(balances[BSC_USDT.toLowerCase()], 40n)
+})
+
+test('BSC ftUSD returns empty before the MintAndRedeem deployment block', async () => {
+  const api = {
+    chain: 'bsc', block: 108860157,
+    getBalances: () => ({}),
+    async fetchList() { throw new Error('Unexpected pre-deployment call') },
+  }
+  assert.deepEqual(await ftusd.bsc.tvl(api), {})
 })
 
 test('ftUSD rejects a funded external strategy whose position metadata is unreadable', async () => {

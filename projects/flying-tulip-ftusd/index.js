@@ -6,11 +6,13 @@ const MINT_AND_REDEEM = {
   sonic: '0x0c6f8ec81c3ea5bff06f6cd0791780f9f050ee31',
   bsc: '0x7d73863178A3eCb9767F0BE1bf50F55305A52743',
 }
+const BSC_DEPLOY_BLOCK = 108860158
 
 const COLLATERAL_INFO_ABI =
   'function collateralInfo(address) view returns (tuple(address yieldWrapper, uint8 decimals, bool enabled, uint16 mintFeeBps, uint16 redeemFeeBps, uint256 maxValueFtUSD, uint256 mintPriceHardcapWad, uint256 totalIn, uint256 totalOut, uint256 totalFtUSDBurned, uint256 totalFtUSDMinted))'
 
 async function tvl(api) {
+  if (api.chain === 'bsc' && api.block != null && Number(api.block) < BSC_DEPLOY_BLOCK) return api.getBalances()
   const mr = MINT_AND_REDEEM[api.chain]
   const collaterals = await api.fetchList({
     target: mr,
@@ -83,5 +85,5 @@ module.exports = {
     'Counts idle collateral in each MintAndRedeem wrapper and strategy, plus external strategy receipts. For Flying Tulip shared strategies, counts the collateral held in Lend up to the lesser of the strategy claim and reserve cash; Lend counts only residual cash. Borrowed funds are separate from TVL.',
   ethereum: { tvl },
   sonic: { tvl },
-  bsc: { tvl },
+  bsc: { tvl, start: '2026-07-08' },
 }

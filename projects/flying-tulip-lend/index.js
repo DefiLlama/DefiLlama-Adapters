@@ -23,15 +23,17 @@ const RESERVES = {
     // { token: '0xF7D85EC4E7710f71992752eac2111312e73E9C9C', wrapper: '0xc67D966f761e8cf13Faa0a1E774425290c8453d9' }, // ftUSD -> ftFtUSD - excluded to prevent flying-tulip-ftusd double count
   ],
   bsc: [
-    { token: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', wrapper: '0x39285FA9992A3A87e1C2e1476C1404E2cfdD1931' }, // USDC
-    { token: '0x55d398326f99059fF775485246999027B3197955', wrapper: '0xFe040BEeF432FB924f871e9C76180b557a13533c' }, // USDT
-    { token: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', wrapper: '0xa07adCaFc7709685836CF357Fa537AE2B3061156' }, // WBNB
-    { token: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409', wrapper: '0x41CB54680d1Baa26b85bc97641854E59964dBe38' }, // FDUSD
-    { token: '0x77734e70b6E88b4d82fE632a168EDf6e700912b6', wrapper: '0x2D3587Fbd9A8fD4d4dD76e0102BC0063776E5BF6' }, // asBNB
-    { token: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', wrapper: '0x5625ad05ED1031dCEFf37B3383fDd17b202A4f74' }, // ETH
-    { token: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', wrapper: '0x440BE5Cb3663c8d33FD29D5FcF1ad78D684e4DCd' }, // BTCB
-    { token: '0xa2E3356610840701BDf5611a53974510Ae27E2e1', wrapper: '0xfCcE797c51dA526156B14FAa6a9d0e44AF570a62' }, // wBETH
-    { token: '0x205812CdBed920aFf76C6580abD681a46D11efc7', wrapper: '0xee62f248C22F279A39252727E0A17052D85ac7f6' }, // QQQB
+    // startBlock is each wrapper's first on-chain code block. Later markets
+    // must not be called during historical TVL replay before deployment.
+    { token: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', wrapper: '0x39285FA9992A3A87e1C2e1476C1404E2cfdD1931', startBlock: 115757612 }, // USDC
+    { token: '0x55d398326f99059fF775485246999027B3197955', wrapper: '0xFe040BEeF432FB924f871e9C76180b557a13533c', startBlock: 115757648 }, // USDT
+    { token: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', wrapper: '0xa07adCaFc7709685836CF357Fa537AE2B3061156', startBlock: 115757623 }, // WBNB
+    { token: '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409', wrapper: '0x41CB54680d1Baa26b85bc97641854E59964dBe38', startBlock: 115757660 }, // FDUSD
+    { token: '0x77734e70b6E88b4d82fE632a168EDf6e700912b6', wrapper: '0x2D3587Fbd9A8fD4d4dD76e0102BC0063776E5BF6', startBlock: 115757635 }, // asBNB
+    { token: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', wrapper: '0x5625ad05ED1031dCEFf37B3383fDd17b202A4f74', startBlock: 124580546 }, // ETH
+    { token: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', wrapper: '0x440BE5Cb3663c8d33FD29D5FcF1ad78D684e4DCd', startBlock: 124580833 }, // BTCB
+    { token: '0xa2E3356610840701BDf5611a53974510Ae27E2e1', wrapper: '0xfCcE797c51dA526156B14FAa6a9d0e44AF570a62', startBlock: 124580558 }, // wBETH
+    { token: '0x205812CdBed920aFf76C6580abD681a46D11efc7', wrapper: '0xee62f248C22F279A39252727E0A17052D85ac7f6', startBlock: 124581107 }, // QQQB
   ],
 }
 
@@ -41,8 +43,16 @@ const LENDING_LENS = {
   bsc: '0xc374d2aE274f31bf53C561d0b4024136cC692f48',
 }
 
-async function tvl(api) {
+function activeReserves(api) {
   const reserves = RESERVES[api.chain] || []
+  if (api.block == null) return reserves
+  const block = Number(api.block)
+  return Number.isFinite(block) ? reserves.filter(r => !r.startBlock || block >= r.startBlock) : reserves
+}
+
+async function tvl(api) {
+  const reserves = activeReserves(api)
+  if (!reserves.length) return api.getBalances()
 
   // Shared reserve cash is allocated to ftUSD first. Other reserves retain
   // their wrapper/receipt accounting; borrowed funds remain a separate metric.
@@ -72,7 +82,8 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  const reserves = RESERVES[api.chain] || []
+  const reserves = activeReserves(api)
+  if (!reserves.length) return api.getBalances()
   const states = await api.multiCall({
     target: LENDING_LENS[api.chain],
     abi: ASSET_STATE_ABI,
@@ -86,5 +97,5 @@ module.exports = {
     'TVL: independent reserves sum wrapper underlying plus external strategy receipts. For USDC/USDT reserves shared with ftUSD, LendingLens cash is assigned to ftUSD up to its strategy claim and only the residual is assigned to Lend. Borrowed is outstanding debt reported separately via LendingLens.assetState.borrows.',
   sonic: { tvl, borrowed },
   ethereum: { tvl, borrowed },
-  bsc: { tvl, borrowed },
+  bsc: { tvl, borrowed, start: '2026-08-13' },
 }

@@ -27,6 +27,8 @@ wrapper/strategy collateral, so the two reported values sum exactly to cash.
 | Ethereum 26182537 | USDC | 2,819,506,836,872 | 2,788,487,871,495 | 2,788,487,871,495 | 31,018,965,377 |
 | Ethereum 26182537 | USDT | 1,738,722,096,135 | 1,837,448,927,263 | 1,738,722,096,135 | 0 |
 | Sonic 80906979 | USDC | 492,855,453,930 | 785,987,138,787 | 492,855,453,930 | 0 |
+| BSC 123848543 | USDC | 748,915,911,423,675,719,431 | 22,200,000,000,000,000,000 | 22,200,000,000,000,000,000 | 726,715,911,423,675,719,431 |
+| BSC 123848543 | USDT | 971,035,324,970,471,419,797 | 50,192,141,999,999,996,926 | 50,192,141,999,999,996,926 | 920,843,182,970,471,422,871 |
 | BSC 127387993 | USDC | 1,407,720,144,169,538,155,229 | 55,010,120,467,542,427,883 | 55,010,120,467,542,427,883 | 1,352,710,023,701,995,727,346 |
 | BSC 127387993 | USDT | 2,124,917,464,024,836,509,096 | 1,308,656,597,999,999,996,926 | 1,308,656,597,999,999,996,926 | 816,260,866,024,836,512,170 |
 
@@ -36,5 +38,8 @@ Sonic `0x2ded4f9647efb054247f7917db78240a275fc16791b925ddfdd1554bf8bec1e6`,
 BSC `0x173c4ce4178fad58f01129c405477c02d7bd9eeb3f1e572b723cdf7e55375fc2`.
 
 Run `node --test tests/flying-tulip-shared-tvl.test.cjs` and the repository's
-`node test.js` command for each adapter. The BSC public RPC used for the fixed
-check prunes historical state; older BSC replay needs an archive RPC.
+`node test.js` command for each adapter. Historical BSC replay at block 123848543
+used an archive RPC; the standard public RPC prunes that state. The ETH, BTCB,
+wBETH, and QQQB Lend wrappers did not exist at that block. Their first-code
+blocks are 124580546, 124580833, 124580558, and 124581107 respectively, so
+the Lend adapter skips them before deployment and includes them afterward.
