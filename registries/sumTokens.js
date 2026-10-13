@@ -41746,7 +41746,8 @@ const configs = {
         "0x9fd253eeca51aa8cef55d8eb2fedd22b72fab3fd",
         "0x3322a1084b905cad729abcc6f02c52bbfbcbdf55",
         "0xad0d5df9316ca451707fae2ea3e079d368e80ba3",
-        "0x4f84d1f9ae79363008870dacf7d50e4385166c9f"
+        "0x4f84d1f9ae79363008870dacf7d50e4385166c9f",
+        "0x7DdCa859D0a6F4D9B4A4a9209e97Ac0C73E454Ec" // additional authorized vault wallet
       ],
       "resolveUniV3": true
     },
