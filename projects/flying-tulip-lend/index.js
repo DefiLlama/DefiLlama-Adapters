@@ -43,6 +43,11 @@ const LENDING_LENS = {
   bsc: '0xc374d2aE274f31bf53C561d0b4024136cC692f48',
 }
 
+/**
+ * Exclude reserve wrappers that were not deployed at the requested block.
+ * @param {object} api DefiLlama API with chain and optional historical block.
+ * @returns {object[]} Reserves available at that block.
+ */
 function activeReserves(api) {
   const reserves = RESERVES[api.chain] || []
   if (api.block == null) return reserves
@@ -50,6 +55,11 @@ function activeReserves(api) {
   return Number.isFinite(block) ? reserves.filter(r => !r.startBlock || block >= r.startBlock) : reserves
 }
 
+/**
+ * Count independent Lend assets plus cash left after ftUSD's shared claim.
+ * @param {object} api DefiLlama API for the chain and block being measured.
+ * @returns {Promise<object>} Token balances supplied to Lend.
+ */
 async function tvl(api) {
   const reserves = activeReserves(api)
   if (!reserves.length) return api.getBalances()
@@ -81,6 +91,11 @@ async function tvl(api) {
   }
 }
 
+/**
+ * Report outstanding reserve debt separately from supplied Lend TVL.
+ * @param {object} api DefiLlama API for the chain and block being measured.
+ * @returns {Promise<object>} Borrowed token balances.
+ */
 async function borrowed(api) {
   const reserves = activeReserves(api)
   if (!reserves.length) return api.getBalances()

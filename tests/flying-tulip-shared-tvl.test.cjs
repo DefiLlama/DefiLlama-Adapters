@@ -8,6 +8,11 @@ const ftusd = require('../projects/flying-tulip-ftusd')
 const BSC_USDC = '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'
 const BSC_USDT = '0x55d398326f99059fF775485246999027B3197955'
 
+/**
+ * Load a fresh Lend adapter with a mocked receipt-token balance helper.
+ * @param {Function} sumTokens2 Mock used while the adapter module loads.
+ * @returns {object} Adapter instance isolated from the module cache.
+ */
 function loadLendWithMockSumTokens(sumTokens2) {
   const helperPath = require.resolve('../projects/helper/unwrapLPs')
   const adapterPath = require.resolve('../projects/flying-tulip-lend')

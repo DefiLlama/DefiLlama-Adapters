@@ -22,6 +22,12 @@ const SHARED_RESERVES = {
 const ASSET_STATE_ABI = 'function assetState(address) view returns (uint256 cash, uint256 borrows, uint256 reserves, uint256 utilWad)'
 const GET_BALANCE_ABI = 'function getBalance(address user, address asset) view returns (uint256 avail, uint256 holdBal)'
 
+/**
+ * Give ftUSD its available claim from reserve cash and leave the rest to Lend.
+ * @param {bigint | string | number} cash Cash held by the Lend reserve.
+ * @param {bigint | string | number} claim ftUSD strategy's available claim.
+ * @returns {{ ftusd: bigint, lend: bigint }} Nonnegative cash allocation.
+ */
 function allocateSharedCash(cash, claim) {
   cash = BigInt(cash)
   claim = BigInt(claim)
@@ -30,10 +36,23 @@ function allocateSharedCash(cash, claim) {
   return { ftusd, lend: cash - ftusd }
 }
 
+/**
+ * Check whether an asset's Lend cash is shared with ftUSD on this chain.
+ * @param {string} chain DefiLlama chain name.
+ * @param {string} token Reserve asset address.
+ * @returns {boolean} Whether the reserve uses shared-cash allocation.
+ */
 function isSharedReserve(chain, token) {
   return SHARED_RESERVES[chain]?.tokens.some(asset => asset.toLowerCase() === token.toLowerCase()) || false
 }
 
+/**
+ * Read the ftUSD claim and Lend cash, then allocate their shared reserve cash.
+ * @param {object} api DefiLlama API for the chain and block being measured.
+ * @param {string} token Shared reserve asset address.
+ * @param {object} [state] Optional prefetched LendingLens asset state.
+ * @returns {Promise<{ftusd: bigint, lend: bigint, claim: bigint, cash: bigint}>} Allocation and source balances.
+ */
 async function getSharedAllocation(api, token, state) {
   const config = SHARED_RESERVES[api.chain]
   if (!config || !isSharedReserve(api.chain, token)) throw new Error(`Not a Flying Tulip shared reserve: ${api.chain}:${token}`)

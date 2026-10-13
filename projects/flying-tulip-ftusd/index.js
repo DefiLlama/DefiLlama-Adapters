@@ -11,6 +11,11 @@ const BSC_DEPLOY_BLOCK = 108860158
 const COLLATERAL_INFO_ABI =
   'function collateralInfo(address) view returns (tuple(address yieldWrapper, uint8 decimals, bool enabled, uint16 mintFeeBps, uint16 redeemFeeBps, uint256 maxValueFtUSD, uint256 mintPriceHardcapWad, uint256 totalIn, uint256 totalOut, uint256 totalFtUSDBurned, uint256 totalFtUSDMinted))'
 
+/**
+ * Count ftUSD wrapper collateral, strategy assets, and its share of Lend cash.
+ * @param {object} api DefiLlama API for the chain and block being measured.
+ * @returns {Promise<object>} Token balances backing ftUSD.
+ */
 async function tvl(api) {
   if (api.chain === 'bsc' && api.block != null && Number(api.block) < BSC_DEPLOY_BLOCK) return api.getBalances()
   const mr = MINT_AND_REDEEM[api.chain]
