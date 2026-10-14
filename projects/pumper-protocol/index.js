@@ -21,29 +21,6 @@ const PUMPER = '0xd86800D5b021F5D79350C2F742Bbb1ecc010Bf82'
 const USDT0 = '0x779Ded0c9e1022225f8E0630b35a9b54bE713736'
 const WGUSDT = '0x817997Ca8394E26CCE3dE3A076a4889b27DbF9dE'
 const QUOTE_TOKENS = [USDT0, WGUSDT]
-const NATIVE = '0x0000000000000000000000000000000000000000'
-
-// Report every stablecoin as USDT0. On Stable, USDT0 held by a contract is read
-// as the native gas balance (18dp, same money as the 6dp ERC-20 view), and
-// WgUSDT is an 18dp 1:1 wrapper of USDT0.
-function toUsdt0(api) {
-  const balances = api.getBalances()
-  let extra = 0
-  // the same token can appear under differently-cased keys (checksummed vs lowercase)
-  const keys = [NATIVE, WGUSDT].map((t) => `stable:${t.toLowerCase()}`)
-  for (const key of Object.keys(balances).filter((k) => keys.includes(k.toLowerCase()))) {
-    extra += Number(balances[key]) / 1e12
-  }
-  for (const token of [NATIVE, WGUSDT]) api.removeTokenBalance(token)
-  if (extra) api.add(USDT0, extra)
-}
-
-// PUMPER LP NFTs parked to fund staker rewards
-const PUMPER_LP_GAUGES = [
-  '0x19f2A134F39dF26370E09B36A7817D23Eec6fE6A', // PumperLpGaugeV3
-  '0x859f6F2Fe604B2d132a969EdA2b406a0293801d3', // PumperGoldGauge
-  '0xBb8778DF4F4b6ec8D047F887E22fC42bB815E173', // PumperLpGauge (legacy)
-]
 // PumperRewardLocker: staked PUMPER
 const PUMPER_STAKING = [
   '0x1276021Cf10aD7b3f9677Ee5A70827146Cc1b5CF', // WgUSDT reward pool (legacy)
@@ -51,23 +28,7 @@ const PUMPER_STAKING = [
 ]
 
 async function getLaunches(api) {
-  // allTokens has no length getter: read it in pages until an index fails
-  const tokens = []
-  for (let page = 0; ; page += 100) {
-    const batch = await api.multiCall({
-      abi: 'function allTokens(uint256) view returns (address)',
-      target: REGISTRY,
-      calls: Array.from({ length: 100 }, (_, i) => page + i),
-      permitFailure: true,
-    })
-    // past the end every call fails; a failure followed by a valid index is
-    // an RPC error, not the end of the list, so fail instead of dropping launches
-    const end = batch.findIndex((t) => !t)
-    if (end === -1) { tokens.push(...batch); continue }
-    if (batch.slice(end).some(Boolean)) throw new Error(`registry allTokens read failed at index ${page + end}`)
-    tokens.push(...batch.slice(0, end))
-    break
-  }
+  const tokens = await api.fetchList({ lengthAbi: 'totalTokens', itemAbi: 'allTokens', target: REGISTRY })
   const records = await api.multiCall({
     abi: 'function tokens(address) view returns (address creator, address pool, address launchpad)',
     target: REGISTRY,
@@ -84,25 +45,20 @@ async function getLaunches(api) {
 async function tvl(api) {
   const { v3Launchpads, v4Launches } = await getLaunches(api)
   const v4Launchpads = [...new Set(v4Launches.map((l) => l.launchpad))]
+  // vaultOf exists only on the Lock launchpads that escrow in a per-launch vault
   const vaults = await api.multiCall({
     abi: 'function vaultOf(address) view returns (address)',
     calls: v4Launches.map((l) => ({ target: l.launchpad, params: [l.token] })),
     permitFailure: true,
   })
   const escrows = [V4_POOL_MANAGER, ...v4Launchpads, ...vaults.filter((v) => v && !/^0x0+$/.test(v))]
-  await sumTokens2({
+  return sumTokens2({
     api,
     owners: [...v3Launchpads, ...escrows],
     tokens: QUOTE_TOKENS,
     resolveUniV3: true,
     uniV3WhitelistedTokens: QUOTE_TOKENS,
   })
-  toUsdt0(api)
-}
-
-async function pool2(api) {
-  await sumTokens2({ api, owners: PUMPER_LP_GAUGES, resolveUniV3: true })
-  toUsdt0(api)
 }
 
 async function staking(api) {
@@ -111,6 +67,6 @@ async function staking(api) {
 
 module.exports = {
   doublecounted: true, // V3 launch liquidity is also stableswap DEX TVL
-  methodology: 'TVL is the USDT0 side of the liquidity of every token launched on Pumper Launchpad (WgUSDT counted as USDT0, 1:1): the Uniswap V3 LP positions held by the V3 launchpads, the liquidity in Pumper\'s Uniswap V4 PoolManager used by the V4 and Lock launchpads, and curve raises escrowed by the Lock launchpads before migration. Launches are taken from PumperProtocolRegistry. Pool2 is the PUMPER/USDT0 LP parked in the Pumper Staking Pool gauge. Staking is PUMPER staked in the Pumper Staking Pool (PUMPER reward lockers). Launched tokens\' own Pumper Launchpad staking pools are not counted, since launched tokens have no price.',
-  stable: { tvl, pool2, staking },
+  methodology: 'TVL is the USDT0/WgUSDT side of the liquidity of every token launched on Pumper Launchpad: the Uniswap V3 LP positions held by the V3 launchpads, the liquidity in Pumper\'s Uniswap V4 PoolManager used by the V4 and Lock launchpads, and curve raises escrowed by the Lock launchpads before migration. Launches are taken from PumperProtocolRegistry. Staking is PUMPER staked in the Pumper Staking Pool (PUMPER reward lockers). Launched tokens\' own Pumper Launchpad staking pools are not counted, since launched tokens have no price.',
+  stable: { tvl, staking },
 }
