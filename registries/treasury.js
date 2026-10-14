@@ -4638,6 +4638,24 @@ const configs = {
       uniV3nftsAndOwners: [['0xE9baC8f0100C3229AbddE01D692c6e5791d3b544', '0x940e79c49d73ce46884f57087e0c78b608da57c6']],
     },
   },
+  'treasury/pumper-protocol': {
+    stable: {
+      tokens: [ADDRESSES.stable.USDT0, '0x817997Ca8394E26CCE3dE3A076a4889b27DbF9dE'], // USDT0, WgUSDT
+      owners: [
+        '0x88417F6cF37DAf2055f325B9de4498B8da2f4359', // PumperTreasuryVaultV3
+        '0x3d641ad57af4cFb9C354e7554dDbcf29033b699A', // PumperTreasuryVault V2 (abandoned)
+        '0x5198a9A0c4f44f1494d4931697cC693CA3673320', // PumperTreasuryVault V1
+        '0x600191784c1F56fE1930Cb9A084c23d47d76aDD6', // PumperTreasuryVault V2
+        '0xD3173b0CC00FAAdb8D3FBF9035DA2B26491eC170', // PumperTreasuryVault V2 (abandoned)
+        '0xF4F918bdc3B4e2717D05034C8a079c5c1Ae3d7Ee', // PumperTreasuryVault V2 (abandoned)
+        '0xb961cE542585F15DC447eF97a11A3392DbD11F06', // admin vault (10% launchpad cut)
+        '0x19f2A134F39dF26370E09B36A7817D23Eec6fE6A', // PumperLpGaugeV3: team PUMPER/USDT0 LP, admin-removable
+        '0x859f6F2Fe604B2d132a969EdA2b406a0293801d3', // PumperGoldGauge
+      ],
+      ownTokens: ['0xd86800D5b021F5D79350C2F742Bbb1ecc010Bf82'], // PUMPER
+      resolveUniV3: true,
+    },
+  },
   'treasury/push': {
     ethereum: {
       owners: ['0x19Ff5f2C05aC6a303aF6d5002C99686e823EBE72'],
