@@ -41,6 +41,7 @@ async function tvl() {
     MARKET_SEED_RECEIVABLES
   );
   const tokens = await sumTokens2({
+    computeTokenAccount: true,
     tokensAndOwners: [
       [USDC, signingAuthorityKeyFintech],
       [USDC, signingAuthorityKeyReceivables],
@@ -66,10 +67,15 @@ async function borrowed(api) {
 
   const provider = getProvider();
   const program = constructProgram(provider);
-  const states = await program.account.globalMarketState.all();
+  const pdas = await Promise.all(
+    [...PRODUCTION_MARKET_SEEDS].map(
+      async (seed) => (await findGlobalMarketStatePDA(seed))[0]
+    )
+  );
+  const states = await program.account.globalMarketState.fetchMultiple(pdas);
 
-  states.forEach(({ account }) => {
-    if (!PRODUCTION_MARKET_SEEDS.has(account.seed)) return
+  states.forEach((account) => {
+    if (!account) return
     api.add(account.baseTokenMint.toBase58(), account.poolOutstandingCredit.toString())
   })
 }
