@@ -41,7 +41,6 @@ async function tvl() {
     MARKET_SEED_RECEIVABLES
   );
   const tokens = await sumTokens2({
-    computeTokenAccount: true,
     tokensAndOwners: [
       [USDC, signingAuthorityKeyFintech],
       [USDC, signingAuthorityKeyReceivables],
@@ -58,9 +57,6 @@ module.exports = {
     tvl,
     borrowed,
   },
-  hallmarks: [
-    ["2025-08-04", "CrediX acUSDC key compromise on Sonic; team went dark afterwards"],
-  ],
 };
 
 async function borrowed(api) {
