@@ -78,8 +78,10 @@ async function tvl(api) {
     add(market.denom, netAmount.toFixed(0));
   });
 
+  // Only listed assets count: the credit manager accepts deposits of any denom.
+  const tokens = markets.map((market) => market.denom);
   for (const owner of creditManagers) {
-    await getBalance2({ chain: api.chain, owner, api: { add } });
+    await getBalance2({ chain: api.chain, owner, tokens, api: { add } });
   }
 
   // maps azig to its price source (helper/tokenMapping.js)
