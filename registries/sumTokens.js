@@ -27780,12 +27780,18 @@ const configs = {
     },
   },
   "the-lifedao": {
-    "methodology": "TVL is calculated by unwrapping the Savings Vault's Uniswap V3 USDC/USDT LP position on Arbitrum into its underlying token balances.",
+    "methodology": "Counts idle USDC in the Savings Vault and BTC-ETH Investment Vault, the Uniswap V3 LP positions both vaults hold (USDC/USDT and WBTC/WETH), and idle WBTC/WETH in the BTC-ETH strategy, on Arbitrum.",
     "arbitrum": {
-      "owner": "0x6d1bD94Cd572e51Aa018aE6Bf909BA61F8F8d4f9",
+      "owners": [
+        "0x6d1bD94Cd572e51Aa018aE6Bf909BA61F8F8d4f9",
+        "0x86565284b9e6c29da4c401b3C59128F8672C216D",
+        "0x317c1b07442bb945FF139517c0F6fa91d0C0d0b7"
+      ],
       "resolveUniV3": true,
       "tokens": [
-        ADDRESSES.arbitrum.USDC
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+        ADDRESSES.arbitrum.WBTC,
+        ADDRESSES.arbitrum.WETH
       ]
     },
   },
