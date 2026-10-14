@@ -68,6 +68,9 @@ const COMPOUND_POOLS = {
     'Sentora mWIN Main': '0x7cBcfc4F64be199eDE6db1D916ddcdb69f666B57',
     'Sentora PRIME Main': '0xC21b08C16458202593D4D9B26b9984Ee67b38BbD',
     'Steakhouse Prime Instant PYUSD': '0xbeef00B5d83C1188F07A5184230a805639c39f04',
+    'Keyrock USDC V2': '0x04422053aDDbc9bB2759b248B574e3FCA76Bc145',
+    'KPK ETH Prime': '0xBb50A5341368751024ddf33385BA8cf61fE65FF9',
+    'Pendle Ecosystem USDC V2': '0x55C1B6e461a6334B567bAF0FEb5D728715446f05',
   };
 
   // Fluid (Ethereum mainnet)
@@ -98,6 +101,7 @@ const COMPOUND_POOLS = {
     'Euler Prime WETH': '0xD8b27CF359b7D15710a5BE299AF6e7Bf904984C2',
     'K3 Capital Prime USDC': '0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9',
     'K3 Capital Earn USDT': '0xb072b2779F1EF1A6A9D2d5fAa1766F341B92aB3a',
+    USDC: '0xe0a80d35bB6618CBA260120b279d357978c42BCE', // eUSDC-22
   };
   
   // Wasabi Protocol (Ethereum mainnet)
