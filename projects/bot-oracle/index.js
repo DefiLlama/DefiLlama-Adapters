@@ -14,24 +14,14 @@ const OPERATOR_REGISTRY = '0xfC059C84744843B1651bfa414D5500c0dF8Ca9D1'
 // Balances are native BOT, but bot:0x0000...0000 has no price feed; WBOT is
 // priced and 1:1 by construction, so we denominate in it (same convention as
 // dexlaunch's wnative on this chain).
-async function addNativeAsWbot(api, owners) {
-  const { output: bals } = await sdk.api.eth.getBalances({ targets: owners, chain: 'bot', block: api.block })
-  bals.forEach(({ balance }) => api.add(ADDRESSES.bot.WBOT, balance))
-}
-
 async function tvl(api) {
-  // Native BOT held by the coordinators: open request escrow + accrued fees.
-  return addNativeAsWbot(api, [COORDINATOR_V1, COORDINATOR])
-}
-
-async function staking(api) {
-  // Native BOT bonded by registered operators.
-  return addNativeAsWbot(api, [OPERATOR_REGISTRY])
+  const { output: bals } = await sdk.api.eth.getBalances({ targets: [COORDINATOR_V1, COORDINATOR, OPERATOR_REGISTRY], chain: 'bot', block: await api.getBlock() })
+  bals.forEach(({ balance }) => api.add(ADDRESSES.bot.WBOT, balance))
 }
 
 module.exports = {
   methodology:
-    'TVL counts native BOT held by OracleCoordinator: fees escrowed while requests are in flight plus accrued protocol fees pending treasury withdrawal. Staking counts BOT bonds operators post to OperatorRegistry, which secure fulfillments and are slashable on fraud. Native BOT balances are reported as WBOT (1:1 wrapped native).',
+    'TVL counts native BOT held by OracleCoordinator (fees escrowed while requests are in flight plus accrued protocol fees pending treasury withdrawal) and BOT bonds operators post to OperatorRegistry, which secure fulfillments and are slashable on fraud. Native BOT balances are reported as WBOT (1:1 wrapped native).',
   start: '2026-10-05', // first fulfilled request on mainnet (block 25665263)
-  bot: { tvl, staking },
+  bot: { tvl },
 }
