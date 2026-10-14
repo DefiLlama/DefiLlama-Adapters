@@ -23470,6 +23470,22 @@ const configs = {
       ]
     },
   },
+  "qualia": {
+    "doublecounted": true,
+    "methodology": "Counts the WMON held by the Kintsu superMON vault on Monad and the USDe held by the HLPe vault on Hyperliquid, both Upshift vaults curated by Qualia. Assets the vault operator reports as deployed outside the vaults are not counted. The vaults are also counted under Upshift.",
+    "monad": {
+      "owner": "0x792C7c5fB5C996E588b9F4A5FB201C79974e267C", // Kintsu superMON
+      "tokens": [
+        ADDRESSES.monad.WMON
+      ]
+    },
+    "hyperliquid": {
+      "owner": "0x8fFDcd8A96d293f45aA044d10b899F9D71897E8a", // HLPe
+      "tokens": [
+        ADDRESSES.hyperliquid.USDe
+      ]
+    },
+  },
   "quantum-unit": {
     "methodology": "count all contract balance",
     "bsc": {
