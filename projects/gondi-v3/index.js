@@ -34,30 +34,39 @@ const loanContracts = {
   ],
 }
 
-// MultiSourceLoan only stores keccak(loan) per loan id, so open loans are rebuilt from its events:
-// a refinance closes the old id and opens a new one with the loan in the event.
+const principalOf = (loan) => loan.tranche.reduce((sum, { principalAmount }) => sum + principalAmount, 0n).toString()
+
+// [openedLoanId, closedLoanId, principalAddress, principal]: a refinance closes the old id and opens a new one
+const toEntry = {
+  LoanEmitted: ({ loanId, loan }) => [String(loanId), null, loan.principalAddress, principalOf(loan)],
+  LoanRefinanced: ({ oldLoanId, newLoanId, loan }) => [String(newLoanId), String(oldLoanId), loan.principalAddress, principalOf(loan)],
+  LoanRefinancedFromNewOffers: ({ loanId, newLoanId, loan }) => [String(newLoanId), String(loanId), loan.principalAddress, principalOf(loan)],
+}
+CLOSING_EVENTS.forEach(name => toEntry[name] = ({ loanId }) => [null, String(loanId)])
+
+// the logs cache keeps one small entry per loan event instead of the raw log
+const compactCache = (name) => ({ cache, logs }) => {
+  if (!Array.isArray(cache.logs)) cache.logs = []
+  logs.forEach(log => cache.logs.push(toEntry[name](log)))
+  return cache
+}
+
+// MultiSourceLoan only stores keccak(loan) per loan id, so open loans are rebuilt from its events
 async function addOpenLoans(api, { target, fromBlock, events }) {
-  const logs = {}
-  await Promise.all(Object.entries(events).map(async ([name, eventAbi]) => {
-    logs[name] = await getLogs2({ api, target, fromBlock, eventAbi, extraKey: name })
-  }))
+  const entries = await Promise.all(Object.entries(events).map(([name, eventAbi]) =>
+    getLogs2({ api, target, fromBlock, eventAbi, extraKey: name, customCacheFunction: compactCache(name) })
+  ))
 
   const loans = {}
   const closed = new Set()
-  logs.LoanEmitted.forEach(({ loanId, loan }) => loans[loanId] = loan)
-  logs.LoanRefinanced.forEach(({ oldLoanId, newLoanId, loan }) => {
-    closed.add(String(oldLoanId))
-    loans[newLoanId] = loan
+  entries.flat().forEach(([opened, closedId, token, principal]) => {
+    if (opened) loans[opened] = [token, principal]
+    if (closedId) closed.add(closedId)
   })
-  logs.LoanRefinancedFromNewOffers.forEach(({ loanId, newLoanId, loan }) => {
-    closed.add(String(loanId))
-    loans[newLoanId] = loan
-  })
-  CLOSING_EVENTS.forEach(name => logs[name].forEach(({ loanId }) => closed.add(String(loanId))))
 
   Object.entries(loans)
     .filter(([loanId]) => !closed.has(loanId))
-    .forEach(([, loan]) => loan.tranche.forEach(({ principalAmount }) => api.add(loan.principalAddress, principalAmount)))
+    .forEach(([, [token, principal]]) => api.add(token, principal))
 }
 
 async function borrowed(api) {
