@@ -487,6 +487,9 @@ module.exports = {
     "1L153qzyQdrnYuPDeGyyBEHmXyUqWXHzTn",
     "bc1qwyc5km9j23enhtfke96wt9ejqe9hwdpg222f7f",
     "1BKWQjCcRGjs9TozqbUEiPnehtzGVmHPXT",
+    "bc1q9v9lcpmzk8wf9uvv07szm5t445rnr2capk5mey",
+    "bc1qtkrjaaqy3l42zmu7wrw7wn44xkzxxtqespjavk",
+    "19XXnYoRw1diwT7MWksBfJ9HoWUKmZV2FG",
   ],
   btse: ["bc1qaxyju6n2x2tednv8e7hgnhnz44vrfcmuhjxpfk"],
   bybit: [
