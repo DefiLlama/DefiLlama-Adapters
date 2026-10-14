@@ -1777,7 +1777,19 @@ const configs = {
         },
       }
     }
-  }
+  },
+  "utorg": {
+    config: {
+      methodology: 'Counts assets deposited in the Utorg USD Yield Morpho vault on Ethereum.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x2dcfaea213ff75ce9ccc36598d1c1180b6a37c08',
+          ],
+        },
+      }
+    },
+  },
 }
 
 const allProtocols = {}
