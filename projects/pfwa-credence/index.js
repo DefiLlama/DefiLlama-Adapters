@@ -1,8 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
-// Credence (credence.pfwa.fun, part of PFWA): a launchpad on Robinhood Chain where each token's trading fees fund a
-// Polymarket bet. Only cash is counted: ETH, WETH and dollar stablecoins sitting in Credence's vault contracts.
+// Credence (credence.pfwa.fun, part of PFWA): a token deployer on Robinhood Chain. Every token it deploys is tied to a
+// live Polymarket prediction: the token's trading fees fund the bet, and winnings buy back and burn the token.
+// Only cash is counted: ETH, WETH and dollar stablecoins sitting in Credence's vault contracts.
 // Not counted: Polymarket outcome shares (CTF ERC-1155 positions) held by the PolyVaults, the launched meme tokens and
 // their curve / pool liquidity, $PFWA, launch fees in the launcher contracts (protocol revenue) and fees not yet
 // collected from Pons.
