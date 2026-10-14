@@ -2,30 +2,25 @@ const ADDRESSES = require('../helper/coreAssets.json');
 
 // Maintained deployment inventory: https://docs.dittonetwork.io/ditto-earn
 // Roots only: custody links and registered Ethereum strategies are read at api.block.
+// Each root maps to its deploy block.
 const YIELD_SPLIT = '0x62507A876309639096D08E7F77AC9CfB67Df8011';
-const MUSD_VAULTS = [
-  '0x762a17f2B3164ea5010C1C88085AeAC8872957D0', // August 11 pilot; still funded
-  '0x9171Cb787C3fEEbBC808D07CaB62B1d789CE14F8', // September 23 V2
-];
-const RECEIVERS = [
-  '0x7817548BE174C22DecDe831Ea9d514927fD0D286', // pilot, Ethereum
-  '0x73e97D42f341713e2ED10E55964C066d924a8106', // V2, Ethereum
-];
+const YIELD_SPLITS = { [YIELD_SPLIT]: 24322294 };
+const MUSD_VAULTS = {
+  '0x762a17f2B3164ea5010C1C88085AeAC8872957D0': 11046210, // August 11 pilot; still funded
+  '0x9171Cb787C3fEEbBC808D07CaB62B1d789CE14F8': 12045506, // September 23 V2
+};
+const RECEIVERS = {
+  '0x7817548BE174C22DecDe831Ea9d514927fD0D286': 25730917, // pilot, Ethereum
+  '0x73e97D42f341713e2ED10E55964C066d924a8106': 26040404, // V2, Ethereum
+};
 const ZERO = '0x0000000000000000000000000000000000000000';
 /** Deduplicate custody addresses case-insensitively and exclude the zero address. */
 const unique = addresses => [...new Set(addresses.map(address => address.toLowerCase()))].filter(address => address !== ZERO);
 
-/**
- * Select contracts deployed at the requested historical block.
- * A genuine pre-deployment zero is allowed; provider failures propagate.
- * @param {object} api DeFiLlama chain API pinned to the requested block.
- * @param {string[]} addresses Public deployment roots to check.
- * @returns {Promise<string[]>} Roots with deployed bytecode at that block.
- */
-async function deployed(api, addresses) {
+/** Roots already deployed at the requested block. */
+async function deployed(api, roots) {
   const block = await api.getBlock();
-  const code = await Promise.all(addresses.map(address => api.provider.getCode(address, block)));
-  return addresses.filter((_, index) => code[index] !== '0x');
+  return Object.keys(roots).filter(address => block >= roots[address]);
 }
 
 /**
@@ -56,7 +51,7 @@ async function mezoTvl(api) {
  * @returns {Promise<object>} Settled underlying asset balances.
  */
 async function ethereumTvl(api) {
-  const yieldSplit = await deployed(api, [YIELD_SPLIT]);
+  const yieldSplit = await deployed(api, YIELD_SPLITS);
   if (yieldSplit.length) await api.erc4626Sum({ calls: yieldSplit, isOG4626: true });
   const receivers = await deployed(api, RECEIVERS);
   if (!receivers.length) return api.getBalances();
