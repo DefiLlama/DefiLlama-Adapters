@@ -1777,7 +1777,19 @@ const configs = {
         },
       }
     }
-  }
+  },
+  "splits": {
+    config: {
+      methodology: 'Counts assets deposited in the Splits Earn USDC Morpho vault on Base.',
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0x00353084d226fc607e0ec7b213832d4633d52acc',
+          ],
+        },
+      }
+    },
+  },
 }
 
 const allProtocols = {}
