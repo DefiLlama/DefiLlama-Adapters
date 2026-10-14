@@ -67,15 +67,14 @@ async function borrowed(api) {
 
   const provider = getProvider();
   const program = constructProgram(provider);
+  const seeds = [...PRODUCTION_MARKET_SEEDS];
   const pdas = await Promise.all(
-    [...PRODUCTION_MARKET_SEEDS].map(
-      async (seed) => (await findGlobalMarketStatePDA(seed))[0]
-    )
+    seeds.map(async (seed) => (await findGlobalMarketStatePDA(seed))[0])
   );
   const states = await program.account.globalMarketState.fetchMultiple(pdas);
 
-  states.forEach((account) => {
-    if (!account) return
+  states.forEach((account, i) => {
+    if (!account) throw new Error(`credix: missing globalMarketState for market ${seeds[i]}`)
     api.add(account.baseTokenMint.toBase58(), account.poolOutstandingCredit.toString())
   })
 }
