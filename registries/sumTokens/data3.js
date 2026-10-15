@@ -997,8 +997,14 @@ module.exports = {
     }
   },
   "pare": {
-    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain. Each vault holds the stock backing one series of principal (pToken) and yield (yToken) tokens until maturity.",
+    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain, and yield-bearing dollars (sUSDx) deposited in PARE YieldVaults on Ethereum. Each vault holds what backs one series of principal (pToken) and yield (yToken) tokens until maturity.",
     "start": "2026-09-02",
+    "ethereum": {
+      "tokensAndOwners": [
+        // YieldVaults hold the share they split (sUSDx, Staked USDx). The PT/sUSDx pools are Uniswap v4 and count under Uniswap.
+        ["0xEB892628D1E58BC475A6dCB7F5dBC4F591632AA4", "0xFB0c70eaDdc3717A9c95E3D6c5B791244437a25c"], // pUSDx-MAR27, audited build, 2026-10-10
+      ],
+    },
     "robinhood": {
       "tokensAndOwners": [
         // audited build, 2026-09-18, maturity 2027-12-31
