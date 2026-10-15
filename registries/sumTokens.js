@@ -23495,25 +23495,6 @@ const configs = {
       ]
     },
   },
-  "quantumpools": {
-    "methodology": "TVL is the value of every Uniswap V3 concentrated-liquidity position held by the QuantumPools vaults (V2 and V2.1) on Base and Robinhood Chain, unwrapped to underlying token amounts at the current pool tick.",
-    "doublecounted": true,
-    "start": "2026-09-28",
-    "robinhood": {
-      "owners": [
-        "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3",
-        "0xd3AAb853758c81c09C4510D1b05b9152F71B30F5"
-      ],
-      "resolveUniV3": true
-    },
-    "base": {
-      "owners": [
-        "0x9597f68203d1bc85744A5Fc11D890aA7777e386B",
-        "0x0e8A7c9Fd76e718202B3c3530f3B587ba52FB1A8"
-      ],
-      "resolveUniV3": true
-    },
-  },
   "quenta": {
     "methodology": "The calculation method for Quenta's TVL is the total value of all stablecoins (ioUSDC, ioUSDT) staked in the USDQ contract.",
     "iotex": {
