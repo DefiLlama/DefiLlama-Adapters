@@ -1,5 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
+const { getLogs2 } = require('../helper/cache/getLogs')
 const sdk = require('@defillama/sdk')
 
 const kongEndpoint = 'https://kong.yearn.fi/api/rest'
@@ -87,35 +88,47 @@ async function remoteOverlap(api, vaults, strategyAbi) {
 async function getV3Strategies(api, vaults) {
   if (!vaults.length) return []
   const toBlock = await api.getBlock()
-  // Tokenized strategies also report 3.x, but have no child-strategy registry.
-  // Identify them on-chain; a failed queue read alone must not hide an allocator.
+  const queueAbi = 'function get_default_queue() view returns (address[])'
   const queues = await api.multiCall({
-    abi: 'function get_default_queue() view returns (address[])',
-    calls: vaults.map(({ vault }) => vault.address), permitFailure: true,
+    abi: queueAbi, calls: vaults.map(({ vault }) => vault.address), permitFailure: true,
   })
-  const withoutQueue = vaults.filter((_, i) => !queues[i])
+  // An empty array is a confirmed empty queue; null is an unavailable read.
+  // Tokenized strategies also report 3.x, but expose management() instead of a queue.
+  const unavailable = vaults.map((_, i) => i).filter(i => queues[i] == null)
   const managers = await api.multiCall({
-    abi: 'address:management', calls: withoutQueue.map(({ vault }) => vault.address), permitFailure: true,
+    abi: 'address:management', calls: unavailable.map(i => vaults[i].vault.address), permitFailure: true,
   })
-  managers.forEach((manager, i) => {
-    if (manager == null) throw new Error(`Cannot identify Yearn V3 vault: ${withoutQueue[i].vault.address}`)
-  })
+  const retry = unavailable.filter((_, i) => managers[i] == null)
+  // Retry unclassified contracts strictly. Never silently skip an allocator
+  // whose queue could not be read, even if the other vaults were successful.
+  if (retry.length) {
+    const recovered = await api.multiCall({ abi: queueAbi, calls: retry.map(i => vaults[i].vault.address) })
+    retry.forEach((index, i) => {
+      if (!Array.isArray(recovered[i])) throw new Error(`Cannot read Yearn V3 queue: ${vaults[index].vault.address}`)
+      queues[index] = recovered[i]
+    })
+  }
   const strategies = []
-  // Bound concurrent history scans; the SDK caches ranges and fetches new logs.
+  // Bound concurrent history scans; getLogs2 caches history and fetches new logs.
   for (let offset = 0; offset < vaults.length; offset += 5) {
     const batch = await Promise.all(vaults.slice(offset, offset + 5).map(async ({ vault }, i) => {
       if (!queues[offset + i]) return []
       const fromBlock = Number(vault.inceptBlock)
       if (!Number.isSafeInteger(fromBlock) || fromBlock <= 0 || fromBlock > toBlock)
         throw new Error(`Invalid Yearn V3 inception block: ${vault.address}`)
-      const logs = await api.getLogs({
-        target: vault.address, fromBlock, toBlock, cacheInCloud: true,
+      const params = {
+        api, target: vault.address, fromBlock, toBlock,
         eventAbi: 'event StrategyChanged(address indexed strategy, uint256 indexed change_type)',
-        onlyArgs: true,
-      })
+        extraKey: 'yearn-v3-strategy-changed', onlyArgs: false,
+      }
+      // Cached getLogs2 reads exclude toBlock and may lag by one block.
+      // Read that block uncached too, without requesting a future block.
+      const history = await getLogs2(params)
+      const closingBlock = await getLogs2({ ...params, fromBlock: toBlock, skipCache: true })
+      const logs = [...history, ...closingBlock].filter(log => log.blockNumber >= fromBlock && log.blockNumber <= toBlock)
       // Keep revoked/re-added addresses too: debt is checked at the requested
       // block below. Queue membership and Kong's count are not debt evidence.
-      return [...new Set([...queues[offset + i], ...logs.map(log => log.strategy)]
+      return [...new Set([...queues[offset + i], ...logs.map(log => log.args.strategy)]
         .map(address => address.toLowerCase()))]
     }))
     strategies.push(...batch)
