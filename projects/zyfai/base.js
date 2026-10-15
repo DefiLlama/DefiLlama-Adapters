@@ -85,8 +85,6 @@ const SUPERFORM_POOLS = {
     'Flagship Base WETH SuperVault': '0x0e70c10fa06931f7b878653a15aecc86145c1af7', 
     'Flagship Base CBBTC SuperVault': '0xfc8a6526ffcd8248b8d0f8dac8037dbe438924ce',
     'NVDAC': '0xc441a2cc3a528b6312740448a70cc4d40f4d7bfc',
-    'GOOGLC': '0x363600ac7173e8d91bcfee68d711bb93e992c110',
-    'AAPLC': '0x301a1ceb684d62833101b373ab6c395349b24033',
 };
 
 const BASE_YEARN_POOLS = {
@@ -101,8 +99,14 @@ const IPOR_POOLS = {
     'Apple Carry Trade': '0x31744e44d6af88225c1dbefbe5df8308faea641b',
     'Meta Carry Trade': '0xcd19f18884bf388b866d05cdd1ae351133821f01',
     'Google Carry Trade': '0x01dbdb9748ecf71b1ffbb62f5cb41318531ba362',
-    USDC: '0xd46a3c2d958d0a2cb098d48c48dc19fe3a710f37',
 };
+
+// Share tokens with no Llama price. Held out of allPoolTokens and counted as underlying.
+const UNPRICED_VAULTS = [
+    '0xd46a3c2d958d0a2cb098d48c48dc19fe3a710f37', // IPOR Fusion USDC
+    '0x363600ac7173e8d91bcfee68d711bb93e992c110', // Superform GOOGLc
+    '0x301a1ceb684d62833101b373ab6c395349b24033', // Superform AAPLc
+];
 
 const AUTOFINANCE_POOLS = {
     USDC: '0x9c6864105AEC23388C89600046213a44C384c831', // baseUSD
@@ -137,5 +141,6 @@ const allPoolTokens = [
 ]
 
 module.exports = {
-  allPoolTokens
+  allPoolTokens,
+  unpricedVaults: UNPRICED_VAULTS,
 };
