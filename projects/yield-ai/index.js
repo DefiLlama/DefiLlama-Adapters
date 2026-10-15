@@ -111,9 +111,9 @@ function normalizeObjectAddress(obj) {
 }
 
 /**
- * Exponential backoff with jitter. The public fullnode answers bursts with 429, and a failed
- * Echelon read now fails the run instead of dropping the safe, so a short linear backoff is not
- * enough to ride out a rate-limit window.
+ * Exponential backoff with jitter. The public fullnode and the Aptos indexer answer bursts with
+ * 429, and a failed read fails the run instead of dropping that safe, so a short linear backoff
+ * is not enough to ride out a rate-limit window.
  */
 async function retryAsync(fn, attempts = 8) {
   let lastError;
@@ -326,11 +326,13 @@ async function resolveHyperionPoolAddress(pos) {
   if (known?.poolAddress) return known.poolAddress;
 
   // liquidity_pool_address_safe returns a (bool exists, address) tuple
-  const res = await function_view({
-    functionStr: `${HYPERION_DEX}::pool_v3::liquidity_pool_address_safe`,
-    args: [pos.tokenA, pos.tokenB, pos.feeTier],
-    chain: "aptos",
-  });
+  const res = await retryAsync(() =>
+    function_view({
+      functionStr: `${HYPERION_DEX}::pool_v3::liquidity_pool_address_safe`,
+      args: [pos.tokenA, pos.tokenB, pos.feeTier],
+      chain: "aptos",
+    })
+  );
   const [exists, addr] = Array.isArray(res) ? res : [false, null];
   return exists ? normalizeAptosAddress(addr) : null;
 }
@@ -344,11 +346,13 @@ async function getHyperionPoolCurrentTick(poolAddress) {
     return hyperionCurrentTickCache.get(pool);
   }
   
-  const res = await function_view({
-    functionStr: `${HYPERION_DEX}::pool_v3::current_tick_and_price`,
-    args: [pool],
-    chain: "aptos",
-  });
+  const res = await retryAsync(() =>
+    function_view({
+      functionStr: `${HYPERION_DEX}::pool_v3::current_tick_and_price`,
+      args: [pool],
+      chain: "aptos",
+    })
+  );
   const tickRaw = Array.isArray(res) ? res[0] : res;
   const tick = decodeI32Tick(tickRaw);
   hyperionCurrentTickCache.set(pool, tick);
@@ -363,11 +367,13 @@ async function resolveHyperionPositionAmounts(pos) {
   if (hasLiveA || hasLiveB) return { amountA, amountB };
 
   if (pos.position) {
-    const routerRes = await function_view({
-      functionStr: `${HYPERION_DEX}::router_v3::get_amount_by_liquidity`,
-      args: [pos.position],
-      chain: "aptos",
-    });
+    const routerRes = await retryAsync(() =>
+      function_view({
+        functionStr: `${HYPERION_DEX}::router_v3::get_amount_by_liquidity`,
+        args: [pos.position],
+        chain: "aptos",
+      })
+    );
     if (Array.isArray(routerRes)) {
       amountA = toIntegerString(routerRes[0]);
       amountB = toIntegerString(routerRes[1]);
@@ -396,20 +402,24 @@ async function resolveHyperionPositionAmounts(pos) {
  * @returns {{ safeAddresses: string[] }}
  */
 async function fetchExistingSafes() {
-  const totalRaw = await function_view({
-    functionStr: `${VAULT}::vault::get_total_safes`,
-    chain: "aptos",
-  });
+  const totalRaw = await retryAsync(() =>
+    function_view({
+      functionStr: `${VAULT}::vault::get_total_safes`,
+      chain: "aptos",
+    })
+  );
   const total = Math.max(0, Number(totalRaw) || 0);
 
   const safeOut = [];
   for (let start = 0; start < total; start += PAGE_SIZE) {
     const limit = Math.min(PAGE_SIZE, total - start);
-    const pageRaw = await function_view({
-      functionStr: `${VAULT}::vault::get_safes_range_info`,
-      args: [String(start), String(limit)],
-      chain: "aptos",
-    });
+    const pageRaw = await retryAsync(() =>
+      function_view({
+        functionStr: `${VAULT}::vault::get_safes_range_info`,
+        args: [String(start), String(limit)],
+        chain: "aptos",
+      })
+    );
     const rows = unwrapVector(pageRaw).map(normalizeSafeRow);
     for (const row of rows) {
       if (!truthyExists(row.exists)) continue;
@@ -509,14 +519,19 @@ async function tvl(api) {
   const { adds: echelonAdds, totalsByAsset: echelonTotalsByAsset } =
     await sumEchelonSafePositions(api, safeAddresses);
 
-  const graphQLClient = new GraphQLClient(INDEXER_URL);
+  // The SDK already sends APTOS_API_KEY on fullnode views. The indexer client did not, so balance
+  // queries sat on the anonymous compute-unit budget and a 429 aborted the whole day.
+  const indexerHeaders = {};
+  if (process.env.APTOS_API_KEY) {
+    indexerHeaders.Authorization = `Bearer ${process.env.APTOS_API_KEY}`;
+  }
+  const graphQLClient = new GraphQLClient(INDEXER_URL, { headers: indexerHeaders });
 
   const faTotalsByAsset = new Map();
 
   for (const batch of sliceIntoChunks(safeAddresses, OWNER_BATCH_SIZE)) {
-    const { current_fungible_asset_balances: rows } = await graphQLClient.request(
-      FA_BALANCES_QUERY,
-      { addresses: batch }
+    const { current_fungible_asset_balances: rows } = await retryAsync(() =>
+      graphQLClient.request(FA_BALANCES_QUERY, { addresses: batch })
     );
 
     const list = rows || [];
@@ -538,12 +553,14 @@ async function tvl(api) {
   await PromisePool.withConcurrency(COIN_BALANCE_CONCURRENCY)
     .for(safeAddresses)
     .process(async (addr) => {
-      const bal = await function_view({
-        functionStr: COIN_BALANCE_FN,
-        type_arguments: [APT_TYPE_ARG],
-        args: [addr],
-        chain: "aptos",
-      });
+      const bal = await retryAsync(() =>
+        function_view({
+          functionStr: COIN_BALANCE_FN,
+          type_arguments: [APT_TYPE_ARG],
+          args: [addr],
+          chain: "aptos",
+        })
+      );
       const balStr = toIntegerString(bal);
       if (!balStr || balStr === "0") return;
       api.add(APT, balStr);
@@ -556,32 +573,39 @@ async function tvl(api) {
     .for(safeAddresses)
     .handleError((e) => { throw e; }) // throws on public rpcs instead of dropping hyperion tvl
     .process(async (safe) => {
-      const configExists = await function_view({
-        functionStr: `${VAULT}::vault::hyperion_lp_config_exists`,
-        args: [safe],
-        chain: "aptos",
-      })
-        .then((res) => {
-          const v = Array.isArray(res) ? res[0] : res;
-          return v === true || v === "true" || v === 1 || v === "1";
-        });
+      const configExists = await retryAsync(() =>
+        function_view({
+          functionStr: `${VAULT}::vault::hyperion_lp_config_exists`,
+          args: [safe],
+          chain: "aptos",
+        })
+      ).then((res) => {
+        const v = Array.isArray(res) ? res[0] : res;
+        return v === true || v === "true" || v === 1 || v === "1";
+      });
       if (!configExists) return;
 
-      const positionsRaw = await function_view({
-        functionStr: `${VAULT}::vault::get_hyperion_positions`,
-        args: [safe],
-        chain: "aptos",
-      });
+      const positionsRaw = await retryAsync(() =>
+        function_view({
+          functionStr: `${VAULT}::vault::get_hyperion_positions`,
+          args: [safe],
+          chain: "aptos",
+        })
+      );
 
       const positionAddresses = unwrapPositionAddresses(positionsRaw);
       if (!positionAddresses.length) return;
 
       for (const positionAddr of positionAddresses) {
-        const posRaw = await function_view({
-          functionStr: `${VAULT}::vault::get_hyperion_position`,
-          args: [safe, positionAddr],
-          chain: "aptos",
-        }).catch(()=>null);
+        // Retry the 429, then skip a position that still fails so one broken position cannot
+        // zero the day's TVL. The config and position-list reads above still fail the run.
+        const posRaw = await retryAsync(() =>
+          function_view({
+            functionStr: `${VAULT}::vault::get_hyperion_position`,
+            args: [safe, positionAddr],
+            chain: "aptos",
+          })
+        ).catch(() => null);
 
         const pos = normalizeHyperionPosition(posRaw, positionAddr);
         if (!pos || pos.closed) continue;
@@ -614,6 +638,9 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
+  // Hundreds of per-safe Aptos views. Hyperion sets the same flag so a long run is not cut off
+  // and stored as the previous day.
+  isHeavyProtocol: true,
   aptos: { tvl },
   methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Hyperion and Decibel are also tracked as separate protocols (doublecounted: true).",
 };
