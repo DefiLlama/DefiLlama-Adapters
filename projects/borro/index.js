@@ -63,7 +63,7 @@ const eventAbis = {
 }
 
 // Net collateral per market id, replayed from the only three events that change it.
-async function collateralByMarket(api) {
+async function collateralByMarket(api, toBlock) {
   const wanted = new Set(markets.map((i) => i.toLowerCase()))
   const net = {}
   const apply = (id, delta) => {
@@ -73,12 +73,11 @@ async function collateralByMarket(api) {
   }
 
   // getLogs keys its cache on chain/target, so each event against the one singleton needs its own
-  // extraKey. toBlock is held back from the head because the cache is append-only. No fallback to a
-  // possibly stale cache: if the logs cannot be read up to safeBlock the run fails rather than
-  // reporting a collateral total that silently misses recent events.
-  const safeBlock = (await api.getBlock()) - 200
+  // extraKey. toBlock (tvl's safeBlock) is held back from the head because the cache is append-only. No
+  // fallback to a possibly stale cache: if the logs cannot be read up to toBlock the run fails rather
+  // than reporting a collateral total that silently misses recent events.
   const sweep = (eventAbi, extraKey) =>
-    getLogs2({ api, target: MORPHO, eventAbi, fromBlock: FROM_BLOCK, toBlock: safeBlock, onlyArgs: true, extraKey })
+    getLogs2({ api, target: MORPHO, eventAbi, fromBlock: FROM_BLOCK, toBlock, onlyArgs: true, extraKey })
 
   const [supplied, withdrawn, liquidated] = await Promise.all([
     sweep(eventAbis.supplyCollateral, "borro-supplyCollateral"),
@@ -127,7 +126,20 @@ async function vaultHoldings(api) {
 }
 
 async function tvl(api) {
-  const [{ params, data }, collateral] = await Promise.all([marketState(api), collateralByMarket(api)])
+  // Every read at one block: the collateral replay can only reach safeBlock (the log cache is append-only),
+  // so the market and vault balances are read there too.
+  const safeBlock = (await api.getBlock()) - 200
+  const previousBlock = api.block
+  api.block = safeBlock
+  try {
+    await tvlAt(api, safeBlock)
+  } finally {
+    api.block = previousBlock
+  }
+}
+
+async function tvlAt(api, safeBlock) {
+  const [{ params, data }, collateral] = await Promise.all([marketState(api), collateralByMarket(api, safeBlock)])
 
   markets.forEach((id, i) => {
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
