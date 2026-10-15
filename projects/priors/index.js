@@ -12,6 +12,10 @@ const POOL_V2 = '0x281210097f0de7A8FB6F87310AF0f089c9C8DE21'
 // hold USDG in it.
 const POOL_V1 = '0x0259889e6EBab1a18CeE7e62Bc5B9648FB6C44e5'
 const STOCK_VAULT = '0xbEcd07EC689988e16b870C121756C4c2C8cb02B6' // proxy
+// deployment blocks: a contract is read only from its own
+const POOL_V1_BLOCK = 68593823
+const POOL_V2_BLOCK = 71702617
+const STOCK_VAULT_BLOCK = 74826641
 // USDG bonds an agent's owner posts for an automatic invite; returned when the line closes.
 const INVITE_BONDS = ['0x8BE478c754D9124D11e78dB20F5bf4dA45403275', '0x346d3360B7258a18E8a2a55fe20E0F467113a53A']
 // $PRIORS stakers' escrow behind agents' lines (v2, v3, v4, v5, and the v5 deployment retired on 2026-10-11).
@@ -26,8 +30,8 @@ const SEAT_VAULTS = [
 // Root backers' stakes (Priors' treasury contracts, the seat vaults' and the stock vault's roots among them) are pool
 // shares: their USDG is already in the pool's balance and is not counted again.
 async function tvl(api) {
-  // permitFailure: the stock vault exists from block 74826641 (2026-09-28); earlier blocks have no collateral list
-  const stockTokens = (await api.call({ target: STOCK_VAULT, abi: 'address[]:assetList', permitFailure: true })) || []
+  // before the stock vault's deployment there is no collateral list to read; after it, a failed read is an error
+  const stockTokens = (await api.getBlock()) >= STOCK_VAULT_BLOCK ? await api.call({ target: STOCK_VAULT, abi: 'address[]:assetList' }) : []
   return sumTokens2({
     api,
     tokensAndOwners: [
@@ -43,15 +47,19 @@ async function tvl(api) {
 
 // Principal of the open loans; the fee is paid at repayment and is not counted.
 async function borrowed(api) {
-  // permitFailure: pool v2 exists from 2026-09-24, v1 from 2026-09-21
-  const out = await api.multiCall({ abi: 'uint256:totalPrincipalOut', calls: [POOL_V2, POOL_V1], permitFailure: true })
-  out.forEach((amount) => { if (amount) api.add(USDG, amount) })
+  // only the pools deployed at the queried block; a failed read from one of them is an error, never a zero
+  const block = await api.getBlock()
+  const pools = [[POOL_V2, POOL_V2_BLOCK], [POOL_V1, POOL_V1_BLOCK]].filter(([, from]) => block >= from).map(([pool]) => pool)
+  if (!pools.length) return
+  const out = await api.multiCall({ abi: 'uint256:totalPrincipalOut', calls: pools })
+  out.forEach((amount) => api.add(USDG, amount))
 }
 
 // DefiLlama prices $PRIORS by its CoinGecko id (priors-agent); its Robinhood Chain address has no price of its own.
+// The token predates every seat vault, and a vault not yet deployed holds none, so every read here must succeed.
 async function staking(api) {
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', target: PRIORS, calls: SEAT_VAULTS, permitFailure: true })
-  const total = balances.reduce((sum, b) => sum + BigInt(b || 0), 0n)
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', target: PRIORS, calls: SEAT_VAULTS })
+  const total = balances.reduce((sum, b) => sum + BigInt(b), 0n)
   api.addCGToken('priors-agent', Number(total) / 1e18)
 }
 
