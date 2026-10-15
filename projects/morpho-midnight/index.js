@@ -51,12 +51,17 @@ async function tvl(api) {
 async function borrowed(api) {
   const { midnight } = config[api.chain]
   const markets = await getMarkets(api)
-  const totalUnits = await api.multiCall({ abi: 'function totalUnits(bytes32) view returns (uint128)', target: midnight, calls: markets.map(m => ({ params: [m.id] })) })
-  markets.forEach((market, i) => api.add(market.loanToken, totalUnits[i]))
+  const calls = markets.map(m => ({ params: [m.id] }))
+  const [totalUnits, withdrawable] = await Promise.all([
+    api.multiCall({ abi: 'function totalUnits(bytes32) view returns (uint128)', target: midnight, calls }),
+    api.multiCall({ abi: 'function withdrawable(bytes32) view returns (uint128)', target: midnight, calls }),
+  ])
+  // totalUnits = outstanding debt + withdrawable (repaid, not yet withdrawn, already counted in tvl)
+  markets.forEach((market, i) => api.add(market.loanToken, BigInt(totalUnits[i]) - BigInt(withdrawable[i])))
 }
 
 module.exports = {
-  methodology: 'Every Midnight market is enumerated on-chain from MarketCreated events. TVL is the collateral held in the Midnight contract. Borrowed is outstanding debt read per-market from totalUnits.',
+  methodology: 'Every Midnight market is enumerated on-chain from MarketCreated events. TVL is the collateral held in the Midnight contract. Borrowed is outstanding debt, read per market as totalUnits minus withdrawable (repaid assets not yet withdrawn by lenders, which stay in the contract and are already counted in TVL).',
 }
 
 Object.keys(config).forEach(chain => {

@@ -7,7 +7,8 @@ const BASE_AAVE_POOLS = {
 };
 const FLUID_POOL_ADDRESSES = {
     'USDC': '0xf42f5795D9ac7e9D757dB633D693cD548Cfd9169',
-    'wstETH': '0x896E39f0E9af61ECA9dD2938E14543506ef2c2b5'
+    'wstETH': '0x896E39f0E9af61ECA9dD2938E14543506ef2c2b5',
+    'EURC': '0x1943FA26360f038230442525Cf1B9125b5DCB401',
 };
 const MORPHO_POOL_ADDRESSES = {
     'Universal - USDC': '0xB7890CEE6CF4792cdCC13489D36D9d42726ab863',
@@ -40,6 +41,7 @@ const MORPHO_POOL_ADDRESSES = {
     'Clearstar Core ETH V2': '0xBCA4E2E24A7cFa776E4282CC8Eb06f04738b71da',
     'Steakhouse High Yield USDC V2': '0xbeeff7aE5E00Aae3Db302e4B0d8C883810a58100',
     'Noon Ecosystem Vault': '0x8B12106a70FE2F8bB255F691f1CF9a9ccfB278AF',
+    'Yearn OG USDC V2': '0xe7D0DBE3493830e2Ab62619211A2BfF0Fc60dB42',
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
@@ -83,6 +85,8 @@ const SUPERFORM_POOLS = {
     'Flagship Base WETH SuperVault': '0x0e70c10fa06931f7b878653a15aecc86145c1af7', 
     'Flagship Base CBBTC SuperVault': '0xfc8a6526ffcd8248b8d0f8dac8037dbe438924ce',
     'NVDAC': '0xc441a2cc3a528b6312740448a70cc4d40f4d7bfc',
+    'GOOGLC': '0x363600ac7173e8d91bcfee68d711bb93e992c110',
+    'AAPLC': '0x301a1ceb684d62833101b373ab6c395349b24033',
 };
 
 const BASE_YEARN_POOLS = {
@@ -97,6 +101,11 @@ const IPOR_POOLS = {
     'Apple Carry Trade': '0x31744e44d6af88225c1dbefbe5df8308faea641b',
     'Meta Carry Trade': '0xcd19f18884bf388b866d05cdd1ae351133821f01',
     'Google Carry Trade': '0x01dbdb9748ecf71b1ffbb62f5cb41318531ba362',
+    USDC: '0xd46a3c2d958d0a2cb098d48c48dc19fe3a710f37',
+};
+
+const AUTOFINANCE_POOLS = {
+    USDC: '0x9c6864105AEC23388C89600046213a44C384c831', // baseUSD
 };
 
 // const BASE_YO_PROTOCOL_POOLS = {
@@ -119,6 +128,7 @@ const allPoolTokens = [
     ...Object.values(BASE_EULER_POOLS),
     ...Object.values(BASE_YEARN_POOLS),
     ...Object.values(IPOR_POOLS),
+    ...Object.values(AUTOFINANCE_POOLS),
     // ...Object.values(BASE_YO_PROTOCOL_POOLS),
     // ...Object.values(BASE_LAZY_SUMMER_POOLS),
     COMPOUND_TOKEN_ADDRESS,

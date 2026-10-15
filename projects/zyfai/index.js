@@ -148,6 +148,9 @@ const ARBITRUM_DOLOMITE_POOLS = {
     'USDC': '0x444868B6e8079ac2c55eea115250f92C2b2c4D14',
     'WETH': '0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF',
 };
+const ARBITRUM_AUTOFINANCE_POOLS = {
+    USDC: '0xf63b7F49B4f5Dc5D0e7e583Cfd79DC64E646320c', // arbUSD
+};
 const arbitrumPoolTokens = [
     ...Object.values(COMPOUND_POOLS),
     ...Object.values(ARBITRUM_AAVE_POOLS),
@@ -158,6 +161,7 @@ const arbitrumPoolTokens = [
     ...Object.values(ARBITRUM_EULER_POOLS),
     ...Object.values(ARBITRUM_HARVEST_POOLS),
     ...Object.values(ARBITRUM_DOLOMITE_POOLS),
+    ...Object.values(ARBITRUM_AUTOFINANCE_POOLS),
 ]
 
 // --- inlined from ./plasma ---
