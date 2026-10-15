@@ -30,6 +30,10 @@ const config = {
   base: { factory: '0x278D7bdc2451B0Fa4087A68ce084a86cB91D4d83', },
   avax: { factory: '0xc6c230FA8F40022dE997727436Fae01caAbcDe61', },
   polygon: { factory: '0x1bb57e2Abf2822C01cCAeBcCBc9D16C7fD0c1956', },
+  adi: { factory: '0x1bb57e2Abf2822C01cCAeBcCBc9D16C7fD0c1956', },
+  taiko: { factory: '0xF4443f86B969f2DEf2dc4e784b22987a44943CE5', },
+  xdc: { factory: '0x6452831d759EA8F6cE1Ac0D4a2A6ff6D3E2E0Ca9', },
+  mantra: { factory: '0x8ed6601a5Bb34396fc93C9B1feA3dA24ED0c5800', },
 }
 
 Object.keys(config).forEach(chain => {
