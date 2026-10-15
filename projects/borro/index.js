@@ -73,17 +73,12 @@ async function collateralByMarket(api) {
   }
 
   // getLogs keys its cache on chain/target, so each event against the one singleton needs its own
-  // extraKey. toBlock is held back from the head because the cache is append-only.
+  // extraKey. toBlock is held back from the head because the cache is append-only. No fallback to a
+  // possibly stale cache: if the logs cannot be read up to safeBlock the run fails rather than
+  // reporting a collateral total that silently misses recent events.
   const safeBlock = (await api.getBlock()) - 200
-  const sweep = async (eventAbi, extraKey) => {
-    const args = { api, target: MORPHO, eventAbi, fromBlock: FROM_BLOCK, toBlock: safeBlock, onlyArgs: true, extraKey }
-    try {
-      return await getLogs2(args)
-    } catch (e) {
-      // Fall back to whatever is already cached rather than dropping the whole collateral leg.
-      return getLogs2({ ...args, onlyUseExistingCache: true })
-    }
-  }
+  const sweep = (eventAbi, extraKey) =>
+    getLogs2({ api, target: MORPHO, eventAbi, fromBlock: FROM_BLOCK, toBlock: safeBlock, onlyArgs: true, extraKey })
 
   const [supplied, withdrawn, liquidated] = await Promise.all([
     sweep(eventAbis.supplyCollateral, "borro-supplyCollateral"),
