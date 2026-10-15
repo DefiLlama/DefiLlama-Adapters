@@ -516,7 +516,12 @@ const configs = {
     doublecounted: true,
     methodology: "Underlying assets in Otomate ERC-4626 vaults on Ink, measured with totalAssets net of accrued protocol fees. Assets are supplied to Tydro and already included in Tydro TVL.",
     ink: ['0x919C57BF59484798Ff2f90018640fd0A08242aC2', '0x2baA4C3f66Fa6f0c2d56242BaAE446a4De878B98', '0xcc7DcF43b17D8EdC437a6e33a6A325C57eba1ED7', '0x59046e5a0cbb5b64981b4668a31ab3a5ed0e7dd0']
-  }
+  },
+  'alphaprimer': {
+    doublecounted: true,
+    methodology: 'TVL is the USDC held by the AlphaPrimer vault, read via ERC-4626 totalAssets(). Deposits are supplied to Aave V3, Compound V3 or Fluid on Arbitrum, so they are also counted under those protocols.',
+    arbitrum: ['0x87Ef5c25203886b1026ad907E7f84fBAABdF1fa9'],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
