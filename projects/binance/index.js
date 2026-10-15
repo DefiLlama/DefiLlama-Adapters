@@ -52,6 +52,7 @@ const binanceToDefillama = {
   SONIC: "sonic",
   PLASMA: "plasma",
   STATEMINT: 'polkadot',
+  XTZ: 'tezos',
 }
 
 const withdrawalAddresses = [
