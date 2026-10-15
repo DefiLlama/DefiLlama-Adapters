@@ -92,8 +92,11 @@ async function robinhoodTvl(api) {
     const currency1 = key?.currency1 ?? key?.[1];
     const tickSpacing = Number(key?.tickSpacing ?? key?.[3]);
     if (!currency0 || !currency1 || !tickSpacing) return null;
-    if (currency0.toLowerCase() !== launch.token.toLowerCase()) return null;
-    if (currency1.toLowerCase() !== ADDRESSES.robinhood.USDG.toLowerCase()) return null;
+    const token = launch.token.toLowerCase();
+    const usdg = ADDRESSES.robinhood.USDG.toLowerCase();
+    const validOrder = (currency0.toLowerCase() === token && currency1.toLowerCase() === usdg)
+      || (currency0.toLowerCase() === usdg && currency1.toLowerCase() === token);
+    if (!validOrder) return null;
     return {
       ...launch,
       token0: currency0,
@@ -126,7 +129,7 @@ async function robinhoodTvl(api) {
       tickUpper: launch.tickUpper,
       tick: Number(slot.tick),
     });
-    api.removeTokenBalance(launch.token0);
+    api.removeTokenBalance(launch.token);
   });
 }
 
