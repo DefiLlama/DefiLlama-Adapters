@@ -1540,7 +1540,8 @@
     "XPLA": "axpla"
   },
   "xp": {
-    "wXP": "0x8c290B96768210Dc1Ab64970Ff62F0F97be00431"
+    "wXP": "0x8c290B96768210Dc1Ab64970Ff62F0F97be00431",
+    "XEF": "0x80252C2D06bbd85699c555fc3633D5B8eE67C9AD"
   },
   "chihuahua": {
     "HUAHUA": "uhuahua"
