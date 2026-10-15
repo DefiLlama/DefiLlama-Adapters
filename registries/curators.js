@@ -1709,6 +1709,7 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
+            '0x0Dca0FDC170baA4CA9c1dCd37Ffe01f97bCfD504',
             '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
             '0x50B75d586929Ab2F75dC15f07E1B921b7C4Ba8fA',
             '0x75a1253432356f90611546a487b5350CEF08780D',
