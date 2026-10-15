@@ -84,16 +84,56 @@ async function remoteOverlap(api, vaults, strategyAbi) {
   return new Map([[countedSender ? strategy : parent, owned < owed ? owned : owed]])
 }
 
+async function getV3Strategies(api, vaults) {
+  if (!vaults.length) return []
+  const toBlock = await api.getBlock()
+  // Tokenized strategies also report 3.x, but have no child-strategy registry.
+  // Identify them on-chain; a failed queue read alone must not hide an allocator.
+  const queues = await api.multiCall({
+    abi: 'function get_default_queue() view returns (address[])',
+    calls: vaults.map(({ vault }) => vault.address), permitFailure: true,
+  })
+  const withoutQueue = vaults.filter((_, i) => !queues[i])
+  const managers = await api.multiCall({
+    abi: 'address:management', calls: withoutQueue.map(({ vault }) => vault.address), permitFailure: true,
+  })
+  managers.forEach((manager, i) => {
+    if (manager == null) throw new Error(`Cannot identify Yearn V3 vault: ${withoutQueue[i].vault.address}`)
+  })
+  const strategies = []
+  // Bound concurrent history scans; the SDK caches ranges and fetches new logs.
+  for (let offset = 0; offset < vaults.length; offset += 5) {
+    const batch = await Promise.all(vaults.slice(offset, offset + 5).map(async ({ vault }, i) => {
+      if (!queues[offset + i]) return []
+      const fromBlock = Number(vault.inceptBlock)
+      if (!Number.isSafeInteger(fromBlock) || fromBlock <= 0 || fromBlock > toBlock)
+        throw new Error(`Invalid Yearn V3 inception block: ${vault.address}`)
+      const logs = await api.getLogs({
+        target: vault.address, fromBlock, toBlock, cacheInCloud: true,
+        eventAbi: 'event StrategyChanged(address indexed strategy, uint256 indexed change_type)',
+        onlyArgs: true,
+      })
+      // Keep revoked/re-added addresses too: debt is checked at the requested
+      // block below. Queue membership and Kong's count are not debt evidence.
+      return [...new Set([...queues[offset + i], ...logs.map(log => log.strategy)]
+        .map(address => address.toLowerCase()))]
+    }))
+    strategies.push(...batch)
+  }
+  return strategies
+}
+
 async function getDebts(api, activeVaults) {
   // get version from apiVersion instead of Kong's `v3` flag (some 3.x vaults are flagged v2).
   // V3 exposes get_default_queue(); V2 a slot-indexed withdrawalQueue.
   const withStrat = activeVaults.filter(({ vault }) => vault.strategiesCount > 0)
   const isV3 = ({ vault }) => (vault.apiVersion || '').startsWith('3')
-  const v3 = withStrat.filter(isV3)
+  const v3 = activeVaults.filter(isV3)
   const v2 = withStrat.filter(v => !isV3(v))
 
-  // V3 exposes the whole queue in one call; V2 is slot-indexed, capped at MAX_V2_STRATEGIES
-  const v3Queues = await api.multiCall({ abi: 'function get_default_queue() view returns (address[])', calls: v3.map(({ vault }) => vault.address) })
+  // V3 includes every event-discovered strategy, even outside the default queue.
+  // V2 keeps its existing slot-indexed withdrawal queue and count limit.
+  const v3Queues = await getV3Strategies(api, v3)
   const v2QueueCalls = []
   v2.forEach(({ vault }) => { for (let i = 0; i < Math.min(vault.strategiesCount, MAX_V2_STRATEGIES); i++) v2QueueCalls.push({ target: vault.address, params: [i] }) })
   const v2QueueRes = await api.multiCall({ abi: 'function withdrawalQueue(uint256) view returns (address)', calls: v2QueueCalls })
