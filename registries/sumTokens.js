@@ -25643,7 +25643,9 @@ const configs = {
               // DEFI.ssi
               "0x164ffdaE2fe3891714bc2968f1875ca4fA1079D0",
               // MEME.ssi
-              "0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA"
+              "0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA",
+              // soUSDC
+              "0xb88A0269C0b7E665F15DE46F634e02cE81E361c9"
 
             ],
             // bridge
