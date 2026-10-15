@@ -23496,16 +23496,28 @@ const configs = {
     },
   },
   "quantumpools": {
-    "methodology": "TVL is the value of every Uniswap V3 concentrated-liquidity position held by the QuantumPools vaults on Base and Robinhood Chain, unwrapped to underlying token amounts at the current pool tick.",
+    "methodology": "TVL is the value of every Uniswap V3 and PancakeSwap V3 concentrated-liquidity position held by the QuantumPools V2/V2.1 vaults, unwrapped to underlying token amounts at the current pool tick.",
     "doublecounted": true,
     "start": "2026-09-28",
+    // [position manager, vault]: each vault binds one position manager
     "robinhood": {
-      "owner": "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3",
-      "resolveUniV3": true
+      "uniV3nftsAndOwners": [
+        ["0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3", "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3"],
+        ["0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3", "0xd3AAb853758c81c09C4510D1b05b9152F71B30F5"],
+        ["0x46A15B0b27311cedF172AB29E4f4766fbE7F4364", "0xeBdfa133432bC0321ed1073Fe776F4701956E0e7"],
+      ]
     },
     "base": {
-      "owner": "0x9597f68203d1bc85744A5Fc11D890aA7777e386B",
-      "resolveUniV3": true
+      "uniV3nftsAndOwners": [
+        ["0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1", "0x9597f68203d1bc85744A5Fc11D890aA7777e386B"],
+        ["0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1", "0x0e8A7c9Fd76e718202B3c3530f3B587ba52FB1A8"],
+      ]
+    },
+    "bsc": {
+      "uniV3nftsAndOwners": [
+        ["0x46A15B0b27311cedF172AB29E4f4766fbE7F4364", "0x9597f68203d1bc85744A5Fc11D890aA7777e386B"],
+        ["0x7b8A01B39D58278b5DE7e48c8449c9f4F5170613", "0x57cB3160D59e967D3ac62620Fc69f7e0898d2690"],
+      ]
     },
   },
   "quenta": {
