@@ -3,43 +3,14 @@ const config = {
   ethereum: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     fromBlock: 18883124,
-    blacklistedMarketIds: [
-      "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
-
-      // bad debt due to resolv hack
-      "0xd9e34b1eed46d123ac1b69b224de1881dbc88798bc7b70f504920f62f58f28cc",
-      "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33",
-      "0x8e7cc042d739a365c43d0a52d5f24160fa7ae9b7e7c9a479bd02a56041d4cf77",
-      "0xcc39b6c92fd03ac608b9239618db8b80a4a2034b0450bdf47b404229571312da",
-      "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
-
-      "0x0f9563442d64ab3bd3bcb27058db0b0d4046a4c46f0acd811dacae9551d2b129", // sdeUSD/USDC (91.5% LLTV) bad debt from sdeUSD exploit (Nov 2025)
-      "0x8eaf7b29f02ba8d8c1d7aeb587403dcb16e2e943e4e2f5f94b0963c2386406c9", // PAXG market
-      "0x11db9f2c7bda8c2af6a6a72db18aa5eb9290cb99cf75a3c0abacf1b84b8eaf77", // amphrETH market
-      "0x4b86442549b52826e0fc11770ec5154450cb3c5c14dc751a761d81dcfbe7a7b2", // RLP market
-      "0xbd1ad3b968f5f0552dbd8cf1989a62881407c5cccf9e49fb3657c8731caf0c1f", // deUSD market
-      "0xfd0d72a4f0469598b566b1bc5fe64835f828f90b1fb7d746148c086164cd4cc2", // AZND/USDC market, 0 liquidity and 1 borrower
-      "0x23a7d0ff682b323363fb8ba58327ed87001f6306e09b7fd7413bbe4698e749c8", // msY/USDC market
-    ],
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     fromBlock: 13977148,
-    blacklistedMarketIds: [
-      '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
-      '0xe1986e80099257c65dd18091ec7e34752ae2336870a5649f20c450c9c4931fb8', // HERMES market
-      '0xa4ec527128b425ee3fcb7f60eca37677b63b3d003345ec2a72ef6a2e72da53fc', // RSS/USDC (77% LLTV) market, single supplier looping against self-issued RSS collateral
-      '0x41c08085ddcfd1dc1c5eb82d7dc031593d1a1a831958380e8b60469c45bf7d88', // RSS/USDC (77% LLTV) market, single supplier looping against self-issued RSS collateral
-    ]
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
     fromBlock: 296446593,
-    blacklistedMarketIds: [
-      "0xfdb8221edcae73f73485d55c30e706906114bc2ff4634870c5c57e8fb83eae6a", // K/USDC bad debt from Kinto exploit
-      "0x9e90aec7d768403dacc9dd0d8320307fda3f980eed4df43e3e52168a1c667709", // xUSD market
-      "0xc7670063349ac19dfa324ead7bd7da2985ae931e1b09fb0e31b62c6486b730bd", // RLP market
-    ],
   },
   fraxtal: {
     morphoBlue: "0xa6030627d724bA78a59aCf43Be7550b4C5a0653b",
@@ -64,9 +35,6 @@ const config = {
   wc: {
     morphoBlue: "0xE741BC7c34758b4caE05062794E8Ae24978AF432",
     fromBlock: 9025669,
-    blacklistedMarketIds: [
-      "0x5a96ea60ddb8ece11b0dd1176f05bbc44ec92197ba206adb086db559146cc964", // sdeUSD market
-    ],
   },
   mode: {
     morphoBlue: "0xd85cE6BD68487E0AaFb0858FDE1Cd18c76840564",
@@ -99,15 +67,11 @@ const config = {
   // },
   hyperliquid: {
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
-    blackList: ['0x0aD339d66BF4AeD5ce31c64Bc37B3244b6394A77'], // USR on hyperevm; the entry here was the ethereum address
     fromBlock: 1988429,
   },
   plume_mainnet: {
     morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
     fromBlock: 765994,
-    blacklistedMarketIds: [
-      "0x82e7ab8ccabaac59b5f397507ed031ebf19a9a5b2657c00c93bc2423cd0a890d",
-    ],
   },
   lisk: {
     morphoBlue: "0x00cD58DEEbd7A2F1C55dAec715faF8aed5b27BF8",

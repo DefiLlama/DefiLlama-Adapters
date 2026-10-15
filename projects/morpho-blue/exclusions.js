@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { getConfig } = require('../helper/cache')
+const { getConfig, getCache } = require('../helper/cache')
 const { get } = require('../helper/http')
 
 // Morpho's own exclusion feed. Additive: unioned with the hardcoded lists in config.js, never a
@@ -56,6 +56,14 @@ async function getExclusions() {
       })
       // a partial or malformed fetch must not overwrite the cache - getConfig keeps the last good copy
       if (!isValidBundle(fetched)) throw new Error('morpho exclusions: incomplete or malformed feed')
+      // these lists only grow in practice, so a sharp drop is a bad publish rather than a real
+      // un-exclusion. Keep the cached copy instead of silently letting markets back into tvl.
+      const prior = await getCache('config-cache', 'morpho-blue/exclusions').catch(() => null)
+      if (isValidBundle(prior)) {
+        const count = (b) => kinds.reduce((n, k) => n + b[k].length, 0)
+        if (count(fetched) < count(prior) * 0.8)
+          throw new Error(`morpho exclusions: feed shrank ${count(prior)} -> ${count(fetched)} rows, keeping cache`)
+      }
       return fetched
     },
   })
