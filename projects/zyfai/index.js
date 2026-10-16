@@ -197,7 +197,7 @@ const TOKENS = {
 
 // Llama drops these share tokens (no coins.llama.fi price). convertToAssets into the underlying, which is priced.
 async function unpricedVaultsTvl(api, owners, vaults) {
-    const assets = await api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: true });
+    const assets = await api.multiCall({ abi: 'address:asset', calls: vaults });
     const vaultAsset = {};
     vaults.forEach((vault, i) => { if (assets[i]) vaultAsset[vault.toLowerCase()] = assets[i]; });
     const okVaults = Object.keys(vaultAsset);
@@ -218,7 +218,6 @@ async function unpricedVaultsTvl(api, owners, vaults) {
     const amounts = await api.multiCall({
         abi: 'function convertToAssets(uint256) view returns (uint256)',
         calls: convertCalls,
-        permitFailure: true,
     });
     amounts.forEach((amount, i) => { if (amount) api.add(convertAssets[i], amount); });
 }
