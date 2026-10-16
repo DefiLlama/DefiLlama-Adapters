@@ -50,8 +50,13 @@ async function swarmBalances(api, ownToken) {
   // a swarm's counter asset is fixed at creation; the legacy bundle predates counterIsNative() and is native ETH
   const native = await api.multiCall({ abi: 'bool:counterIsNative', calls: allSwarms, permitFailure: true })
   const counters = await api.multiCall({ abi: 'address:counterAsset', calls: allSwarms, permitFailure: true })
-  const allCounters = allSwarms.map((s, i) => (native[i] ?? LEGACY_SWARMS.includes(s)) ? nullAddress : counters[i])
-  // a swarm whose counter asset did not read is skipped rather than allowed to fail the whole run
+  const allCounters = allSwarms.map((s, i) => {
+    const legacyNative = LEGACY_SWARMS.includes(s) // this pre-factory swarm predates counterIsNative()
+    if (native[i] == null && !legacyNative) throw new Error(`mosh: counterIsNative read failed for swarm ${s}`)
+    if (native[i] ?? legacyNative) return nullAddress
+    if (counters[i] == null) throw new Error(`mosh: counterAsset read failed for swarm ${s}`)
+    return counters[i]
+  })
   const swarms = allSwarms.filter((_, i) => Boolean(allCounters[i]))
   const counterOf = allCounters.filter(Boolean)
   if (!swarms.length) return api.getBalances()

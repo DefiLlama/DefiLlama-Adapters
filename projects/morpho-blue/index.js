@@ -209,7 +209,7 @@ async function fetchPriceMap(api, addresses) {
   const tokens = [...new Set(addresses.filter(a => a && a.toLowerCase() !== nullAddress).map(a => a.toLowerCase()))]
   if (!tokens.length) return {}
   const keys = tokens.map(t => `${api.chain}:${t}`)
-  const prices = await sdk.coins.getPrices(keys, 'now').catch(() => ({}))
+  const prices = await sdk.coins.getPrices(keys, 'now')
   const out = {}
   Object.entries(prices).forEach(([k, v]) => {
     if (!v || !v.price) return
