@@ -84,16 +84,58 @@ async function remoteOverlap(api, vaults, strategyAbi) {
   return new Map([[countedSender ? strategy : parent, owned < owed ? owned : owed]])
 }
 
+async function getV3Strategies(api, vaults, activeVaults) {
+  if (!vaults.length) return []
+  const queueAbi = 'function get_default_queue() view returns (address[])'
+  const queues = await api.multiCall({
+    abi: queueAbi, calls: vaults.map(({ vault }) => vault.address), permitFailure: true,
+  })
+  // An empty array is a confirmed empty queue; null is an unavailable read.
+  // Tokenized strategies also report 3.x, but expose management() instead of a queue.
+  const unavailable = vaults.map((_, i) => i).filter(i => queues[i] == null)
+  const managers = await api.multiCall({
+    abi: 'address:management', calls: unavailable.map(i => vaults[i].vault.address), permitFailure: true,
+  })
+  const retry = unavailable.filter((_, i) => managers[i] == null)
+  // Retry unclassified contracts strictly. Never silently skip an allocator
+  // whose queue could not be read, even if the other vaults were successful.
+  if (retry.length) {
+    const recovered = await api.multiCall({ abi: queueAbi, calls: retry.map(i => vaults[i].vault.address) })
+    retry.forEach((index, i) => {
+      if (!Array.isArray(recovered[i])) throw new Error(`Cannot read Yearn V3 queue: ${vaults[index].vault.address}`)
+      queues[index] = recovered[i]
+    })
+  }
+  // strategies() is a public mapping and add_strategy enforces the vault asset, so probing
+  // counted same-asset vaults and registered routers finds active strategies off the default queue.
+  const probes = []
+  vaults.forEach(({ vault }, i) => {
+    const parent = vault.address.toLowerCase(), asset = vault.asset?.address?.toLowerCase()
+    if (!queues[i] || !asset) return
+    const queued = new Set(queues[i].map(a => a.toLowerCase()))
+    const candidates = new Set([
+      ...activeVaults.filter(({ vault: v }) => v.asset?.address?.toLowerCase() === asset).map(({ vault: v }) => v.address.toLowerCase()),
+      ...registeredNestedVaults.filter(r => r.chainId === api.chainId && r.parent === parent).map(r => r.strategy),
+    ])
+    candidates.forEach(strategy => { if (strategy !== parent && !queued.has(strategy)) probes.push({ i, target: vault.address, strategy }) })
+  })
+  const params = await api.multiCall({ abi: V3_STRATEGY_ABI, calls: probes.map(({ target, strategy }) => ({ target, params: [strategy] })) })
+  const strategies = vaults.map((_, i) => (queues[i] ?? []).map(a => a.toLowerCase()))
+  probes.forEach(({ i, strategy }, j) => { if (BigInt(params[j].activation) > 0n) strategies[i].push(strategy) })
+  return strategies
+}
+
 async function getDebts(api, activeVaults) {
   // get version from apiVersion instead of Kong's `v3` flag (some 3.x vaults are flagged v2).
   // V3 exposes get_default_queue(); V2 a slot-indexed withdrawalQueue.
   const withStrat = activeVaults.filter(({ vault }) => vault.strategiesCount > 0)
   const isV3 = ({ vault }) => (vault.apiVersion || '').startsWith('3')
-  const v3 = withStrat.filter(isV3)
+  const v3 = activeVaults.filter(isV3)
   const v2 = withStrat.filter(v => !isV3(v))
 
-  // V3 exposes the whole queue in one call; V2 is slot-indexed, capped at MAX_V2_STRATEGIES
-  const v3Queues = await api.multiCall({ abi: 'function get_default_queue() view returns (address[])', calls: v3.map(({ vault }) => vault.address) })
+  // V3 includes every active strategy that is a counted vault, even outside the default queue.
+  // V2 keeps its existing slot-indexed withdrawal queue and count limit.
+  const v3Queues = await getV3Strategies(api, v3, activeVaults)
   const v2QueueCalls = []
   v2.forEach(({ vault }) => { for (let i = 0; i < Math.min(vault.strategiesCount, MAX_V2_STRATEGIES); i++) v2QueueCalls.push({ target: vault.address, params: [i] }) })
   const v2QueueRes = await api.multiCall({ abi: 'function withdrawalQueue(uint256) view returns (address)', calls: v2QueueCalls })
