@@ -46,7 +46,7 @@ const getMarket = async (api) => {
     ].filter(i => !existingIds.has(i)).map(id => ({ id })))
 
   }
-  // union with morpho's own feed, never a replacement - the feed is a subset of the list above
+  // blacklistedMarketIds is empty in config now; morpho's feed is the source, kept as a manual override
   const excluded = new Set([...blacklistedMarketIds.map(i => i.toLowerCase()), ...await getExcludedMarketIds(api)])
   const all = logs.map((i) => i.id.toLowerCase())
 
@@ -209,7 +209,7 @@ async function fetchPriceMap(api, addresses) {
   const tokens = [...new Set(addresses.filter(a => a && a.toLowerCase() !== nullAddress).map(a => a.toLowerCase()))]
   if (!tokens.length) return {}
   const keys = tokens.map(t => `${api.chain}:${t}`)
-  const prices = await sdk.coins.getPrices(keys, 'now').catch(() => ({}))
+  const prices = await sdk.coins.getPrices(keys, 'now')
   const out = {}
   Object.entries(prices).forEach(([k, v]) => {
     if (!v || !v.price) return

@@ -7,12 +7,12 @@ const LOCKER = 'component_rdx1cpae8nqhyeu2pz6z89vwca8085xels52lhsfrutnvagxz53u3p
 const CORE = new Set(Object.values(ADDRESSES.radixdlt))
 
 async function getFungibles(address) {
-  const first = await post(`${GATEWAY}/state/entity/details`, { addresses: [address], aggregation_level: 'Global' })
+  const first = await post(`${GATEWAY}/state/entity/details`, { addresses: [address], aggregation_level: 'Global' }, { timeout: 30000 })
   const at_ledger_state = { state_version: first.ledger_state.state_version }
   const items = [...first.items[0].fungible_resources.items]
   let cursor = first.items[0].fungible_resources.next_cursor
   while (cursor) {
-    const page = await post(`${GATEWAY}/state/entity/page/fungibles/`, { address, cursor, aggregation_level: 'Global', at_ledger_state })
+    const page = await post(`${GATEWAY}/state/entity/page/fungibles/`, { address, cursor, aggregation_level: 'Global', at_ledger_state }, { timeout: 30000 })
     items.push(...page.items)
     cursor = page.next_cursor
   }
@@ -22,7 +22,7 @@ async function getFungibles(address) {
 async function getDetails(addresses, opt_ins) {
   const items = []
   for (let i = 0; i < addresses.length; i += 20)
-    items.push(...(await post(`${GATEWAY}/state/entity/details`, { addresses: addresses.slice(i, i + 20), opt_ins })).items)
+    items.push(...(await post(`${GATEWAY}/state/entity/details`, { addresses: addresses.slice(i, i + 20), opt_ins }, { timeout: 30000 })).items)
   return Object.fromEntries(items.map(i => [i.address, i]))
 }
 
