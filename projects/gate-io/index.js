@@ -7,6 +7,7 @@ const { sumTokens2: solanaSumTokens } = require("../helper/solana");
 const { unwrapDolomiteDeposits } = require("../helper/unwrapLPs.js");
 const { addHypercoreSpotBalances } = require("../helper/chain/hyperliquid.js");
 const { sumTokens: cosmosSumTokens } = require("../helper/chain/cosmos.js");
+const { addThetaBalances } = require("../helper/chain/theta.js");
 
 const config = {
   "ethereum": {
@@ -557,6 +558,11 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "canton": {
+    "owners": [
+      "Gate::1220660fcee9042e5d36a50eccee8b6ff3e79cc3612ad41b7ec056c5c6cddacf864b"
+    ]
+  },
   "bittensor": {
     "owners": [
       "5CNChyk2fnVgVSZDLAVVFb4QBTMGm6WfuQvseBG6hj8xWzKP",
@@ -711,6 +717,27 @@ const config = {
   "constellation": {
     "owners": [
       "DAG4TETUwraLYX1mYdC8ymUxxWsoNZPffUpDf4Ar"
+    ]
+  },
+  "iota": {
+    "owners": [
+      "0x62f36b79d7ea8ae189491854edd9318b29c75346792177b230a95f333ffa53ad"
+    ]
+  },
+  "mina": {
+    "owners": [
+      "B62qm7vP2JPj1d8XDmGUiv3GtwAfzuaxrdNsiXdWmZ7QqXZtzpVyGPG"
+    ]
+  },
+  "decred": {
+    "owners": [
+      "DshHFVeVJofCFKFDgzB1FyzvqkpMLDnLnFa"
+    ]
+  },
+  "nervos": {
+    "owners": [
+      "ckb1qyq8cakcjf490h7vj9gegzhj8pur7hsguz3qlu2e5u",
+      "ckb1qyqqjtaucwu2mzz67ndua5jvd2wrl5ejr73q2upyca"
     ]
   },
   "core": {
@@ -1932,7 +1959,7 @@ const config = {
 };
 
 // remove chains w/o historical tvl
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'conflux', 'cmp', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'cmp', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
   'vinu', 'rollux', 'aelf', 'ailayer', 'archway',
 ]
 
@@ -2154,6 +2181,8 @@ const gateEarnTvl = {
   // same split as kava: config.sei carries the cosmos-side sei1... owners, so the
   // EVM-side native SEI held by the hot wallet is summed here
   sei: { tvl: earnTvl(api => api.sumTokens({ owners: ['0x0d0707963952f2fba59dd06f2b425ace40b492fe'], tokens: [ADDRESSES.null] })) },
+  // config.theta counts TFUEL via the EVM rpc; native THETA lives in the account ledger, summed here
+  theta: { tvl: earnTvl(api => addThetaBalances(api, config.theta.owners)) },
 }
 
 Object.entries(earnStakers).forEach(([chain, owners]) => {

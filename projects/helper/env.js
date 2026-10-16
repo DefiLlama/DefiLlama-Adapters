@@ -123,6 +123,7 @@ const ENV_KEYS = [
   'TEAM_WEBHOOK',
   'HIRO_API_KEY',
   'APTOS_API_KEY',
+  'CANTON_API', // <base url>?key=<api key>
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
