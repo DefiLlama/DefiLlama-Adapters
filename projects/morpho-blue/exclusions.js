@@ -48,7 +48,7 @@ async function getExclusions() {
   const kinds = Object.keys(KINDS)
   const bundle = await getConfig('morpho-blue/exclusions', undefined, {
     fetcher: async () => {
-      const files = await Promise.all(kinds.map(f => get(`${BASE_URL}/${f}.csv`)))
+      const files = await Promise.all(kinds.map(f => get(`${BASE_URL}/${f}.csv`, { timeout: 30000 })))
       const fetched = {}
       kinds.forEach((k, i) => {
         const rows = parseCsv(files[i], KINDS[k])

@@ -182,7 +182,7 @@ module.exports = {
         'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
       ],
       holders: [
-        'TNu3QZx8U2YAZTUsB3csii1L8QVgUAY3no' // portal
+        'TD4tamFrCq7KvQEB1LArNXr9sKFC6GaAmt' // portal
       ]
     },
     {
@@ -559,6 +559,15 @@ module.exports = {
       ],
       holders: [
         '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal
+      ]
+    },
+    {
+      name: 'xlayer',
+      tokens: [
+        '0xb6ceceab302e2e4948951ee7843fc24e92933061', // USDC
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
     },
   ]

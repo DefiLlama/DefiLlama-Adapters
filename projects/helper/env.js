@@ -66,8 +66,6 @@ const DEFAULTS = {
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
   PROM_RPC: 'https://promscan.io/api/eth-rpc,https://prom-rpc.eu-north-2.gateway.fm',
-  PROM_RPC_MULTICALL: '0xfF785aF3De8C2cb5727A8665984E741c16679131',
-  NIBIRU_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
   // PAST block is served only by drpc: blockdaemon answers "state at block N is pruned" and
   // rpc.mainnet.arc.io 429s every archival read, even a single batch of 50 after sitting idle.
@@ -77,9 +75,11 @@ const DEFAULTS = {
   // explorer.arc.io/api/eth-rpc answers every programmatic request with HTTP 403.
   ARC_ARCHIVAL_RPC: 'https://rpc.arc-scan.org,https://rpc.blockdaemon.mainnet.arc.io,https://rpc.nodeflare.app/arc/public', // public archive fallbacks; use <=100k-block log ranges
   // Arc is not in the SDK Multicall3 deployment map; canonical Multicall3 is deployed there.
-  ARC_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
-  ARC_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
   ARC_MULTICALL_CHUNK_SIZE: '50',
+  // Bitcoin Swap (482120): canonical Multicall3 is not deployed; this is the verified Multicall3 deployment on the chain.
+  BTCWCHAIN_RPC: 'https://rpc.btcw.tech',
+  BTCWCHAIN_RPC_CHAIN_ID: '482120',
+  BTCWCHAIN_RPC_MULTICALL: '0xA0093EA76633A983364cb2582959870eaffDdea0',
   RLS_ARCHIVAL_RPC: 'https://mainnet-archive.rayls.com',
   CRONOS_RPC: 'https://evm.cronos.org,https://rpc.vvs.finance,https://cronos.drpc.org,https://cronos.rpc.sentio.xyz,https://evm-cronos.crypto.org',
   // chains with no provider in the SDK providers list (chainid.network RPCs)
@@ -121,6 +121,7 @@ const ENV_KEYS = [
   'TATUM_API_KEY',
   'TEAM_WEBHOOK',
   'HIRO_API_KEY',
+  'APTOS_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

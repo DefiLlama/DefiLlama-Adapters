@@ -4,6 +4,10 @@ const { sumTokensExport } = require("../helper/sumTokens");
 // HBARX staking contract, holds the staked HBAR
 // https://stader.gitbook.io/stader/hedera/smart-contracts
 const HBARX_STAKING = "0.0.1412503";
+// Two pool contracts from the same deployer. Around 00:00 UTC each day the staking
+// contract moves all of its HBAR into these for ~15 minutes and then pulls it back,
+// so reading only HBARX_STAKING at that time returns 0. They hold 1 HBAR otherwise.
+const HBARX_POOLS = ["0.0.1412476", "0.0.1412488"];
 
 async function ethTvl(api) {
   return await api.call({ abi: "uint256:totalAssets", target: "0xcf5ea1b38380f6af39068375516daf40ed70d299" });
@@ -13,7 +17,7 @@ module.exports = {
   timetravel: false,
   methodology: "We aggregated the assets staked across Stader staking protocols",
   /*terra: { tvl },*/
-  hedera: { tvl: sumTokensExport({ owners: [HBARX_STAKING] }) },
+  hedera: { tvl: sumTokensExport({ owners: [HBARX_STAKING, ...HBARX_POOLS] }) },
   fantom: { tvl: () => ({}) },
   terra2: { tvl: () => ({}) },
   bsc: { tvl: () => ({}), },
