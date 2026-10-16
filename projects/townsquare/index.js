@@ -1,4 +1,4 @@
-const chains = ['xlayer', 'base', 'robinhood', 'monad', 'arbitrum', 'bsc', 'ethereum']
+const chains = ['xlayer', 'base', 'robinhood', 'arbitrum', 'bsc', 'ethereum']
 
 module.exports = {
     methodology: "townsquare TVL is the sum of tokens committed in townsquare private credits",
