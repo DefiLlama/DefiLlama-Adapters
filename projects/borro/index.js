@@ -16,8 +16,8 @@ const { nullAddress } = require("../helper/tokenMapping")
 //
 // tvl per market = (totalSupplyAssets - totalBorrowAssets) + collateral
 //   the first term is the loan-asset cash Morpho still holds for the market; borrowed assets have
-//   left the contract and are reported under borrowed instead. Collateral is replayed from the
-//   three events that move it (Morpho exposes no aggregate collateral getter).
+//   left the contract and are reported under borrowed instead. Morpho exposes no aggregate collateral
+//   getter, so collateral is position() summed over the borrowers seen in SupplyCollateral.
 //   Collateral that is itself a Borro vault share (bNVDA posted on the USDG markets) is NOT added:
 //   the stock behind that share is already counted in the stock-loan market above, and adding the
 //   share again would double count it.
@@ -56,42 +56,27 @@ const vaultAbi = {
   realAssets: "uint256:realAssets",
 }
 
-const eventAbis = {
-  supplyCollateral: "event SupplyCollateral(bytes32 indexed id, address indexed caller, address indexed onBehalf, uint256 assets)",
-  withdrawCollateral: "event WithdrawCollateral(bytes32 indexed id, address caller, address indexed onBehalf, address indexed receiver, uint256 assets)",
-  liquidate: "event Liquidate(bytes32 indexed id, address indexed caller, address indexed borrower, uint256 repaidAssets, uint256 repaidShares, uint256 seizedAssets, uint256 badDebtAssets, uint256 badDebtShares)",
+const supplyCollateralAbi = "event SupplyCollateral(bytes32 indexed id, address indexed caller, address indexed onBehalf, uint256 assets)"
+const positionAbi = "function position(bytes32 id, address user) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)"
+
+// cache only the unique "<market id>:<borrower>" pairs of Borro's markets, not every log on the shared singleton
+const wanted = new Set(markets.map((i) => i.toLowerCase()))
+function borrowerCache({ cache, logs }) {
+  const pairs = new Set(cache.logs ?? [])
+  logs.forEach(({ id, onBehalf }) => {
+    if (wanted.has(id.toLowerCase())) pairs.add(`${id.toLowerCase()}:${onBehalf.toLowerCase()}`)
+  })
+  cache.logs = [...pairs]
+  return cache
 }
 
-// Net collateral per market id, replayed from the only three events that change it.
-async function collateralByMarket(api, toBlock) {
-  const wanted = new Set(markets.map((i) => i.toLowerCase()))
+async function collateralByMarket(api) {
+  const toBlock = (await api.getBlock()) - 200 // the log cache is append-only, stay clear of reorgs at the tip
+  const pairs = await getLogs2({ api, target: MORPHO, eventAbi: supplyCollateralAbi, fromBlock: FROM_BLOCK, toBlock, extraKey: "borro-borrowers", customCacheFunction: borrowerCache })
+  const calls = pairs.map((p) => ({ params: p.split(":") }))
+  const positions = await api.multiCall({ target: MORPHO, abi: positionAbi, calls })
   const net = {}
-  const apply = (id, delta) => {
-    const key = id.toLowerCase()
-    if (!wanted.has(key)) return
-    net[key] = (net[key] || 0n) + delta
-  }
-
-  // getLogs keys its cache on chain/target, so each event against the one singleton needs its own
-  // extraKey. toBlock (tvl's safeBlock) is held back from the head because the cache is append-only. No
-  // fallback to a possibly stale cache: if the logs cannot be read up to toBlock the run fails rather
-  // than reporting a collateral total that silently misses recent events.
-  const sweep = (eventAbi, extraKey) =>
-    getLogs2({ api, target: MORPHO, eventAbi, fromBlock: FROM_BLOCK, toBlock, onlyArgs: true, extraKey })
-
-  const [supplied, withdrawn, liquidated] = await Promise.all([
-    sweep(eventAbis.supplyCollateral, "borro-supplyCollateral"),
-    sweep(eventAbis.withdrawCollateral, "borro-withdrawCollateral"),
-    sweep(eventAbis.liquidate, "borro-liquidate"),
-  ])
-
-  supplied.forEach((i) => apply(i.id, BigInt(i.assets)))
-  withdrawn.forEach((i) => apply(i.id, -BigInt(i.assets)))
-  liquidated.forEach((i) => apply(i.id, -BigInt(i.seizedAssets)))
-
-  for (const [id, amount] of Object.entries(net))
-    if (amount < 0n) throw new Error(`borro: negative collateral replayed for market ${id}`)
-
+  calls.forEach(({ params: [id] }, i) => { net[id] = (net[id] || 0n) + BigInt(positions[i].collateral) })
   return net
 }
 
@@ -126,20 +111,7 @@ async function vaultHoldings(api) {
 }
 
 async function tvl(api) {
-  // Every read at one block: the collateral replay can only reach safeBlock (the log cache is append-only),
-  // so the market and vault balances are read there too.
-  const safeBlock = (await api.getBlock()) - 200
-  const previousBlock = api.block
-  api.block = safeBlock
-  try {
-    await tvlAt(api, safeBlock)
-  } finally {
-    api.block = previousBlock
-  }
-}
-
-async function tvlAt(api, safeBlock) {
-  const [{ params, data }, collateral] = await Promise.all([marketState(api), collateralByMarket(api, safeBlock)])
+  const [{ params, data }, collateral] = await Promise.all([marketState(api), collateralByMarket(api)])
 
   markets.forEach((id, i) => {
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
