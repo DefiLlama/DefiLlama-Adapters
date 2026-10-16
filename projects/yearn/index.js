@@ -1,6 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
-const { getLogs2 } = require('../helper/cache/getLogs')
 const sdk = require('@defillama/sdk')
 
 const kongEndpoint = 'https://kong.yearn.fi/api/rest'
@@ -85,9 +84,8 @@ async function remoteOverlap(api, vaults, strategyAbi) {
   return new Map([[countedSender ? strategy : parent, owned < owed ? owned : owed]])
 }
 
-async function getV3Strategies(api, vaults) {
+async function getV3Strategies(api, vaults, activeVaults) {
   if (!vaults.length) return []
-  const toBlock = await api.getBlock()
   const queueAbi = 'function get_default_queue() view returns (address[])'
   const queues = await api.multiCall({
     abi: queueAbi, calls: vaults.map(({ vault }) => vault.address), permitFailure: true,
@@ -108,31 +106,22 @@ async function getV3Strategies(api, vaults) {
       queues[index] = recovered[i]
     })
   }
-  const strategies = []
-  // Bound concurrent history scans; getLogs2 caches history and fetches new logs.
-  for (let offset = 0; offset < vaults.length; offset += 5) {
-    const batch = await Promise.all(vaults.slice(offset, offset + 5).map(async ({ vault }, i) => {
-      if (!queues[offset + i]) return []
-      const fromBlock = Number(vault.inceptBlock)
-      if (!Number.isSafeInteger(fromBlock) || fromBlock <= 0 || fromBlock > toBlock)
-        throw new Error(`Invalid Yearn V3 inception block: ${vault.address}`)
-      const params = {
-        api, target: vault.address, fromBlock, toBlock,
-        eventAbi: 'event StrategyChanged(address indexed strategy, uint256 indexed change_type)',
-        extraKey: 'yearn-v3-strategy-changed', onlyArgs: false,
-      }
-      // Cached getLogs2 reads exclude toBlock and may lag by one block.
-      // Read that block uncached too, without requesting a future block.
-      const history = await getLogs2(params)
-      const closingBlock = await getLogs2({ ...params, fromBlock: toBlock, skipCache: true })
-      const logs = [...history, ...closingBlock].filter(log => log.blockNumber >= fromBlock && log.blockNumber <= toBlock)
-      // Keep revoked/re-added addresses too: debt is checked at the requested
-      // block below. Queue membership and Kong's count are not debt evidence.
-      return [...new Set([...queues[offset + i], ...logs.map(log => log.args.strategy)]
-        .map(address => address.toLowerCase()))]
-    }))
-    strategies.push(...batch)
-  }
+  // strategies() is a public mapping and add_strategy enforces the vault asset, so probing
+  // counted same-asset vaults and registered routers finds active strategies off the default queue.
+  const probes = []
+  vaults.forEach(({ vault }, i) => {
+    const parent = vault.address.toLowerCase(), asset = vault.asset?.address?.toLowerCase()
+    if (!queues[i] || !asset) return
+    const queued = new Set(queues[i].map(a => a.toLowerCase()))
+    const candidates = new Set([
+      ...activeVaults.filter(({ vault: v }) => v.asset?.address?.toLowerCase() === asset).map(({ vault: v }) => v.address.toLowerCase()),
+      ...registeredNestedVaults.filter(r => r.chainId === api.chainId && r.parent === parent).map(r => r.strategy),
+    ])
+    candidates.forEach(strategy => { if (strategy !== parent && !queued.has(strategy)) probes.push({ i, target: vault.address, strategy }) })
+  })
+  const params = await api.multiCall({ abi: V3_STRATEGY_ABI, calls: probes.map(({ target, strategy }) => ({ target, params: [strategy] })) })
+  const strategies = vaults.map((_, i) => (queues[i] ?? []).map(a => a.toLowerCase()))
+  probes.forEach(({ i, strategy }, j) => { if (BigInt(params[j].activation) > 0n) strategies[i].push(strategy) })
   return strategies
 }
 
@@ -144,9 +133,9 @@ async function getDebts(api, activeVaults) {
   const v3 = activeVaults.filter(isV3)
   const v2 = withStrat.filter(v => !isV3(v))
 
-  // V3 includes every event-discovered strategy, even outside the default queue.
+  // V3 includes every active strategy that is a counted vault, even outside the default queue.
   // V2 keeps its existing slot-indexed withdrawal queue and count limit.
-  const v3Queues = await getV3Strategies(api, v3)
+  const v3Queues = await getV3Strategies(api, v3, activeVaults)
   const v2QueueCalls = []
   v2.forEach(({ vault }) => { for (let i = 0; i < Math.min(vault.strategiesCount, MAX_V2_STRATEGIES); i++) v2QueueCalls.push({ target: vault.address, params: [i] }) })
   const v2QueueRes = await api.multiCall({ abi: 'function withdrawalQueue(uint256) view returns (address)', calls: v2QueueCalls })
