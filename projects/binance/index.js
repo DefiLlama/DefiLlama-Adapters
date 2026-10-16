@@ -51,6 +51,7 @@ const binanceToDefillama = {
   SCROLL: "scroll",
   SONIC: "sonic",
   PLASMA: "plasma",
+  STATEMINT: 'polkadot',
 }
 
 const withdrawalAddresses = [
