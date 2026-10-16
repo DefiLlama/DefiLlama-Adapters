@@ -1,4 +1,6 @@
 // Production protocol: https://app.koo.xyz/ and https://docs.koo.xyz/earn/yield-bearing-usdc
+const { sumTokens2 } = require('../helper/unwrapLPs')
+
 const CORE = '0xA18b67e194d4f4bADe61d4e68cd135C63C438D1d'
 const USDC = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
 // Both receipt balances are denominated in six-decimal underlying USDC units.
@@ -10,12 +12,7 @@ async function tvl(api) {
   if (supported.some(asset => asset.toLowerCase() !== USDC.toLowerCase()))
     throw new Error('Koo collateral assets changed; update the custody/strategy mapping')
 
-  const balances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: [USDC, aArbUSDCn, compoundUSDC].map(target => ({ target, params: CORE })),
-  })
-  const total = balances.reduce((sum, balance) => sum + BigInt(balance), 0n)
-  api.add(USDC, total.toString())
+  return sumTokens2({ api, owner: CORE, tokens: [USDC, aArbUSDCn, compoundUSDC] })
 }
 
 module.exports = {
