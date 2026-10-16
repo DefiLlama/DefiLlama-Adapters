@@ -58,7 +58,7 @@ async function borrowed(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'Alpend is a lending protocol on the Canton Network. Users supply CC, USDCx, and CBTC as collateral to earn yield, ' +
+    'Alpend is a lending protocol on the Canton Network. Users supply assets to its lending pools as collateral to earn yield, ' +
     'and borrow against that collateral; interest accrues on-chain via reserve indices. ' +
     'TVL is the amount of each asset supplied to Alpend\'s lending pools minus the amount borrowed out of them, i.e. the assets held by the pool operator party; ' +
     'the borrowed tab is the gross amount currently borrowed out of those pools. ' +
