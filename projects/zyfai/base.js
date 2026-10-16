@@ -7,7 +7,8 @@ const BASE_AAVE_POOLS = {
 };
 const FLUID_POOL_ADDRESSES = {
     'USDC': '0xf42f5795D9ac7e9D757dB633D693cD548Cfd9169',
-    'wstETH': '0x896E39f0E9af61ECA9dD2938E14543506ef2c2b5'
+    'wstETH': '0x896E39f0E9af61ECA9dD2938E14543506ef2c2b5',
+    'EURC': '0x1943FA26360f038230442525Cf1B9125b5DCB401',
 };
 const MORPHO_POOL_ADDRESSES = {
     'Universal - USDC': '0xB7890CEE6CF4792cdCC13489D36D9d42726ab863',
@@ -40,6 +41,7 @@ const MORPHO_POOL_ADDRESSES = {
     'Clearstar Core ETH V2': '0xBCA4E2E24A7cFa776E4282CC8Eb06f04738b71da',
     'Steakhouse High Yield USDC V2': '0xbeeff7aE5E00Aae3Db302e4B0d8C883810a58100',
     'Noon Ecosystem Vault': '0x8B12106a70FE2F8bB255F691f1CF9a9ccfB278AF',
+    'Yearn OG USDC V2': '0xe7D0DBE3493830e2Ab62619211A2BfF0Fc60dB42',
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
@@ -99,6 +101,17 @@ const IPOR_POOLS = {
     'Google Carry Trade': '0x01dbdb9748ecf71b1ffbb62f5cb41318531ba362',
 };
 
+// Share tokens with no Llama price. Held out of allPoolTokens and counted as underlying.
+const UNPRICED_VAULTS = [
+    '0xd46a3c2d958d0a2cb098d48c48dc19fe3a710f37', // IPOR Fusion USDC
+    '0x363600ac7173e8d91bcfee68d711bb93e992c110', // Superform GOOGLc
+    '0x301a1ceb684d62833101b373ab6c395349b24033', // Superform AAPLc
+];
+
+const AUTOFINANCE_POOLS = {
+    USDC: '0x9c6864105AEC23388C89600046213a44C384c831', // baseUSD
+};
+
 // const BASE_YO_PROTOCOL_POOLS = {
 //     yoEUR: '0x50c749aE210D3977ADC824AE11F3c7fd10c871e9',
 // };
@@ -119,6 +132,7 @@ const allPoolTokens = [
     ...Object.values(BASE_EULER_POOLS),
     ...Object.values(BASE_YEARN_POOLS),
     ...Object.values(IPOR_POOLS),
+    ...Object.values(AUTOFINANCE_POOLS),
     // ...Object.values(BASE_YO_PROTOCOL_POOLS),
     // ...Object.values(BASE_LAZY_SUMMER_POOLS),
     COMPOUND_TOKEN_ADDRESS,
@@ -127,5 +141,6 @@ const allPoolTokens = [
 ]
 
 module.exports = {
-  allPoolTokens
+  allPoolTokens,
+  unpricedVaults: UNPRICED_VAULTS,
 };

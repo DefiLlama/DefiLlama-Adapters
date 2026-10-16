@@ -997,8 +997,14 @@ module.exports = {
     }
   },
   "pare": {
-    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain. Each vault holds the stock backing one series of principal (pToken) and yield (yToken) tokens until maturity.",
+    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain, and yield-bearing dollars (sUSDx) deposited in PARE YieldVaults on Ethereum. Each vault holds what backs one series of principal (pToken) and yield (yToken) tokens until maturity.",
     "start": "2026-09-02",
+    "ethereum": {
+      "tokensAndOwners": [
+        // YieldVaults hold the share they split (sUSDx, Staked USDx). The PT/sUSDx pools are Uniswap v4 and count under Uniswap.
+        ["0xEB892628D1E58BC475A6dCB7F5dBC4F591632AA4", "0xFB0c70eaDdc3717A9c95E3D6c5B791244437a25c"], // pUSDx-MAR27, audited build, 2026-10-10
+      ],
+    },
     "robinhood": {
       "tokensAndOwners": [
         // audited build, 2026-09-18, maturity 2027-12-31
@@ -1129,15 +1135,19 @@ module.exports = {
     }
   },
   "tacit": {
-    "methodology": "TVL is the ETH held by Tacit's shielded pools: the ETH wrapped into the ConfidentialPool on Ethereum, and the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain. Balances are read from the pool contracts.",
+    "methodology": "TVL is the assets held by Tacit's contracts: the ETH, USDC, USDT and wstETH wrapped into the ConfidentialPool on Ethereum, the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain, and the wstETH escrowed in the CollateralEngine that backs Bitcoin locks. Balances are read from the contracts; Tacit's own token (TAC) is not counted.",
     "start": "2026-09-17",
     "ethereum": {
       "owners": [
         "0x000000000Ed1eabD231Be41d93b719056F7febFC",
-        "0x000000c2A20657CE25f2Ba99737933D031AFBEE9"
+        "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+        "0x000000003f608BDdF0ca45934003ffb9DbDF70DB"
       ],
       "tokens": [
-        ADDRESSES.null
+        ADDRESSES.null,
+        ADDRESSES.ethereum.WSTETH,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT
       ]
     },
     "base": {

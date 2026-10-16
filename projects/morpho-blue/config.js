@@ -2,13 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const config = {
   ethereum: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: [
-      "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
-      ADDRESSES.base.USDC,
-      ADDRESSES.optimism.WSTETH,
-      '0x84b78bc998e4b1a63f2cf9ebfe76c55fc96a5a9b',
-      '0x52c66b5e7f8fde20843de900c5c8b4b0f23708a0' // AZND token used to artificially inflate Morpho total deposit metric
-    ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
@@ -31,7 +24,6 @@ const config = {
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd', '0x46415998764c29ab2a25cbea6254146d50d22687', '0x5e331e9ae6e1a5d375f699811736527222a9db15', '0x2dc205f24bcb6b311e5cdf0745b0741648aebd3d', '0xadcdd085ad2887758255090589f72237bdd33d8a', '0xcb327b99ff831bf8223cced12b1338ff3aa322fa', '0xadcdd085ad2887758255090589f72237bdd33d8e', '0x4bcaf180df5b13c0441fe41a66e9638a2a410c6d'], // HERMES token used to artificially inflate Morpho total deposit metric
     fromBlock: 13977148,
     blacklistedMarketIds: [
       '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
@@ -42,11 +34,6 @@ const config = {
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
-    blackList: [
-      "0xf8b3fa720a9cd8abeed5a81f11f80cd8f93e6b57",
-      "0x010700ab046dd8e92b0e3587842080df36364ed3", // K token inflated by Kinto exploit
-      '0x57587e47a0af9d1bb93c0d4b3df671b053ab4366', // GLVT token - verify backing
-    ],
     fromBlock: 296446593,
     blacklistedMarketIds: [
       "0xfdb8221edcae73f73485d55c30e706906114bc2ff4634870c5c57e8fb83eae6a", // K/USDC bad debt from Kinto exploit
@@ -68,7 +55,6 @@ const config = {
   },
   polygon: {
     morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
-    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719", "0xc69e948a9a5c123704580c46332f90cff1cb215b", "0x316c0b5cd67aa7c2da7a576d3724e3763981d08f", "0xd59a2e7d5110dc379910925aa0472a13e09a093e", "0xc7a357293a35ce4c8d7f2000571043313987aab7", "0xf14c4fd60765e36d63f6c8b8161bd41ba995fb44", "0x338a4ef6953b36e67ccf7cffe50ebc74b1d64387", "0x12fd05a9306affc946cb13301d88a102400544d2", "0x8a874eb137d99415bad95c5d4399bc691849d02f", "0x365ab7828ea541c1d6e30472a1a1e7d07600a6bd", "0xc7056597f3a816202486b5082b3291a2023c9633", "0x2faaa34f387e6485671faeda7c021ee6af961d35"],
     fromBlock: 66931042,
   },
   scroll: {
@@ -113,7 +99,7 @@ const config = {
   // },
   hyperliquid: {
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
-    blackList: ['0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110'],
+    blackList: ['0x0aD339d66BF4AeD5ce31c64Bc37B3244b6394A77'], // USR on hyperevm; the entry here was the ethereum address
     fromBlock: 1988429,
   },
   plume_mainnet: {
@@ -176,7 +162,6 @@ const config = {
   },
   monad: {
     morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
-    blackList: ['0x4917a5ec9fcb5e10f47cbb197abe6ab63be81fe8'], // AZND token used to artificially inflate Morpho total deposit metric
     fromBlock: 31907457,
   },
   stable: {
