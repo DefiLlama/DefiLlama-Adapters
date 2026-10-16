@@ -7,6 +7,8 @@ const FETCH_OPTS = { headers: { 'User-Agent': 'DefiLlama-Adapter (cashen)' } }
 // and answers 503 once its own read is over 2h old, so a fresh feed is at most ~8h behind;
 // this only catches a feed that stopped advancing.
 const MAX_SNAPSHOT_AGE_SECONDS = 12 * 60 * 60
+// A snapshot time ahead of the clock is a fault, not a fresh read; allow 5 minutes of skew.
+const MAX_CLOCK_SKEW_SECONDS = 5 * 60
 
 async function tvl(api) {
   const feed = await get(TVL_URL, FETCH_OPTS)
@@ -18,6 +20,8 @@ async function tvl(api) {
   const ageSeconds = (Date.now() - new Date(feed.as_of).getTime()) / 1000
   if (!Number.isFinite(ageSeconds) || ageSeconds > MAX_SNAPSHOT_AGE_SECONDS)
     throw new Error(`cashen: CCTools feed is stale, as_of=${feed.as_of}`)
+  if (ageSeconds < -MAX_CLOCK_SKEW_SECONDS)
+    throw new Error(`cashen: CCTools feed snapshot is in the future, as_of=${feed.as_of}`)
 
   // total_cc is a decimal string in whole CC; do not scale it again.
   // null/'' convert to 0 under Number(), so reject them explicitly.
