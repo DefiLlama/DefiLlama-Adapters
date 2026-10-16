@@ -74,7 +74,6 @@ const EXCLUDED_STRATEGIES = {
         '0x78f9486c71371bb5af50cbcdf4bacdc298ec8a97',
         '0x0d58d3a21adc8f60c81c00c13e7363cc56c6e061',
         '0xa783b87047dcdaf5d84f4843fae85a6c9e3343af',
-        '0x945dc31b38c811a0188b5b30cf1ea7721666cf7c',
         '0x33ca98cfca7f25735d8719e67f616fcc44d7771e',
     ],
 }
