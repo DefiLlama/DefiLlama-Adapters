@@ -4,6 +4,7 @@ const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
 const sdk = require('@defillama/sdk');
+const { getEnv } = require("../helper/env");
 
 const VAULT =
   "0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700";
@@ -519,12 +520,10 @@ async function tvl(api) {
   const { adds: echelonAdds, totalsByAsset: echelonTotalsByAsset } =
     await sumEchelonSafePositions(api, safeAddresses);
 
-  // The SDK already sends APTOS_API_KEY on fullnode views. The indexer client did not, so balance
-  // queries sat on the anonymous compute-unit budget and a 429 aborted the whole day.
+  // the SDK sends the same key on fullnode views
   const indexerHeaders = {};
-  if (process.env.APTOS_API_KEY) {
-    indexerHeaders.Authorization = `Bearer ${process.env.APTOS_API_KEY}`;
-  }
+  const apiKey = getEnv("APTOS_API_KEY");
+  if (apiKey) indexerHeaders.Authorization = `Bearer ${apiKey}`;
   const graphQLClient = new GraphQLClient(INDEXER_URL, { headers: indexerHeaders });
 
   const faTotalsByAsset = new Map();
@@ -552,6 +551,7 @@ async function tvl(api) {
 
   await PromisePool.withConcurrency(COIN_BALANCE_CONCURRENCY)
     .for(safeAddresses)
+    .handleError((e) => { throw e; })
     .process(async (addr) => {
       const bal = await retryAsync(() =>
         function_view({
@@ -597,15 +597,13 @@ async function tvl(api) {
       if (!positionAddresses.length) return;
 
       for (const positionAddr of positionAddresses) {
-        // Retry the 429, then skip a position that still fails so one broken position cannot
-        // zero the day's TVL. The config and position-list reads above still fail the run.
         const posRaw = await retryAsync(() =>
           function_view({
             functionStr: `${VAULT}::vault::get_hyperion_position`,
             args: [safe, positionAddr],
             chain: "aptos",
           })
-        ).catch(() => null);
+        );
 
         const pos = normalizeHyperionPosition(posRaw, positionAddr);
         if (!pos || pos.closed) continue;
@@ -638,9 +636,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  // Hundreds of per-safe Aptos views. Hyperion sets the same flag so a long run is not cut off
-  // and stored as the previous day.
-  isHeavyProtocol: true,
   aptos: { tvl },
   methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Hyperion and Decibel are also tracked as separate protocols (doublecounted: true).",
 };
