@@ -31,7 +31,7 @@ const binanceNetworkMapping = {
   // STATEMINT: 'polkadot',
   // OPBNB: 'op_bnb',
   CELO: 'celo',
-  // KAVAEVM: 'kava',
+  KAVAEVM: 'kava',
   XLM: 'stellar',
   LUNC: 'terra',
   // 2 tokens
