@@ -15538,18 +15538,6 @@ const configs = {
       "resolveNFTs": true
     },
   },
-  "gondi-v3": {
-    "methodology": "Counts the floor value of the NFTs held as loan collateral by GONDI's escrow (MultiSourceLoan) and user vault contracts, priced with DefiLlama's NFT collection prices. Collections without a DefiLlama price are not counted.",
-    "ethereum": {
-      "owners": [
-        "0xf65b99ce6dc5f6c556172bcc0ff27d3665a7d9a8",
-        "0x823de2c44369e94cac3da789ad4b6493e27e4bfe",
-        "0xf41b389e0c1950dc0b16c9498eae77131cc08a56",
-        "0xe365ff3cad44d19cb7aba81df8ffd6818a66ac0a"
-      ],
-      "resolveNFTs": true
-    },
-  },
   "goosefx-v2": {
     "timetravel": false,
     "solana": {
@@ -20755,6 +20743,9 @@ const configs = {
   "nullmask": {
     start: '2026-10-01',
     ethereum: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT] },
+    base: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.base.USDC] },
+    bsc: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT] },
+    robinhood: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null] },
   },
   "numbers": {
     "misrepresentedTokens": true,
@@ -23482,6 +23473,22 @@ const configs = {
       ]
     },
   },
+  "qualia": {
+    "doublecounted": true,
+    "methodology": "Counts the WMON held by the Kintsu superMON vault on Monad and the USDe held by the HLPe vault on Hyperliquid, both Upshift vaults curated by Qualia. Assets the vault operator reports as deployed outside the vaults are not counted. The vaults are also counted under Upshift.",
+    "monad": {
+      "owner": "0x792C7c5fB5C996E588b9F4A5FB201C79974e267C", // Kintsu superMON
+      "tokens": [
+        ADDRESSES.monad.WMON
+      ]
+    },
+    "hyperliquid": {
+      "owner": "0x8fFDcd8A96d293f45aA044d10b899F9D71897E8a", // HLPe
+      "tokens": [
+        ADDRESSES.hyperliquid.USDe
+      ]
+    },
+  },
   "quantum-unit": {
     "methodology": "count all contract balance",
     "bsc": {
@@ -23492,16 +23499,28 @@ const configs = {
     },
   },
   "quantumpools": {
-    "methodology": "TVL is the value of every Uniswap V3 concentrated-liquidity position held by the QuantumPools vaults on Base and Robinhood Chain, unwrapped to underlying token amounts at the current pool tick.",
+    "methodology": "TVL is the value of every Uniswap V3 and PancakeSwap V3 concentrated-liquidity position held by the QuantumPools V2/V2.1 vaults, unwrapped to underlying token amounts at the current pool tick.",
     "doublecounted": true,
     "start": "2026-09-28",
+    // [position manager, vault]: each vault binds one position manager
     "robinhood": {
-      "owner": "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3",
-      "resolveUniV3": true
+      "uniV3nftsAndOwners": [
+        ["0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3", "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3"],
+        ["0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3", "0xd3AAb853758c81c09C4510D1b05b9152F71B30F5"],
+        ["0x46A15B0b27311cedF172AB29E4f4766fbE7F4364", "0xeBdfa133432bC0321ed1073Fe776F4701956E0e7"],
+      ]
     },
     "base": {
-      "owner": "0x9597f68203d1bc85744A5Fc11D890aA7777e386B",
-      "resolveUniV3": true
+      "uniV3nftsAndOwners": [
+        ["0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1", "0x9597f68203d1bc85744A5Fc11D890aA7777e386B"],
+        ["0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1", "0x0e8A7c9Fd76e718202B3c3530f3B587ba52FB1A8"],
+      ]
+    },
+    "bsc": {
+      "uniV3nftsAndOwners": [
+        ["0x46A15B0b27311cedF172AB29E4f4766fbE7F4364", "0x9597f68203d1bc85744A5Fc11D890aA7777e386B"],
+        ["0x7b8A01B39D58278b5DE7e48c8449c9f4F5170613", "0x57cB3160D59e967D3ac62620Fc69f7e0898d2690"],
+      ]
     },
   },
   "quenta": {
@@ -25639,7 +25658,9 @@ const configs = {
               // DEFI.ssi
               "0x164ffdaE2fe3891714bc2968f1875ca4fA1079D0",
               // MEME.ssi
-              "0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA"
+              "0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA",
+              // soUSDC
+              "0xb88A0269C0b7E665F15DE46F634e02cE81E361c9"
 
             ],
             // bridge
@@ -27776,12 +27797,18 @@ const configs = {
     },
   },
   "the-lifedao": {
-    "methodology": "TVL is calculated by unwrapping the Savings Vault's Uniswap V3 USDC/USDT LP position on Arbitrum into its underlying token balances.",
+    "methodology": "Counts idle USDC in the Savings Vault and BTC-ETH Investment Vault, the Uniswap V3 LP positions both vaults hold (USDC/USDT and WBTC/WETH), and idle WBTC/WETH in the BTC-ETH strategy, on Arbitrum.",
     "arbitrum": {
-      "owner": "0x6d1bD94Cd572e51Aa018aE6Bf909BA61F8F8d4f9",
+      "owners": [
+        "0x6d1bD94Cd572e51Aa018aE6Bf909BA61F8F8d4f9",
+        "0x86565284b9e6c29da4c401b3C59128F8672C216D",
+        "0x317c1b07442bb945FF139517c0F6fa91d0C0d0b7"
+      ],
       "resolveUniV3": true,
       "tokens": [
-        ADDRESSES.arbitrum.USDC
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+        ADDRESSES.arbitrum.WBTC,
+        ADDRESSES.arbitrum.WETH
       ]
     },
   },

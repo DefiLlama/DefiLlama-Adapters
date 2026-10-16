@@ -671,6 +671,11 @@ const configs = {
         base: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
         },
+        arc: {
+          morpho: [
+            '0x8E357432CC12ff425c36432F312968aEb16112AF', // Galaxy USDC, $89.7M 2026-10-13; curator "Galaxy Curation" per Morpho UI; 100% one MarketV1 market
+          ],
+        },
       },
     },
   },
@@ -800,6 +805,11 @@ const configs = {
         ethereum: {
           morphoVaultOwners: [
             '0xbA75546ACD56b3a9142f94F179b03970eE4283Fd', // initial owner — Keyrock V1/V2 vaults
+          ],
+        },
+        arc: {
+          morpho: [
+            '0x5bEfAb92a5A3D60F578Cb51EEb4e4FD50a1e3123', // Keyrock Prime USDC, $75.0M 2026-10-13; curator "Keyrock" per Morpho UI; 100% one MarketV1 market
           ],
         },
       }
@@ -1699,6 +1709,7 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
+            '0x0Dca0FDC170baA4CA9c1dCd37Ffe01f97bCfD504',
             '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
             '0x50B75d586929Ab2F75dC15f07E1B921b7C4Ba8fA',
             '0x75a1253432356f90611546a487b5350CEF08780D',

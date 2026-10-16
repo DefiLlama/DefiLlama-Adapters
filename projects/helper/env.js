@@ -121,6 +121,7 @@ const ENV_KEYS = [
   'TATUM_API_KEY',
   'TEAM_WEBHOOK',
   'HIRO_API_KEY',
+  'APTOS_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

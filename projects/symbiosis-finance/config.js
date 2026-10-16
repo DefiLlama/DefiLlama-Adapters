@@ -561,5 +561,14 @@ module.exports = {
         '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal
       ]
     },
+    {
+      name: 'xlayer',
+      tokens: [
+        '0xb6ceceab302e2e4948951ee7843fc24e92933061', // USDC
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
   ]
 }
