@@ -55,8 +55,12 @@ async function borrowed(api) {
   out.forEach((amount) => api.add(USDG, amount))
 }
 
+// DefiLlama prices $PRIORS by its CoinGecko id (priors-agent); its Robinhood Chain address has no price of its own.
+// The token predates every seat vault, and a vault not yet deployed holds none, so every read here must succeed.
 async function staking(api) {
-  return api.sumTokens({ owners: SEAT_VAULTS, tokens: [PRIORS] })
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', target: PRIORS, calls: SEAT_VAULTS })
+  const total = balances.reduce((sum, b) => sum + BigInt(b), 0n)
+  api.addCGToken('priors-agent', Number(total) / 1e18)
 }
 
 module.exports = {
