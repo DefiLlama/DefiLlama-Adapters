@@ -52,6 +52,11 @@ const fixBalancesTokens = {
   zigchain: {
     azig: { coingeckoId: 'zignaly', decimals: 18 },
   },
+  // Grey Goo (GOO) is listed on CoinGecko as grey-goo (platform robinhood), but is not priced
+  // under robinhood:0x6572… by the coins service yet
+  robinhood: {
+    '0x6572EADe9Fb17F4027baF92FEAC222B9AA746bd0': { coingeckoId: 'grey-goo', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
