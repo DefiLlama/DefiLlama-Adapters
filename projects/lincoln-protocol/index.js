@@ -16,6 +16,11 @@ const POOLS = {
   '0x207Dc4DD4E40Ab280dF9eC10CD5Edf04685e9d88': '0xec262a75e413fAfD0dF80480274532C79D42da09', // MSTR
 };
 
+/**
+ * Sums the asset held by each privacy pool: native ETH for the ETH pool,
+ * the pool's ERC20 (USDG or a tokenized stock) for the others.
+ * @param {import("@defillama/sdk").ChainApi} api
+ */
 async function tvl(api) {
   const ownerTokens = Object.entries(POOLS).map(([pool, token]) => [[token], pool]);
   return sumTokens2({ api, ownerTokens });
