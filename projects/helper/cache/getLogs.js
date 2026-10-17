@@ -150,22 +150,17 @@ async function getLogs({ target,
     if (cache.logs.length < chunkSize) return setCache(cacheFolder, key, cache)
 
 
-    let allLogs = cache.logs
+    const allLogs = cache.logs
     cache.logs = allLogs.slice(0, chunkSize)
-    allLogs = allLogs.slice(chunkSize)
-    cache.hasMore = allLogs.length > 0
+    cache.hasMore = allLogs.length > chunkSize
     await setCache(cacheFolder, key, cache)
 
-    let index = 0
-
-    while (allLogs.length) {
-      const logs = allLogs.splice(0, chunkSize)
-      allLogs = allLogs.slice(chunkSize)
+    for (let offset = chunkSize, index = 0; offset < allLogs.length; offset += chunkSize, index++) {
+      const logs = allLogs.slice(offset, offset + chunkSize)
       const chunkKey = `${key}-${index}`
-      const hasMore = allLogs.length > 0
+      const hasMore = offset + chunkSize < allLogs.length
       await setCache(cacheFolder, chunkKey, { logs, hasMore })
       sdk.log(`Saved ${logs.length} logs to cache: ${chunkKey}, has more: ${hasMore}`)
-      index++
     }
   }
 
