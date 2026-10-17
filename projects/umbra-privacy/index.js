@@ -1,5 +1,6 @@
 const { PublicKey } = require('@solana/web3.js')
-const { sumTokens2, getConnection } = require('../helper/solana')
+const { getConnection } = require('../helper/solana')
+const { sleep } = require('../helper/utils')
 
 // Umbra V1: one PDA per shielded pool, each owning that pool's token account
 const UMBRA_PROGRAM = 'UMBRAD2ishebJTcgCLkTkNUx1v3GyoAgpTRPeWoLykh'
@@ -13,23 +14,61 @@ const V2_VAULT_AUTHORITY = '2sjnjABJHPEZS8oVdp8nztPBUVUAT7uJawc8eQTMHTfa'
 const V2_SOL_VAULT = 'BxDCkvgZYRcCAnpywVw5j14AhkXehYvsXoCRiaodUs8s'
 
 const UMBRA_MINT = 'PRVT6TB7uss3FrUd2D9xs2zqDBsa3GbMJMwCQsgmeta'
+const SOL_MINT = 'So11111111111111111111111111111111111111112'
+const TOKEN_PROGRAMS = ['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb']
 
-async function getPoolOwners() {
-  const accounts = await getConnection().getProgramAccounts(new PublicKey(UMBRA_PROGRAM), {
+// The public RPC rate-limits getTokenAccountsByOwner per method, so owners are read one call
+// at a time, with a retry on 429
+async function withRetry(fn, attempts = 5) {
+  for (let i = 0; ; i++) {
+    try {
+      return await fn()
+    } catch (e) {
+      if (i + 1 >= attempts || !/429|Too many requests/i.test(String(e?.message ?? e))) throw e
+      await sleep(2000 * 2 ** i)
+    }
+  }
+}
+
+// Raw balance per mint across every pool, read once and shared by tvl and staking
+let balancesPromise
+function getPoolBalances() {
+  if (!balancesPromise) balancesPromise = readPoolBalances().catch((e) => { balancesPromise = undefined; throw e })
+  return balancesPromise
+}
+
+async function readPoolBalances() {
+  const connection = getConnection()
+  const pools = await withRetry(() => connection.getProgramAccounts(new PublicKey(UMBRA_PROGRAM), {
     filters: [{ dataSize: POOL_ACCOUNT_SIZE }, { memcmp: { offset: 0, bytes: POOL_DISCRIMINATOR } }],
     dataSlice: { offset: 0, length: 0 },
-  })
-  return accounts.map(a => a.pubkey.toString()).concat(V2_VAULT_AUTHORITY)
+  }))
+  const owners = pools.map(a => a.pubkey).concat(new PublicKey(V2_VAULT_AUTHORITY))
+
+  const balances = {}
+  for (const owner of owners) {
+    for (const programId of TOKEN_PROGRAMS) {
+      const { value } = await withRetry(() => connection.getParsedTokenAccountsByOwner(owner, { programId: new PublicKey(programId) }))
+      for (const { account } of value) {
+        const { mint, tokenAmount } = account.data.parsed.info
+        balances[mint] = (balances[mint] ?? 0n) + BigInt(tokenAmount.amount)
+      }
+      await sleep(800)
+    }
+  }
+  const lamports = await withRetry(() => connection.getBalance(new PublicKey(V2_SOL_VAULT)))
+  balances[SOL_MINT] = (balances[SOL_MINT] ?? 0n) + BigInt(lamports)
+  return balances
 }
 
 async function tvl(api) {
-  const owners = await getPoolOwners()
-  return sumTokens2({ api, owners, solOwners: [V2_SOL_VAULT], blacklistedTokens: [UMBRA_MINT] })
+  const balances = await getPoolBalances()
+  for (const [mint, amount] of Object.entries(balances)) if (mint !== UMBRA_MINT) api.add(mint, amount.toString())
 }
 
 async function staking(api) {
-  const owners = await getPoolOwners()
-  return sumTokens2({ api, tokensAndOwners: owners.map(owner => [UMBRA_MINT, owner]) })
+  const balances = await getPoolBalances()
+  if (balances[UMBRA_MINT]) api.add(UMBRA_MINT, balances[UMBRA_MINT].toString())
 }
 
 module.exports = {
