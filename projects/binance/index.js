@@ -52,6 +52,7 @@ const binanceToDefillama = {
   SONIC: "sonic",
   PLASMA: "plasma",
   STATEMINT: 'polkadot',
+  KAVAEVM: 'kava',
   KAIA: 'klaytn',
   SEIEVM: 'sei',
   XTZ: 'tezos',
@@ -143,7 +144,7 @@ const tvl = async (api) => {
     .map(({ address }) => address)
     .filter(Boolean)
 
-  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei']
+  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava']
   const isEvm = evmChains.includes(chain)
 
   const lockInfoAddresses = []
