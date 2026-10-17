@@ -1,5 +1,5 @@
 /**
- * DefiLlama TVL & Treasury Adapter for Syn DAO
+ * DefiLlama TVL Adapter for Syn DAO
  * Chain: Arc Mainnet (Chain ID 5042)
  * Website: https://syndaopro.xyz
  */
@@ -19,15 +19,11 @@ const TRACKED_TOKENS = [USDC_ADDRESS, EURC_ADDRESS, CIRBTC_ADDRESS];
 
 module.exports = {
   methodology:
-    'TVL counts the USDC, EURC, and cirBTC balances deposited in the Syn DAO Crowdfund and Treasury contracts on Arc Network. Treasury counts the assets held directly in the DAO Treasury contract.',
+    'TVL counts the USDC, EURC, and cirBTC balances deposited in the Syn DAO Crowdfund and Treasury contracts on Arc Network.',
   start: '2026-10-01',
   arc: {
     tvl: sumTokensExport({
       owners: [TREASURY_ADDRESS, CROWDFUND_ADDRESS],
-      tokens: TRACKED_TOKENS,
-    }),
-    treasury: sumTokensExport({
-      owner: TREASURY_ADDRESS,
       tokens: TRACKED_TOKENS,
     }),
   },
