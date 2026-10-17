@@ -1,23 +1,61 @@
 const { PublicKey } = require('@solana/web3.js')
-const { sumTokens2, getConnection } = require('../helper/solana')
+const { getConnection } = require('../helper/solana')
+const { sleep } = require('../helper/utils')
 
+// Umbra V1: one PDA per shielded pool, each owning that pool's token account
 const UMBRA_PROGRAM = 'UMBRAD2ishebJTcgCLkTkNUx1v3GyoAgpTRPeWoLykh'
 const POOL_ACCOUNT_SIZE = 176
 const POOL_DISCRIMINATOR = 'JGBg3fpzoEY'
 
-async function getPoolOwners() {
-  const accounts = await getConnection().getProgramAccounts(new PublicKey(UMBRA_PROGRAM), {
-    filters: [{ dataSize: POOL_ACCOUNT_SIZE }, { memcmp: { offset: 0, bytes: POOL_DISCRIMINATOR } }],
-    dataSlice: { offset: 0, length: 0 },
-  })
-  return accounts.map(a => a.pubkey.toString())
+const TOKEN_PROGRAMS = ['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb']
+
+// The public RPC rate-limits getTokenAccountsByOwner per method, so owners are read one call
+// at a time, with a retry on 429
+async function withRetry(fn, attempts = 5) {
+  for (let i = 0; ; i++) {
+    try {
+      return await fn()
+    } catch (e) {
+      if (i + 1 >= attempts || !/429|Too many requests/i.test(String(e?.message ?? e))) throw e
+      await sleep(2000 * 2 ** i)
+    }
+  }
 }
 
+// Raw balance per mint across every pool
+let balancesPromise
+function getPoolBalances() {
+  if (!balancesPromise) balancesPromise = readPoolBalances().catch((e) => { balancesPromise = undefined; throw e })
+  return balancesPromise
+}
+
+async function readPoolBalances() {
+  const connection = getConnection()
+  const pools = await withRetry(() => connection.getProgramAccounts(new PublicKey(UMBRA_PROGRAM), {
+    filters: [{ dataSize: POOL_ACCOUNT_SIZE }, { memcmp: { offset: 0, bytes: POOL_DISCRIMINATOR } }],
+    dataSlice: { offset: 0, length: 0 },
+  }))
+  const owners = pools.map(a => a.pubkey)
+
+  const balances = {}
+  for (const owner of owners) {
+    for (const programId of TOKEN_PROGRAMS) {
+      const { value } = await withRetry(() => connection.getParsedTokenAccountsByOwner(owner, { programId: new PublicKey(programId) }))
+      for (const { account } of value) {
+        const { mint, tokenAmount } = account.data.parsed.info
+        balances[mint] = (balances[mint] ?? 0n) + BigInt(tokenAmount.amount)
+      }
+      await sleep(800)
+    }
+  }
+  return balances
+}
+
+// UMBRA is counted like every other pooled token: it is shielded by users to hold and
+// transact privately, with no lockup, rewards or governance attached
 async function tvl(api) {
-  const owners = await getPoolOwners()
-  // UMBRA is counted like every other pooled token: it is shielded by users to hold and
-  // transact privately, with no lockup, rewards or governance attached
-  return sumTokens2({ api, owners })
+  const balances = await getPoolBalances()
+  for (const [mint, amount] of Object.entries(balances)) api.add(mint, amount.toString())
 }
 
 module.exports = {
