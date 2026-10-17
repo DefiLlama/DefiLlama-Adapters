@@ -17,7 +17,10 @@ const base = treasuryExports({
   },
 })
 
-// The Treasury's sIMD (its redemption reserve), counted as the IMD it converts to: 24-decimal shares, not 1:1.
+/**
+ * The Treasury's sIMD (its redemption reserve), counted as the IMD it converts to: 24-decimal shares, not 1:1.
+ * @param {import('@defillama/sdk').ChainApi} api
+ */
 async function simd(api) {
   const shares = await api.call({ target: SIMD, abi: 'erc20:balanceOf', params: [TREASURY] })
   const imd = await api.call({ target: SIMD, abi: 'function convertToAssets(uint256) view returns (uint256)', params: [shares] })
