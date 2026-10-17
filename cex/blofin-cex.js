@@ -196,6 +196,9 @@ module.exports = {
   dash: {
     owners: ["Xy3gi2zmGKB8QHPcqn85vK6yNs1S49NPkU"],
   },
+  thorchain: {
+    owners: ["thor1acj55m7ycy59nvh9lyglq36kem7e9kvwut0fpz"],
+  },
   plasma: { owners: [EVM_MAIN] },
   robinhood: { owners: [EVM_MAIN] },
   monad: { owners: [EVM_MAIN] },

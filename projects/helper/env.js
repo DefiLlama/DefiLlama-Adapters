@@ -87,6 +87,7 @@ const DEFAULTS = {
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
   // p2p/everstake neon proxies are gone (dns), thirdweb refuses the chain; blockscout's eth-rpc proxy still serves it
   NEON_EVM_RPC: 'https://neon.blockscout.com/api/eth-rpc',
+  THORCHAIN_LCD: 'https://gateway.liquify.com/chain/thorchain_api',
 }
 
 const ENV_KEYS = [
@@ -122,6 +123,7 @@ const ENV_KEYS = [
   'TEAM_WEBHOOK',
   'HIRO_API_KEY',
   'APTOS_API_KEY',
+  'CANTON_API', // <base url>?key=<api key>
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

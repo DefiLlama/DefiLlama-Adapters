@@ -53,6 +53,7 @@ const binanceToDefillama = {
   PLASMA: "plasma",
   STATEMINT: 'polkadot',
   SEIEVM: 'sei',
+  XTZ: 'tezos',
 }
 
 const withdrawalAddresses = [
