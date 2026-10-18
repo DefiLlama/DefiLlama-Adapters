@@ -163,6 +163,11 @@ const configs = {
         '0x9131eb40bd0bdce73c72755f1bb2cf39a9453341', // Gauntlet USDC Morpho vault
       ],
     },
+    arc: {
+      morpho: [
+        '0xdECcd53BE5453215821184824B519E04C7e00bC7', // Gauntlet USDC Prime (Morpho V2)
+      ],
+    },
   }
 }
 
