@@ -41,3 +41,4 @@ Object.keys(config).forEach(chain => {
     },
   }
 })
+module.exports.deadFrom = '2026-04-01'
