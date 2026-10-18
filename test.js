@@ -470,7 +470,7 @@ async function computeTVL(balances, timestamp) {
         return undefined;
       }
     })
-    .filter((item) => item !== undefined);
+    .filter((item) => item !== undefined)
 
   const unknownTokens = {}
   let tokenData = []
@@ -492,7 +492,7 @@ async function computeTVL(balances, timestamp) {
         if (queries.length > 6) {
           sdk.log(`Processed ${i}/${queryCount} queries, ${tokenData.length} responses received`)
           if (i < queryCount - 2) {
-            await sleep(5000) // avoid rate limiting
+            await sleep(100) // avoid rate limiting
           }
         }
       } catch (e) {
