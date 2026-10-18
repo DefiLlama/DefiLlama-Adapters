@@ -21,7 +21,7 @@ const TRX_PLACEHOLDER = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb' // native TRX in th
 
 /**
  * Collects the tokens of all SunSwap V4 pools with at least MIN_POOL_LIQUIDITY_USD of liquidity,
- * paging through the SUN.io pool list API until an empty page (at most MAX_PAGES pages).
+ * paging through the SUN.io pool list API until empty pages confirm the end of the list (at most MAX_PAGES pages).
  * Native TRX is returned as nullAddress so its balance is read as the native coin.
  * @returns {Promise<string[]>} unique token addresses
  * @throws if the list has more than MAX_PAGES pages, a page only repeats earlier pools (the API ignored pageNo), or no pool is found
@@ -29,11 +29,22 @@ const TRX_PLACEHOLDER = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb' // native TRX in th
 async function getTokens() {
   const tokens = new Set()
   const seenPools = new Set()
+  let emptyRetries = 0
   // Fetch one page past MAX_PAGES: it must be empty, otherwise the list was cut off and TVL would be partial.
   for (let pageNo = 1; pageNo <= MAX_PAGES + 1; pageNo++) {
     const { data } = await get(`${POOL_LIST_API}&pageNo=${pageNo}&pageSize=${PAGE_SIZE}`, { timeout: 30000 })
     if (!Array.isArray(data)) throw new Error(`sunswap-v4: unexpected pool list response for page ${pageNo}`)
-    if (!data.length) break // an empty page is the end of the list
+    // the pool list is appended to over time, so a page can transiently come
+    // back empty mid-list; retry a few times before accepting it as the end
+    if (!data.length) {
+      if (++emptyRetries < 3) {
+        await new Promise(resolve => setTimeout(resolve, 3000))
+        pageNo-- // retry the same page
+        continue
+      }
+      break // several consecutive empty pages => no more pools
+    }
+    emptyRetries = 0
     if (pageNo > MAX_PAGES) throw new Error(`sunswap-v4: pool list has more than ${MAX_PAGES} pages`)
     let newPools = 0
     for (const pool of data) {
