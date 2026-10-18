@@ -22,14 +22,6 @@ const config = {
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675, useIndexerSql: true, blacklistedTokens: [
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
   ]},
-  // base moved to the subgraph below, the full pool list (15M+ launchpad pools) means ~30M balanceOf calls per run
-  // base: { factory: "0x498581ff718922c3f8e6a244956af099b2652b2b", fromBlock: 25350988,
-  //   blacklistedTokens: [
-  //     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
-  //     '0xbc33b4d48f76d17a1800afcb730e8a6aaada7fe5', // vDOT was hacked
-  //   '0x570b1533f6daa82814b25b62b5c7c4c55eb83947', // BOBO is mispriced
-  //   ]
-  //  },
   arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872, useIndexerSql: true, blacklistedTokens: ['0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1', '0x3e4ffeb394b371aaaa0998488046ca19d870d9ba', 
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
   ] },
@@ -56,7 +48,9 @@ const config = {
 }
 const subgraphs = {
   // the xlayer subgraph has no price for xStocks, so their pools read $0 TVL there and the $100 filter drops them
-  xlayer: {endpoint: '2fc6nFafrPs4xybzHMnmD48qgUYoHTizhDk1mCJJUDjD', factory: '0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32', noTvlFilter: true },
+  xlayer: { endpoint: '2fc6nFafrPs4xybzHMnmD48qgUYoHTizhDk1mCJJUDjD', factory: '0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32', noTvlFilter: true },
+  
+  // base moved to the subgraph below, the full pool list (15M+ launchpad pools) means ~30M balanceOf calls per run
   // only pools the subgraph values above $100, balances are still pulled on-chain
   base: { endpoint: 'Gqm2b5J85n1bhCyDMpGbtbVn4935EvvdyHdHrx3dibyj', factory: '0x498581ff718922c3f8e6a244956af099b2652b2b', skipHookBalances: true, blacklistedTokens: [
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
@@ -111,8 +105,7 @@ Object.keys(subgraphs).forEach(chain => {
 const eventAbi = "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)"
 const initializeTopic = '0xdd466e674ea557f56295e2d0218a125ea4b4f0f6f3307b95f85e6110838d6438'
 
-// pool list from the llama indexer (clickhouse) instead of the huge Initialize log cache, balances are still pulled on-chain
-// keep the scan plain (no arrayJoin), else clickhouse skips the (short_address, short_topic0) projection and scans ~1.4B rows
+// pool list from the clickhouse instead of the huge Initialize log cache, balances are still pulled on-chain
 const poolsSql = `
   SELECT DISTINCT
     concat('0x', substring(topic2, 27)) AS token0,
