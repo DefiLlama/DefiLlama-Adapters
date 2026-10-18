@@ -151,11 +151,9 @@ async function getLogs({ target,
     if (cache.logs.length < chunkSize) return setCache(cacheFolder, key, cache)
 
 
-    let allLogs = cache.logs
-    cache.logs = allLogs.slice(0, chunkSize)
-    allLogs = allLogs.slice(chunkSize)
-    cache.hasMore = allLogs.length > 0
-    await setCache(cacheFolder, key, cache)
+    // write a copy, cache.logs is returned by fetchLogs and must keep all the logs
+    let allLogs = cache.logs.slice(chunkSize)
+    await setCache(cacheFolder, key, { ...cache, logs: cache.logs.slice(0, chunkSize), hasMore: allLogs.length > 0 })
 
     let index = 0
 
