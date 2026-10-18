@@ -27014,6 +27014,13 @@ const configs = {
           ],
           [
             [
+              ADDRESSES.tron.USDT,
+              "TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz"
+            ],
+            "THJCvwFmu6uDqKY59JbULHDgfddy2Zojty"
+          ],
+          [
+            [
               ADDRESSES.tron.USDC,
               ADDRESSES.tron.USDT
             ],
