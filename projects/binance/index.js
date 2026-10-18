@@ -13,6 +13,7 @@ const LOCK_INFO_ENDPOINT = "https://www.binance.com/bapi/tokencanal/v2/tokencana
 const binanceToDefillama = {
   BTC: 'bitcoin',
   ADA: 'cardano',
+  ZEC: 'zcash',
   ETH: 'ethereum',
   BEP20: 'bsc',
   BSC: 'bsc',
