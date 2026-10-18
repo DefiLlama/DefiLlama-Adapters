@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const AAPL = '0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9' // Apple stock token issued by Robinhood
+const AAPL = ADDRESSES.robinhood.AAPL // Apple stock token issued by Robinhood
 const SEED = '0x5eED45d9cD4c21280db5b190D9c263f086401b9D' // Orchard's own token
 const ORCHARD_V1 = '0xEbB8b167c0992cFdc497A995a8Cf7167acAA0A1A'
 const ORCHARD_V2 = '0x86510b3df745C67a993A66CB08720Ed158d44549' // live since 2026-09-03; v1 stays open for claims

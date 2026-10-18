@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { nullAddress } = require('../helper/tokenMapping')
 
 const FACTORY = '0xc5DF918b40BeAad05bd84F88FD39550AedEB4c71'
-const XEF = '0x80252C2D06bbd85699c555fc3633D5B8eE67C9AD'
+const XEF = ADDRESSES.xp.XEF
 
 const LaunchCreated = 'event LaunchCreated(address indexed launch, address indexed creator, bytes params, uint256 time)'
 

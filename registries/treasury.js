@@ -1345,7 +1345,7 @@ const configs = {
     robinhood: {
       owners: ['0x2FE3C1cc641B2463CEE2857Ac520E111fbE11fDF'],
       ownTokens: ['0x26E82171eb01204eE114e2B8C34Be035B8bc029E'],
-      tokens: [nullAddress, ADDRESSES.robinhood.USDG, '0x322F0929c4625eD5bAd873c95208D54E1c003b2d']
+      tokens: [nullAddress, ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.TSLA]
     },
   },
   'treasury/comdex': {
@@ -4088,11 +4088,11 @@ const configs = {
         ADDRESSES.robinhood.USDG,
         '0x59F95461E68e0c77605299791E1449f175165B54', // NET/USDG POL
         '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG (ERC-4626)
-        '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec', // NVDA
-        '0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea', // SPCX
-        '0xaf3d76f1834a1d425780943c99ea8a608f8a93f9', // AAPL
+        ADDRESSES.robinhood.NVDA, // NVDA
+        ADDRESSES.robinhood.SPCX, // SPCX
+        ADDRESSES.robinhood.AAPL, // AAPL
         '0xe93237c50d904957cf27e7b1133b510c669c2e74', // MSFT
-        '0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3', // GOOGL
+        ADDRESSES.robinhood.GOOGL, // GOOGL
         '0x6330d8c3178a418788df01a47479c0ce7ccf450b', // COIN
       ],
       ownTokens: ['0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'], // NET

@@ -690,11 +690,11 @@ const gasTokenSet = new Set(gasTokens)
 // ERC-20 views of the native coin: balanceOf returns the same number as eth_getBalance, so they are
 // read as the native balance and deduped per owner, otherwise listing both counts the coin twice
 const nativeTokenAliases = {
-  polygon: '0x0000000000000000000000000000000000001010', // POL (MRC20)
-  celo: '0x471ece3750da237f93b8e339c536989b8978a438', // CELO (GoldToken)
-  metis: '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000', // METIS
-  arc: '0x3600000000000000000000000000000000000000', // USDC (6 decimals, native is 18)
-  stable: '0x779ded0c9e1022225f8e0630b35a9b54be713736', // USDT0 (6 decimals, native is 18)
+  polygon: ADDRESSES.polygon.WMATIC_1, // POL (MRC20)
+  celo: ADDRESSES.celo.CELO, // CELO (GoldToken)
+  metis: ADDRESSES.metis.Metis, // METIS
+  arc: ADDRESSES.arc.USDC, // USDC (6 decimals, native is 18)
+  stable: ADDRESSES.xlayer.USDT0, // USDT0 (6 decimals, native is 18)
 }
 /*
 tokensAndOwners [

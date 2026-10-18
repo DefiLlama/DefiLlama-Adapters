@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // Stax (stax.finance) -- tokenized-stock index baskets on Robinhood Chain.
 // TVL = the stock tokens and USDG held as basket collateral by the two Stax vaults
 // (v19 and V2) and by the V2 community-basket clones created through the Stax factory.
@@ -15,7 +16,7 @@ const VAULTS = [
   { address: "0xAda84161033C0Cc54EF21CEeF913A8fEC4239b33", fromBlock: 68883165 }, // StaxVaultV2 (V2) -- newer baskets
 ];
 const USER_BASKET_FACTORY = "0x1de6a6bD0C62097A7559A29a76e41985558f9918"; // StaxUserBasketFactoryV2
-const USDG = "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168";
+const USDG = ADDRESSES.robinhood.USDG;
 
 const abi = {
   basketCreated: "event BasketCreated(uint256 indexed basketId, address token, string name)",

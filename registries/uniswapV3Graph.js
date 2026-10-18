@@ -47,9 +47,6 @@ const configs = {
   'physica-finance': {
     planq: { graphURL: 'https://subgraph.planq.finance/subgraphs/name/ianlapham/uniswap-v3', name: 'physica-v3' },
   },
-  'neby-dex': {
-    sapphire: { graphURL: 'https://graph.api.neby.exchange/dex', name: 'Neby Dex' },
-  },
   'kinetix-v3': {
     kava: { graphURL: 'https://kava-graph-node.metavault.trade/subgraphs/name/kinetixfi/v3-subgraph', name: 'kinetixfi/kava-v3' },
     base: { graphURL: 'https://api.studio.thegraph.com/query/55804/kinetixfi-base-v3/version/latest', name: 'kinetixfi/base-v3' },

@@ -548,7 +548,7 @@ module.exports = {
   },
   "sparkdex-perps": {
     "flare": {
-      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,ADDRESSES.flare.sFLR,ADDRESSES.morph.USDT0,"0xad552a648c74d49e10027ab8a618a3ad4901c5be"] },
+      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,ADDRESSES.flare.sFLR,ADDRESSES.morph.USDT0,ADDRESSES.flare.FXRP] },
     },
   },
   "corex": {
@@ -855,7 +855,7 @@ module.exports = {
   "deepstate": {
     methodology: "TVL is the value of USDG, NVDA, and DEEP held by the Deepstate router as collateral for resting orders or as matched proceeds awaiting maker claims.",
     "robinhood": {
-      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"] },
+      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.NVDA] },
       "staking": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": ["0x1DA24f6Bb623b9d1aFEae3F3146659A2662D6d27", "0xbfb7b3Ff3D498a559b946B836d26F0E168f273D5"] },
     }
   },
@@ -1008,13 +1008,13 @@ module.exports = {
     "robinhood": {
       "tokensAndOwners": [
         // audited build, 2026-09-18, maturity 2027-12-31
-        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
+        [ADDRESSES.robinhood.AAPL, "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
         ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0xa0f77015E46e45c1A12B73466A08711a28Dac1A7"], // SPY-DEC27
         ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0xAb8e536C9E7c76C1045EDEb6096e9B37B26B4372"], // QQQ-DEC27
         ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x1aC9599B91973A3d5d75F7594a47382223FEC0F5"], // PFE-DEC27
         ["0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5", "0x1d44BB0E2D09C35Cc116270E45F8782E7B51fF52"], // SGOV-DEC27
         // launch build, 2026-09-02..04, still redeemable
-        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
+        [ADDRESSES.robinhood.AAPL, "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
         ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0x38EAE2c04F65861cD17914100125826de2b735c7"], // SPY-MAR27
         ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0x16daFbB03C4EF20967043185255532A8cadf79Ba"], // QQQ-MAR27
         ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x0Fd9c2DCABf7780D051a519c654eb13Afec5a975"], // PFE-MAR28
@@ -1061,9 +1061,9 @@ module.exports = {
     "robinhood": {
       "owner": "0x3504aA69ca9C5A5Bc3dA312a6c761e9633251cFc", // ReserveVault
       "tokens": [
-        "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", // NVDA
-        "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", // AAPL
-        "0x322F0929c4625eD5bAd873c95208D54E1c003b2d", // TSLA
+        ADDRESSES.robinhood.NVDA, // NVDA
+        ADDRESSES.robinhood.AAPL, // AAPL
+        ADDRESSES.robinhood.TSLA, // TSLA
       ]
     },
   },

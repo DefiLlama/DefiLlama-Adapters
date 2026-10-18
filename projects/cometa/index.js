@@ -12,6 +12,7 @@ async function tvl() {
 }
 
 module.exports = {
+    deadFrom: "2026-10-01", // abandoned?
     timetravel: false,
     misrepresentedTokens: true,
     algorand: {

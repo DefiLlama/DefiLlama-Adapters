@@ -491,8 +491,8 @@ const defaultTokens = {
   ],
   robinhood: [
     nullAddress,
-    '0x39dbed3a2bd333467115de45665cc57f813c4571', // PONS
-    '0x020bfc650a365f8bb26819deaabf3e21291018b4', // CASHCAT
+    ADDRESSES.robinhood.PONS, // PONS
+    ADDRESSES.robinhood.CASHCAT, // CASHCAT
   ],
 }
 

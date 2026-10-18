@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { default: BigNumber } = require('bignumber.js')
 const { call, sumSingleBalance } = require('../helper/chain/near')
 
@@ -107,7 +108,7 @@ function detectCrossChainToken(tokenId) {
   // FXRP reaches Ethereum through a lock-and-mint bridge from Flare, so the
   // underlying liquidity stays locked on Flare and is attributed there
   if (tokenId === 'eth-0xce6170ea245dc8d1f275a710a062b70f125f0110.omft.near') {
-    return { chain: 'flare', token: 'flare:0xad552a648c74d49e10027ab8a618a3ad4901c5be' }
+    return { chain: 'flare', token: 'flare:' + ADDRESSES.flare.FXRP }
   }
 
   // Ethereum tokens via omnichain bridge

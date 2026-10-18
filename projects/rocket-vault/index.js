@@ -20,6 +20,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   doublecounted: true,
+  deadFrom: "2026-09-05", // paused after a hack
   methodology: "TVL is calculated by summing all USDC collateral deposited in Rocket Liquidity Provider vaults",
   arbitrum: { tvl },
 };

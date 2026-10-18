@@ -480,7 +480,7 @@ const configs = {
       '0x49A991e33B80d6c5F727242C778DbFeb606b6259',
     ],
     arbitrum: [
-      '0xea7aaf1713348be6f3556d4b94a44ddff20f9e4b',
+      // '0xea7aaf1713348be6f3556d4b94a44ddff20f9e4b',
       '0x3163a647ff4c819b6286d2dbc8405a124c93eba6',
       '0x645c2712fda24a41ed61064054429e00cb4293bb',
       '0x3b1ef6cca0672bb08df2c817b37dca22a69b005f',

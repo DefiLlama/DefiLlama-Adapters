@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 const sdk = require('@defillama/sdk')
@@ -34,15 +35,15 @@ const registeredNestedVaults = [
   { chainId: 1, parent: '0xa74d4b67b3368e83797a35382afb776baae4f5c8', strategy: '0x85b360dee557135d8903225939699dd644d33cb8', child: '0x4cbb6a5ec00ceec252a7091559484f7adb83165f', getter: 'yVault' },
   { chainId: 1, parent: '0xa9fe4601811213c340e850ea305481aff02f5b28', strategy: '0xe5f7f2e59b259e11ecf2ff76fdf5dc7438363a3f', child: '0xa258c4606ca8206d8aa700ce2143d7db854d168c', getter: 'yVault' },
   { chainId: 1, parent: '0xb4ada607b9d6b2c9ee07a275e9616b84ac560139', strategy: '0xaad21781fe48048264d89da52423097e4397ff36', child: '0xb37094c1b5614bd6ece40afb295c26f4377069d3', getter: 'yVault' },
-  { chainId: 1, parent: '0xbe53a109b494e5c9f97b9cd39fe969be68bf6204', strategy: '0x39c0aec5738ed939876245224afc7e09c8480a52', child: '0x182863131f9a4630ff9e27830d945b1413e347e8', getter: 'vault', parentAsset: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', childAsset: '0xdc035d45d973e3ec169d2276ddab16f1e407384f', parentDecimals: 6, childDecimals: 18 },
+  { chainId: 1, parent: '0xbe53a109b494e5c9f97b9cd39fe969be68bf6204', strategy: '0x39c0aec5738ed939876245224afc7e09c8480a52', child: '0x182863131f9a4630ff9e27830d945b1413e347e8', getter: 'vault', parentAsset: ADDRESSES.ethereum.USDC, childAsset: ADDRESSES.ethereum.USDS, parentDecimals: 6, childDecimals: 18 },
   { chainId: 1, parent: '0xbfedbcbe27171c418cdabc2477042554b1904857', strategy: '0xa7074434aa4419ed18f220152bcaa989b3b9d8c1', child: '0x77e829fff18c14ad9bb88963acb0010a0506de88', getter: 'yVault' },
   { chainId: 1, parent: '0xd6ea40597be05c201845c0bfd2e96a60bacde267', strategy: '0xb2f45226d0b1ebe7ce3c7b0a53eb4a82e032060d', child: '0xae6ed98b1bd9aadd3185160324e0e011159b61d3', getter: 'yVault' },
   { chainId: 1, parent: '0xda816459f1ab5631232fe5e97a05bbbb94970c95', strategy: '0xa7496763f035e73ec6b56f4c86312cc1874a01e3', child: '0x028ec7330ff87667b6dfb0d94b954c820195336c', getter: 'yVault' },
   { chainId: 1, parent: '0xdcd90c7f6324cfa40d7169ef80b12031770b4325', strategy: '0x9084b5a98e3b4b257affd82ae4a1753f87906dce', child: '0x5b8c556b8b2a78696f0b9b830b3d67623122e270', getter: 'yVault' },
   { chainId: 1, parent: '0xe14d13d8b3b85af791b2aadd661cdbd5e6097db1', strategy: '0x0a5157244e4f82f100a461ca65c7b05c8dacf835', child: '0xdb25ca703181e7484a155dd612b06f57e12be5f0', getter: 'yVault' },
   { chainId: 1, parent: '0xe537b5cc158eb71037d4125bdd7538421981e6aa', strategy: '0x906a5fb545d177ba441a57b3a24eaeda555d29e3', child: '0x8078198fc424986ae89ce4a910fc109587b6abf3', getter: 'yVault' },
-  { chainId: 1, parent: '0x92545bce636e6ee91d88d2d017182cd0bd2fc22e', strategy: '0x6164217caa4ff58fb722d726391875ac0c5fb541', child: '0xe852db931ac6f02490a32695f09ee79a31f53821', getter: 'vault', parentAsset: '0x6b175474e89094c44da98b954eedeac495271d0f', childAsset: '0xdc035d45d973e3ec169d2276ddab16f1e407384f', parentDecimals: 18, childDecimals: 18 },
-  { chainId: 1, parent: '0x696d02db93291651ed510704c9b286841d506987', strategy: '0x9e0a5943dfc1a85b48c191aa7c10487297aa675b', child: '0xc9f01b5c6048b064e6d925d1c2d7206d4feef8a3', getter: 'vault', parentAsset: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', childAsset: '0xdc035d45d973e3ec169d2276ddab16f1e407384f', parentDecimals: 6, childDecimals: 18 },
+  { chainId: 1, parent: '0x92545bce636e6ee91d88d2d017182cd0bd2fc22e', strategy: '0x6164217caa4ff58fb722d726391875ac0c5fb541', child: '0xe852db931ac6f02490a32695f09ee79a31f53821', getter: 'vault', parentAsset: ADDRESSES.ethereum.DAI, childAsset: ADDRESSES.ethereum.USDS, parentDecimals: 18, childDecimals: 18 },
+  { chainId: 1, parent: '0x696d02db93291651ed510704c9b286841d506987', strategy: '0x9e0a5943dfc1a85b48c191aa7c10487297aa675b', child: '0xc9f01b5c6048b064e6d925d1c2d7206d4feef8a3', getter: 'vault', parentAsset: ADDRESSES.ethereum.USDC, childAsset: ADDRESSES.ethereum.USDS, parentDecimals: 6, childDecimals: 18 },
   { chainId: 1, parent: '0x028ec7330ff87667b6dfb0d94b954c820195336c', strategy: '0xaedf7d5f3112552e110e5f9d08c9997adce0b78d', child: '0x182863131f9a4630ff9e27830d945b1413e347e8' }, // DAI-1 -> (DAI/USDS) -> USDS-1
   { chainId: 1, parent: '0x028ec7330ff87667b6dfb0d94b954c820195336c', strategy: '0xff03dce6d95aa7a30b75efbafd11384221b9f9b5', child: '0xbe53a109b494e5c9f97b9cd39fe969be68bf6204' }, // DAI-1 -> (DAI/USDC) -> USDC-1
 ]
@@ -68,8 +69,8 @@ async function remoteOverlap(api, vaults, strategyAbi) {
   const remoteAsset = await remote.call({ target: child, abi: 'address:asset' })
   if (Number(chain) !== 747474 || counterpart.toLowerCase() !== holder ||
       reverse.toLowerCase() !== strategy || destination.toLowerCase() !== child ||
-      asset.toLowerCase() !== '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' ||
-      remoteAsset.toLowerCase() !== '0x203a662b0bd271a6ed5a60edfbd04bfce608fd36')
+      asset.toLowerCase() !== ADDRESSES.ethereum.USDC ||
+      remoteAsset.toLowerCase() !== ADDRESSES.katana.VB_USDC)
     throw new Error('Yearn Katana overlap route changed')
   const debt = await api.call({ target: parent, abi: strategyAbi, params: [strategy] })
   const shares = BigInt(await remote.call({ target: child, abi: 'erc20:balanceOf', params: [holder] }))

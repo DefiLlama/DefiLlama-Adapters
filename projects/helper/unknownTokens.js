@@ -179,7 +179,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
       const tokenLPs = [...tokens].filter(i => !nativeTokens.includes(i))
-      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens, skipFixBalances: true, })
+      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens, skipFixBalances: true, permitFailure: true, })
       nativeTokens.forEach(nativeToken => {
         if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
         delete tempBalances[nativeToken]
