@@ -113,6 +113,7 @@ async function getLogs({ target,
     // remove possible duplicates
     if (!customCacheFunction)
       cache.logs = cache.logs.filter(i => {
+        if (!i) return false
         let key = (i.transactionHash ?? i.hash) + (i.logIndex ?? i.index)
         if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !(i.hasOwnProperty('transactionHash') || i.hasOwnProperty('hash'))) {
           sdk.log(i, i.logIndex, i.index, i.transactionHash)
@@ -159,8 +160,7 @@ async function getLogs({ target,
     let index = 0
 
     while (allLogs.length) {
-      const logs = allLogs.splice(0, chunkSize)
-      allLogs = allLogs.slice(chunkSize)
+      const logs = allLogs.splice(0, chunkSize) // splice already removes the chunk from allLogs
       const chunkKey = `${key}-${index}`
       const hasMore = allLogs.length > 0
       await setCache(cacheFolder, chunkKey, { logs, hasMore })
@@ -185,10 +185,15 @@ async function getLogs({ target,
     while (hasMore) {
       sdk.log(`Fetching more logs for ${key} from cache: ${index}`)
       const extraLogs = await getCache(cacheFolder, `${key}-${index}`, { checkIfRecent: true, })
+      // a missing chunk means the cache is incomplete; refetch everything rather than return partial logs
+      if (!Array.isArray(extraLogs.logs)) {
+        sdk.log(`Missing log cache chunk ${key}-${index}, refetching from fromBlock`)
+        return defaultRes
+      }
       index++
       hasMore = extraLogs.hasMore
       cache.logs = cache.logs.concat(extraLogs.logs)
-      sdk.log(cache.logs.length, 'logs fetched from cache', extraLogs.logs.length, 'more logs', extraLogs.hasMore ? 'and more to come' : 'no more logs')
+      sdk.log(cache.logs.length, 'logs fetched from cache', extraLogs.logs?.length, 'more logs', extraLogs.hasMore ? 'and more to come' : 'no more logs')
     }
 
 

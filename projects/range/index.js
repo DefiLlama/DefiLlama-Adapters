@@ -75,6 +75,7 @@ Object.keys(config).forEach(chain => {
           eventAbi: 'event VaultCreated(address indexed uniPool, address indexed vault)',
           onlyArgs: true,
           fromBlock,
+          onlyUseExistingCache: true,
         })
         logs.forEach((log) => allLogs.push({ factory, log, chain, factoryType }));
       }
