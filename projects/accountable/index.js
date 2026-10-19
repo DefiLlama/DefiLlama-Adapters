@@ -79,7 +79,6 @@ const EXCLUDED_STRATEGIES = {
 }
 
 const abis = {
-    strategyProxies: 'function strategyProxies(uint256) view returns (address)',
     strategyVaults: 'function strategyVaults(address) view returns (address)',
     convertToAssets: 'function convertToAssets(uint256) view returns (uint256)',
     asset: 'function asset() view returns (address)',
@@ -87,43 +86,42 @@ const abis = {
 
 const NULL_ADDRESS = ADDRESSES.null
 
+/**
+ * Collects vault addresses for the given chain by reading each registered
+ * factory's strategy count (getStrategiesCount) and enumerating the full
+ * strategy list through api.fetchList, which fails the run on a read error
+ * instead of silently truncating the list. Excluded strategies are skipped;
+ * EXTRA_VAULTS are added directly.
+ * @returns {Promise<string[]>} lowercase vault addresses
+ */
 async function getVaults(api) {
     const vaults = new Set()
-    const batchSize = 20
     const factories = FACTORIES[api.chain]
     const excludedStrategies = new Set(
         (EXCLUDED_STRATEGIES[api.chain] || []).map((s) => s.toLowerCase())
     )
 
     for (const factory of factories) {
-        for (let start = 0; ; start += batchSize) {
-            const indexes = Array.from({ length: batchSize }, (_, i) => start + i)
+        const strategies = await api.fetchList({
+            target: factory,
+            lengthAbi: 'getStrategiesCount',
+            itemAbi: 'strategyProxies',
+        })
+        const validStrategies = strategies.filter(
+            (s) => s && s !== NULL_ADDRESS && !excludedStrategies.has(s.toLowerCase())
+        )
+        if (!validStrategies.length) continue
 
-            const strategies = await api.multiCall({
-                target: factory,
-                abi: abis.strategyProxies,
-                calls: indexes.map((i) => ({ params: [i] })),
-                permitFailure: true,
-            })
-            const allStrategies = strategies.filter((s) => s && s !== NULL_ADDRESS)
-            if (!allStrategies.length) break
-            const validStrategies = allStrategies.filter(
-                (s) => !excludedStrategies.has(s.toLowerCase())
-            )
-            if (!validStrategies.length) continue
+        const factoryVaults = await api.multiCall({
+            target: factory,
+            abi: abis.strategyVaults,
+            calls: validStrategies.map((strategy) => ({ params: [strategy] })),
+        })
 
-            const factoryVaults = await api.multiCall({
-                target: factory,
-                abi: abis.strategyVaults,
-                calls: validStrategies.map((strategy) => ({ params: [strategy] })),
-                permitFailure: true,
-            })
-
-            factoryVaults.forEach((vault) => {
-                if (!vault || vault === NULL_ADDRESS) return
-                vaults.add(vault.toLowerCase())
-            })
-        }
+        factoryVaults.forEach((vault) => {
+            if (!vault || vault === NULL_ADDRESS) return
+            vaults.add(vault.toLowerCase())
+        })
     }
 
     for (const vault of (EXTRA_VAULTS[api.chain] || []))
