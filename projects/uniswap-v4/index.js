@@ -44,7 +44,16 @@ const config = {
   tempo: { factory: "0x33620f62c5b9b2086dd6b62f4a297a9f30347029", fromBlock: 6475880, useIndexerSql: true },
   megaeth: { factory: "0xacb7e78fa05d562e0a5d3089ec896d57d057d38e", fromBlock: 7009653, useIndexerSql: true },
   robinhood: { factory: "0x8366a39CC670B4001A1121B8F6A443A643e40951", fromBlock: 9070, useIndexerSql: true, skipHookBalances: true },
-  arc: { factory: "0x8366a39cc670b4001a1121b8f6a443a643e40951", fromBlock: 1946500, useIndexerSql: true, skipHookBalances: true },
+  arc: { 
+    factory: "0x8366a39cc670b4001a1121b8f6a443a643e40951", 
+    fromBlock: 1946500, 
+    useIndexerSql: true, 
+    skipHookBalances: true, 
+    blacklistedTokens: [
+      '0x9696b5e894afe749b3d4683b230e549f39678932', // USDB mispriced
+      '0xd794ce63002c4ae9da4f373f1ecb856187b7a375', // ATC only priced against USDB (1 ATC = 3909 USDB), unpriced today
+    ] 
+  },
 }
 const subgraphs = {
   // the xlayer subgraph has no price for xStocks, so their pools read $0 TVL there and the $100 filter drops them
