@@ -12,7 +12,7 @@ async function tvl(api) {
     fromBlock,
     eventAbi: tokenCreatedEvent,
     extraKey: 'token-created',
-    useIndexer: false,
+    useIndexer: false, // Anubi rejects log queries that extend beyond the latest block.
     transform: log => [log.quoteAsset, log.vault],
   })
 
@@ -21,6 +21,6 @@ async function tvl(api) {
 
 module.exports = {
   start: '2026-10-01',
-  methodology: 'TVL is the total on-chain quote-asset balance held in Thumb launch vaults discovered from Core TokenCreated events.',
+  methodology: 'Counts quote collateral held in Thumb launch vaults. Excludes minted launch-token inventory, fee recipients, treasury balances, and liquidity migrated to external DEX pools.',
   anubi: { tvl },
 }
