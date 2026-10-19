@@ -868,7 +868,7 @@ module.exports = {
         "MQ9mZJu3X7m4CpMkvHia2nMRvY2q25kBA6", // 3
     ],
   },
-  // defillama does not support bitcoincash at the moment
+  // duplicate of osl-hk
   // bitcoincash: {
   //   owners: [
   //       "bitcoincash:qqfys07mea9d3zq4ht6yvr4td2thr2w3cgq9nsews5", // house-cold

@@ -19,6 +19,7 @@ const binanceToDefillama = {
   BSC: 'bsc',
   CELO: 'celo',
   CHZ2: 'chz',
+  BCH: 'bitcoincash',
   HBAR: 'hedera',
   TRX: 'tron',
   TRON: 'tron',
