@@ -522,6 +522,11 @@ const configs = {
     methodology: 'TVL is the USDC held by the AlphaPrimer vault, read via ERC-4626 totalAssets(). Deposits are supplied to Aave V3, Compound V3 or Fluid on Arbitrum, so they are also counted under those protocols.',
     arbitrum: ['0x87Ef5c25203886b1026ad907E7f84fBAABdF1fa9'],
   },
+  'ace-pro': {
+    start: '2026-09-29',
+    methodology: 'Counts LP assets reported by totalAssets() in the Ace.Pro V5 shared HYPE and USDC liquidity vaults on HyperEVM. Excludes round escrow, claimable payouts and protocol revenue held for the team and treasury, Lucky Draw prize pools and legacy vaults.',
+    hyperliquid: ['0xd39C426bd1a40b5cdB89B8CEb8464C4f78AbB29d', '0xf725Ac947c7B3EF790a3E68e2Ca2Fb48ce4023eD'],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
