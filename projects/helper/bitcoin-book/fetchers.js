@@ -269,10 +269,16 @@ module.exports = {
     return Array.from(new Set(staticAddresses))
   },
   zeusZBTC: async () => {
-    const API_URL = 'https://indexer.zeuslayer.io/api/v2/chainlink/proof-of-reserves'
-    const data = await getConfig('zeus/zbtc', API_URL)
-    const list = data.result.map(item => item.address)
-    return list
+    // indexer.zeuslayer.io is gone; reserve addresses from https://zeusnetwork.xyz/developers/bitcoin-on-chain-por-hioggkgl
+    return [
+      'bc1p698gf9gm8j34gvars97j6spsgrlxlhvyfajt2tsz2vnw9fcat9cqjcjn4v', // Zeus Foundation (Guardian)
+      'bc1p96utmwdngv3xwdn90d7wg4tyqke70fs6js8ajgqkk89zn08z8d5q8xzchd', // Mechanism Capital (Guardian)
+      'bc1pd46txhc0a3t8juc2r4njyuk4rv3099dcn039ny0hzgt24tgx3qlszg5e6f', // Animoca Ventures (Guardian)
+      'bc1p795t8whcfpl6uyxj38enzt43cg8scphrgvn2e79y3xgflv6s6nrsrmudk6', // Anagram (Guardian)
+      'bc1pq7pr972ckfwrwrprqw5en54ytr58jndcaafr780hm35ttz4ekmas3fctx4', // Axia8 (Guardian)
+      'bc1qlw9h7fspehfvrgyhnr334936y2x6vurw7svxq3', // Institutional #1
+      'bc1purewdvplqykhwp90fenpqjd0sksw7uzvuwxv9guffkf0ma7hurtsys9ey0', // guardian reserves were swept here on 2025-11-18, pays out redemptions
+    ]
   },
   binanceFetcher: async () => {
     const staticAddresses = await getConfig('binance-cex/btc', undefined, {

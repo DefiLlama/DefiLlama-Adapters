@@ -1417,6 +1417,19 @@ const configs = {
       staking: ['0x9c648D57E929F59B483b2903390725449F990Cb8', '0x0000000005aCa17e8bd5779Fc87E13cb433aEd24'],
     },
   },
+  "numerai": {
+    "methodology": "NMR staked on models in Numerai's tournament staking contracts (tournaments 8 and 12). NMR is Numerai's own token, so it is reported as staking.",
+    "start": "2026-07-29",
+    "ethereum": {
+      staking: [['0xe44c35ec2896983accce2a38dc1668793e85956d', '0xc1f46adf341145369eee9fbe0d84fa1cb0c24706'], '0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671'],
+    },
+  },
+  "quotum": {
+    "methodology": "Staking is QUOTUM principal deposited in QuotumStaking. The protocol's own token is excluded from ordinary TVL. TaxSink funds earmarked for inference payments and buybacks are excluded from TVL.",
+    "robinhood": {
+      staking: ["0x7F1d2b117aBac121f99cEED7f80e5925fFF37A53", "0xFE936755185353b63a81dD72b47533Eb6021018E"]
+    }
+  }
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)

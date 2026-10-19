@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 // Kaleido lending: a peer-to-peer market on an EIP-2535 diamond. Borrowers post collateral (EURC, cirBTC),
 // lenders list native USDC; the diamond holds both until loans are drawn/repaid.
 const DIAMOND = '0xE4e7f16DB22e6bb2E505fbC504d7B2B4B995A6E3'
-const SENTINEL = '0x0000000000000000000000000000000000000001' // how the market registers native USDC
+const SENTINEL = ADDRESSES.linea.WETH_1 // how the market registers native USDC
 
 const abi = {
   getAllCollateralToken: 'function getAllCollateralToken() view returns (address[])',

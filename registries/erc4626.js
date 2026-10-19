@@ -260,17 +260,6 @@ const configs = {
     start: '2026-04-11',
     base: ['0x71c298a6eb10e7958ce25a450a706330a4c946c0']
   },
-  'r25': {
-    pharos: Object.values({
-      vRPCWeeklyVault: '0x1c2bc8b553d9a7e61f7531a3a4bf2162f4569268',
-      vRPCQuarterlyVault: '0x94f7ebc6ae0819a4b4e231ae6ddaaf9bfd2a1a86',
-      vRPCSemiYearlyVault: '0xee26bb0989691735c997dfdc49a4a607f75e190b',
-      pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
-      apcVault: '0xd0428799fbc35557834d33121ba4472692c8908a',
-      hybVault: '0x6Ce4bc043398Ac40392d1E063328048072b2075d',
-    }),
-    methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
-  },
   'visionboard-vault': {
     timetravel: false,
     hyperliquid: ['0x0a5e236425aca07fd087904F8863CAd554675E06'],
@@ -491,7 +480,7 @@ const configs = {
       '0x49A991e33B80d6c5F727242C778DbFeb606b6259',
     ],
     arbitrum: [
-      '0xea7aaf1713348be6f3556d4b94a44ddff20f9e4b',
+      // '0xea7aaf1713348be6f3556d4b94a44ddff20f9e4b',
       '0x3163a647ff4c819b6286d2dbc8405a124c93eba6',
       '0x645c2712fda24a41ed61064054429e00cb4293bb',
       '0x3b1ef6cca0672bb08df2c817b37dca22a69b005f',
@@ -527,7 +516,17 @@ const configs = {
     doublecounted: true,
     methodology: "Underlying assets in Otomate ERC-4626 vaults on Ink, measured with totalAssets net of accrued protocol fees. Assets are supplied to Tydro and already included in Tydro TVL.",
     ink: ['0x919C57BF59484798Ff2f90018640fd0A08242aC2', '0x2baA4C3f66Fa6f0c2d56242BaAE446a4De878B98', '0xcc7DcF43b17D8EdC437a6e33a6A325C57eba1ED7', '0x59046e5a0cbb5b64981b4668a31ab3a5ed0e7dd0']
-  }
+  },
+  'alphaprimer': {
+    doublecounted: true,
+    methodology: 'TVL is the USDC held by the AlphaPrimer vault, read via ERC-4626 totalAssets(). Deposits are supplied to Aave V3, Compound V3 or Fluid on Arbitrum, so they are also counted under those protocols.',
+    arbitrum: ['0x87Ef5c25203886b1026ad907E7f84fBAABdF1fa9'],
+  },
+  'ace-pro': {
+    start: '2026-09-29',
+    methodology: 'Counts LP assets reported by totalAssets() in the Ace.Pro V5 shared HYPE and USDC liquidity vaults on HyperEVM. Excludes round escrow, claimable payouts and protocol revenue held for the team and treasury, Lucky Draw prize pools and legacy vaults.',
+    hyperliquid: ['0xd39C426bd1a40b5cdB89B8CEb8464C4f78AbB29d', '0xf725Ac947c7B3EF790a3E68e2Ca2Fb48ce4023eD'],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

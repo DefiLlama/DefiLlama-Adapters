@@ -3,6 +3,7 @@ async function tvl() {
 }
 
 module.exports = {
+  deadFrom: "2025-01-01",
   misrepresentedTokens: true,
   algorand: {
     tvl,

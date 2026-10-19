@@ -7,7 +7,7 @@ Object.keys(config).forEach(chain => {
   const { factory, blacklistedTokens, } = config[chain]
   module.exports[chain] = {
     tvl: getUniTVL({
-      factory, blacklistedTokens, fetchBalances: true, abis: {
+      factory, blacklistedTokens, fetchBalances: true, permitFailure: true, abis: {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: "function allPools(uint) view returns (address)",
       }

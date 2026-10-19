@@ -53,14 +53,24 @@ function getAllData() {
     return getConfig('bitstamp', undefined, {
       fetcher: async () => {
         let page = 1
+        let emptyRetries = 0
         const walletChainMapping = {}
         // Bitstamp caps per_page at 100; larger values return HTTP 400
         const PER_PAGE = 100
         while (true) {
           sdk.log('fetching page', page)
-          const data = await get(`https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=${PER_PAGE}&page=${page}`)
+          const data = await get(`https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=${PER_PAGE}&page=${page}`, { timeout: 30000 })
           const allWallets = Object.values(data.wallets ?? {}).flat()
-          if (!allWallets.length) break // empty page => no more wallets
+          // wallet list is appended to over time, so a page can transiently come
+          // back empty mid-list; retry a few times before accepting it as the end
+          if (!allWallets.length) {
+            if (++emptyRetries < 3) {
+              await new Promise(resolve => setTimeout(resolve, 3000))
+              continue
+            }
+            break // several consecutive empty pages => no more wallets
+          }
+          emptyRetries = 0
 
           allWallets.forEach(({ address, network }) => {
             if (!walletChainMapping[network])
@@ -77,7 +87,12 @@ function getAllData() {
 
         walletChainMapping.avax = walletChainMapping['avalanche-c-chain']
         walletChainMapping.xdc = walletChainMapping['xdc-network']
-        walletChainMapping.ripple = config.ripple
+        walletChainMapping.ripple = {
+          owners: [...new Set([
+            ...config.ripple.owners,
+            ...(walletChainMapping.xrpl?.owners ?? []).map(address => address.split('?')[0]),
+          ])],
+        }
         return walletChainMapping
       }
     })

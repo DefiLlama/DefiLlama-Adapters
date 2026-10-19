@@ -16,9 +16,15 @@ const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 //     the owner is the PositionManager and the salt is the NFT id, which the launchpad publishes in
 //     its LaunchTermsV22 event. The reserves are derived the same way.
 //
-// https://robinhoodchain.blockscout.com/address/0x0f2005a033c6cA153a06cA80c670E856e494c45A
+// From V2.3 anyone may also add liquidity to a pool once its opening windows are over. Those positions
+// belong to whoever added them, so they are not counted: only the launch's own position is read, by its
+// NFT id.
+//
+// https://robinhoodchain.blockscout.com/address/0x05281d26889a7225936D124F30CA5bDfF025339B
 const LAUNCHPADS = [
-  // V2.2: new coins are created here since 2026-09-26; positions are LP NFTs locked at the dead address.
+  // V2.3: new coins are created here since 2026-10-07; same events and positions as V2.2.
+  { launchpad: '0x05281d26889a7225936D124F30CA5bDfF025339B', fromBlock: 82670394, lpNft: true },
+  // V2.2: positions are LP NFTs locked at the dead address.
   { launchpad: '0x0f2005a033c6cA153a06cA80c670E856e494c45A', fromBlock: 73071918, lpNft: true },
   // V2.1: vault-held positions.
   { launchpad: '0x3AAB7D1317565d768b92A07b4417B128F470Da68', vault: '0xb7Ab4c5e3d133cfbE4fCd627728849B8E6F0dbF0', fromBlock: 69908367 },
@@ -146,7 +152,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is the liquidity heks locks in the Uniswap V4 PoolManager across every coin it has launched. Each launch seeds one one-sided position that can never be withdrawn — held by the launchpad vault in earlier deployments, and from V2.2 minted through the Uniswap V4 PositionManager with its NFT sent to the dead address — so the pair asset buyers pay in accumulates there and only fees can leave. Launches are read from the launchpads\' TokenCreated logs, which carry both currencies and the position\'s tick range (V2.2 launches also name their NFT in LaunchTermsV22); the position\'s liquidity is read from Uniswap V4 StateView, and the reserves are derived from that liquidity, the tick range and the pool\'s current price. Both sides of each position are counted, so a launched coin contributes only once it has a price of its own.',
+    'TVL is the liquidity heks locks in the Uniswap V4 PoolManager across every coin it has launched. Each launch seeds one one-sided position that can never be withdrawn — held by the launchpad vault in earlier deployments, and from V2.2 minted through the Uniswap V4 PositionManager with its NFT sent to the dead address — so the pair asset buyers pay in accumulates there and only fees can leave. Launches are read from the launchpads\' TokenCreated logs, which carry both currencies and the position\'s tick range (V2.2 launches also name their NFT in LaunchTermsV22); the position\'s liquidity is read from Uniswap V4 StateView, and the reserves are derived from that liquidity, the tick range and the pool\'s current price. Both sides of each position are counted, so a launched coin contributes only once it has a price of its own. Liquidity that other users add to these pools (possible from V2.3 once a launch\'s opening windows are over) is theirs and is not counted.',
   start: '2026-09-10',
   // These are Uniswap V4 pools, and the same funds are already counted by the uniswap-v4 adapter,
   // which reads raw PoolManager balances on this chain.

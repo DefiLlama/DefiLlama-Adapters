@@ -1,4 +1,4 @@
-const { allPoolTokens: baseTokens } = require('./base');
+const { allPoolTokens: baseTokens, unpricedVaults: baseUnpricedVaults } = require('./base');
 const { getConfig } = require('../helper/cache');
 const { allPoolTokens: ethereumPoolTokens } = require('./ethereum');
 
@@ -148,6 +148,9 @@ const ARBITRUM_DOLOMITE_POOLS = {
     'USDC': '0x444868B6e8079ac2c55eea115250f92C2b2c4D14',
     'WETH': '0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF',
 };
+const ARBITRUM_AUTOFINANCE_POOLS = {
+    USDC: '0xf63b7F49B4f5Dc5D0e7e583Cfd79DC64E646320c', // arbUSD
+};
 const arbitrumPoolTokens = [
     ...Object.values(COMPOUND_POOLS),
     ...Object.values(ARBITRUM_AAVE_POOLS),
@@ -158,6 +161,7 @@ const arbitrumPoolTokens = [
     ...Object.values(ARBITRUM_EULER_POOLS),
     ...Object.values(ARBITRUM_HARVEST_POOLS),
     ...Object.values(ARBITRUM_DOLOMITE_POOLS),
+    ...Object.values(ARBITRUM_AUTOFINANCE_POOLS),
 ]
 
 // --- inlined from ./plasma ---
@@ -191,6 +195,33 @@ const TOKENS = {
   sonic: sonicTokens,
 };
 
+// Llama drops these share tokens (no coins.llama.fi price). convertToAssets into the underlying, which is priced.
+async function unpricedVaultsTvl(api, owners, vaults) {
+    const assets = await api.multiCall({ abi: 'address:asset', calls: vaults });
+    const vaultAsset = {};
+    vaults.forEach((vault, i) => { if (assets[i]) vaultAsset[vault.toLowerCase()] = assets[i]; });
+    const okVaults = Object.keys(vaultAsset);
+    if (!okVaults.length) return;
+
+    const calls = owners.flatMap(owner => okVaults.map(vault => ({ target: vault, params: [owner] })));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+
+    const convertCalls = [];
+    const convertAssets = [];
+    balances.forEach((balance, i) => {
+        if (!balance || balance === '0') return;
+        convertCalls.push({ target: calls[i].target, params: [balance] });
+        convertAssets.push(vaultAsset[calls[i].target.toLowerCase()]);
+    });
+    if (!convertCalls.length) return;
+
+    const amounts = await api.multiCall({
+        abi: 'function convertToAssets(uint256) view returns (uint256)',
+        calls: convertCalls,
+    });
+    amounts.forEach((amount, i) => { if (amount) api.add(convertAssets[i], amount); });
+}
+
 async function tvl(api) {
     const owners = await getConfig('zyfai/'+api.chain, `https://api.zyf.ai/api/v1/data/active-wallets?chainId=${api.chainId}`);
     const cleanOwners = owners.filter(o => o !== '');
@@ -200,6 +231,10 @@ async function tvl(api) {
             beetsTvl(api, cleanOwners),
             penpieTvl(api, cleanOwners),
         ]);
+    }
+
+    if (api.chain === 'base') {
+        await unpricedVaultsTvl(api, cleanOwners, baseUnpricedVaults);
     }
 
     return api.sumTokens({ownerTokens: cleanOwners.map(o => [TOKENS[api.chain], o])});

@@ -24,10 +24,8 @@ function validateFeed(feed, caller) {
 async function getPools(caller) {
   const feed = await get(TVL_URL, FETCH_OPTS)
   validateFeed(feed, caller)
-  for (const pool of feed.pools)
-    if (!pool.coingeckoId)
-      throw new Error(`alpend: no coingecko id for ${pool.asset}`)
-  return feed.pools
+  // Newly listed assets (e.g. USDXLR) can appear before CCTools maps a coingecko id; skip them.
+  return feed.pools.filter(pool => pool.coingeckoId)
 }
 
 // Amounts are already decimal-adjusted; do not scale them again.
@@ -60,7 +58,7 @@ async function borrowed(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'Alpend is a lending protocol on the Canton Network. Users supply CC, USDCx, and CBTC as collateral to earn yield, ' +
+    'Alpend is a lending protocol on the Canton Network. Users supply assets to its lending pools as collateral to earn yield, ' +
     'and borrow against that collateral; interest accrues on-chain via reserve indices. ' +
     'TVL is the amount of each asset supplied to Alpend\'s lending pools minus the amount borrowed out of them, i.e. the assets held by the pool operator party; ' +
     'the borrowed tab is the gross amount currently borrowed out of those pools. ' +

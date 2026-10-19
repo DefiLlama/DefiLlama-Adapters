@@ -13,6 +13,7 @@ const FACTORIES = {
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
         '0xB4082B8126AF8B5345CfB159AC5d4b4F05F54bC5',
         '0xC0f778b51bF9751BBccBF4e78A107026aDaDbe43', // yield factory
+        '0xcC2Af6B6B3a888D96166205B9bA27d7dba3a67DE', // collateral fixed term factory
     ],
     arbitrum: [
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
@@ -33,11 +34,13 @@ const FACTORIES = {
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
         '0xB4082B8126AF8B5345CfB159AC5d4b4F05F54bC5',
         '0xC0f778b51bF9751BBccBF4e78A107026aDaDbe43', // yield factory
+        '0xcC2Af6B6B3a888D96166205B9bA27d7dba3a67DE', // collateral fixed term factory
     ],
     bsc: [
         '0xd51FaCdE443729A8302A8138f3e050e831Db413D',
         '0x6E659cD796aAB41419C70def7748Fff37Bf3967a',
         '0xdBdbb4F6B80CA00B2a8B1f929C1957eCecd1BAaB', // yield factory
+        '0xF9a0197f9dB6bd8171EBa53D21cb098597D23871', // collateral fixed term factory
     ],
     pharos: [
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
@@ -71,13 +74,11 @@ const EXCLUDED_STRATEGIES = {
         '0x78f9486c71371bb5af50cbcdf4bacdc298ec8a97',
         '0x0d58d3a21adc8f60c81c00c13e7363cc56c6e061',
         '0xa783b87047dcdaf5d84f4843fae85a6c9e3343af',
-        '0x945dc31b38c811a0188b5b30cf1ea7721666cf7c',
         '0x33ca98cfca7f25735d8719e67f616fcc44d7771e',
     ],
 }
 
 const abis = {
-    strategyProxies: 'function strategyProxies(uint256) view returns (address)',
     strategyVaults: 'function strategyVaults(address) view returns (address)',
     convertToAssets: 'function convertToAssets(uint256) view returns (uint256)',
     asset: 'function asset() view returns (address)',
@@ -85,43 +86,42 @@ const abis = {
 
 const NULL_ADDRESS = ADDRESSES.null
 
+/**
+ * Collects vault addresses for the given chain by reading each registered
+ * factory's strategy count (getStrategiesCount) and enumerating the full
+ * strategy list through api.fetchList, which fails the run on a read error
+ * instead of silently truncating the list. Excluded strategies are skipped;
+ * EXTRA_VAULTS are added directly.
+ * @returns {Promise<string[]>} lowercase vault addresses
+ */
 async function getVaults(api) {
     const vaults = new Set()
-    const batchSize = 20
     const factories = FACTORIES[api.chain]
     const excludedStrategies = new Set(
         (EXCLUDED_STRATEGIES[api.chain] || []).map((s) => s.toLowerCase())
     )
 
     for (const factory of factories) {
-        for (let start = 0; ; start += batchSize) {
-            const indexes = Array.from({ length: batchSize }, (_, i) => start + i)
+        const strategies = await api.fetchList({
+            target: factory,
+            lengthAbi: 'getStrategiesCount',
+            itemAbi: 'strategyProxies',
+        })
+        const validStrategies = strategies.filter(
+            (s) => s && s !== NULL_ADDRESS && !excludedStrategies.has(s.toLowerCase())
+        )
+        if (!validStrategies.length) continue
 
-            const strategies = await api.multiCall({
-                target: factory,
-                abi: abis.strategyProxies,
-                calls: indexes.map((i) => ({ params: [i] })),
-                permitFailure: true,
-            })
-            const allStrategies = strategies.filter((s) => s && s !== NULL_ADDRESS)
-            if (!allStrategies.length) break
-            const validStrategies = allStrategies.filter(
-                (s) => !excludedStrategies.has(s.toLowerCase())
-            )
-            if (!validStrategies.length) continue
+        const factoryVaults = await api.multiCall({
+            target: factory,
+            abi: abis.strategyVaults,
+            calls: validStrategies.map((strategy) => ({ params: [strategy] })),
+        })
 
-            const factoryVaults = await api.multiCall({
-                target: factory,
-                abi: abis.strategyVaults,
-                calls: validStrategies.map((strategy) => ({ params: [strategy] })),
-                permitFailure: true,
-            })
-
-            factoryVaults.forEach((vault) => {
-                if (!vault || vault === NULL_ADDRESS) return
-                vaults.add(vault.toLowerCase())
-            })
-        }
+        factoryVaults.forEach((vault) => {
+            if (!vault || vault === NULL_ADDRESS) return
+            vaults.add(vault.toLowerCase())
+        })
     }
 
     for (const vault of (EXTRA_VAULTS[api.chain] || []))

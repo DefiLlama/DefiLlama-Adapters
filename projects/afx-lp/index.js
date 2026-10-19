@@ -5,6 +5,7 @@ const API_URL = "https://api.afx.xyz/info/integrations/defillama/lp/summary";
 
 async function tvl(api) {
   const response = await get(API_URL, {
+    timeout: 30000,
     headers: {
       Accept: "application/json",
       "User-Agent": "defillama-tvl-adapters/1.0",

@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { addUniV4PoolReserves } = require('../helper/uniswapV4')
 
 const STATICS = '0x2d8d6F4A93AcD7a916A5a654ec8b690bA3B3EAdd'
-const WETH = '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73'
+const WETH = ADDRESSES.robinhood.WETH
 const GENESIS_VAULT = '0x8AAAF9a22f439589987B8f1e69d79ca4f648C297'
 const STATE_VIEW = '0xF3334192D15450CdD385c8B70E03f9a6Bd9E673b'
 

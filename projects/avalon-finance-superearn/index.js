@@ -6,7 +6,12 @@ const evmConfig = {
         vaultAddress: '0xf297230fA5614545B427616148a74C888620d659',
         // USDC
         vaultStableTokenAddress: ADDRESSES.ethereum.USDC,
-    },
+  },
+  bsc: {
+    vaultAddress: '0xC6497A4d3Db7ED4b39157EBAC5583E2B1e22C6eD',
+        // USDC
+    vaultStableTokenAddress: ADDRESSES.bsc.USDC,
+  }
 }
 
 const moveConfig = {

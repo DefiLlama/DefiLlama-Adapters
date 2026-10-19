@@ -112,6 +112,9 @@ const configs = {
     monad: {
       morpho: [
         '0xA2fa4CeD4E2d448D084f5a15011b3564922119d6'
+      ],
+      midasTokens: [
+        '0x6CF55183eA297ba200Cf88419Bba156EBA2Ed206'
       ]
     }
   }

@@ -4,6 +4,7 @@ const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
 const sdk = require('@defillama/sdk');
+const { getEnv } = require("../helper/env");
 
 const VAULT =
   "0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700";
@@ -26,9 +27,10 @@ const DLP_SHARE =
 const USDC = ADDRESSES.aptos.USDC_3;
 
 const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
+const INDEXER_PAGE_SIZE = 100; // the indexer caps responses at 100 rows
+const INDEXER_TIMEOUT_MS = 30_000;
 const PAGE_SIZE = 50;
 const OWNER_BATCH_SIZE = 30;
-const COIN_BALANCE_CONCURRENCY = 10;
 const ECHELON_CONCURRENCY = 4;
 const HYPERION_LP_CONCURRENCY = 8;
 
@@ -45,19 +47,18 @@ const YIELD_AI_HYPERION_POOLS = [
   },
 ];
 
-const APT = ADDRESSES.aptos.APT;
-const COIN_BALANCE_FN = "0x1::coin::balance";
-const APT_TYPE_ARG = ADDRESSES.aptos.APT;
-
+// Native APT is included: the indexer reports coin and FA APT as one 0x1::aptos_coin::AptosCoin row.
 const FA_BALANCES_QUERY = gql`
-  query YieldAiFaBalances($addresses: [String!]!) {
-    current_fungible_asset_balances(where: { owner_address: { _in: $addresses } }) {
+  query YieldAiFaBalances($addresses: [String!]!, $limit: Int!, $offset: Int!) {
+    current_fungible_asset_balances(
+      where: { owner_address: { _in: $addresses }, amount: { _gt: "0" } }
+      order_by: [{ owner_address: asc }, { storage_id: asc }]
+      limit: $limit
+      offset: $offset
+    ) {
       owner_address
       amount
       asset_type
-      metadata {
-        decimals
-      }
     }
   }
 `;
@@ -111,11 +112,11 @@ function normalizeObjectAddress(obj) {
 }
 
 /**
- * Exponential backoff with jitter. The public fullnode answers bursts with 429, and a failed
- * Echelon read now fails the run instead of dropping the safe, so a short linear backoff is not
- * enough to ride out a rate-limit window.
+ * Exponential backoff with jitter, for indexer requests only. Fullnode reads go through the SDK,
+ * which already retries transient errors (429, 5xx, timeouts) and skips deterministic ones such
+ * as Move aborts; wrapping those again multiplies the delays and can stall the run.
  */
-async function retryAsync(fn, attempts = 8) {
+async function retryAsync(fn, attempts = 5) {
   let lastError;
   for (let i = 0; i < attempts; i += 1) {
     try {
@@ -131,52 +132,41 @@ async function retryAsync(fn, attempts = 8) {
   throw lastError;
 }
 
-async function getEchelonVaultResource(safe) {
-  return await retryAsync(() =>
-    getResource(safe, ECHELON_VAULT_RESOURCE, "aptos")
-  );
-}
-
 function unwrapScalar(res) {
   return Array.isArray(res) ? res[0] : res;
 }
-
-let dlpNavPromise;
 
 /**
  * DLP shares have no price feed, so they are counted as the USDC they redeem for, at the vault's
  * own on-chain NAV. Both views return 6-decimal base units, the same as USDC, so
  * usdc = shares * net_asset_value / num_shares needs no decimal adjustment.
  */
-function getDlpNav() {
-  if (!dlpNavPromise) {
-    dlpNavPromise = (async () => {
-      // Read both views at one ledger version, so NAV and share count describe the same vault
-      // state even if a contribution or redemption lands between the two calls.
-      const { ledger_version: ledgerVersion } = await retryAsync(() => aQuery("/v1", "aptos"));
-      const [nav, shares] = await Promise.all(
-        ["get_vault_net_asset_value", "get_vault_num_shares"].map((fn) =>
-          retryAsync(() =>
-            function_view({
-              functionStr: `${DECIBEL}::vault::${fn}`,
-              args: [DLP_VAULT],
-              ledgerVersion,
-              chain: "aptos",
-            })
-          )
-        )
-      );
-      return { nav: BigInt(unwrapScalar(nav)), shares: BigInt(unwrapScalar(shares)) };
-    })();
-  }
-  return dlpNavPromise;
+async function getDlpNav() {
+  // Read both views at one ledger version, so NAV and share count describe the same vault
+  // state even if a contribution or redemption lands between the two calls.
+  const { ledger_version: ledgerVersion } = await aQuery("/v1", "aptos");
+  const viewAt = (fn) =>
+    function_view({
+      functionStr: `${DECIBEL}::vault::${fn}`,
+      args: [DLP_VAULT],
+      ledgerVersion,
+      chain: "aptos",
+    });
+  const nav = await viewAt("get_vault_net_asset_value");
+  const shares = await viewAt("get_vault_num_shares");
+  return { nav: BigInt(unwrapScalar(nav)), shares: BigInt(unwrapScalar(shares)) };
 }
 
-async function addDlpAsUsdc(api, sharesRaw) {
-  const { nav, shares } = await getDlpNav();
-  if (shares === 0n) return;
-  const usdc = (BigInt(sharesRaw) * nav) / shares;
-  if (usdc > 0n) api.add(USDC, usdc.toString());
+/** Per-run DLP pricer: the NAV is read once per run, never reused across runs. */
+function createDlpAdder(api) {
+  let navPromise;
+  return async (sharesRaw) => {
+    if (!navPromise) navPromise = getDlpNav();
+    const { nav, shares } = await navPromise;
+    if (shares === 0n) return;
+    const usdc = (BigInt(sharesRaw) * nav) / shares;
+    if (usdc > 0n) api.add(USDC, usdc.toString());
+  };
 }
 
 /** Views return metadata inner; keep 0xa-style APT shorthand as-is (lower case). */
@@ -186,15 +176,6 @@ function normalizeUnderlyingTokenId(inner) {
   if (!s) return null;
   if (s === "0xa") return "0xa";
   return s.startsWith("0x") ? s : `0x${s}`;
-}
-
-function isNativeAptFaRow(assetType) {
-  if (!assetType || typeof assetType !== "string") return false;
-  return (
-    assetType === APT ||
-    assetType.toLowerCase() === APT.toLowerCase() ||
-    assetType.endsWith("::aptos_coin::AptosCoin")
-  );
 }
 
 function toIntegerString(v) {
@@ -335,15 +316,13 @@ async function resolveHyperionPoolAddress(pos) {
   return exists ? normalizeAptosAddress(addr) : null;
 }
 
-const hyperionCurrentTickCache = new Map();
-
-async function getHyperionPoolCurrentTick(poolAddress) {
+async function getHyperionPoolCurrentTick(poolAddress, tickCache) {
   const pool = normalizeAptosAddress(poolAddress);
   if (!pool) return null;
-  if (hyperionCurrentTickCache.has(pool)) {
-    return hyperionCurrentTickCache.get(pool);
+  if (tickCache.has(pool)) {
+    return tickCache.get(pool);
   }
-  
+
   const res = await function_view({
     functionStr: `${HYPERION_DEX}::pool_v3::current_tick_and_price`,
     args: [pool],
@@ -351,11 +330,11 @@ async function getHyperionPoolCurrentTick(poolAddress) {
   });
   const tickRaw = Array.isArray(res) ? res[0] : res;
   const tick = decodeI32Tick(tickRaw);
-  hyperionCurrentTickCache.set(pool, tick);
+  tickCache.set(pool, tick);
   return tick;
 }
 
-async function resolveHyperionPositionAmounts(pos) {
+async function resolveHyperionPositionAmounts(pos, tickCache) {
   let amountA = pos.amountA;
   let amountB = pos.amountB;
   const hasLiveA = amountA && amountA !== "0";
@@ -383,7 +362,7 @@ async function resolveHyperionPositionAmounts(pos) {
   const poolAddress = await resolveHyperionPoolAddress(pos);
   if (!poolAddress) return { amountA: null, amountB: null };
 
-  const currentTick = await getHyperionPoolCurrentTick(poolAddress);
+  const currentTick = await getHyperionPoolCurrentTick(poolAddress, tickCache);
   return computeAmountsFromLiquidity({
     liquidity: pos.liquidity,
     tickLower: pos.tickLower,
@@ -423,7 +402,7 @@ async function fetchExistingSafes() {
   return { safeAddresses: [...new Set(safeOut)] };
 }
 
-async function sumEchelonSafePositions(api, safeAddresses) {
+async function sumEchelonSafePositions(api, safeAddresses, addDlpAsUsdc) {
   if (!safeAddresses.length) return { adds: 0, totalsByAsset: new Map() };
 
   // Use vault_exists first so we only read the resource for safes with positions
@@ -432,13 +411,11 @@ async function sumEchelonSafePositions(api, safeAddresses) {
     .for(safeAddresses)
     .handleError((e) => { throw e; }) // a failed read must fail the run, not drop the safe's TVL
     .process(async (safe) => {
-      const res = await retryAsync(() =>
-        function_view({
-          functionStr: `${ECHELON}::lending::vault_exists`,
-          args: [safe],
-          chain: "aptos",
-        })
-      );
+      const res = await function_view({
+        functionStr: `${ECHELON}::lending::vault_exists`,
+        args: [safe],
+        chain: "aptos",
+      });
       const exists = Array.isArray(res) ? res[0] : res;
       if (exists === true || exists === "true") safesWithVault.push(safe);
     });
@@ -449,13 +426,11 @@ async function sumEchelonSafePositions(api, safeAddresses) {
 
   async function getMarketMetadata(market) {
     if (!marketMetadataCache.has(market)) {
-      const metadata = await retryAsync(() =>
-        function_view({
-          functionStr: `${ECHELON}::lending::market_asset_metadata`,
-          args: [market],
-          chain: "aptos",
-        })
-      );
+      const metadata = await function_view({
+        functionStr: `${ECHELON}::lending::market_asset_metadata`,
+        args: [market],
+        chain: "aptos",
+      });
       marketMetadataCache.set(
         market,
         padAptosAddress(normalizeObjectAddress(metadata))
@@ -468,9 +443,9 @@ async function sumEchelonSafePositions(api, safeAddresses) {
     .for(safesWithVault)
     .handleError((e) => { throw e; }) // a failed read must fail the run, not drop the safe's TVL
     .process(async (safe) => {
-        const vault = await getEchelonVaultResource(safe);
-        const collaterals =
-          vault?.data?.collaterals?.data || vault?.collaterals?.data || [];
+      const vault = await getResource(safe, ECHELON_VAULT_RESOURCE, "aptos");
+      const collaterals =
+        vault?.data?.collaterals?.data || vault?.collaterals?.data || [];
 
       for (const collateral of collaterals) {
         const market = padAptosAddress(
@@ -478,13 +453,11 @@ async function sumEchelonSafePositions(api, safeAddresses) {
         );
         if (!market) continue;
 
-        const coins = await retryAsync(() =>
-          function_view({
-            functionStr: `${ECHELON}::lending::account_coins`,
-            args: [safe, market],
-            chain: "aptos",
-          })
-        );
+        const coins = await function_view({
+          functionStr: `${ECHELON}::lending::account_coins`,
+          args: [safe, market],
+          chain: "aptos",
+        });
         const amount = toIntegerString(coins);
         if (!amount || amount === "0") continue;
 
@@ -494,7 +467,7 @@ async function sumEchelonSafePositions(api, safeAddresses) {
         adds += 1;
         const prev = totalsByAsset.get(asset) || 0n;
         totalsByAsset.set(asset, prev + BigInt(amount));
-        if (asset === DLP_SHARE) await addDlpAsUsdc(api, amount);
+        if (asset === DLP_SHARE) await addDlpAsUsdc(amount);
         else api.add(asset, amount);
       }
     });
@@ -506,65 +479,61 @@ async function tvl(api) {
   const { safeAddresses } = await fetchExistingSafes();
   if (!safeAddresses.length) return;
 
+  const addDlpAsUsdc = createDlpAdder(api);
   const { adds: echelonAdds, totalsByAsset: echelonTotalsByAsset } =
-    await sumEchelonSafePositions(api, safeAddresses);
+    await sumEchelonSafePositions(api, safeAddresses, addDlpAsUsdc);
 
-  const graphQLClient = new GraphQLClient(INDEXER_URL);
+  // the SDK sends the same key on fullnode views
+  const indexerHeaders = {};
+  const apiKey = getEnv("APTOS_API_KEY");
+  if (apiKey) indexerHeaders.Authorization = `Bearer ${apiKey}`;
+  const graphQLClient = new GraphQLClient(INDEXER_URL, { headers: indexerHeaders });
 
   const faTotalsByAsset = new Map();
 
   for (const batch of sliceIntoChunks(safeAddresses, OWNER_BATCH_SIZE)) {
-    const { current_fungible_asset_balances: rows } = await graphQLClient.request(
-      FA_BALANCES_QUERY,
-      { addresses: batch }
-    );
+    for (let offset = 0; ; offset += INDEXER_PAGE_SIZE) {
+      // a fresh signal per attempt, so a hung request is aborted and retried instead of
+      // blocking the run forever
+      const { current_fungible_asset_balances: rows = [] } = await retryAsync(() =>
+        graphQLClient.request({
+          document: FA_BALANCES_QUERY,
+          variables: { addresses: batch, limit: INDEXER_PAGE_SIZE, offset },
+          signal: AbortSignal.timeout(INDEXER_TIMEOUT_MS),
+        })
+      );
 
-    const list = rows || [];
+      for (const row of rows) {
+        const amtStr = toIntegerString(row.amount);
+        if (!amtStr || amtStr === "0" || /^-/.test(amtStr)) continue;
 
-    for (const row of list) {
-      if (isNativeAptFaRow(row.asset_type)) continue;
+        const prev = faTotalsByAsset.get(row.asset_type) || 0n;
+        faTotalsByAsset.set(row.asset_type, prev + BigInt(amtStr));
 
-      const amtStr = toIntegerString(row.amount);
-      if (!amtStr || amtStr === "0" || /^-/.test(amtStr)) continue;
+        if (padAptosAddress(row.asset_type) === DLP_SHARE) await addDlpAsUsdc(amtStr);
+        else api.add(row.asset_type, amtStr);
+      }
 
-      const prev = faTotalsByAsset.get(row.asset_type) || 0n;
-      faTotalsByAsset.set(row.asset_type, prev + BigInt(amtStr));
-
-      if (padAptosAddress(row.asset_type) === DLP_SHARE) await addDlpAsUsdc(api, amtStr);
-      else api.add(row.asset_type, amtStr);
+      if (rows.length < INDEXER_PAGE_SIZE) break;
     }
   }
 
-  await PromisePool.withConcurrency(COIN_BALANCE_CONCURRENCY)
-    .for(safeAddresses)
-    .process(async (addr) => {
-      const bal = await function_view({
-        functionStr: COIN_BALANCE_FN,
-        type_arguments: [APT_TYPE_ARG],
-        args: [addr],
-        chain: "aptos",
-      });
-      const balStr = toIntegerString(bal);
-      if (!balStr || balStr === "0") return;
-      api.add(APT, balStr);
-    });
-
   let hyperionAdds = 0;
   const hyperionTotalsByAsset = new Map();
+  const tickCache = new Map();
 
   await PromisePool.withConcurrency(HYPERION_LP_CONCURRENCY)
     .for(safeAddresses)
     .handleError((e) => { throw e; }) // throws on public rpcs instead of dropping hyperion tvl
     .process(async (safe) => {
-      const configExists = await function_view({
+      const configRes = await function_view({
         functionStr: `${VAULT}::vault::hyperion_lp_config_exists`,
         args: [safe],
         chain: "aptos",
-      })
-        .then((res) => {
-          const v = Array.isArray(res) ? res[0] : res;
-          return v === true || v === "true" || v === 1 || v === "1";
-        });
+      });
+      const configFlag = Array.isArray(configRes) ? configRes[0] : configRes;
+      const configExists =
+        configFlag === true || configFlag === "true" || configFlag === 1 || configFlag === "1";
       if (!configExists) return;
 
       const positionsRaw = await function_view({
@@ -581,12 +550,12 @@ async function tvl(api) {
           functionStr: `${VAULT}::vault::get_hyperion_position`,
           args: [safe, positionAddr],
           chain: "aptos",
-        }).catch(()=>null);
+        });
 
         const pos = normalizeHyperionPosition(posRaw, positionAddr);
         if (!pos || pos.closed) continue;
 
-        const { amountA, amountB } = await resolveHyperionPositionAmounts(pos);
+        const { amountA, amountB } = await resolveHyperionPositionAmounts(pos, tickCache);
 
         if (amountA && amountA !== "0" && pos.tokenA) {
           hyperionAdds += 1;
@@ -615,5 +584,5 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   aptos: { tvl },
-  methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Hyperion and Decibel are also tracked as separate protocols (doublecounted: true).",
+  methodology: "Counts fungible-asset balances on Yield AI safe addresses, including native APT (Aptos indexer), Echelon supply positions held by safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Hyperion and Decibel are also tracked as separate protocols (doublecounted: true).",
 };

@@ -223,7 +223,7 @@ function validateHallmarks(hallmark) {
         try {
           await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
         } catch (e) {
-          failedKeys.push({ storedKey, error: e && e.message ? e.message : String(e) })
+          failedKeys.push({ storedKey, error: formatFailureError(e) })
           console.error(`Error pulling TVL for ${storedKey}:`, e)
           return;
         }
@@ -310,6 +310,14 @@ function validateHallmarks(hallmark) {
 })().catch(handleError);
 
 
+function formatFailureError(e) {
+  if (e && e.message) return e.message
+  if (e && typeof e === 'object') {
+    try { return JSON.stringify(e).slice(0, 500) } catch { return String(e) }
+  }
+  return String(e)
+}
+
 function checkExportKeys(module, filePath, chains) {
   let _filePath = filePath
   filePath = filePath.split(path.sep)
@@ -324,8 +332,10 @@ function checkExportKeys(module, filePath, chains) {
           || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
         )))
 
-  )
-    process.exit(0)
+  ) {
+    console.error(`Not an adapter path, nothing tested: ${_filePath} (expected projects/<adapter>/index.js)`)
+    process.exit(2)
+  }
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
@@ -460,7 +470,7 @@ async function computeTVL(balances, timestamp) {
         return undefined;
       }
     })
-    .filter((item) => item !== undefined);
+    .filter((item) => item !== undefined)
 
   const unknownTokens = {}
   let tokenData = []
@@ -482,7 +492,7 @@ async function computeTVL(balances, timestamp) {
         if (queries.length > 6) {
           sdk.log(`Processed ${i}/${queryCount} queries, ${tokenData.length} responses received`)
           if (i < queryCount - 2) {
-            await sleep(5000) // avoid rate limiting
+            await sleep(100) // avoid rate limiting
           }
         }
       } catch (e) {

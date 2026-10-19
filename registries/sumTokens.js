@@ -361,9 +361,30 @@ const configs = {
     },
   },
   "flooor-fun": {
-    "methodology": "TVL is the native ETH held in the flooor.fun auction contract on Base, comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). ETH exits the contract when sellToHighest() is called, distributing 99.5% to the NFT seller and 0.5% fee to the protocol.",
+    "methodology": "TVL is the native ETH held in the flooor.fun auction contracts on Base and Robinhood Chain (the current main contract, the legacy contract, and one auction contract per NFT collection), comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). When sellToHighest() is called, the winning bid is split: 95% is sent to the NFT seller and 0.5% to the protocol as a fee, while 4.5% stays in the contract as epoch pool rewards (poolAccrued) until signers claim it.",
     "base": {
-      "owner": "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF",
+      "owners": [
+        "0xD53292182A342953f446CD4D10Dc177776044306", // current
+        "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF", // legacy
+        "0xD3706917c71b1A81CeCc31311C6B41eac344DDb5", // loopers
+        "0x0c2d41b6896a7dde2641a0fe04165df180c43242", // warplets
+        "0x0DA60a9965e1059F2258d5e74c3839844FEF1Cf9", // gnars
+        "0x89350393e99f1df89D09376a02a99BAE9aBc8d8F", // based nouns
+        "0x0669583e7d5bE64967153dd276987415926b5e32", // based onchain dinos
+        "0x7b4A2c265dECE5A48e9c9232de1bd4940dfb6A0F", // base day one
+        "0xE0AB0cE2FF407f53b9384205258C037c22cB03A0" // ok computers
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "robinhood": {
+      "owners": [
+        "0x352E6e9EF7BA1BC4398C2c3784dFdF1930D0df32", // hashcats
+        "0x04ec8eDB287D20f29B834b47a44713d814b0788a", // stonkbrokers
+        "0xa14b6A3980C178D8f446F6a33Bad83a9aAa2D09D", // rh machines
+        "0xc347759352F8f2e556CE6A0Ea8048Fb48cfFca45" // quotrons
+      ],
       "tokens": [
         ADDRESSES.null
       ]
@@ -968,6 +989,32 @@ const configs = {
         ADDRESSES.bsc.USDT,
         ADDRESSES.bsc.WBNB,
         ADDRESSES.bsc.BUSD
+      ]
+    },
+  },
+  "alcor-bridge": {
+    "methodology": "Assets locked in the AlcorVault contract on each EVM chain (Ethereum, BNB Chain, Polygon): native ETH/BNB/POL, USDC and USDT backing the tokens minted on Telos and WAX.",
+    "ethereum": {
+      "owner": "0x3e447d533321ad6a8412f97034ac295a9ff8d858",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT
+      ]
+    },
+    "bsc": {
+      "owner": "0x53F18eaa8Bf8099b5bA21Bb7E11ed311b677690e",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.bsc.USDT,
+        ADDRESSES.bsc.USDC
+      ]
+    },
+    "polygon": {
+      "owner": "0x15bbd21148f98c4daeb30450eb05666f7859993d",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.polygon.USDC_CIRCLE
       ]
     },
   },
@@ -3513,6 +3560,16 @@ const configs = {
       "tokens": [
         ADDRESSES.null,
         ADDRESSES.optimism.WETH_1
+      ]
+    },
+  },
+  "capsulepull": {
+    "methodology": "TVL is the USDG balance of the CapsuleLend contract on Robinhood Chain. That balance is principal still held by a funded loan. It drops when the owner withdraws the principal, the loan is repaid, or the loan defaults and the stablecoin leaves the contract. The Solana card vault and the Robinhood treasury wallet are not counted.",
+    "start": 1791718674,
+    "robinhood": {
+      "owner": "0xa7F89DE1FE71Aa4D37A9179231787b2aC1a4DcFc", // CapsuleLend
+      "tokens": [
+        ADDRESSES.robinhood.USDG
       ]
     },
   },
@@ -7158,7 +7215,7 @@ const configs = {
         ],
         "tokens": [
           ADDRESSES.robinhood.USDG,
-          "0x020bfc650a365f8bb26819deaabf3e21291018b4", // CASHCAT
+          ADDRESSES.robinhood.CASHCAT, // CASHCAT
           "0x98096d17e191b3da1d5f99a6d7b3584351b11e18" // BONER
         ]
       },
@@ -11284,7 +11341,7 @@ const configs = {
           "DSBCG2FORGX4RGZNSSPFM7DDPUDLFLMIJI3M4W2Y6CFVTVIFX45GOFLI7M",
           "5GEXLLGTAMM35R6JERPH2DNFZD4DPYSX5WFB5SN7KJJBSPJI2Q7AWEOQTM",
           "5SMZS7576XQOJ7LGLCD7KD4ZRDM5XMPWWDKYZZ5NM6VERF6AQLBWCV5ZOY",
-          "OWARNBYQ62VAERID5S25V3WRAVEH3DRN2ZBE2WG55CDCELO6FHRXO4A5ZA",
+          // "OWARNBYQ62VAERID5S25V3WRAVEH3DRN2ZBE2WG55CDCELO6FHRXO4A5ZA",
           "3FCD7HFUIO7GKD7YRCVDAGAO4SLVNGSBYLLPGUY2ILYTUQ3IE5KI2WGAUQ",
           "DNWJQGUOPYUHNQBN2Y42VC53J4TAOZWWWPWCRLKMC4NGT4LIAGTYMEIH6Q",
           "4WVMYYCZXGNPOD3FNN3SG5NY7VJ7DYFDCMDVNU4A6R3CKGFCM6PJDLZAWA",
@@ -14360,7 +14417,8 @@ const configs = {
     "base": {
       "owner": "0x61c36AFF32Be348a3D1FE1E2B4745048f652770F",
       "resolveUniV3": true,
-      "resolveSlipstream": true
+      "resolveSlipstream": true,
+      "resolveSlipstreamV3": true
     },
     "arbitrum": {
       "owner": "0xD52170Ae01B9198246842D9a4Ad964AcD786ae91",
@@ -14611,7 +14669,7 @@ const configs = {
     "flare": {
       "owner": "0x4C18Ff3C89632c3Dd62E796c0aFA5c07c4c1B2b3",
       "tokens": [
-        "0xad552a648c74d49e10027ab8a618a3ad4901c5be"
+        ADDRESSES.flare.FXRP
       ]
     },
   },
@@ -14640,7 +14698,7 @@ const configs = {
           "0x7e1C6870be30c1f8216f0187C7f181C13c52977A"
         ],
         [
-          "0xAd552A648C74D49E10027AB8a618A3ad4901c5bE",
+          ADDRESSES.flare.FXRP,
           "0x695b696E80f6f7137731eF509D64023F17550eCE"
         ],
         [
@@ -15462,7 +15520,7 @@ const configs = {
     },
   },
   "gondi": {
-    "methodology": "Counts the floor value of all deposited NFTs with Chainlink price feeds.",
+    "methodology": "Counts the floor value of the NFTs held as loan collateral by GONDI's escrow (MultiSourceLoan) and user vault contracts, priced with DefiLlama's NFT collection prices. Collections without a DefiLlama price are not counted.",
     "ethereum": {
       "owners": [
         "0xCa5a494Ca20483e21ec1E41FE1D9461Da77595Bd"
@@ -15471,22 +15529,11 @@ const configs = {
     },
   },
   "gondi-v2": {
-    "methodology": "Counts the floor value of all deposited NFTs with Chainlink price feeds.",
+    "methodology": "Counts the floor value of the NFTs held as loan collateral by GONDI's escrow (MultiSourceLoan) and user vault contracts, priced with DefiLlama's NFT collection prices. Collections without a DefiLlama price are not counted.",
     "ethereum": {
       "owners": [
         "0x478f6F994C6fb3cf3e444a489b3AD9edB8cCaE16",
         "0x14a6Dcebb2Bb73aae1b199CCAadA75247b81976D"
-      ],
-      "resolveNFTs": true
-    },
-  },
-  "gondi-v3": {
-    "methodology": "Counts the floor value of all deposited NFTs with Chainlink price feeds.",
-    "ethereum": {
-      "owners": [
-        "0xf65b99ce6dc5f6c556172bcc0ff27d3665a7d9a8",
-        "0x823de2c44369e94cac3da789ad4b6493e27e4bfe",
-        "0xf41b389e0c1950dc0b16c9498eae77131cc08a56"
       ],
       "resolveNFTs": true
     },
@@ -15995,13 +16042,13 @@ const configs = {
     "robinhood": {
       "owner": "0x43e4aa3204A2d3cee2E12532195E9a6b766a3639",
       "tokens": [
-        "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9",
+        ADDRESSES.robinhood.AAPL,
         "0xe93237C50D904957Cf27E7B1133b510C669c2e74",
-        "0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3",
-        "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
-        "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC",
-        "0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",
-        "0x322F0929c4625eD5bAd873c95208D54E1c003b2d",
+        ADDRESSES.robinhood.GOOGL,
+        ADDRESSES.robinhood.AMZN,
+        ADDRESSES.robinhood.NVDA,
+        ADDRESSES.robinhood.META,
+        ADDRESSES.robinhood.TSLA,
       ]
     }
   },
@@ -16239,7 +16286,7 @@ const configs = {
     },
   },
   "hypersurface": {
-    "methodology": "TVL includes tokens in MarginPool, HedgedPool, and Hedger contracts of every collateral pool (USDT0-collateral and USDC-collateral on HyperEVM, USDC-collateral on Base). LP positions held by the Hedger are unwrapped to their underlying tokens.",
+    "methodology": "TVL includes tokens in MarginPool, PremiumPool, HedgedPool, and Hedger contracts of every collateral pool (USDT0-collateral and USDC-collateral on HyperEVM, USDC-collateral on Base). LP positions held by the Hedger are unwrapped to their underlying tokens.",
     "hyperliquid": {
       "owners": [
         "0x7D2e4b4d7ba55C423F5CCe194ae8194eFD1C6e35",
@@ -16247,7 +16294,9 @@ const configs = {
         "0xa8c9403BDf554C047Ad91a448DDb24208Ab5313c",
         "0x7FfD5706C916499676D707f3ec3F0c9b928E7A95",
         "0xe0F9cA7FD12E31F5d720A93d04722d6DFbAD59e7",
-        "0x220f86b641ec63f4832CC30a663Bb26b15259Ee2"
+        "0x220f86b641ec63f4832CC30a663Bb26b15259Ee2",
+        "0x6806c2c11d9aa3464792d10455a6480d793eedc1",
+        "0x724a3031f22a5d8b8ec45fcf66de398dedba4edf"
       ],
       "tokens": [
         ADDRESSES.hyperliquid.USDT0,
@@ -17114,6 +17163,20 @@ const configs = {
       "tokens": [
         ADDRESSES.berachain.USDC
       ]
+    },
+  },
+  "kyorai": {
+    "methodology": "Kyorai is a swap front end with no pools of its own, so TVL is empty. Pool2 is the KAMIRAI-WBNB PancakeSwap V2 LP staked in the Kyorai farm.",
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "__pool2": [
+          "0xceA42138b022014BdeA7C4EFc1CAF9A9e719b6D0", // farm
+          "0xBD92961CA33E137270Bf5Bcd902ed1BAEf9A38e0" // KAMIRAI-WBNB Cake-LP
+        ]
+      }
     },
   },
   "kyan-blue": {
@@ -20680,6 +20743,9 @@ const configs = {
   "nullmask": {
     start: '2026-10-01',
     ethereum: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT] },
+    base: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.base.USDC] },
+    bsc: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT] },
+    robinhood: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null] },
   },
   "numbers": {
     "misrepresentedTokens": true,
@@ -21416,12 +21482,17 @@ const configs = {
   },
   "paradex": {
     "ethereum": {
-      "owners": [
-        "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"
-      ],
-      "tokens": [
-        ADDRESSES.ethereum.USDC
-      ]
+      "tvl": {
+        "tokensAndOwners": [
+          [ADDRESSES.ethereum.USDC, "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"], // StarknetTokenBridge proxy (USDC + DIME)
+          [ADDRESSES.null, "0x45B79622C095ab834b9C8dC71013ed13B39F1B8D"], // native ETH (StarknetEthBridge)
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          ["0xb32E10022FFBeDfE10bc818a1C7e67D9d87e0fa7", "0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3"], // DIME
+        ]
+      }
     },
   },
   "parasset": {
@@ -23402,6 +23473,22 @@ const configs = {
       ]
     },
   },
+  "qualia": {
+    "doublecounted": true,
+    "methodology": "Counts the WMON held by the Kintsu superMON vault on Monad and the USDe held by the HLPe vault on Hyperliquid, both Upshift vaults curated by Qualia. Assets the vault operator reports as deployed outside the vaults are not counted. The vaults are also counted under Upshift.",
+    "monad": {
+      "owner": "0x792C7c5fB5C996E588b9F4A5FB201C79974e267C", // Kintsu superMON
+      "tokens": [
+        ADDRESSES.monad.WMON
+      ]
+    },
+    "hyperliquid": {
+      "owner": "0x8fFDcd8A96d293f45aA044d10b899F9D71897E8a", // HLPe
+      "tokens": [
+        ADDRESSES.hyperliquid.USDe
+      ]
+    },
+  },
   "quantum-unit": {
     "methodology": "count all contract balance",
     "bsc": {
@@ -23412,16 +23499,28 @@ const configs = {
     },
   },
   "quantumpools": {
-    "methodology": "TVL is the value of every Uniswap V3 concentrated-liquidity position held by the QuantumPools vaults on Base and Robinhood Chain, unwrapped to underlying token amounts at the current pool tick.",
+    "methodology": "TVL is the value of every Uniswap V3 and PancakeSwap V3 concentrated-liquidity position held by the QuantumPools V2/V2.1 vaults, unwrapped to underlying token amounts at the current pool tick.",
     "doublecounted": true,
     "start": "2026-09-28",
+    // [position manager, vault]: each vault binds one position manager
     "robinhood": {
-      "owner": "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3",
-      "resolveUniV3": true
+      "uniV3nftsAndOwners": [
+        ["0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3", "0x5433f385F538Fa11b8A25B82230a306d25dF8EB3"],
+        ["0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3", "0xd3AAb853758c81c09C4510D1b05b9152F71B30F5"],
+        ["0x46A15B0b27311cedF172AB29E4f4766fbE7F4364", "0xeBdfa133432bC0321ed1073Fe776F4701956E0e7"],
+      ]
     },
     "base": {
-      "owner": "0x9597f68203d1bc85744A5Fc11D890aA7777e386B",
-      "resolveUniV3": true
+      "uniV3nftsAndOwners": [
+        ["0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1", "0x9597f68203d1bc85744A5Fc11D890aA7777e386B"],
+        ["0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1", "0x0e8A7c9Fd76e718202B3c3530f3B587ba52FB1A8"],
+      ]
+    },
+    "bsc": {
+      "uniV3nftsAndOwners": [
+        ["0x46A15B0b27311cedF172AB29E4f4766fbE7F4364", "0x9597f68203d1bc85744A5Fc11D890aA7777e386B"],
+        ["0x7b8A01B39D58278b5DE7e48c8449c9f4F5170613", "0x57cB3160D59e967D3ac62620Fc69f7e0898d2690"],
+      ]
     },
   },
   "quenta": {
@@ -25559,7 +25658,9 @@ const configs = {
               // DEFI.ssi
               "0x164ffdaE2fe3891714bc2968f1875ca4fA1079D0",
               // MEME.ssi
-              "0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA"
+              "0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA",
+              // soUSDC
+              "0xb88A0269C0b7E665F15DE46F634e02cE81E361c9"
 
             ],
             // bridge
@@ -26913,6 +27014,13 @@ const configs = {
           ],
           [
             [
+              ADDRESSES.tron.USDT,
+              "TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz"
+            ],
+            "THJCvwFmu6uDqKY59JbULHDgfddy2Zojty"
+          ],
+          [
+            [
               ADDRESSES.tron.USDC,
               ADDRESSES.tron.USDT
             ],
@@ -27498,6 +27606,14 @@ const configs = {
       ]
     },
   },
+  "taifoon": {
+    "methodology": "TVL is the ICP held on the ICP ledger by the tICP bridge custody canister (dkafq-4aaaa-aaaaj-a6ysq-cai, default account). It backs the tICP released on Base, Arc and Robinhood Chain.",
+    "icp": {
+      "owners": [
+        "dkafq-4aaaa-aaaaj-a6ysq-cai"
+      ]
+    },
+  },
   "tangent-protocol": {
     "cardano": {
       "tvl": {
@@ -27688,12 +27804,18 @@ const configs = {
     },
   },
   "the-lifedao": {
-    "methodology": "TVL is calculated by unwrapping the Savings Vault's Uniswap V3 USDC/USDT LP position on Arbitrum into its underlying token balances.",
+    "methodology": "Counts idle USDC in the Savings Vault and BTC-ETH Investment Vault, the Uniswap V3 LP positions both vaults hold (USDC/USDT and WBTC/WETH), and idle WBTC/WETH in the BTC-ETH strategy, on Arbitrum.",
     "arbitrum": {
-      "owner": "0x6d1bD94Cd572e51Aa018aE6Bf909BA61F8F8d4f9",
+      "owners": [
+        "0x6d1bD94Cd572e51Aa018aE6Bf909BA61F8F8d4f9",
+        "0x86565284b9e6c29da4c401b3C59128F8672C216D",
+        "0x317c1b07442bb945FF139517c0F6fa91d0C0d0b7"
+      ],
       "resolveUniV3": true,
       "tokens": [
-        ADDRESSES.arbitrum.USDC
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+        ADDRESSES.arbitrum.WBTC,
+        ADDRESSES.arbitrum.WETH
       ]
     },
   },
@@ -41644,17 +41766,25 @@ const configs = {
   },
   "yieldcore": {
     "start": "2026-02-06",
-    "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds & Krystal vault",
+    "methodology": "Counts USDT held by the YieldCore bond contracts (v3, v4.3.1, v4.3.2) and USDT plus PancakeSwap/Uniswap V3 LP positions held by the protocol's Krystal vaults.",
     "bsc": {
       "tokens": [
         ADDRESSES.bsc.USDT
       ],
       "owners": [
-        "0x2375Fcc2a256425228aA94d7100093230761639e",
+        "0x2375Fcc2a256425228aA94d7100093230761639e", // v3
         "0x6D6CDf89Cc565A04f0Ba99A1Dc13d43d0d005E4E", // v4.3.1
         "0x903407687486b3ae60746622D06b2eD3D75EaCAb", // v4.3.2
-        "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7"
-      ]
+        // Krystal PrivateVaults owned by the protocol wallet
+        "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7",
+        "0x5e910c45611b401c6bbd6d9c85e4a228b4f5fac1",
+        "0xde5da338479e1c5751e7243eb1bd750ec4e5a91f",
+        "0x9fd253eeca51aa8cef55d8eb2fedd22b72fab3fd",
+        "0x3322a1084b905cad729abcc6f02c52bbfbcbdf55",
+        "0xad0d5df9316ca451707fae2ea3e079d368e80ba3",
+        "0x4f84d1f9ae79363008870dacf7d50e4385166c9f"
+      ],
+      "resolveUniV3": true
     },
   },
   "yieldwars": {

@@ -140,6 +140,10 @@ const defaultTokens = {
     '0x8de39b057cc6522230ab19c0205080a8663331ef', // WOJAK
     '0xa3ee21c306a700e682abcdfe9baa6a08f3820419', // CTC
     '0xba47214edd2bb43099611b208f75e4b42fdcfedc', // GOOGLON
+    '0x8ed97a637a790be1feff5e888d43629dc05408f6', // NPC
+    '0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f', // TRAC
+    '0xeD35af169aF46a02eE13b9d79Eb57d6D68C1749e', // OMI
+    '0xb0076de78dc50581770bba1d211ddc0ad4f2a241', // EDGEX
   ],
   tron: [
     nullAddress,
@@ -172,6 +176,10 @@ const defaultTokens = {
     '0x7bebd226154e865954a87650faefa8f485d36081', // ZIG
   ],
   algorand: [],
+  cardano: [
+    nullAddress, // ADA
+    '279c909f348e533da5808898f87f9a14bb2c3dfbbacccd631d927a3f534e454b', // SNEK
+  ],
   solana: [
     ADDRESSES.solana.USDC, // USDC
     ADDRESSES.solana.USDT, // USDT
@@ -251,7 +259,9 @@ const defaultTokens = {
     '0xc07e1300dc138601fa6b0b59f8d0fa477e690589', // Q
     '0x9558a9254890b2a8b057a789f413631b9084f4a3', // AIN
     '0x55ad16bd573b3365f43a9daeb0cc66a73821b4a5', // AIOT
+    '0xd69a4b260ef021ccd4e1c5f5a4fb522b032ce831', // MCAT
     '0x10d4183389e99233db3cc981c43443ebd28ebd5e', // DGAI
+    '0x3d4f0513e8a29669b960f9dbca61861548a9a760', // BANANAS
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -284,6 +294,7 @@ const defaultTokens = {
     '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b', // BNKR
     '0x16ee7ecac70d1028e7712751e2ee6ba808a7dd92', // FUN
     '0xe0cd4cacddcbf4f36e845407ce53e87717b6601d', // ICNT
+    '0xed6e000def95780fb89734c07ee2ce9f6dcaf110', // EDGE
   ],
   avax: [
     nullAddress,
@@ -480,8 +491,8 @@ const defaultTokens = {
   ],
   robinhood: [
     nullAddress,
-    '0x39dbed3a2bd333467115de45665cc57f813c4571', // PONS
-    '0x020bfc650a365f8bb26819deaabf3e21291018b4', // CASHCAT
+    ADDRESSES.robinhood.PONS, // PONS
+    ADDRESSES.robinhood.CASHCAT, // CASHCAT
   ],
 }
 

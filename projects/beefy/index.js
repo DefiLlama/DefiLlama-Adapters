@@ -55,6 +55,7 @@ const chains = {
   kava: 2222,
   megaeth: 4326,
   mantle: 5000,
+  arc: 5042,
   saga: 5464,
   canto: 7700,
   base: 8453,
@@ -126,6 +127,7 @@ const beefyChainNameMapping = {
   'harmony': 'harmony',
   'megaeth': 'megaeth',
   'robinhood': 'robinhood',
+  'arc': 'arc',
 };
 
 async function fetchVaultData() {

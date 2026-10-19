@@ -7,7 +7,7 @@ const blacklistedPools = [
 ]
 
 async function suiTvl(api) {
-  const pools = (await getConfig('bluefin/amm-sui', 'https://swap.api.sui-prod.bluefin.io/api/v1/pools/info?limit=1000')).map(i => i.address)
+  const pools = (await getConfig('bluefin/amm-sui', 'https://swap.api.sui-prod.bluefin.io/api/v1/pools/info?limit=10000')).map(i => i.address)
   // const res = await sui.getObjects(pools.filter(p => !blacklistedPools.includes(p)))
   const res = await sui.getObjects(pools)
   res.forEach((i) => {

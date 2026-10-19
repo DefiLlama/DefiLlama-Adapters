@@ -22,6 +22,7 @@ const helpers = {
   "near": require("./chain/near"),
   "bitcoin": require("./chain/bitcoin"),
   "litecoin": require("./chain/litecoin"),
+  "bitcoincash": require("./chain/bitcoincash"),
   "dash": require("./chain/dash"),
   "kaspa": require("./chain/kaspa"),
   "bsv": require("./chain/bsv"),
@@ -48,6 +49,12 @@ const helpers = {
   "constellation": require("./chain/constellation"),
   "supra": require("./chain/supra"),
   "icp": require("./chain/icp"),
+  "canton": require("./chain/canton"),
+  "conflux": require("./chain/conflux"),
+  "nervos": require("./chain/nervos"),
+  "iota": require("./chain/iota"),
+  "mina": require("./chain/mina"),
+  "decred": require("./chain/decred"),
 }
 
 svmChains.forEach(chain => {
@@ -59,6 +66,7 @@ svmChains.forEach(chain => {
 const altEVMHelper = {
   "astar": require("./chain/astar"),
   "evmos": helpers.cosmos,
+  "oasis": require("./chain/oasis"), // oasis1... consensus accounts; 0x owners stay on the Emerald EVM path
 }
 
 const geckoMapping = {

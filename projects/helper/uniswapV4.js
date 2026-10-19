@@ -19,6 +19,7 @@ const chainConfig = {
   unichain: { poolManager: '0x1F98400000000000000000000000000000000004', fromBlock: 1, stateView: '0x86e8631A016F9068C3f085fAF484Ee3F5fDee8f2' },
   monad: { poolManager: '0x188d586ddcf52439676ca21a244753fa19f9ea8e', fromBlock: 29255895, stateView: '0x77395f3b2e73ae90843717371294fa97cc419d64' },
   robinhood: { poolManager: '0x8366a39CC670B4001A1121B8F6A443A643e40951', fromBlock: 9070, stateView: '0xf3334192d15450cdd385c8b70e03f9a6bd9e673b' },
+  arc: { poolManager: '0x8366a39cc670b4001a1121b8f6a443a643e40951', fromBlock: 1946500, stateView: '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b' },
 }
 
 const initializeAbi = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'

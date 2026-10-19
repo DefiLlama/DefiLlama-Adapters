@@ -18,7 +18,7 @@ const config = {
     '0x80Fe1F70FDc272CAd6db179a5f691A169AA48636', // legacy compound V9
   ],
   robinhood: [
-    '0x58111317A2920F8b40fd9A5a7596c105530B425e', // official (compound)
+    '0x40b2eE9E4AcC3B218218c3e4c8C48B40C2adb311', // official (compound)
     '0xFb78eC2DeEF1aBEe421E981A239ae949Ae4E26B2', // legacy compound V8
   ],
   base: [
@@ -27,6 +27,15 @@ const config = {
   ethereum: [
     '0x1d5630534d3Eb7504fb936e141c5E2BE468FAa9e', // official (compound)
   ],
+  avax: [
+    '0x866165d601406B6bAB78B431f84746d510Ee82bc', // official (compound)
+  ],
+};
+
+// Uniswap V3 NonfungiblePositionManager on chains the shared helper has no
+// built-in default for.
+const nftAddresses = {
+  avax: '0x655C406EBFa14EE2006250925e54ec43AD184f8B',
 };
 
 async function tvl(api) {
@@ -45,7 +54,10 @@ async function tvl(api) {
 
   const ownerTokens = vaults.map((v, i) => [[token0s[i], token1s[i]], v]);
 
-  await sumTokens2({ api, ownerTokens, owners: vaults, resolveUniV3: true });
+  const nftAddress = nftAddresses[api.chain];
+  const uniV3ExtraConfig = nftAddress ? { nftAddress } : undefined;
+
+  await sumTokens2({ api, ownerTokens, owners: vaults, resolveUniV3: true, uniV3ExtraConfig });
 }
 
 module.exports = {
@@ -56,4 +68,5 @@ module.exports = {
   robinhood: { tvl },
   base: { tvl },
   ethereum: { tvl },
+  avax: { tvl },
 };

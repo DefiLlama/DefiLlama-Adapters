@@ -35,7 +35,7 @@ const CL_TOKENS = [
   ADDRESSES.robinhood.USDG, // USDG
   '0xc6911796042b15d7Fa4F6CDe69e245DdCd3d9c31', // VIRTUAL (real Virtuals Protocol token, not issued by AEON)
   '0x56A98Db16Cf501b686c14BA00a5DeC02E87083FA', // ROBINFUN (real, independently-deployed token, not issued by AEON)
-  '0x020bfC650A365f8BB26819deAAbF3E21291018b4', // CASHCAT (real, independently-deployed token, not issued by AEON)
+  ADDRESSES.robinhood.CASHCAT, // CASHCAT (real, independently-deployed token, not issued by AEON)
 ]
 
 const vammFactoryTvl = getUniTVL({ factory: AEON_FACTORY, fetchBalances: true, abis: { allPairs: 'function allPools(uint256) view returns (address)', allPairsLength: 'uint256:allPoolsLength'}})

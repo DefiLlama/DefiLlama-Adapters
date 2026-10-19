@@ -140,6 +140,9 @@ async function transformLSUs(api) {
   if (tokens.length) {
     const lsuRedemptionValues = await queryLiquidStakeUnitDetails(tokens)
     Object.entries(lsuRedemptionValues).forEach(([lsuResourceAddress, { xrdRedemptionValue }]) => {
+      if (!Number.isFinite(Number(xrdRedemptionValue))) {
+        throw new Error(`Missing XRD redemption value for ${lsuResourceAddress}`)
+      }
       const bals = balances[`radixdlt:${lsuResourceAddress}`] * xrdRedemptionValue
       api.add(ADDRESSES.radixdlt.XRD, bals)
       delete balances[`radixdlt:${lsuResourceAddress}`]

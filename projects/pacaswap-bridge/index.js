@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
 async function tvl(api) {
-  const data = await get('https://api.pacaswap.com/mainnet/coingecko/tickers_complete')  
+  const data = await get('https://api.pacaswap.com/mainnet/coingecko/tickers_complete', { timeout: 30000 })  
   api.addUSDValue(data.reduce((acc, i) => acc + +i.liquidity_in_usd, 0))
 }
 

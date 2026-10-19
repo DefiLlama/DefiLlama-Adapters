@@ -37,17 +37,19 @@ module.exports = {
     },
   },
   "ethos-network": {
-    "methodology": "Measures the total amount of ETH stored in the Vouch contract. Each vouch represents a trust relationship backed by ETH.",
+    "methodology": "TVL is the ETH held in the v1 Vouch contract. Staking is the WHUF held in the EthosVouchV2 contract. Each vouch represents a trust relationship backed by ETH or WHUF.",
     "start": "2025-01-21",
     "base": {
       "tvl": { "owner": "0xD89E6B7687f862dd6D24B3B2D4D0dec6A89A6fdd", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x8B5Ef9c00152CaDBfedA4f59212EDB6e2e45de11"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "ethos-markets": {
-    "methodology": "Measures the total amount of ETH stored in the Reputation Markets contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
+    "methodology": "TVL is the ETH held in the v1 Reputation Markets contract. Staking is the WHUF held in the EthosMarket contract. Markets allow trading trust/distrust votes against Ethos network profiles on an AMM.",
     "start": "2025-01-21",
     "base": {
       "tvl": { "owner": "0xC26F339F4E46C776853b1c190eC17173DBe059Bf", "tokens": [ADDRESSES.null] },
+      "staking": { "owners": ["0x27F49210bc000BEE3197aFB4397969df35810919"], "tokens": ["0xeeee77bC7e82c0d4166d52F58239D4c5Bf41eeee"] },
     },
   },
   "king-finance": {
@@ -546,7 +548,7 @@ module.exports = {
   },
   "sparkdex-perps": {
     "flare": {
-      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,ADDRESSES.flare.sFLR,ADDRESSES.morph.USDT0,"0xad552a648c74d49e10027ab8a618a3ad4901c5be"] },
+      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,ADDRESSES.flare.sFLR,ADDRESSES.morph.USDT0,ADDRESSES.flare.FXRP] },
     },
   },
   "corex": {
@@ -853,7 +855,7 @@ module.exports = {
   "deepstate": {
     methodology: "TVL is the value of USDG, NVDA, and DEEP held by the Deepstate router as collateral for resting orders or as matched proceeds awaiting maker claims.",
     "robinhood": {
-      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"] },
+      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.NVDA] },
       "staking": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": ["0x1DA24f6Bb623b9d1aFEae3F3146659A2662D6d27", "0xbfb7b3Ff3D498a559b946B836d26F0E168f273D5"] },
     }
   },
@@ -863,10 +865,24 @@ module.exports = {
       "tvl": { "owners": ["0xAF0Bf8593dC6CA973DF2132731B0F9B5F974FA9F", "0xa1bf9bb17C283CF17F01516f78f3127D2C84C79d"], "tokens": [ADDRESSES.base.USDC] },
     }
   },
+  "alfaclub-v2": {
+    "methodology": "USDG held by the AlfaClub V2 RoomKey contract on Robinhood Chain: bonding-curve reserves backing outstanding room keys, plus key-trading fees not yet claimed.",
+    "start": "2026-09-27",
+    "robinhood": {
+      "tvl": { "owners": ["0x64Fb2678cCe04A352a405eAa024eE02935f0ACb9"], "tokens": [ADDRESSES.robinhood.USDG] },
+    }
+  },
   "usdr": {
     "methodology": "TVL is the $M balance held by the USDR extension contract on RISE Chain, which is the collateral backing every minted USDR.",
     "rise": {
       "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
+    }
+  },
+  "startale-earn": {
+    "methodology": "TVL is the USDSC held by the Startale Earn vault on Soneium.",
+    "start": "2025-11-25",
+    "soneium": {
+      "tvl": { "owners": ["0xfdeb7e9f59cad080d9158ff850ce79bcf6cdd5f0"], "tokens": ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a"] },
     }
   },
   "veiledhood": {
@@ -981,18 +997,24 @@ module.exports = {
     }
   },
   "pare": {
-    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain. Each vault holds the stock backing one series of principal (pToken) and yield (yToken) tokens until maturity.",
+    "methodology": "Stock Tokens deposited in PARE StripVaults on Robinhood Chain, and yield-bearing dollars (sUSDx) deposited in PARE YieldVaults on Ethereum. Each vault holds what backs one series of principal (pToken) and yield (yToken) tokens until maturity.",
     "start": "2026-09-02",
+    "ethereum": {
+      "tokensAndOwners": [
+        // YieldVaults hold the share they split (sUSDx, Staked USDx). The PT/sUSDx pools are Uniswap v4 and count under Uniswap.
+        ["0xEB892628D1E58BC475A6dCB7F5dBC4F591632AA4", "0xFB0c70eaDdc3717A9c95E3D6c5B791244437a25c"], // pUSDx-MAR27, audited build, 2026-10-10
+      ],
+    },
     "robinhood": {
       "tokensAndOwners": [
         // audited build, 2026-09-18, maturity 2027-12-31
-        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
+        [ADDRESSES.robinhood.AAPL, "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
         ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0xa0f77015E46e45c1A12B73466A08711a28Dac1A7"], // SPY-DEC27
         ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0xAb8e536C9E7c76C1045EDEb6096e9B37B26B4372"], // QQQ-DEC27
         ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x1aC9599B91973A3d5d75F7594a47382223FEC0F5"], // PFE-DEC27
         ["0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5", "0x1d44BB0E2D09C35Cc116270E45F8782E7B51fF52"], // SGOV-DEC27
         // launch build, 2026-09-02..04, still redeemable
-        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
+        [ADDRESSES.robinhood.AAPL, "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
         ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0x38EAE2c04F65861cD17914100125826de2b735c7"], // SPY-MAR27
         ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0x16daFbB03C4EF20967043185255532A8cadf79Ba"], // QQQ-MAR27
         ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x0Fd9c2DCABf7780D051a519c654eb13Afec5a975"], // PFE-MAR28
@@ -1039,9 +1061,9 @@ module.exports = {
     "robinhood": {
       "owner": "0x3504aA69ca9C5A5Bc3dA312a6c761e9633251cFc", // ReserveVault
       "tokens": [
-        "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", // NVDA
-        "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", // AAPL
-        "0x322F0929c4625eD5bAd873c95208D54E1c003b2d", // TSLA
+        ADDRESSES.robinhood.NVDA, // NVDA
+        ADDRESSES.robinhood.AAPL, // AAPL
+        ADDRESSES.robinhood.TSLA, // TSLA
       ]
     },
   },
@@ -1073,5 +1095,79 @@ module.exports = {
         ADDRESSES.null
       ]
     },
+  },
+  "nlyra-desk": {
+    "methodology": "TVL counts the ETH, WETH, USDG and USDe that users keep in the NLYRA Desk escrow contracts (grid, infinity, DCA, TWAP, martingale, ladder, copy-trading and sniper bots, the OTC desk and open Predict rounds). NLYRA held in the escrows is not counted. Staking counts the NLYRA held by Staking v1 and Real Yield Staking v2.",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0x9730274e9aB060eB2C9CC3417f85A323aeF7bB6C", // Ladder
+          "0x056A87cB9974f78fa4185BCe2e14807cBE357F8F", // Martingale v2
+          "0xad55Ab54B38F6eE5aB8408de627C0CE20aeF5Cef", // Martingale v1
+          "0xC0A3cE7e18FeE382432a18F750756E296D44dD4b", // Spot Grid v1
+          "0x994Cf0A4f0E876f52f3b76a2856D93924DA71511", // Spot Grid v3
+          "0xF8ef52605FBcc968B24b7FdBD7e93c752A659D5f", // Spot Grid v4
+          "0xdd13354cfE3E79a944d8F93476176F016f6311e4", // Spot Grid USDG
+          "0x5B8555f254AbD8c4B2a25ca6595Cc4025308584c", // Infinity Grid v1
+          "0x6C56f98FF2A3867B43aFf8Cad47EC2b6da81E1ab", // Infinity Grid v2
+          "0x177a8837c0444e18677b618624C2a853573d2D7D", // Infinity Grid v3
+          "0xBdC77e3D589D161489f7C986d8f654F30b88DDeb", // Infinity Grid v4
+          "0x551C66EF613c283FC439AE21DFa9C54c6f6b19a3", // Infinity Grid USDG
+          "0x07D52Ced2EA760187Fa83D5AA96A4B8174124a0d", // DCA v1
+          "0x630d58f9B8Cb55D8e246268F52596AFc3471fc1d", // DCA v2
+          "0xF8bE45D8da70745B9Df1CF17848dfcDD4b4C2309", // TWAP
+          "0xE26dd0A09Cd7bA2F7d0a31e4B625E983B0B1B3D2", // Shadow (copy trading)
+          "0x6B30B0946743eF8A2D323127c8CfaC9966b5C84c", // Sniper
+          "0x9656513aC910a9839B51dB7c92a6914ABB4F52e8", // OTC Desk
+          "0x688c265886776005eaF321c7121bF2D1b76676A1", // Predict
+        ],
+        "tokens": [ADDRESSES.null, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.USDe]
+      },
+      "staking": { "__staking": [["0x5e63228add4390f77BbcDb364F6A7b42bA7Aa3ef", "0x5CB0Cb16cA019bcff4E494b32575848E4CdB5aF8"], "0xb9d3824149ad8ac984153ceec91d5a2405d1fb95"] }
+    }
+  },
+  "baibai": {
+    "methodology": "TVL is the WETH and USDC held by the BaibaiCustodian contract, which custodies the maker liquidity that BaiBai quotes and settles swaps against.",
+    "start": "2026-09-05",
+    "base": {
+      "owner": "0xAaC48FEB93c5C97E0fb3c7C57E1633922A4ACDa3",
+      "tokens": [ADDRESSES.base.WETH, ADDRESSES.base.USDC]
+    }
+  },
+  "tacit": {
+    "methodology": "TVL is the assets held by Tacit's contracts: the ETH, USDC, USDT and wstETH wrapped into the ConfidentialPool on Ethereum, the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain, and the wstETH escrowed in the CollateralEngine that backs Bitcoin locks. Balances are read from the contracts; Tacit's own token (TAC) is not counted.",
+    "start": "2026-09-17",
+    "ethereum": {
+      "owners": [
+        "0x000000000Ed1eabD231Be41d93b719056F7febFC",
+        "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+        "0x000000003f608BDdF0ca45934003ffb9DbDF70DB"
+      ],
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.ethereum.WSTETH,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT
+      ]
+    },
+    "base": {
+      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "robinhood": {
+      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
+  "wager-predict": {
+    "methodology": "USDW held by the Wager Predict market contracts on BSC: trader collateral in SpotEngine, LP deposits in the Vault and resolution bonds in the ResolutionModule.",
+    "start": "2026-10-05",
+    "bsc": {
+      "tvl": { "owners": ["0x76b91e83f2A12dc52E33f856eeA300E5B3A62c0c", "0x88d163d40D6BFe0Ad2b17f4a90A03053fEbf3014", "0xdfc40D309C0D8f4Cc42863991C8e606eD330e1E8"], "tokens": ["0xe5eBE2AE0a036C955bfF58291826C50F7d670D43"] },
+    }
   },
 }

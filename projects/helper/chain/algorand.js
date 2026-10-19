@@ -54,7 +54,15 @@ async function sumTokens({ owner, owners = [], tokens = [], token, balances, api
   if (owner) owners = [owner]
   if (token) tokens = [token]
   if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
-  const accounts = await Promise.all(owners.map(getAccountInfo))
+  // closed accounts (balance 0, removed from the ledger) 404 on the indexer; they hold nothing, so count them as empty
+  const accounts = await Promise.all(owners.map(async (owner) => {
+    try {
+      return await getAccountInfo(owner)
+    } catch (e) {
+      if (/account not found/i.test(e?.message)) return { assets: [] }
+      throw e
+    }
+  }))
   accounts.forEach(({ assets }, i) => {
     if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
