@@ -2,8 +2,8 @@
 //
 // Seeryx is a prediction market on Solana: Up/Down crypto rounds and event markets resolved by UMA. Users' USDC
 // never sit in a shared pool: every user has a proxy (the associated token account of their UserAccount PDA), every
-// market keeps its collateral in an escrow (the ATA of the Market PDA), and kept fees sit in the ATA of the Fees PDA.
-// TVL = the USDC held by all of those accounts. The three account kinds are enumerated from the program by their
+// market keeps its collateral in an escrow (the ATA of the Market PDA). Kept fees (the ATA of the Fees PDA) are
+// protocol revenue and are not counted. TVL = the USDC held by the user and market accounts. Both account kinds are enumerated from the program by their
 // Anchor discriminators, so a new user or market is counted without any change here.
 const { PublicKey } = require("@solana/web3.js");
 const { getConnection, sumTokens2, getAssociatedTokenAddress } = require("../helper/solana");
@@ -15,11 +15,10 @@ const USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 const DISCRIMINATORS = [
   Buffer.from([211, 33, 136, 16, 186, 110, 242, 127]), // UserAccount
   Buffer.from([219, 190, 213, 55, 0, 227, 198, 154]), // Market
-  Buffer.from([151, 157, 50, 115, 130, 72, 179, 36]), // Fees
 ];
 
 // One getProgramAccounts call (the public RPC rate-limits that method hard), reading only the first 8 bytes of
-// every account of the program, then keeping the three kinds that own USDC token accounts.
+// every account of the program, then keeping the user and market accounts.
 async function owners() {
   const connection = getConnection();
   const accounts = await connection.getProgramAccounts(new PublicKey(PROGRAM_ID), { dataSlice: { offset: 0, length: 8 } });
@@ -38,6 +37,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "USDC held by the Seeryx program's accounts on Solana: every user's proxy (the token account of their UserAccount PDA), every market's collateral escrow (the token account of the Market PDA) and the fees account. The accounts are enumerated from the program by their Anchor discriminators and their USDC balances summed; nothing is read from Seeryx's own API.",
+    "USDC held by the Seeryx program's accounts on Solana: every user's proxy (the token account of their UserAccount PDA), and every market's collateral escrow (the token account of the Market PDA). Protocol fees held by the Fees account are excluded. The accounts are enumerated from the program by their Anchor discriminators and their USDC balances summed; nothing is read from Seeryx's own API.",
   solana: { tvl },
 };
