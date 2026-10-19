@@ -33,6 +33,6 @@ module.exports = {
     'smxBTC receipt tokens, the protocol-owned insurance fund, instant-exit buffers and undistributed ' +
     'yield in YieldEscrow are excluded. Only the current deployment is tracked; USDM and mxHYPE ' +
     'are separate Monetrix products.',
-  start: START_TIMESTAMP,
+  start: "2026-10-13",
   hyperliquid: { tvl },
 }
