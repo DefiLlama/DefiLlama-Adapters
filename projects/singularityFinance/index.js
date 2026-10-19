@@ -19,9 +19,10 @@ const ownTokens = {
 
 
 const vaultRegistry = {
-  // 1: "",
-  // 56: "",
+  1: "0x97C46cE66Ec71559DbF43fF9E5D110C3657C1ca4",
+  56: "0xBCCa741996196462480108BCEf7561C0aB3Fdb04",
   8453: "0xe260c97949bB01E49c0af64a3525458197851657",
+  42161: "0x44921e42017316F89C1DEdd70a3A017d4c5162c3",
 };
 
 // calculates the tvl of the SFI dynavaults by calling totalAsset which is a representation of the vault tvl in in a reference asset
@@ -54,7 +55,7 @@ async function calculateDynaVaultTVL(api, chainId) {
 
 // calculates the tvl of the SFI staking pools. Each pool takes a deposit token and has a rewardToken.
 async function calculateStaking(api, chainId) {
-  const tokens = ownTokens[chainId].map(t => t.toLowerCase());
+  const tokens = (ownTokens[chainId] || []).map(t => t.toLowerCase());
   const stakingPools = poolconfig.filter(pool => pool.chainId === chainId && !tokens.includes(pool.depositTokenAddress.toLowerCase()));
 
   const stakingBalances = await api.multiCall({
@@ -133,5 +134,8 @@ module.exports = {
   base: {
     tvl,
     staking
+  },
+  arbitrum: {
+    tvl
   }
 };
