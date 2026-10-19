@@ -418,6 +418,7 @@ const configs = {
   'bitunix-cex': {
     ethereum: {
       owners: [
+        "0x0988533bCB2e747351F08a365b33E46456C965A1",
         "0x76B0aB5067B3be922ef4698390Ca8bd5812A5080",
         "0x6Fe39F2831caF58529779EFDB73341Aa64df50Ab",
         "0x431CA183bD6c2fd4a160ac28363D1719f3F12779"
