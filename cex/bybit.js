@@ -14,8 +14,9 @@ const CHAIN_MAP = {
   Solana: 'solana', Aptos: 'aptos', SUI: 'sui', TON: 'ton', ZKSync: 'era', ZKSyncEra: 'era',
   TRX: 'tron', Tron: 'tron', XRP: 'ripple', Scroll: 'scroll', TAIKO: 'taiko', LINEA: 'linea',
   Manta: 'manta', Litecoin: 'litecoin', Dogecoin: 'doge', Cosmos: 'cosmos', Celo: 'celo',
-  Polkadot: 'polkadot', KLAY: 'klaytn', KAVAEVM: 'kava', EOS: 'eos', Dydx: 'dydx', Sonic: 'sonic',
+  Polkadot: 'polkadot', KLAY: 'klaytn', KAIA: 'klaytn', KAVAEVM: 'kava', EOS: 'eos', Dydx: 'dydx', Sonic: 'sonic',
   HyperEVM: 'hyperliquid', PLASMA: 'plasma', MONAD: 'monad', Cardano: 'cardano', Starknet: 'starknet',
+  SEIEVM: 'sei', HBAR: 'hedera', STABLE: 'stable',
 }
 
 async function fetchLatestCsv() {
