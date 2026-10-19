@@ -1,3 +1,0 @@
-{
-  "getAllStakes": "function getAllStakes(address _address) external view returns (tuple(uint256 poolId, uint256 tokenId, uint256 deposited, uint256 unclaimed, uint256 rewards24hr, tuple(uint256 mainTokenId, uint256 mainTypePoolId))[])"
-}

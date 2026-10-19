@@ -4,16 +4,22 @@ const { call, sumSingleBalance, } = require('./helper/chain/near')
 const PROJECT_CONTRACT = 'v2.ref-finance.near'
 const PROJECT_DCL_CONTRACT = 'dclv2.ref-labs.near'
 
+const blacklistedTokens = new Set(['fusotao-token.near'])  // mispriced token
+
 async function tvl() {
   const balances = {}
   let poolIndex = 0
   const numberOfPools = await call(PROJECT_CONTRACT, 'get_number_of_pools', {})
-  const allDclPools = await call(PROJECT_DCL_CONTRACT, 'list_pools', {});
-  allDclPools.forEach((dclPoolDetail) => {
-    const { token_x, token_y, total_order_x, total_order_y, total_x, total_y } = dclPoolDetail;
-    sumSingleBalance(balances, token_x, BigNumber(total_order_x).plus(total_x).toFixed());
-    sumSingleBalance(balances, token_y, BigNumber(total_order_y).plus(total_y).toFixed());
-  })
+  // list_pools without pagination exceeds the view call gas limit
+  const { pool_count: numberOfDclPools } = await call(PROJECT_DCL_CONTRACT, 'get_metadata', {})
+  for (let dclIndex = 0; dclIndex < +numberOfDclPools; dclIndex += 100) {
+    const dclPools = await call(PROJECT_DCL_CONTRACT, 'list_pools', { from_index: dclIndex, limit: 100 })
+    dclPools.forEach((dclPoolDetail) => {
+      const { token_x, token_y, total_order_x, total_order_y, total_x, total_y } = dclPoolDetail;
+      sumSingleBalance(balances, token_x, BigNumber(total_order_x).plus(total_x).toFixed());
+      sumSingleBalance(balances, token_y, BigNumber(total_order_y).plus(total_y).toFixed());
+    })
+  }
   do {
     const pools = await call(PROJECT_CONTRACT, 'get_pools', { from_index: poolIndex, limit: 500 })
 
@@ -22,13 +28,14 @@ async function tvl() {
       .map(({ token_account_ids, pool_kind, amounts }) => {
         // if (!['SIMPLE_POOL', 'STABLE_SWAP', "RATED_SWAP"].includes(pool_kind)) throw new Error('Unknown pool kind.')
         token_account_ids.forEach((token, index) => {
+          if (blacklistedTokens.has(token)) return;
           sumSingleBalance(balances, token, amounts[index])
         })
       })
 
     poolIndex += 500
   } while (poolIndex < numberOfPools)
-  
+
   return balances
 }
 
@@ -38,6 +45,6 @@ module.exports = {
     tvl,
   },
   hallmarks: [
-    ['2022-10-24',"DCB withdrawn liquidity"]
+    ['2022-10-24', "DCB withdrawn liquidity"]
   ],
 };

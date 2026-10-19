@@ -4,11 +4,12 @@ const subgraphEndpointUnichain = sdk.graph.modifyEndpoint('https://gateway.thegr
 const subgraphEndpointBase = sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/Gqm2b5J85n1bhCyDMpGbtbVn4935EvvdyHdHrx3dibyj')
 const hookAddressUnichain = "0xa0b0d2d00fd544d8e0887f1a3cedd6e24baf10cc".toLowerCase();
 const hookAddressBase = "0x88c9ff9fc0b22cca42265d3f1d1c2c39e41cdacc".toLowerCase();
-const subgraphQuery = (blockNumber, hookAddress) => {
+const subgraphQuery = (blockNumber, hookAddresses) => {
+  const hooks = Array.isArray(hookAddresses) ? hookAddresses : [hookAddresses]
   return {
     query: `
       {
-        pools(first: 1000, block: {number: ${blockNumber}}, where: { hooks: "${hookAddress}" }) {
+        pools(first: 1000, block: {number: ${blockNumber}}, where: { hooks_in: [${hooks.map((h) => `"${h}"`).join(', ')}] }) {
           token0 {
             id
             decimals
@@ -69,7 +70,7 @@ module.exports.unichain = {
     const graphBlock = await getGraphBlock(subgraphEndpointUnichain)
 
     const response = await fetch(subgraphEndpointUnichain, {
-      "body": JSON.stringify(subgraphQuery(block > graphBlock ? graphBlock : block, hookAddressUnichain)),
+      "body": JSON.stringify(subgraphQuery(block > graphBlock ? graphBlock : block, [hookAddressUnichain, hookAddressBase])),
       "method": "POST"
     })
     const data = await response.json()

@@ -1,3 +1,0 @@
-{
-  "getBalanceByToken": "function getBalanceByToken(address trader, address token) view returns (int256)"
-}

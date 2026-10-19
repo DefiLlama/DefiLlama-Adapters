@@ -3,7 +3,23 @@ const glob = require('glob')
 const jsonfile = require('jsonfile')
 const fs = require('fs')
 
-let data = require('../projects/test/abi.json')
+let _data = require('../projects/test/abi.json')
+// let data = _data
+let data = _data
+const missingKeyMap = {}
+if (!Array.isArray(data)) {
+  Object.keys(data).forEach(key => {
+    if (key !== data[key].name) {
+      missingKeyMap[key] = data[key].name
+    }
+  })
+  data = Object.values(data)
+}
+
+data.forEach(i => {
+  if (!i.inputs) i.inputs = []
+})
+
 const rootFolder = '../projects'
 const rootFolderTest = '../projects/yfii'
 
@@ -84,14 +100,17 @@ function print() {
   if (Array.isArray(data)) {
     res = {}
     data
-    .filter(i => i.type === 'function' || i.type === 'event')
-    // .filter(i => isTransformable({ test: i}))
-    // .filter(i => i.stateMutability === 'view'  || i.stateMutability === 'pure')
-    .forEach(i => res[i.name ?? 'ignore'] = i)
+      .filter(i => i.type === 'function' || i.type === 'event')
+      // .filter(i => isTransformable({ test: i}))
+      // .filter(i => i.stateMutability === 'view'  || i.stateMutability === 'pure')
+      .forEach(i => res[i.name ?? 'ignore'] = i)
+  }
+  if (Object.keys(missingKeyMap).length) {
+    Object.keys(missingKeyMap).forEach(key => res[key] = res[missingKeyMap[key]])
   }
   console.log(res)
   res = transform(res)
-  fs.writeFileSync(__dirname+'/../projects/test/abi.json', JSON.stringify(res, null, 2))
+  fs.writeFileSync(__dirname + '/../projects/test/abi.json', JSON.stringify(res, null, 2))
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }
@@ -104,7 +123,7 @@ print()
 async function printRes(abi, target, api) {
   const res = {}
   await Promise.all(Object.entries(abi).map(async ([name, abi]) => {
-    res[name] = await api.call({ abi, target})
+    res[name] = await api.call({ abi, target })
   }))
   console.log(res)
 }

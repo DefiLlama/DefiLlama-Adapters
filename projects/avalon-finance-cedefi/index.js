@@ -1,6 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
-const { sumTokensExport } = require('../helper/sumTokens');
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const abi = {

@@ -19,11 +19,15 @@ function run() {
 
   // return;
 
-  glob(rootFolder + '/**/*.js', {}, async (e, files) => {
+  const update = async (e, files) => {
     console.log('JSON file count', files.length)
     // console.log(files)
     files.forEach(updateFile)
-  })
+  }
+
+  glob(rootFolder + '/**/*.js', {}, update)
+  glob(rootFolder + '/../registries/**/*.js', {}, update)
+  glob(rootFolder + '/../cex/**/*.js', {}, update)
 }
 
 run()

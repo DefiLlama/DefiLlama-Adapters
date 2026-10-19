@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk")
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -20,21 +19,18 @@ async function getPools(api) {
 }
 
 async function tvl(api) {
-  const block = api.block
   const pools = await getPools(api)
   const tokensAndOwners = pools.map(i => ([i.currency, i.pool]))
-  return sumTokens2({ block, tokensAndOwners })
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 async function borrowed(api) {
   const pools = await getPools(api)
-  const calls = pools.map(i => ({ target: i.pool }))
-  const { output: borrows } = await sdk.api.abi.multiCall({
-    abi: "uint256:borrows", calls, block: api.block,
+  const borrows = await api.multiCall({
+    abi: "uint256:borrows", calls: pools.map(i => i.pool),
   })
-  const balances = {}
-  borrows.forEach(({ output, }, i) => sdk.util.sumSingleBalance(balances, pools[i].currency, output ))
-  return balances
+  borrows.forEach((output, i) => api.add(pools[i].currency, output))
+  return api.getBalances()
 }
 
 module.exports = {

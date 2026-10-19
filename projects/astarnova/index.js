@@ -1,4 +1,7 @@
-const dashboard = '0x63d3b2d066c1247245B31252441B3B6744e5BeB1'
+const { sumTokens2 } = require('../helper/unwrapLPs')
+
+// the dashboard contract (0x63d3b2d066c1247245B31252441B3B6744e5BeB1, tvlOfPool) reverts on every RPC;
+// each VaultFarm exposes its staking token and the total staked balance directly
 const pools = [
     '0x2426F33359ef3BC6cb80104D3e2C81D81c790D6F',
     '0x3ad9F054454E948D0016aaa568D05b22CE1B7b37',
@@ -14,12 +17,13 @@ const pools = [
 ]
 
 async function astar(api) {
-    const bals = await api.multiCall({ abi: 'function tvlOfPool(address pool) view returns (uint256 tvl)', calls: pools, target: dashboard })
-    api.addUSDValue(bals.map(i => i / 1e6).reduce((a, b) => a + b, 0))
+    const tokens = await api.multiCall({ abi: 'address:stakingToken', calls: pools, permitFailure: true })
+    const bals = await api.multiCall({ abi: 'uint256:balance', calls: pools, permitFailure: true })
+    tokens.forEach((token, i) => { if (token && bals[i]) api.add(token, bals[i]) })
+    return sumTokens2({ api, resolveLP: true })
 }
 
 module.exports = {
-    misrepresentedTokens: true,
     astar: {
         tvl: astar
     },

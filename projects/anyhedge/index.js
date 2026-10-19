@@ -39,10 +39,8 @@ async function tvl({timestamp}) {
   if (tvlAnyHedge == null)
     throw "Unable to determine AnyHedge TVL."
   
-  const bchTvl = Number(tvlAnyHedge).toFixed();
-
   return {
-    'bitcoin-cash': bchTvl
+    'bitcoin-cash': +tvlAnyHedge
   }
 }
 

@@ -6,9 +6,11 @@ const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
+const problematicChainSet = new Set(['rbn',])
+
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer = true, }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -21,6 +23,8 @@ async function getLogs({ target,
 
   const block = api.block
   const chain = api.chain ?? 'ethereum'
+
+  if (problematicChainSet.has(chain)) onlyUseExistingCache = true
 
   // if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
 
@@ -109,6 +113,7 @@ async function getLogs({ target,
     // remove possible duplicates
     if (!customCacheFunction)
       cache.logs = cache.logs.filter(i => {
+        if (!i) return false
         let key = (i.transactionHash ?? i.hash) + (i.logIndex ?? i.index)
         if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !(i.hasOwnProperty('transactionHash') || i.hasOwnProperty('hash'))) {
           sdk.log(i, i.logIndex, i.index, i.transactionHash)
@@ -146,17 +151,14 @@ async function getLogs({ target,
     if (cache.logs.length < chunkSize) return setCache(cacheFolder, key, cache)
 
 
-    let allLogs = cache.logs
-    cache.logs = allLogs.slice(0, chunkSize)
-    allLogs = allLogs.slice(chunkSize)
-    cache.hasMore = allLogs.length > 0
-    await setCache(cacheFolder, key, cache)
+    // write a copy, cache.logs is returned by fetchLogs and must keep all the logs
+    let allLogs = cache.logs.slice(chunkSize)
+    await setCache(cacheFolder, key, { ...cache, logs: cache.logs.slice(0, chunkSize), hasMore: allLogs.length > 0 })
 
     let index = 0
 
     while (allLogs.length) {
-      const logs = allLogs.splice(0, chunkSize)
-      allLogs = allLogs.slice(chunkSize)
+      const logs = allLogs.splice(0, chunkSize) // splice already removes the chunk from allLogs
       const chunkKey = `${key}-${index}`
       const hasMore = allLogs.length > 0
       await setCache(cacheFolder, chunkKey, { logs, hasMore })
@@ -181,10 +183,15 @@ async function getLogs({ target,
     while (hasMore) {
       sdk.log(`Fetching more logs for ${key} from cache: ${index}`)
       const extraLogs = await getCache(cacheFolder, `${key}-${index}`, { checkIfRecent: true, })
+      // a missing chunk means the cache is incomplete; refetch everything rather than return partial logs
+      if (!Array.isArray(extraLogs.logs)) {
+        sdk.log(`Missing log cache chunk ${key}-${index}, refetching from fromBlock`)
+        return defaultRes
+      }
       index++
       hasMore = extraLogs.hasMore
       cache.logs = cache.logs.concat(extraLogs.logs)
-      sdk.log(cache.logs.length, 'logs fetched from cache', extraLogs.logs.length, 'more logs', extraLogs.hasMore ? 'and more to come' : 'no more logs')
+      sdk.log(cache.logs.length, 'logs fetched from cache', extraLogs.logs?.length, 'more logs', extraLogs.hasMore ? 'and more to come' : 'no more logs')
     }
 
 

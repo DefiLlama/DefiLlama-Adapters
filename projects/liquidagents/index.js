@@ -1,6 +1,6 @@
 const sui = require('../helper/chain/sui')
 
-const CREATE_EVENT_TYPE = '0xb0575765166030556a6eafd3b1b970eba8183ff748860680245b9edd41c716e7::events::Event<0xb0575765166030556a6eafd3b1b970eba8183ff748860680245b9edd41c716e7::liquid_staking::CreateEvent>';
+const LIQUID_STAKING_INFO_TYPE = '0xb0575765166030556a6eafd3b1b970eba8183ff748860680245b9edd41c716e7::liquid_staking::LiquidStakingInfo';
 const INCLUDE_POOL_IDS = [
   '0x14347e46d48e39a33c8d4e63d5e95d513014ceced519d96ce1510b0dfadd6cd6', // JUG_SUI
   '0x4f020d1e6d4a5b1269948963587877e7217bcdc5978ddbb393b0ec015f83bbbd', // KOIT_SUI
@@ -14,13 +14,9 @@ const INCLUDE_POOL_IDS = [
 ]
 
 async function tvl() {
-  const poolIds = (await sui.queryEvents({
-    eventType: CREATE_EVENT_TYPE,
-    transform: (i) => i.event.liquid_staking_info_id,
-  })).filter((id) => INCLUDE_POOL_IDS.includes(id));
-
   let suiAmount = 0;
-  const data = await sui.getObjects(poolIds);
+  const data = (await sui.getObjectsByType(LIQUID_STAKING_INFO_TYPE))
+    .filter((pool) => pool && INCLUDE_POOL_IDS.includes(pool.fields.id.id));
 
   data.forEach((pool) => {
     if (!pool) return;

@@ -1,0 +1,72 @@
+name: Comment_PR
+on:
+  workflow_run:
+    workflows: ["Test_Change"]
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  actions: read
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    # Only run if the triggering workflow produced comments. We don't gate on
+    # conclusion because the test workflow intentionally exits non-zero when an
+    # adapter errors, and we still want to post the error comment.
+    steps:
+      - name: Download PR comments artifact
+        id: download
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-comments
+          run-id: ${{ github.event.workflow_run.id }}
+          # This GitHub token is automatically provided by GitHub Actions for every workflow run.
+          # It grants permissions to the workflow to interact with the repository (read/write access).
+          # The token is injected by GitHub and available as a default secret in all workflows.
+          # It's commonly used for actions that need to authenticate with the GitHub API
+          # (e.g., posting comments, creating issues, updating workflows, etc.)
+          # Reference: https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: pr-comments
+        continue-on-error: true
+
+      - name: Post comments on PR
+        if: steps.download.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const dir = 'pr-comments';
+            if (!fs.existsSync(dir)) {
+              core.info('No pr-comments directory, nothing to post.');
+              return;
+            }
+
+            const prNumberPath = path.join(dir, 'pr-number.txt');
+            if (!fs.existsSync(prNumberPath)) {
+              core.info('No pr-number.txt, nothing to post.');
+              return;
+            }
+            const prNumber = Number(fs.readFileSync(prNumberPath, 'utf8').trim());
+            if (!Number.isInteger(prNumber) || prNumber <= 0) {
+              core.setFailed(`Invalid PR number in artifact: ${prNumber}`);
+              return;
+            }
+
+            const files = fs.readdirSync(dir)
+              .filter(f => f.endsWith('.md'))
+              .sort();
+
+            for (const f of files) {
+              const body = fs.readFileSync(path.join(dir, f), 'utf8');
+              if (!body.trim()) continue;
+              await github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body,
+              });
+            }

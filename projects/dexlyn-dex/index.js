@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
+const axios = require("axios");
 const {
   getAccountAllResources,
-  invokeViewFunction,
+  rpcURL,
   COIN_INFO_STRUCT_TYPE,
 } = require("../helper/chain/supra");
 const { transformBalances } = require("../helper/portedTokens");
@@ -41,11 +42,20 @@ const calculateDexlynTVL = async (api) => {
       let isCoreAssetX = coreTokens.includes(xCoinType);
       let isCoreAssetY = coreTokens.includes(yCoinType);
       if (isCoreAssetX || isCoreAssetY) {
-        let [reserveX, reserveY] = await invokeViewFunction(
-          GET_POOL_RESERVE_SIZE_FUNCTION_TYPE,
-          [xCoinType, yCoinType, curveType],
-          []
-        );
+        let reserves;
+        try {
+          // called directly (not via helper http.post) so the abort reason in the 400 body is kept
+          reserves = (await axios.post(`${rpcURL()}/rpc/v1/view`, {
+            function: GET_POOL_RESERVE_SIZE_FUNCTION_TYPE,
+            type_arguments: [xCoinType, yCoinType, curveType],
+            arguments: [],
+          })).data.result;
+        } catch (e) {
+          // locked pools abort get_reserves_size in liquidity_pool::assert_pool_unlocked; skip them
+          if (String(e?.response?.data?.message).includes("assert_pool_unlocked")) continue;
+          throw e;
+        }
+        let [reserveX, reserveY] = reserves;
         if (isCoreAssetX && isCoreAssetY) {
           sdk.util.sumSingleBalance(balances, xCoinType, reserveX);
           sdk.util.sumSingleBalance(balances, yCoinType, reserveY);

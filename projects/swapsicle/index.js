@@ -51,69 +51,35 @@ const contracts = {
   }
 }
 
-function getAVAXAddress(address) {
-  return `avax:${address}`;
-}
-
-function getTLOSAddress(address) {
-  return `telos:${address}`;
-}
-
-// AVAX (ETH) staking product
-async function iceBox(contract, block, chain) {
-  let balances = {
-    [ADDRESSES.null]: (
-      await sdk.api.eth.getBalance({ target: contract, block, chain: chain })
-    ).output,
-  };
-  return balances;
-}
-
 // Avalanche - IceVault Staking (USDC)
-async function stakedUSDC(timestamp, _, { avax: block }) {
-  const balances = {};
-
-  const tokenBalance = await sdk.api.abi.call({
+async function stakedUSDC(api) {
+  const tokenBalance = await api.call({
     target: contracts.avax.stakingContract_IV,
     abi: iceVaultABI.totalStaked,
-    chain: "avax", block,
   });
-
-  balances[getAVAXAddress(contracts.avax.usdc)] = tokenBalance.output;
-
-  return balances;
+  api.add(contracts.avax.usdc, tokenBalance);
+  return api.getBalances();
 }
 
-async function stakedAVAXIceBox(timestamp, ethBlock, chainBlocks) {
-  const balances = {};
-  const block = chainBlocks.avax;
-
-  const ibBalance = await iceBox(contracts.avax.stakingContract_IB, block, 'avax');
-  balances[getAVAXAddress(WAVAX)] = ibBalance[ADDRESSES.null];
-
-  return balances;
+async function stakedAVAXIceBox(api) {
+  const ibBalance = await api.getEthBalance(contracts.avax.stakingContract_IB);
+  api.add(WAVAX, ibBalance);
+  return api.getBalances();
 }
 
-async function stakedAVAXIceBox2(timestamp, ethBlock, chainBlocks) {
-  const balances = {};
-  const block = chainBlocks.avax;
-
-  const ibBalance2 = await iceBox(contracts.avax.stakingContract_IB2, block, 'avax');
-  balances[getAVAXAddress(WAVAX)] = ibBalance2[ADDRESSES.null]
-
-  return balances;
+async function stakedAVAXIceBox2(api) {
+  const ibBalance2 = await api.getEthBalance(contracts.avax.stakingContract_IB2);
+  api.add(WAVAX, ibBalance2);
+  return api.getBalances();
 }
 
-async function stakedTLOSIceBox(timestamp, _, { telos: block }) {
-  const balances = {};
-  const stakedSTLOS = await sdk.api.abi.call({
-      target: contracts.telos.stakingContract_IB2,
-      abi: iceBoxABI.totalPrimaryStaked,
-      chain: "telos", block,
+async function stakedTLOSIceBox(api) {
+  const stakedSTLOS = await api.call({
+    target: contracts.telos.stakingContract_IB2,
+    abi: iceBoxABI.totalPrimaryStaked,
   });
-
-  balances[getTLOSAddress(contracts.telos.stlos)] = stakedSTLOS.output;
-  return balances;
+  api.add(contracts.telos.stlos, stakedSTLOS);
+  return api.getBalances();
 }
 
 module.exports = {

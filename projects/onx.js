@@ -90,7 +90,7 @@ const config = {
   ] },
   fantom: { vaults: [
     //xBoo
-    ['0x841fad6eae12c286d1fd18d1d525dffa75c7effe', '0x95d0d6A7D75A5b086d2823C38F6Dd80a50fD0d93',],
+    [ADDRESSES.fantom.BOO, '0x95d0d6A7D75A5b086d2823C38F6Dd80a50fD0d93',],
     //BooFtm
     ['0xec7178f4c41f346b2721907f5cf7628e388a7a58', '0x62CA6F1640776070ECa70E09d9AF27352a43a5D8'],
     //UsdcFtm

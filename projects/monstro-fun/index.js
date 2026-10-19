@@ -1,26 +1,24 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
-const BASE_CONTRACT = '0x813303b6F253C74D997020518227f87Ff721F53F';
-// 0xdbe214c863d6b2ecf5d79012e5d03aab09c57e28
-const ABI_GOLEMZ = "function golemzLatestStats() view returns (uint256 totalInvested, uint256 currentTVL, uint256 insurance, uint256 totalPaidOut)";  // 0x07f2a4b640d0c780d52d476ac2b674d8a22bc1b1
-const ABI_POOLZ = "function poolzLatestStats() view returns (uint256 totalInvested, uint256 currentTVL, uint256 insurance, uint256 totalPaidOut)"; // 0x4d0eb0e7e851787065f694b2e12e75bfa97be08e
+const MONSTRO = '0x1d3bE1CC80cA89DDbabe5b5C254AF63200e708f7'
+const STAKING_CONTRACT = '0x99741758A3BCD7A95B80845E124C5C499DF4742b'
 
-async function getInvestedValue(api, contractAddress, abi) {
-  const response = await api.call({ target: contractAddress, abi, });
-
-  return api.add(ADDRESSES.base.USDC, response.totalInvested)
-}
-
-async function tvl(api) {
-  await getInvestedValue(api, BASE_CONTRACT, ABI_GOLEMZ);
-  await getInvestedValue(api, BASE_CONTRACT, ABI_POOLZ);
+async function stakingTvl(api) {
+  const totalStaked = await api.call({
+    target: STAKING_CONTRACT,
+    abi: 'function totalStaked() view returns (uint256)',
+  })
+  api.add(MONSTRO, totalStaked)
 }
 
 module.exports = {
-  methodology: 'Sums the total invested value from farmz, golemz, and poolz contracts based on their respective latestStats functions.',
-  hallmarks: [['2024-12-21', "BSC->Base ecosystem migration"]],
-  misrepresentedTokens: true,
+  methodology: 'Staking counts MONSTRO tokens staked by users via totalStaked(), excluding unreleased emissions.',
+  hallmarks: [
+    ['2026-01-21', 'Legacy contracts deprecated'],
+    ['2026-02-01', 'DAO launch with staking'],
+  ],
   base: {
-    tvl,
+    tvl: () => ({}),
+    staking: stakingTvl,
   },
-};
+}

@@ -1,4 +1,0 @@
-{
-  "balanceOf": "function balanceOf(address account) view returns (uint256)",
-  "totalSupply": "uint256:totalSupply"
-}

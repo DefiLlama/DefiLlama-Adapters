@@ -1,14 +1,17 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require("../helper/unwrapLPs");
 const { function_view } = require("../helper/chain/aptos")
-const sdk = require('@defillama/sdk')
 
 const evmConfig = {
     ethereum: {
         vaultAddress: '0xf297230fA5614545B427616148a74C888620d659',
         // USDC
         vaultStableTokenAddress: ADDRESSES.ethereum.USDC,
-    },
+  },
+  bsc: {
+    vaultAddress: '0xC6497A4d3Db7ED4b39157EBAC5583E2B1e22C6eD',
+        // USDC
+    vaultStableTokenAddress: ADDRESSES.bsc.USDC,
+  }
 }
 
 const moveConfig = {
@@ -78,25 +81,19 @@ const evmAbi = {
 
 const getEvmTvl = async (api, { vaultAddress, vaultStableTokenAddress }) => {
   // 1. Call mintedAvalonVault() to get the total amount of vault tokens minted.
-  const mintedAvalonVaultResult = await sdk.api.abi.call({
+  const vaultTokenAmount = await api.call({
     target: vaultAddress,
     abi: evmAbi.mintedAvalonVault,
-    chain: api.chain,
-    block: api.block,
   })
 
-  const vaultTokenAmount = mintedAvalonVaultResult.output
-
   // 2. Call convertToStable(avalonVaultAmount) to convert vault token amount to stable token value.
-  const tvlResult = await sdk.api.abi.call({
+  const tvlResult = await api.call({
     target: vaultAddress,
     abi: evmAbi.convertToStable,
     params: [vaultTokenAmount],
-    chain: api.chain,
-    block: api.block,
   })
 
-  return tvlResult.output
+  return tvlResult
 }
 
 // Methodology

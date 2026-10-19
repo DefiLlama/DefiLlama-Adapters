@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const uniV3ABI = require('../helper/abis/uniV3.json');
 
 const config = {
-  arbitrum: { strategy: '0xB4E291f443f51D80186dd3EE0Af7F4a4E6e90804', veToken: '0xAAA343032aA79eE9a6897Dab03bef967c3289a06', token: '0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418' },
+  arbitrum: { strategy: '0xB4E291f443f51D80186dd3EE0Af7F4a4E6e90804', veToken: '0xAAA343032aA79eE9a6897Dab03bef967c3289a06', token: ADDRESSES.arbitrum.RAM },
   avax: { strategy: '0xedEd6a22bf714d4B19b7e7bC1CA0BCF88956751c', veToken: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', token: '0xaaab9d12a30504559b0c5a9a5977fee4a6081c6b' },
   bsc: { strategy: '0x37e46C030e0d843b39F692c9108E54945F4CCCf7', veToken: '0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D', token: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11' },
   polygon: { strategy: '0x32dAc1B8AD93b53F549D6555e01c35dCC50b6229', veToken: '0xB419cE2ea99f356BaE0caC47282B9409E38200fa', token: '0xBFA35599c7AEbb0dAcE9b5aa3ca5f2a79624D8Eb' },

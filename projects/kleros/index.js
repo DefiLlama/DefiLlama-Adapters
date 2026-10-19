@@ -1,4 +1,3 @@
-const { getBlock } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 
 const graphUrls = {
@@ -15,21 +14,16 @@ query($block: Int) {
 `
 
 function getStakedTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-
-    const graphUrl = graphUrls[chain]
-    const block = await getBlock(timestamp, chain, chainBlocks)
+  return async (api) => {
+    const block = await api.getBlock()
 
     const { klerosCounters } = await sdk.graph.request(
-      graphUrl,
+      graphUrls[chain],
       totalStakedQuery,
       { variables: { block: block - 500 }}
     )
 
-    balances.kleros = klerosCounters[0].tokenStaked / (10 ** 18);
-
-    return balances;
+    return { kleros: klerosCounters[0].tokenStaked / (10 ** 18) }
   }
 }
 

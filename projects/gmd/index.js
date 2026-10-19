@@ -4,6 +4,7 @@ const abi = 'uint256:totalUSDvaults';
 
 const arbitrum_vault = "0xA7Ce4434A29549864a46fcE8662fD671c06BA49a";
 const arbitrum_vault2 = "0x8080B5cE6dfb49a6B86370d6982B3e2A86FBBb08";
+const arbitrum_gmdbfr_vault = "0x56009e94418ddfe8604331eceff38db0738775f8";
 const arbitrum_staking = "0x48c81451d1fddeca84b47ff86f91708fa5c32e93";
 const arbitrum_GMD = "0x4945970EfeEc98D393b4b979b9bE265A3aE28A8B";
 const arbitrum_esGMD = "0x49E050dF648E9477c7545fE1779B940f879B787A";
@@ -15,7 +16,7 @@ const avax_esGMD = "0xeE788a8b015376eC0185e1e40140af03029C8763";
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: 'staked gmd + vault balance',
+  methodology: 'TVL is calculated as the USD value reported by GMD vault contracts. Staking is calculated as GMD and esGMD held in the staking contracts.',
   arbitrum: {
     staking: staking(arbitrum_staking, [arbitrum_esGMD, arbitrum_GMD]),
     tvl
@@ -28,7 +29,7 @@ module.exports = {
 
 const config = {
   avax: [avax_vault],
-  arbitrum: [arbitrum_vault, arbitrum_vault2],
+  arbitrum: [arbitrum_vault, arbitrum_vault2, arbitrum_gmdbfr_vault],
 }
 
 async function tvl(api) {

@@ -13,7 +13,75 @@ const treasuries = [
 
 const ethWallet = '0x355d72fb52ad4591b2066e43e89a7a38cf5cb341'
 
+// covalent token auto-discovery refuses more than 11 owners (12 treasuries here) and the
+// treasury is nearly empty, so these chains use explicit token lists only
+const owners = treasuries
+const fetchCoValentTokens = false
+const multiOwnerChains = {
+  avax: {
+    fetchCoValentTokens,
+    tokens: [
+      nullAddress,
+      ADDRESSES.avax.USDT_e,//usdte
+      "0x39fC9e94Caeacb435842FADeDeCB783589F50f5f",//knc
+      "0x63682bdc5f875e9bf69e201550658492c9763f89",//bsgg
+      ADDRESSES.avax.USDC,//USDC
+      ADDRESSES.avax.USDC_e,//USDC.e
+      "0x9e295b5b976a184b14ad8cd72413ad846c299660",//fsGLP
+    ],
+    owners,
+    ownTokens: [TIME, '0x0da67235dd5787d67955420c84ca1cecd4e5bb3b', '0x9b06f3c5de42d4623d7a2bd940ec735103c68a76'], //last is volta
+  },
+  arbitrum: {
+    fetchCoValentTokens,
+    tokens: [
+      nullAddress,
+      ADDRESSES.arbitrum.ARB,//arb
+      ADDRESSES.arbitrum.WETH,//weth
+      ADDRESSES.arbitrum.GMX,//gmx
+      "0xf42Ae1D54fd613C9bb14810b0588FaAa09a426cA",//esGMX
+      "0xd2D1162512F927a7e282Ef43a362659E4F2a728F",//sbfGMX
+    ],
+    owners,
+    ownTokens: ['0x9b06f3c5de42d4623d7a2bd940ec735103c68a76'], //volta
+  },
+  polygon: {
+    fetchCoValentTokens,
+    tokens: [
+      nullAddress,
+      // "0xb08b3603C5F2629eF83510E6049eDEeFdc3A2D91",//cpool
+    ],
+    owners,
+  },
+  bsc: {
+    fetchCoValentTokens,
+    tokens: [
+      nullAddress,
+      ADDRESSES.bsc.USDC,//USDC
+    ],
+    owners,
+  },
+  fantom: {
+    fetchCoValentTokens,
+    tokens: [
+      nullAddress,
+    ],
+    owners,
+  },
+  optimism: {
+    fetchCoValentTokens,
+    tokens: [
+      nullAddress,
+      ADDRESSES.moonbeam.MAI,//MAI
+      ADDRESSES.tombchain.FTM,//WETH
+      ADDRESSES.optimism.USDT,//USDT
+    ],
+    owners,
+  },
+}
+
 module.exports = treasuryExports({
+  ...multiOwnerChains,
   ethereum: {
     tokens: [
       nullAddress,
@@ -41,60 +109,8 @@ module.exports = treasuryExports({
       '0x67fadbd9bf8899d7c578db22d7af5e2e500e13e5',// uwu lend token
     ],
     owners: [ethWallet],
-    ownTokens: ['0x3b79a28264fc52c7b4cea90558aa0b162f7faf57', '0x9b06f3c5de42d4623d7a2bd940ec735103c68a76', '0x55c08ca52497e2f1534b59e2917bf524d4765257'], //wmemo, volta, uwu,  
+    ownTokens: ['0x3b79a28264fc52c7b4cea90558aa0b162f7faf57', '0x9b06f3c5de42d4623d7a2bd940ec735103c68a76', '0x55c08ca52497e2f1534b59e2917bf524d4765257'], //wmemo, volta, uwu,
   },
-  avax: {
-    tokens: [
-      nullAddress,
-      ADDRESSES.avax.USDT_e,//usdte
-      "0x39fC9e94Caeacb435842FADeDeCB783589F50f5f",//knc
-      "0x63682bdc5f875e9bf69e201550658492c9763f89",//bsgg
-      ADDRESSES.avax.USDC,//USDC
-      ADDRESSES.avax.USDC_e,//USDC.e
-      "0x9e295b5b976a184b14ad8cd72413ad846c299660",//fsGLP
-    ],
-    owners: treasuries,
-    ownTokens: [TIME, '0x0da67235dd5787d67955420c84ca1cecd4e5bb3b', '0x9b06f3c5de42d4623d7a2bd940ec735103c68a76'], //last is volta
-  },
-  arbitrum: {
-    tokens: [
-      nullAddress,
-      ADDRESSES.arbitrum.WETH,//weth
-      ADDRESSES.arbitrum.GMX,//gmx
-      "0xd2D1162512F927a7e282Ef43a362659E4F2a728F",//sbfGMX
-    ],
-    owners: treasuries,
-    ownTokens: ['0x9b06f3c5de42d4623d7a2bd940ec735103c68a76'], //volta
-  },
-  polygon: {
-    tokens: [
-      nullAddress,
-      // "0xb08b3603C5F2629eF83510E6049eDEeFdc3A2D91",//cpool
-    ],
-    owners: treasuries
-  },
-  bsc: {
-    tokens: [
-      nullAddress,
-      ADDRESSES.bsc.USDC,//USDC
-    ],
-    owners: treasuries
-  },
-  fantom: {
-    tokens: [
-      nullAddress,
-    ],
-    owners: treasuries
-  },
-  optimism: {
-    tokens: [
-      nullAddress,
-      ADDRESSES.moonbeam.MAI,//MAI
-      ADDRESSES.tombchain.FTM,//WETH
-      ADDRESSES.optimism.USDT,//USDT
-    ],
-    owners: treasuries
-  }
 })
 
 module.exports.ethereum.tvl = sdk.util.sumChainTvls([module.exports.ethereum.tvl, uwuPositions])

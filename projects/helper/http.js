@@ -5,6 +5,10 @@ const { getEnv } = require('./env')
 
 const getCacheData = {}
 
+// One default here beats a timeout in every caller: axios default is no
+// timeout (hangs forever), which froze whole runs on dead upstreams.
+const DEFAULT_TIMEOUT = 30000
+
 async function getCache(endpoint) {
   if (!getCacheData[endpoint]) getCacheData[endpoint] = get(endpoint)
   return getCacheData[endpoint]
@@ -31,7 +35,7 @@ async function get(endpoint, options = {}) {
       if (!options.headers) options.headers = {}
       options.headers['Authorization'] = tonApiKey
     }
-    const data = (await axios.get(endpoint, options)).data
+    const data = (await axios.get(endpoint, { timeout: DEFAULT_TIMEOUT, ...options })).data
     return data
   } catch (e) {
     sdk.log(e.message)
@@ -45,7 +49,7 @@ async function getWithMetadata(endpoint) {
 
 async function post(endpoint, body, options) {
   try {
-    const data = (await axios.post(endpoint, body, options)).data
+    const data = (await axios.post(endpoint, body, { timeout: DEFAULT_TIMEOUT, ...options })).data
     return data
   } catch (e) {
     sdk.log(e.message)
@@ -109,7 +113,7 @@ async function proxiedFetch(url) {
   const authInfo = getEnv('PROXY_AUTH')
   if (!authInfo) return get(url)
 
-  const [host, username, password] = authInfo.split(':')
+  const [host, username, password, port = 8001] = authInfo.split(':')
 
   const client = axios.create({
     httpsAgent: new https.Agent({
@@ -121,7 +125,7 @@ async function proxiedFetch(url) {
       proxy: {
         protocol: "https",
         host,
-        port: 8000,
+        port: parseInt(port),
         auth: { username, password },
       },
     })

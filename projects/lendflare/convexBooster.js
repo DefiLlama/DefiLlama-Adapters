@@ -60,51 +60,39 @@ const convexPools = {
     27: { lpToken: "0xDE5331AC4B3630f94853Ff322B66407e0D6331E8", virtualBalance: "0x0D66b49A68AffdDcDaDDdfE06CD6369307B2BA46", coinId: 2, coinName: "wrapped-bitcoin", decimals: 8 }
 }
 
-async function getTotalSupply(pools, chainBlocks) {
-    const output = (await sdk.api.abi.multiCall({
-        block: chainBlocks.ethereum,
-        chain: "ethereum",
+async function getTotalSupply(pools, api) {
+    const pids = Object.keys(pools);
+    const totalSupplies = await api.multiCall({
         abi: 'erc20:totalSupply',
-        calls: Object.keys(pools).map((pid, _) => {
-            return {
-                target: pools[pid].virtualBalance
-            }
-        })
-    })).output.map((result, i) => {
-        for (let pid of Object.keys(pools)) {
-            if (pools[pid].virtualBalance == result.input.target) {
-                pools[pid].totalSupply = (new BN(result.output));
-                pools[pid].totalSupplyString = result.output;
-            }
-        }
+        calls: pids.map(pid => pools[pid].virtualBalance),
+    });
+    pids.forEach((pid, i) => {
+        pools[pid].totalSupply = new BN(totalSupplies[i]);
+        pools[pid].totalSupplyString = totalSupplies[i];
     });
 
     return pools;
 }
 
-async function calculateTokenAmount(pools, chainBlocks) {
-    for (let pid of Object.keys(pools)) {
-        await sdk.api.abi.call({
-            block: chainBlocks.ethereum,
-            chain: "ethereum",
-            abi: 'function calculateTokenAmount(uint256 _pid, uint256 _tokens, int128 _curveCoinId) view returns (uint256)',
-            target: CONVEX_BOOSTER_PROXY,
-            params: [pid, pools[pid].totalSupplyString, pools[pid].coinId]
-        }).then(result => {
-            pools[pid].calculateTokenAmount = new BN(result.output);
-        }).catch(error => {
-            pools[pid].calculateTokenAmount = new BN(0);
-        });
-    }
+async function calculateTokenAmount(pools, api) {
+    const pids = Object.keys(pools);
+    const amounts = await api.multiCall({
+        abi: 'function calculateTokenAmount(uint256 _pid, uint256 _tokens, int128 _curveCoinId) view returns (uint256)',
+        target: CONVEX_BOOSTER_PROXY,
+        calls: pids.map(pid => ({ params: [pid, pools[pid].totalSupplyString, pools[pid].coinId] })),
+        permitFailure: true,
+    });
+    pids.forEach((pid, i) => {
+        pools[pid].calculateTokenAmount = new BN(amounts[i] || 0);
+    });
 
     return pools;
 }
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(api) {
     const balances = {}
-    const pools = await getTotalSupply(convexPools, chainBlocks).then(pools => {
-        return calculateTokenAmount(pools, chainBlocks);
-    });
+    let pools = await getTotalSupply(convexPools, api);
+    pools = await calculateTokenAmount(pools, api);
     Object.keys(pools).map((pid, _) => {
         if (convexPools[pid].calculateTokenAmount.isGreaterThan(new BN(0))) {
             convexPools[pid].calculateTokenAmount = convexPools[pid].calculateTokenAmount.dividedBy(10 ** convexPools[pid].decimals);

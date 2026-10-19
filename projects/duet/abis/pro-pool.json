@@ -1,3 +1,0 @@
-{
-  "liquidity": "function liquidity() view returns (int256)"
-}

@@ -1,25 +1,13 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('../http')
 const { PromisePool } = require('@supercharge/promise-pool')
 
-// const url = addr => 'https://chainz.cryptoid.info/ltc/api.dws?q=getbalance&a=' + addr
-const url1 = addr => 'https://ltc.tokenview.io/api/address/balancetrend/ltc/' + addr
-const url = addr => 'https://litecoinspace.org/api/address/' + addr
+const { utxo } = sdk.chains
+const CHAIN = 'litecoin'
 
+// LTC balance in whole coins
 async function getBalance(addr) {
-  try {
-    const {chain_stats} = await get(url(addr))
-    return (chain_stats.funded_txo_sum - chain_stats.spent_txo_sum) / 1e8
-  } catch (e) {
-    console.error(e)
-    return getBalance1(addr)
-  }
-}
-
-async function getBalance1(addr) {
-  // return get(url(addr))
-  const {data} = await get(url(addr))
-  return +Object.values(data[0])[0]
+  const litoshis = await utxo.getBalance({ chain: CHAIN, address: addr })
+  return utxo.fromBaseUnits(litoshis, utxo.CHAINS[CHAIN].decimals)
 }
 
 async function sumTokens({ balances = {}, owners = [] }) {

@@ -12,6 +12,8 @@ const LOCK_INFO_ENDPOINT = "https://www.binance.com/bapi/tokencanal/v2/tokencana
 
 const binanceToDefillama = {
   BTC: 'bitcoin',
+  ADA: 'cardano',
+  ZEC: 'zcash',
   ETH: 'ethereum',
   BEP20: 'bsc',
   BSC: 'bsc',
@@ -50,6 +52,11 @@ const binanceToDefillama = {
   SCROLL: "scroll",
   SONIC: "sonic",
   PLASMA: "plasma",
+  STATEMINT: 'polkadot',
+  KAVAEVM: 'kava',
+  KAIA: 'klaytn',
+  SEIEVM: 'sei',
+  XTZ: 'tezos',
 }
 
 const withdrawalAddresses = [
@@ -81,8 +88,14 @@ for (const [network, chain] of Object.entries(binanceToDefillama)) {
 }
 
 const perChainConfig = {
-  ethereum: { blacklistedTokens: [ADDRESSES.ethereum.BNB] },
-  bsc: { blacklistedTokens: [ADDRESSES.bsc.TUSD] },
+  ethereum: { blacklistedTokens: [
+    ADDRESSES.ethereum.BNB,
+    ADDRESSES.bsc.wBETH, // wBETH, we are already counting staked ETH via withdrawal addresses, so we don't want to double count it
+  ] },
+  bsc: { blacklistedTokens: [
+    ADDRESSES.bsc.TUSD,
+    ADDRESSES.bsc.wBETH, // wBETH
+  ] },
   solana: { blacklistedTokens: ['7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY', 'CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt'] },
 }
 
@@ -98,7 +111,7 @@ function buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens) {
   if (!blacklistedTokens) blacklistedTokens = []
   if (wrappedTokens && wrappedTokens.length) blacklistedTokens.push(...wrappedTokens)
 
-  const options = { ...base, owners, tokens, chain, blacklistedTokens }
+  const options = { ...base, owners, tokens, chain, blacklistedTokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
 
   if (binanceTokensOnChain && binanceTokensOnChain.length) {
     if (!options.tokens) options.tokens = []
@@ -132,7 +145,7 @@ const tvl = async (api) => {
     .map(({ address }) => address)
     .filter(Boolean)
 
-  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma']
+  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava']
   const isEvm = evmChains.includes(chain)
 
   const lockInfoAddresses = []

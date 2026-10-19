@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 const { getUniqueAddresses } = require("../helper/utils");
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -15,7 +16,7 @@ async function tvl(api) {
   let tokens = []
   data.forEach(i => tokens.push(...i.args.tokens))
   tokens = getUniqueAddresses(tokens)
-  return sumTokens2({ api, tokens, owner: vault,  blacklistedTokens: ['0xe80772eaf6e2e18b651f160bc9158b2a5cafca65']})
+  return sumTokens2({ api, tokens, owner: vault,  blacklistedTokens: [ADDRESSES.arbitrum.USDplus]})
 }
 
 module.exports = {

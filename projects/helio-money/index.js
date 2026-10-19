@@ -29,6 +29,7 @@ module.exports = {
   methodology: "The TVL is calculated by summing the values of tokens held in the specified vault addresses",
   hallmarks: [
     ['2022-12-02', "aBNBc exploit"],
+    ['2026-10-01', "CDP sunset announced, migrate to Lista Lending or unwind by Oct 31"],
   ],
   bsc: {
     tvl: async (api) => {

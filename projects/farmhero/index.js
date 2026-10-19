@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const abi = {
     "poolInfo": "function poolInfo(uint256) view returns (address want, uint8 poolType, uint256 allocPoint, uint256 lastRewardTime, uint256 accHEROPerShare, address strat)",
     "poolLength": "uint256:poolLength",
@@ -121,75 +120,28 @@ const pool2StratsOkex = [
   "0xfa065195657A07f9c9F0A0a5e16DcD0Dff4AF11a",
 ];
 
-const calcTvl = async (balances, chain, block, masterchef, excludePool2) => {
-  const poolLength = (
-    await sdk.api.abi.call({
-      abi: abi.poolLength,
-      target: masterchef,
-      chain,
-      block,
-    })
-  ).output;
-
-  const toa = [];
-  const calls = [];
-
-  for (let index = 0; index < poolLength; index++) calls.push({ params: index })
-
-  const { output: data } = await sdk.api.abi.multiCall({
+const calcTvl = async (api, masterchef, excludePool2) => {
+  const data = await api.fetchList({
     target: masterchef,
-    abi: abi.poolInfo,
-    calls,
-    chain, block,
+    lengthAbi: abi.poolLength,
+    itemAbi: abi.poolInfo,
   })
 
-  data.forEach(i => toa.push([i.output.want, i.output.strat]))
+  const toa = data.map(i => [i.want, i.strat])
 
-  return sumTokens2({ balances, chain, block, tokensAndOwners: toa, resolveLP: true, blacklistedTokens: excludePool2 })
+  return sumTokens2({ api, tokensAndOwners: toa, resolveLP: true, blacklistedTokens: excludePool2 })
 };
 
-const bscTvl = async (chainBlocks) => {
-  const balances = {};
-
-
-  await calcTvl(
-    balances,
-    "bsc",
-    chainBlocks["bsc"],
-    masterChefContractBsc,
-    excludePool2Bsc
-  );
-
-  return balances;
+const bscTvl = async (api) => {
+  return calcTvl(api, masterChefContractBsc, excludePool2Bsc);
 };
 
-const polygonTvl = async (chainBlocks) => {
-  const balances = {};
-
-
-  await calcTvl(
-    balances,
-    "polygon",
-    chainBlocks["polygon"],
-    masterChefContractPolygon,
-    excludePool2Polygon
-  );
-
-  return balances;
+const polygonTvl = async (api) => {
+  return calcTvl(api, masterChefContractPolygon, excludePool2Polygon);
 };
 
-const okexTvl = async (chainBlocks) => {
-  const balances = {};
-
-  await calcTvl(
-    balances,
-    "okexchain",
-    chainBlocks["okexchain"],
-    masterChefContractOkex,
-    excludePool2Okex
-  );
-
-  return balances;
+const okexTvl = async (api) => {
+  return calcTvl(api, masterChefContractOkex, excludePool2Okex);
 };
 
 module.exports = {

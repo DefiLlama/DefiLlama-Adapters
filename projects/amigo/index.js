@@ -1,8 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 const ROUTER = "0x4B48F3D1Ddc9e5793D4817517255e6beF6d72A7C"
-const WETH = "0x3439153EB7AF838Ad19d56E1571FBD09333C2809"
 const DEPLOY_BLOCK = 41117113
 
 async function tvl(api) {
@@ -13,7 +13,7 @@ async function tvl(api) {
     fromBlock: DEPLOY_BLOCK,
   })
   const pools = logs.map(l => l.pool)
-  return sumTokens2({ api, owners: pools, tokens: [WETH] })
+  return sumTokens2({ api, owners: pools, tokens: [ADDRESSES.abstract.WETH] })
 }
 
 module.exports = {

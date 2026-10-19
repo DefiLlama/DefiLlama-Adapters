@@ -1,7 +1,18 @@
 const vaultAbi = require('./abi/base.js');
 const ADDRESSES = require('../helper/coreAssets.json')
 const contractsProviderAbi = require('./abi/contract-provider.js');
-const { getOraclePackages } = require('./oracle.js');
+const { getConfig } = require('../helper/cache');
+
+async function getOraclePackages() {
+    const raw = await getConfig('rho/oracle', 'https://v2.roaracle.app/records');
+
+    return raw.map(entry => ({
+        marketId: entry.oraclePackage.marketId,
+        timestamp: entry.oraclePackage.timestamp,
+        signature: entry.oraclePackage.signature,
+        indexValue: entry.oraclePackage.indexValue,
+    }));
+}
 const contractProvider = '0x6544779Ba9747cFA20a9b837C9547DE2e0cbf071';
 const vaultId = '0x75671e1fd10680df33ace780f2b92bc4d51be5f35f1d63c5ad7d0af7a0281d2c'
 

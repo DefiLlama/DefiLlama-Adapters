@@ -15,6 +15,7 @@ Object.keys(config).forEach(chain => {
   const liquidStakingContract = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+      if (api.chain === 'fantom') return {}
       const abi = chain === 'fantom' ? 'totalFTMWorth' : 'totalAssets'
       const supply = await api.call({ abi: "uint256:" + abi, target: liquidStakingContract, });
       api.addGasToken(supply)

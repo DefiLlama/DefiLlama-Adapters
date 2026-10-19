@@ -25,7 +25,9 @@ async function addVaultTvl(api, endpoint) {
 
 async function tvl(api) {
   const { endpoint, contract, itemCount } = CONFIG[api.chain]
-  const tokens = await api.fetchList({ itemCount, itemAbi: abi.currencyIdToAddress, target: contract, startFromOne: true })
+  // the notional proxy is paused/deprecated on some chains and reverts these reads
+  let tokens = await api.fetchList({ itemCount, itemAbi: abi.currencyIdToAddress, target: contract, startFromOne: true, permitFailure: true })
+  tokens = tokens.filter(Boolean)
   await addVaultTvl(api, endpoint)
   return sumTokens2({ tokens, owner: contract, api })
 }

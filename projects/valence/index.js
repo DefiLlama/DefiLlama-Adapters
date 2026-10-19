@@ -100,7 +100,7 @@ async function getLpTvl(api, chain, dexNames=[]) {
 
     const possibleLpTokens = Object.keys(balances).filter((address) => address.match(dexConfig.regex));
 
-    possibleLpTokens.forEach(async(lpToken)=>{
+    await Promise.all(possibleLpTokens.map(async (lpToken) => {
          // regex method does not guarantee an LP token is valid, so handle the error gracefully and ignore the asset in the valuation if this is the case
          try {
           const lpBalance = balances[lpToken];
@@ -118,7 +118,7 @@ async function getLpTvl(api, chain, dexNames=[]) {
         } catch (e){
           console.log('Warning: Could not query LP share value for',lpToken)
         }
-    })
+    }))
   
 
    

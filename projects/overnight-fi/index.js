@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { unwrapSlipstreamNFT } = require('../helper/unwrapLPs')
 
 const CONFIG = {
   optimism: {
@@ -96,34 +95,9 @@ const CONFIG = {
   },
 }
 
-const abi = {
-  strategyAssets: "function strategyAssets() view returns ((address strategy, uint256 netAssetValue, uint256 liquidationValue)[])"
-}
-
 const tvl = async (api) => {
   const { m2ms, assets } = CONFIG[api.chain]
-  const strategyAssetss = await api.multiCall({ calls: m2ms, abi: abi.strategyAssets })
-
-  m2ms.forEach((_, i) => {
-    const strategyAssets = strategyAssetss[i]
-    strategyAssets.forEach(({ strategy, netAssetValue }) => {
-      // we exclude the aerodrome position which is 99% USDC+
-      if (api.chain === 'base' && m2ms[i] === '0x96aa0bBe4D0dea7C4AF4739c53dBFA0300262253')
-        if (strategy.toLowerCase() !== '0x744a222750A0681FB2f7167bDD00E2Ba611F89A9'.toLowerCase()) return;
-      api.add(assets[i], netAssetValue)
-    })
-  })
-
- /*  if (api.chain === 'base') {
-    // unwrap aerodrome positions
-    const strategy = '0xcc9c1edae4D3b8d151Ebc56e749aD08b09f50248'
-    const CLGauge = '0xd030df11fa453a222782f6458cc71954a48ea104'
-    const positionIds = await api.call({ target: CLGauge, abi: 'function stakedValues(address) view returns (uint256[])', params: strategy })
-    const nftAddress = await api.call({  abi: 'address:nft', target: CLGauge})
-
-    await unwrapSlipstreamNFT({ api, positionIds, nftAddress, })
-    api.removeTokenBalance('0x85483696Cc9970Ad9EdD786b2C5ef735F38D156f')
-  } */
+  return api.sumTokens({ owners: m2ms, tokens: assets, })
 }
 
 Object.keys(CONFIG).forEach((chain) => {

@@ -1,10 +1,10 @@
-const ADDRESSES = require("../helper/coreAssets.json");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLiquityTvl } = require("../helper/liquity.js");
 const { sumTokensExport } = require("../helper/unknownTokens.js");
 
 // TroveManager holds total system collateral (deposited HEX)
 const TROVE_MANAGER_ADDRESS = "0x248262ea52198643DD1512Ce7a2c93B32a03E45F";
-const INC_ADDRESS = "0x2fa878Ab3F87CC1C9737Fc071108F904c0B0C95d";
+const INC_ADDRESS = ADDRESSES.pulse.INC;
 
 // Staking holds LQTY tokens and receive share of protocol revenue
 const STAKING_ADDRESS = "0x35b99f29b3Ec3276A2b3Bb5863326B1c100aa160";
@@ -26,8 +26,6 @@ module.exports = {
     staking: sumTokensExport({
       owner: STAKING_ADDRESS,
       tokens: [PRINT_ADDRESS],
-      lps,
-      useDefaultCoreAssets: true,
     }),
     pool2: sumTokensExport({
       owners: [INCD_FARMING_ADDRESS, PRINT_FARMING_ADDRESS],

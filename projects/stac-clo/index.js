@@ -7,7 +7,6 @@ const abi = {
     "cap": "function cap() view returns (uint256)",
     "totalIssued": "function totalIssued() view returns (uint256)",
     "isPaused": "function isPaused() view returns (bool)",
-    "latestAnswer": "function latestAnswer() view returns (int256)",
     "latestRoundData": "function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
     "description": "function description() view returns (string)",
     "priceDecimals": "function decimals() view returns (uint8)"

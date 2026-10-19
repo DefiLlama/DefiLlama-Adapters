@@ -9,6 +9,7 @@ const factory2 = 'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.univ2-registry_v1_0_
 const stableFactory = 'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.curve-registry_v1_1_0'
 
 module.exports = {
+  isHeavyProtocol: true,
   stacks: { tvl }
 }
 
@@ -48,7 +49,7 @@ async function uniTvl(api, factory, { isStable = false, isVersion2 = false } = {
         token1Bal: reserve1?.value,
       })
     sdk.log(`velar-amm: ${i}/${pairCount}`)
-    await sleep(3100)
+    // await sleep(3100)
   }
   return transformDexBalances({ chain: 'stacks', data, balances: api.getBalances() })
 }

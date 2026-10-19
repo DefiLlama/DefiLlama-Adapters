@@ -81,7 +81,7 @@ const PAIRS = [
 
 
 const BATCH_SIZE = 5;
-const DELAY = 2000;
+const DELAY = 100;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -92,7 +92,7 @@ async function tvl(api) {
 
   for (let i = 0; i < PAIRS.length; i += BATCH_SIZE) {
     const batch = PAIRS.slice(i, i + BATCH_SIZE);
-    await sumTokens({ chain: 'stacks', owners: batch, api, balances })
+    await sumTokens({ chain: 'stacks', owners: batch, api, balances, blacklistedTokens: PAIRS })  // exclude LP tokens minted by the pool contracts themselves
     await sleep(DELAY);
   }
 
@@ -102,4 +102,5 @@ async function tvl(api) {
 module.exports = {
   methodology: "Total Liquidity Added to DEX Trading Pools",
   stacks: { tvl },
+  isHeavyProtocol: true,
 };

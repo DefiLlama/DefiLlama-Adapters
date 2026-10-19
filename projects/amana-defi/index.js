@@ -47,20 +47,20 @@ const vaultTokenPairs = [
 async function zetachainTvl(api) {
   const vaultABI = "function totalAssets() external view returns (uint256)";
   
-  for (const [vaultAddress, tokenAddress] of vaultTokenPairs) {
-    const totalAssets = await api.call({
-      target: vaultAddress,
-      abi: vaultABI,
-    });
-    
+  const totalAssetsList = await api.multiCall({
+    abi: vaultABI,
+    calls: vaultTokenPairs.map(([vaultAddress]) => vaultAddress),
+  });
+
+  vaultTokenPairs.forEach(([, tokenAddress], i) => {
+    const totalAssets = totalAssetsList[i];
     // Skip empty vaults
     if (totalAssets === "0" || totalAssets === 0) {
-      continue;
+      return;
     }
-    
     // Add the token balance - let DefiLlama handle the token recognition
     api.add(tokenAddress, totalAssets);
-  }
+  });
 }
 
 module.exports = {

@@ -16,15 +16,7 @@ function normalizeAddress(
 }
 
 const tvl = async (api) => {
-  const newPoolEvents = await sui.queryEvents({
-    eventType: `${SUI_PACKAGE_ID}::event_wrapper::InterestStableSwapEvent<${SUI_PACKAGE_ID}::events::NewPool>`
-  });
-
-   const statesIds = newPoolEvents.map(
-    (event) => event.pos0.state
-  );
-   
-  const states = await sui.getObjects(statesIds);
+  const states = await sui.getObjectsByType(`${SUI_PACKAGE_ID}::interest_stable_pool_inner::StateV1`);
 
   const decimalsMap = {};
 

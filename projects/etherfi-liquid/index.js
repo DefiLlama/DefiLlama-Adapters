@@ -100,6 +100,7 @@ async function updateVaultTvl(api, config) {
         params: ['liquid-vault-wbtc'],
       });
     }
+    wbtc = Math.min(Number(wbtc), amount); // oracle can exceed NAV, never book more than held
     amount -= wbtc;
     api.add(ADDRESSES.ethereum.WBTC, wbtc);
   }
@@ -112,6 +113,7 @@ async function updateVaultTvl(api, config) {
       abi: 'function categoryTVL(string _category) view returns (uint256)',
       params: [category],
     });
+    weth = Math.min(Number(weth), amount);
     amount -= weth;
     api.add(ADDRESSES.ethereum.WETH, weth);
   }

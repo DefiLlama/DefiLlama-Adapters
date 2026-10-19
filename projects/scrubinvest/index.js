@@ -14,7 +14,6 @@ async function tvl(api) {
     { target: '0x8EEA85dA61b397EaB933C001DAAD6fC1C5A4c67C', params: '0xcf4673F714183C42DADc1B42DAC21BE09cfc3684' },
     { target: '0xc28fcef5970fd23e5bfcdc31ce1ba72ef98cc70a', params: '0xef7541FCa94988fA423bC418a854f7967f83a3E0' },
     { target: '0x371d33963fb89ec9542a11ccf955b3a90391f99f', params: '0x43Ac7f627e41EBDa7515FEaCa425306AaB9cB602' },
-    { target: '0x1E5573b2A7C1D08112d0Ff22e9F2D8EFc9583532', params: '0x9e890FBD4295D92c41fA12a2083b51C387699Fd8' },
     { target: '0x8fE243F8B47107c468537D74514d7c52Cd61E937', params: '0x56a9c9230d6D3b7bF147c10fdDBCD8F2eB1a2B6d' },
     //NEW LPs 14/07 - GAUGE / CONTRACT
     { target: '0x5383dEB37479599a33584f7Bbc346ab299e30FF0', params: '0x79eb3848B7B4630D1d883172f8e56B2e8fb18521' },
@@ -42,12 +41,12 @@ async function tvl(api) {
       ['0xcE86EBc669BBf07A64A0a55BB105Cc2B5B5d1961','0xfA8f4Fd6D961ECf25e3406a1e6a22A3671678a65'],
       ['0xb51eFaF2f7aFb8a2F5Be0b730281E414FB487636','0xC00804268b8Ce19D2276A81292a6E28277bf3591'],
       // also count base assets if available
-      [ADDRESSES.telos.ETH, '0xcd017B495DF1dE2DC8069b274e2ddfBB78561176'],
-      [ADDRESSES.moonriver.USDT, '0x88555c4d8e53ffB223aB5baDe0B5e6B2Cd3966c4'],
-      [ADDRESSES.shiden.ETH, '0xB4Ba7ba722eacAE8f1e4c6213AF05b5E8B27dbdB'],
+      ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", '0xcd017B495DF1dE2DC8069b274e2ddfBB78561176'],
+      ["0xb44a9b6905af7c801311e8f4e76932ee959c663c", '0x88555c4d8e53ffB223aB5baDe0B5e6B2Cd3966c4'],
+      ["0x765277eebeca2e31912c9946eae1021199b39c61", '0xB4Ba7ba722eacAE8f1e4c6213AF05b5E8B27dbdB'],
       [ADDRESSES.kava.WKAVA, '0xB9774bB2A18Af59Ec9bf86dCaeC07473A2D2F230'],
-      [ADDRESSES.moonriver.USDC, '0x3CcA2C0d433E00433082ba16e968CA11dA6Dc156'],
-      [ADDRESSES.moonriver.USDC, '0x1504B9EDdD57Ed8252b3b3b407DdE27B72A80790'],
+      ["0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", '0x3CcA2C0d433E00433082ba16e968CA11dA6Dc156'],
+      ["0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", '0x1504B9EDdD57Ed8252b3b3b407DdE27B72A80790'],
       [ADDRESSES.kava.WKAVA, '0xC05021F3b3601BF33aB59dc75577B85985ACaab7'],
       // New Scrub Pool
       // ['0x471F79616569343e8e84a66F342B7B433b958154', '0x67041094c4fc1492A1AB988Fb8De0ab4A0a4A080'], // Tiger - protocol related token
@@ -65,9 +64,20 @@ async function tvl(api) {
   })
 }
 
+// TIGER/LION LP: both sides are protocol tokens, so it counts as staking rather than tvl
+async function staking(api) {
+  const calls = [
+    { target: '0x1E5573b2A7C1D08112d0Ff22e9F2D8EFc9583532', params: '0x9e890FBD4295D92c41fA12a2083b51C387699Fd8' }, // gauge / vault -> vAMM-TIGER/LION (0x78Ef6D3E3d0da9B2248C11BE11743B4C573ADd25)
+  ]
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls })
+  const lps = await api.multiCall({ abi: 'address:stake', calls: calls.map(i => i.target) })
+  api.addTokens(lps, bals)
+  return sumUnknownTokens({ api, useDefaultCoreAssets: true, resolveLP: true, lps })
+}
+
 module.exports = {
-  misrepresentedTokens: true,
   kava: {
     tvl,
+    staking,
   }
 };

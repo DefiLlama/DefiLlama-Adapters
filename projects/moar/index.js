@@ -67,7 +67,7 @@ async function getPoolAddresses(chain) {
 
 module.exports = {
     timetravel: true,
-    start: 1746403200,
+    start: '2025-05-05',
     methodology: "Sums assets held by lending pools and all the assets held by all Credit Accounts.",
     aptos: {
         tvl: async (api) => tvl(api, 'aptos'),

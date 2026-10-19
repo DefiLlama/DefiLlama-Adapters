@@ -10,11 +10,14 @@ const contractAddrs = {
 // Wasm precompile address on Nibiru
 const WASM_PRECOMPILE_ADDRESS = '0x0000000000000000000000000000000000000802';
 
+// removed from coreAssets (unpriced), kept here so the adapter still tracks the balance
+const STNIBI = '0xcA0a9Fb5FBF692fa12fD13c0A900EC56Bb3f0a7b';
+
 async function tvl(api) {
   // Query both vaults in parallel using multiCall
   const vaultQueries = [
     { contract: contractAddrs.vaultUsdc, asset: nibiru.USDC, name: 'USDC vault' },
-    { contract: contractAddrs.vaultStnibi, asset: nibiru["stNIBI"], name: 'stNIBI vault' }
+    { contract: contractAddrs.vaultStnibi, asset: STNIBI, name: 'stNIBI vault' }
   ];
 
   const queryMsg = { tvl: {} };
@@ -50,7 +53,7 @@ async function tvl(api) {
   // Perp Balances
   const tokensToFetch = [
     { key: "erc20/0x0829F361A05D993d5CEb035cA6DF3446b060970b", symbol: nibiru.USDC },
-    { key: "tf/nibi1udqqx30cw8nwjxtl4l28ym9hhrp933zlq8dqxfjzcdhvl8y24zcqpzmh8m/ampNIBI", symbol: nibiru.stNIBI },
+    { key: "tf/nibi1udqqx30cw8nwjxtl4l28ym9hhrp933zlq8dqxfjzcdhvl8y24zcqpzmh8m/ampNIBI", symbol: STNIBI },
   ];
   const relevantTokens = tokensToFetch.map(t => t.key);
   const balancesPerp = await getBalance2({

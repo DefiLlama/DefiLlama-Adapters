@@ -1,6 +1,6 @@
-const { getExports } = require('../helper/heroku-api')
+const { dex } = require('../helper/acala/dex')
 
 module.exports = {
   timetravel: false,
-  ...getExports("acala-dex", ['acala']),
+  acala: { tvl: () => dex('acala') },
 }

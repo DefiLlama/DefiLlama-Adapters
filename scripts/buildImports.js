@@ -97,6 +97,30 @@ async function run() {
   }
 
 
+  // stamp each module with the commit that added its file (meta.addedCommit),
+  // so consumers (born-to-llama bot) do not need a local clone for commit links
+  try {
+    const { fileMap, dirMap, createdMap } = getGitAddedInfo()
+    for (const [modulePath, moduleObject] of Object.entries(moduleMap)) {
+      if (!moduleObject || typeof moduleObject !== 'object') continue
+      const path = `projects/${modulePath}`
+      // modulePath is a file (aave/index.js, cover.js), a file without its
+      // extension (treasury/jpegd -> treasury/jpegd.js) or a bare directory (hop)
+      const commit = fileMap[path]
+        ?? fileMap[`${path}.js`]
+        ?? dirMap[path]
+        ?? dirMap[path.replace(/\/index\.js$/, '')]
+        ?? createdMap[path]
+        ?? createdMap[`${path}.js`]
+      if (commit) {
+        if (!moduleObject.meta) moduleObject.meta = {}
+        moduleObject.meta.addedCommit = commit
+      }
+    }
+  } catch (e) {
+    console.error('Error stamping git added commit:', e)
+  }
+
   const commitHash = execSync('git rev-parse HEAD').toString().trim()
   moduleMap._meta = { commit: commitHash }
 
@@ -133,6 +157,48 @@ function convertHallmarkStrings(hallmarks) {
     }
     return false
   })
+}
+
+// walk git history and map every path under projects/ to the commit that added it
+// fileMap: file path -> latest commit that added it (handles delete + re-add)
+// dirMap: directory path -> commit that added the first file under it (adapter creation)
+// createdMap: file path -> oldest commit that touched it, i.e. the commit that
+//   created it (fallback for files that never show as added)
+function getGitAddedInfo() {
+  const { execSync } = require("child_process")
+
+  function walk(gitArgs, keepOldest) {
+    // --first-parent: walk only the mainline, so a file shows as added at the
+    // commit or PR merge that landed it on main, never at a side-branch commit
+    // --no-renames: files moved into place still show as added instead of renamed
+    const output = execSync(`git log --first-parent --no-renames --format="%H|" --name-only ${gitArgs} -- projects/`, { maxBuffer: 1024 * 1024 * 512 }).toString()
+    const fileMap = {}
+    const dirMap = {}
+    let commit = null
+    for (const line of output.split('\n')) {
+      if (!line) continue
+      if (line.length === 41 && line[40] === '|' && /^[0-9a-f]{40}$/.test(line.slice(0, 40))) {
+        commit = line.slice(0, 40)
+      } else if (commit) {
+        // log is newest-first: first occurrence = latest commit for this path,
+        // overwriting every occurrence keeps the oldest one instead
+        if (keepOldest || !fileMap[line]) fileMap[line] = commit
+        // keep overwriting ancestor dirs: the last write is the oldest file addition
+        const parts = line.split('/')
+        parts.pop()
+        let dir = ''
+        for (const part of parts) {
+          dir = dir ? `${dir}/${part}` : part
+          dirMap[dir] = commit
+        }
+      }
+    }
+    return { fileMap, dirMap }
+  }
+
+  const added = walk('--diff-filter=A', false)
+  const touched = walk('', true)
+  return { fileMap: added.fileMap, dirMap: added.dirMap, createdMap: touched.fileMap }
 }
 
 //Replace all fuctions with mock functions in an object all the way down

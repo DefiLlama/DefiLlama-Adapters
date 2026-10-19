@@ -89,7 +89,7 @@ const CONFIG = {
       },
     ],
     startBlock: 80670441,
-    gasToken: '0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb',
+    gasToken: ADDRESSES.aurora.WETH_2,
   },
 };
 

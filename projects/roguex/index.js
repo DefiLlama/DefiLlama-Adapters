@@ -12,7 +12,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const [v1, v2] = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, {api,}) => {
+    tvl: async (api) => {
       const v1_logs = await getLogs({
         api,
         target: v1.factory,

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking');
@@ -21,7 +22,7 @@ function chainTvl(chain) {
       })
     const toa = []
     logs.forEach(({ token0, token1, pool}) => toa.push([token0, pool], [token1, pool]))
-    return sumTokens2({ api, tokensAndOwners: toa })
+    return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: [ADDRESSES.linea.WETH_1] })
   }
 }
 

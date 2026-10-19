@@ -40,6 +40,7 @@ const getMinerAssets = (agents) => {
 };
 
 module.exports = {
+  hallmarks: [['2026-08-23', 'Project sunset']],
   filecoin: {
     tvl: async (api) => {
       const [tvlComponents, activeAgents] = await Promise.all([
@@ -59,11 +60,7 @@ module.exports = {
     }
   },
   fluence: {
-    tvl: async (api) => {
-      const totalSupply = await api.call({ abi: abi.getTvlTokenAmount, target: FLT_HELPER_CONTRACT })
-      api.addGasToken(totalSupply)
-      return sumTokens2({ api })
-    }
+    tvl: () => ({}), // fluence rollup was sunset
   },
   swan: {
     tvl: async (api) => {

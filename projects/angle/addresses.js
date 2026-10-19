@@ -4,7 +4,7 @@ const TreasuryTokenAddresses = {
         arbitrum: [
             ADDRESSES.arbitrum.USDC,
             '0xe4DDDfe67E7164b0FE14E218d80dC4C08eDC01cB',
-            // '0xFA5Ed56A203466CbBC2430a43c66b9D8723528E7', // agEUR
+            // ADDRESSES.arbitrum.EURA, // agEUR
         ],
         ethereum: [
             // '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8', // agEUR
@@ -26,7 +26,7 @@ const TreasuryTokenAddresses = {
             '0x2F123cF3F37CE3328CC9B5b8415f9EC5109b45e7',
         ],
         optimism: [
-            '0x3c8b650257cfb5f272f799f5e2b4e65093a11a05',
+            ADDRESSES.optimism.VELO,
             // '0x9485aca5bbBE1667AD97c7fE7C4531a624C8b1ED', // agEUR
         ],
         polygon: [
@@ -48,9 +48,9 @@ const TreasuryTokenAddresses = {
     },
     guardian: {
         arbitrum: [
-            // '0xFA5Ed56A203466CbBC2430a43c66b9D8723528E7',
+            // ADDRESSES.arbitrum.EURA,
             ADDRESSES.arbitrum.USDC,
-            '0x463913D3a3D3D291667D53B8325c598Eb88D3B0e',
+            ADDRESSES.arbitrum.SLIZ,
         ],
         ethereum: [
             // '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8',
@@ -78,11 +78,11 @@ const TreasuryTokenAddresses = {
         bsc: [
             // '0x12f31B73D812C6Bb0d735a218c086d44D5fe5f89',
             ADDRESSES.bsc.USDT,
-            '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82',
+            ADDRESSES.bsc.CAKE,
         ],
         celo: [
             // '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049',   // agEUR
-            '0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73'
+            ADDRESSES.celo.cEUR
         ],
     },
 };
@@ -132,7 +132,7 @@ const tokens = {
         bIB01: '0xCA30c93B02514f86d5C86a6e375E3A330B435Fb5',
     },
     arbitrum: {
-        EURA: '0xFA5Ed56A203466CbBC2430a43c66b9D8723528E7',
+        EURA: ADDRESSES.arbitrum.EURA,
         stEUR: ADDRESSES.celo.STEUR,
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
         stUSD: '0x0022228a2cc5E7eF0274A7Baa600d44da5aB5776',
@@ -141,14 +141,14 @@ const tokens = {
         EURA: '0x9485aca5bbBE1667AD97c7fE7C4531a624C8b1ED',
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
         stUSD: '0x0022228a2cc5E7eF0274A7Baa600d44da5aB5776',
-        VELO: '0x3c8B650257cFb5f272f799F5e2b4e65093a11a05',
+        VELO: ADDRESSES.optimism.VELO,
     },
     polygon: {
         EURA: '0xE0B52e49357Fd4DAf2c15e02058DCE6BC0057db4',
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
     },
     avax: {
-        sBUSD: ADDRESSES.avax.sBUSD,
+        sBUSD: '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd',
         EURA: '0xAEC8318a9a59bAEb39861d10ff6C7f7bf1F96C57',
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
     },

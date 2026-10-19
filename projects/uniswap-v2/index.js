@@ -23,7 +23,10 @@ const config = {
   unichain: '0x1F98400000000000000000000000000000000002',
   monad: '0x182a927119d56008d921126764bf884221b10f59',
   xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95',
-  tempo: '0xf9ec577a4e45b5278bb7cf60fcbc20c3acaef68f'
+  tempo: '0xf9ec577a4e45b5278bb7cf60fcbc20c3acaef68f',
+  robinhood: '0x8bcEaA40B9AcdfAedF85AdF4FF01F5Ad6517937f',
+  ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
+  arc: '0x89e5db8b5aa49aa85ac63f691524311aeb649eba',
 }
 
 Object.keys(config).forEach(chain => {
@@ -44,7 +47,7 @@ graphChains.forEach(chain => {
 
 async function tvlViaGraph(api) {
   const endpoint = `https://interface.gateway.uniswap.org/v2/uniswap.explore.v1.ExploreStatsService/ProtocolStats?connect=v1&encoding=json&message=%7B%22chainId%22%3A%22${api.chainId}%22%7D`
-  const res = await get(endpoint, { headers: { 'origin': 'https://app.uniswap.org' } })
+  const res = await get(endpoint, { headers: { 'origin': 'https://app.uniswap.org' }, timeout: 30000 })
   const v2 = res.dailyProtocolTvl.v2
   const oneDayBefore = api.timestamp - 86400 * 5
   const oneDayAfter = api.timestamp + 86400 / 3

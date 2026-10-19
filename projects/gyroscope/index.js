@@ -20,7 +20,7 @@ const blacklistedTokens = [
 
 const getGyroPools = async (api, factories) => {
   for (const { factory, fromBlock } of factories) {
-    const logs = await getLogs({ api, target: factory, eventAbi: abis.poolCreated, onlyArgs: true, fromBlock })
+    const logs = await getLogs({ api, target: factory, eventAbi: abis.poolCreated, onlyArgs: true, fromBlock, onlyUseExistingCache: api.chain === 'sei' })
     const poolAddresses = logs.map(log => log.pool);
     if (poolAddresses.length === 0) continue;
 

@@ -6,10 +6,14 @@ const ITP_VAULT_ADDRRESS= '0x23371aEEaF8718955C93aEC726b3CAFC772B9E37'
 const ITP_ON_OPTIMISM = "0x0a7B751FcDBBAA8BB988B9217ad5Fb5cfe7bf7A0";
 const VELO_PRICE_ORACLE = "0x395942C2049604a314d39F370Dfb8D87AAC89e16";
 const WETH_TOKEN_ADDRESS = ADDRESSES.optimism.WETH_1;
-const VELO_TOKEN_ADDRESS = "0x3c8b650257cfb5f272f799f5e2b4e65093a11a05";
+const VELO_TOKEN_ADDRESS = ADDRESSES.optimism.VELO;
 const OP_TOKEN_ADDRESS = ADDRESSES.optimism.OP;
 const USDC_OP_TOKEN_ADDRESS = ADDRESSES.optimism.USDC_CIRCLE;
 const ITP_STAKED_ABI = "function getVaultInfo() view returns (uint256, uint256, uint256, uint256, uint256, uint256[], uint256)";
+
+// === stSATO (Ethereum) ===
+const STSATO_ON_ETHEREUM = '0xdeE7f7A032326148E65EC3068F1c9b29E26B75b3'
+const SATO_ON_ETHEREUM = '0x829f4B62EEBE12Af653b4dD4fFc480966F7d7f09'
 
 // === Auto-compounder vault contracts and their corresponding LP tokens (Optimism) ===
 const AUTO_COMPOUNDERS = [
@@ -128,12 +132,21 @@ const getCbEggsTVL = async (api) => {
   
   // Add native ETH balance
   api.add(ADDRESSES.null, ethBalance)
-  
+
   return api.getBalances()
 }
 
+// stSATO TVL on Ethereum: the SATO backing the stSATO token, read on-chain via getBacking()
+const getStsatoTVL = async (api) => {
+  const backing = await api.call({ target: STSATO_ON_ETHEREUM, abi: 'uint256:getBacking' })
+  api.add(SATO_ON_ETHEREUM, backing)
+}
+
 module.exports = {
-  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens on Optimism), dHEDGE vaults managed by the DAO across multiple chains (~$300k AUM), and cbEGGS.finance protocol TVL (ETH backing on Base). cbEGGS is owned by Infinite Trading.",
+  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens on Optimism), dHEDGE vaults managed by the DAO across multiple chains (~$300k AUM), cbEGGS.finance protocol TVL (ETH backing on Base), and stSATO TVL on Ethereum from on-chain SATO backing via getBacking(). cbEGGS is owned by Infinite Trading.",
+  ethereum: {
+    tvl: getStsatoTVL,
+  },
   optimism: {
     tvl: async (api) => {
       await getAutoCompounderTVL(api)

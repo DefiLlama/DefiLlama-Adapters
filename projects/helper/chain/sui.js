@@ -1,98 +1,76 @@
-
+const ADDRESSES = require('../coreAssets.json')
+// Sui GraphQL / BCS plumbing lives in @defillama/sdk (`sdk.chains.sui`); this file keeps the historical
+// export names and shapes plus the TVL helpers (dexExport, sumTokens).
 const sdk = require('@defillama/sdk')
-
-const http = require('../http')
-const { getEnv } = require('../env')
 const { transformDexBalances } = require('../portedTokens')
-const { sliceIntoChunks, getUniqueAddresses } = require('../utils')
+const { getUniqueAddresses } = require('../utils')
 
-//https://docs.sui.io/sui-jsonrpc
+const sui = sdk.chains.sui
 
-const endpoint = () => getEnv('SUI_RPC')
-const graphEndpoint = () => getEnv('SUI_GRAPH_RPC')
+const DUMMY_SENDER = sui.DUMMY_SENDER
+
+// ---------- codec (pure) ----------
+
+const hexToBytes = (hex) => sui.hexToBytes(hex)
+const textToBytes = (value) => sui.textToBytes(value)
+const toU64 = (value) => sui.toU64(value)
+const toU128 = (value) => sui.toU128(value)
+const fromU64 = (data, offset = 0) => sui.fromU64(data, offset)
+const fromU128 = (data, offset = 0) => sui.fromU128(data, offset)
+const parseStructTag = (type) => sui.parseStructTag(type)
+const typeTagToBytes = (type) => sui.typeTagToBytes(type)
+const buildProgrammableMoveCallBytes = (params) => sui.buildProgrammableMoveCallBytes(params)
+
+async function devInspectTransactionBlock(txBlockBytes, { sender = DUMMY_SENDER } = {}) {
+  return sui.devInspectTransactionBlock({ chain: 'sui', txBytes: txBlockBytes, sender })
+}
+
+async function getInitialSharedVersion(objectId) {
+  return sui.getInitialSharedVersion({ chain: 'sui', objectId })
+}
+
+// ---------- objects ----------
 
 async function getObject(objectId) {
-  return (await call('sui_getObject', [objectId, {
-    "showType": true,
-    "showOwner": true,
-    "showContent": true,
-  }])).content
+  return sui.getObject({ chain: 'sui', objectId })
 }
 
-async function fnSleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+async function getObjects(objectIds, { sleep, skipLayout = false } = {}) {
+  return sui.getObjects({ chain: 'sui', objectIds, skipLayout, sleep, concurrency: 20 })
 }
 
+async function getObjectsByType(type, { transform } = {}) {
+  return sui.getObjectsByType({ chain: 'sui', type, transform })
+}
+
+// raw event payloads (`contents.json`), no layout based reshaping
 async function queryEvents({ eventType, transform = i => i }) {
-  let filter = {}
-  if (eventType) filter.MoveEventType = eventType
-  const items = []
-  let cursor = null
-  do {
-    const { data, nextCursor, hasNextPage } = await call('suix_queryEvents', [filter, cursor], { withMetadata: true, })
-    cursor = hasNextPage ? nextCursor : null
-    items.push(...data)
-  } while (cursor)
-  return items.map(i => i.parsedJson).map(transform)
+  return sui.queryEvents({ chain: 'sui', eventType, skipLayout: true, transform })
 }
 
-async function getObjects(objectIds, { sleep } = {}) {
-  if (objectIds.length > 9) {
-    const chunks = sliceIntoChunks(objectIds, 9)
-    const res = []
-    for (const chunk of chunks) {
-      if (sleep && res.length) await fnSleep(sleep)
-      res.push(...(await getObjects(chunk)))
-    }
-    return res
-  }
-  const {
-    result
-  } = await http.post(endpoint(), {
-    jsonrpc: "2.0", id: 1, method: 'sui_multiGetObjects', params: [objectIds, {
-      "showType": true,
-      "showOwner": true,
-      "showContent": true,
-    }],
-  })
-  return objectIds.map(i => result.find(j => j.data?.objectId === i)?.data?.content)
-}
+// ---------- dynamic fields ----------
+// the sdk returns the `0x2::dynamic_field::Field<K, V>` wrapper for plain values (callers read `i.fields.value`)
+// and the child object for dynamic object fields, the shape this helper always had
 
 async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } = {}) {
-  return (await call('suix_getDynamicFieldObject', [parent, {
-    "type": idType,
-    "value": id
-  }])).content
+  return sui.getDynamicFieldObject({ chain: 'sui', parent, id, idType })
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep }) {
-  if (sleep) await fnSleep(sleep)
-  const {
-    result: { data, hasNextPage, nextCursor }
-  } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
-  sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
-  const fetchIds = data.filter(idFilter).map(i => i.objectId).filter(i => !addedIds.has(i))
-  fetchIds.forEach(i => addedIds.add(i))
-  const objects = await getObjects(fetchIds, { sleep })
-  items.push(...objects)
-  if (!hasNextPage) return items
-  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds, sleep })
+/**
+ * All dynamic fields of `parent`. `limit` is the page size (max 50), as it always was in this helper.
+ * `items` / `addedIds` can be passed to accumulate across calls; with `onPage` items are handed over per page
+ * instead of being returned. `skipLayout` drops the layout blob (~3.5x the json payload); only safe when the
+ * caller reads plain fields, since Option/TypeName/UID/ID/String rewrapping needs the layout.
+ */
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep, skipLayout = false, onPage }) {
+  const filter = (i) => !addedIds.has(i.objectId) && idFilter(i)
+  const res = await sui.getDynamicFieldObjects({ chain: 'sui', parent, cursor, pageSize: limit, idFilter: filter, skipLayout, sleep, onPage })
+  res.forEach(i => {
+    addedIds.add(i.id)
+    items.push(i)
+  })
+  return items
 }
-
-async function call(method, params, { withMetadata = false } = {}) {
-  if (!Array.isArray(params)) params = [params]
-  const {
-    result, error
-  } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method, params, })
-  if (!result && error) throw new Error(`[sui] ${error.message}`)
-  if (['suix_getAllBalances'].includes(method)) return result
-  return withMetadata ? result : result.data
-}
-
-async function multiCall(calls) {
-  return Promise.all(calls.map(i => call(...i)))
-}
-
 
 function dexExport({
   account,
@@ -142,16 +120,24 @@ function dexExport({
 }
 
 
+// GraphQL returns coin types with the address part zero-padded to 64 hex chars
+// (e.g. 0x000...002::sui::SUI), while configs commonly use the short form (0x2::sui::SUI).
+const normalizeCoinType = (coinType) => sui.normalizeCoinType(coinType)
+
 async function sumTokens({ owners = [], blacklistedTokens = [], api, tokens = [], }) {
   owners = getUniqueAddresses(owners, true)
-  const bals = await call('suix_getAllBalances', owners)
-  const blacklistSet = new Set(blacklistedTokens)
-  const tokenSet = new Set(tokens)
-  bals.forEach(i => {
-    if (blacklistSet.has(i.coinType)) return;
-    if (tokenSet.size > 0 && !tokenSet.has(i.coinType)) return;
-    api.add(i.coinType, i.totalBalance)
-  })
+  const blacklistSet = new Set(blacklistedTokens.map(normalizeCoinType))
+  const tokenSet = new Set(tokens.map(normalizeCoinType))
+
+  for (const owner of owners) {
+    const balances = await sui.getAllBalances({ chain: 'sui', owner })
+    balances.forEach(n => {
+      const coinType = normalizeCoinType(n.coinType)
+      if (blacklistSet.has(coinType)) return
+      if (tokenSet.size > 0 && !tokenSet.has(coinType)) return
+      api.add(coinType, n.totalBalance)
+    })
+  }
   return api.getBalances()
 }
 
@@ -159,61 +145,33 @@ function sumTokensExport(config) {
   return (api) => sumTokens({ ...config, api })
 }
 
-async function queryEventsByType({ eventType, transform = i => i }) {
-  const query = `query GetEvents($after: String, $eventType: String!) {
-  events(first: 50, after: $after, filter: { eventType: $eventType }) {
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-    nodes {
-      contents {
-        json
-      }
-    }
-  }
-}`
-  const items = []
-  let after = null
-  do {
-    const { events: { pageInfo: { endCursor, hasNextPage }, nodes } } = await sdk.graph.request(graphEndpoint(), query, { variables: { after, eventType } })
-    after = hasNextPage ? endCursor : null
-    items.push(...nodes.map(i => i.contents.json).map(transform))
-  } while (after)
-  return items
-}
-
 
 async function getTokenSupply(token) {
-  const { result } = await http.post(endpoint(), {
-    jsonrpc: "2.0",
-    id: 1,
-    method: 'suix_getTotalSupply',
-    params: [token],
-  })
-  const supply = result.value
-  const { result: metadata } = await http.post(endpoint(), {
-    jsonrpc: "2.0",
-    id: 1,
-    method: 'suix_getCoinMetadata',
-    params: [token],
-  })
-  const decimals = metadata?.decimals ?? 0
-  return { supply, decimals, normalized: supply / 10 ** decimals }
+  return sui.getTokenSupply({ chain: 'sui', coinType: token })
 }
 
 module.exports = {
-  endpoint: endpoint(),
-  call,
-  multiCall,
   getObject,
   getObjects,
+  getObjectsByType,
   queryEvents,
   getDynamicFieldObject,
   getDynamicFieldObjects,
   dexExport,
   sumTokens,
   sumTokensExport,
-  queryEventsByType,
+  queryEventsByType: queryEvents,
   getTokenSupply,
+  DUMMY_SENDER,
+  buildProgrammableMoveCallBytes,
+  devInspectTransactionBlock,
+  getInitialSharedVersion,
+  parseStructTag,
+  typeTagToBytes,
+  hexToBytes,
+  textToBytes,
+  toU64,
+  toU128,
+  fromU64,
+  fromU128,
 };

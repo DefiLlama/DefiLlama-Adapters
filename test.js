@@ -128,6 +128,9 @@ function validateHallmarks(hallmark) {
 (async () => {
 
   const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
+  // registry keys can be namespaced (e.g. `treasury/gmx`); preserve the full
+  // key so a treasury entry isn't shadowed by a same-named protocol adapter.
+  const registryKey = process.argv[2].replace(/\.js$/, '').replace(/\/index$/, '').replace(/^projects\//, '')
 
   // throw error if module doesnt start with lowercase letters
   if (!/^[a-z]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
@@ -138,19 +141,20 @@ function validateHallmarks(hallmark) {
   try {
     module = require(passedFile)
   } catch (e) {
-    if (allProtocols[moduleArg]) {
-      module = allProtocols[moduleArg]
-      passedFile = `registry:${moduleArg}`
-      console.log(`Loaded module ${moduleArg} from registry`)
+    const registryName = allProtocols[registryKey] ? registryKey : moduleArg
+    if (allProtocols[registryName]) {
+      module = allProtocols[registryName]
+      passedFile = `registry:${registryName}`
+      console.log(`Loaded module ${registryName} from registry`)
     } else {
       console.error("Error loading module:", e)
-      process.exit(1)
+      return handleError(e)
     }
   }
   deadChains.forEach(chain => {
     delete module[chain]
   })
-  
+
   if (module.hallmarks) {
     if (!Array.isArray(module.hallmarks)) {
       throw new Error("Hallmarks should be an array of arrays")
@@ -158,7 +162,7 @@ function validateHallmarks(hallmark) {
     if (module.hallmarks.length > 6) {
       console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
     }
-    
+
     module.hallmarks.forEach(validateHallmarks)
   }
   // await initCache()
@@ -199,49 +203,50 @@ function validateHallmarks(hallmark) {
   const tokensBalances = {};
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
+  const failedKeys = [];
 
-  let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
+  let tvlPromises = Object.entries(module).map(([chain, value]) => {
     if (typeof value !== "object" || value === null) {
       return;
     }
-    return Promise.all(
-      Object.entries(value).map(async ([tvlType, tvlFunction]) => {
-        if (typeof tvlFunction !== "function") {
+
+    return Object.entries(value).map(([tvlType, tvlFunction]) => {
+      if (typeof tvlFunction !== "function") {
+        return;
+      }
+      let storedKey = `${chain}-${tvlType}`;
+      if (tvlType === "tvl") {
+        storedKey = chain;
+      }
+
+      return async () => {
+        try {
+          await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
+        } catch (e) {
+          failedKeys.push({ storedKey, error: formatFailureError(e) })
+          console.error(`Error pulling TVL for ${storedKey}:`, e)
           return;
         }
-        let storedKey = `${chain}-${tvlType}`;
-        if (tvlType === "tvl") {
-          storedKey = chain;
-        }
-        try {
-
-          await getTvl(
-            unixTimestamp,
-            ethBlock,
-            chainBlocks,
-            usdTvls,
-            tokensBalances,
-            usdTokenBalances,
-            tvlFunction,
-            storedKey,
-          );
-        } catch (e) {
-          console.error(`Error in ${storedKey}:`, e)
-          process.exit(1)
-        }
         let keyToAddChainBalances = tvlType;
-        if (tvlType === "tvl") {
+        if (tvlType === "tvl")
           keyToAddChainBalances = "tvl";
-        }
+
         if (chainTvlsToAdd[keyToAddChainBalances] === undefined) {
           chainTvlsToAdd[keyToAddChainBalances] = [storedKey];
         } else {
           chainTvlsToAdd[keyToAddChainBalances].push(storedKey);
         }
-      })
-    );
-  });
-  await Promise.all(tvlPromises);
+
+      }
+    })
+  }).filter(p => p !== undefined && Array.isArray(p)).flat().filter(p => p !== undefined)
+
+  await util.runInPromisePool({
+    items: tvlPromises,
+    concurrency: 5,
+    processor: async (p) => p(),
+    permitFailure: false,
+  })
   Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
     if (usdTvls[tvlType] === undefined) {
       usdTvls[tvlType] = storedKeys.reduce(
@@ -253,9 +258,21 @@ function validateHallmarks(hallmark) {
     }
   });
   if (usdTvls.tvl === undefined) {
+    if (failedKeys.length) {
+      console.error(`\n------ FAILED (${failedKeys.length}) ------`)
+      failedKeys.forEach(({ storedKey, error }) => console.error(storedKey.padEnd(25, " "), error))
+      throw new Error(
+        "Protocol doesn't have total tvl, all the tvl functions above failed to run"
+      );
+    }
     throw new Error(
       "Protocol doesn't have total tvl, make sure to export a tvl key either on the main object or in one of the chains"
     );
+  }
+
+  if (warningTable.length) {
+    console.log(`WARNING: Found ${warningTable.length} tokens with a very high USD value, please check the following table for more details: `)
+    console.table(warningTable)
   }
 
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
@@ -282,27 +299,43 @@ function validateHallmarks(hallmark) {
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
 
+  if (failedKeys.length) {
+    console.error(`------ FAILED (${failedKeys.length}) ------`)
+    failedKeys.forEach(({ storedKey, error }) => console.error(storedKey.padEnd(25, " "), error))
+    console.error("\nNote: total TVL above excludes the failed chains/components listed here.\n")
+  }
+
   await preExit()
   process.exit(0);
-})();
+})().catch(handleError);
 
+
+function formatFailureError(e) {
+  if (e && e.message) return e.message
+  if (e && typeof e === 'object') {
+    try { return JSON.stringify(e).slice(0, 500) } catch { return String(e) }
+  }
+  return String(e)
+}
 
 function checkExportKeys(module, filePath, chains) {
   let _filePath = filePath
   filePath = filePath.split(path.sep)
   filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
 
-  if ( !_filePath.startsWith('registry:') &&
+  if (!_filePath.startsWith('registry:') &&
     (filePath.length > 2
-    || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 &&
-      !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
-        || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
-        || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
-      )))
-    
-    )
-    process.exit(0)
+      || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
+      || (filePath.length === 2 &&
+        !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
+          || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
+          || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
+        )))
+
+  ) {
+    console.error(`Not an adapter path, nothing tested: ${_filePath} (expected projects/<adapter>/index.js)`)
+    process.exit(2)
+  }
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
@@ -404,6 +437,8 @@ function fixBalances(balances) {
   })
 }
 
+const warningTable = []
+
 const confidenceThreshold = 0.5
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
@@ -435,7 +470,7 @@ async function computeTVL(balances, timestamp) {
         return undefined;
       }
     })
-    .filter((item) => item !== undefined);
+    .filter((item) => item !== undefined)
 
   const unknownTokens = {}
   let tokenData = []
@@ -457,7 +492,7 @@ async function computeTVL(balances, timestamp) {
         if (queries.length > 6) {
           sdk.log(`Processed ${i}/${queryCount} queries, ${tokenData.length} responses received`)
           if (i < queryCount - 2) {
-            await sleep(5000) // avoid rate limiting
+            await sleep(100) // avoid rate limiting
           }
         }
       } catch (e) {
@@ -499,12 +534,12 @@ async function computeTVL(balances, timestamp) {
         usdAmount = amount * data.price;
       }
 
-      if (usdAmount > 1e8) {
-        console.log(`-------------------
-Warning: `)
-        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M) , price data: `, data)
-        console.log(`-------------------`)
+      if (Math.abs(usdAmount) > 1e8) {
+        const chain = address.split(':')[0]
+        warningTable.push({ chain, symbol: data.symbol, usdAmount: humanizeNumber(usdAmount), amount: humanizeNumber(amount), price: data.price, address, confidence: data.confidence, decimals: data.decimals, })
       }
+
+
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;

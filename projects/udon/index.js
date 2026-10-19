@@ -28,6 +28,6 @@ module.exports = {
   timetravel: false,
   chromia: {
     tvl: (api) => tvl(api, false),
-    borrowed: (api) => tvl(api, true),
+    borrowed: () => ({}), // hacked
   },
 }

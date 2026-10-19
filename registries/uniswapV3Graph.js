@@ -32,9 +32,6 @@ const configs = {
   'okieswap-v3': {
     xlayer: { graphURL: 'https://subgraph.okiedokie.fun/subgraphs/name/okieswap-v3', name: 'okieswap-v3-xlayer' },
   },
-  'kittenswap-algebra': {
-    hyperliquid: { graphURL: 'https://api.goldsky.com/api/public/project_cmcxkn8h7pwwc01x30a5e6t39/subgraphs/cl-analytics-prod/v1.0.0/gn', name: 'kittenswap-algebrahyperliquid', blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'] },
-  },
   'hydradex-v3': {
     misrepresentedTokens: true,
     methodology: 'We count liquidity on the dex, pulling data from subgraph',
@@ -49,9 +46,6 @@ const configs = {
   },
   'physica-finance': {
     planq: { graphURL: 'https://subgraph.planq.finance/subgraphs/name/ianlapham/uniswap-v3', name: 'physica-v3' },
-  },
-  'neby-dex': {
-    sapphire: { graphURL: 'https://graph.api.neby.exchange/dex', name: 'Neby Dex' },
   },
   'kinetix-v3': {
     kava: { graphURL: 'https://kava-graph-node.metavault.trade/subgraphs/name/kinetixfi/v3-subgraph', name: 'kinetixfi/kava-v3' },

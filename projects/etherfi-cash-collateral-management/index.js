@@ -1,17 +1,25 @@
-const ADDRESSES = require('../helper/coreAssets.json');
-const { sliceIntoChunks, sleep } = require('../helper/utils');
+const { sliceIntoChunks, sleep, mergeExports } = require('../helper/utils');
 const { PromisePool } = require('@supercharge/promise-pool');
+const { aaveV4Export } = require("../helper/aave");
 
 const CONFIG = {
-  etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
-  cashBorrowerHelperContract: '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B',
-  cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+  scroll: {
+    etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
+    cashBorrowerHelperContract: '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B',
+    cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+  },
+  optimism: {
+    etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
+    cashBorrowerHelperContract: '0x0Da474E396F059594C0412ED79b2C9349bbc8087',
+    cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+  },
 }
 
 const abi = {
   numContractsDeployed: 'function numContractsDeployed() view returns (uint256)',
   getTotalCollateralForSafesWithIndex: 'function getTotalCollateralForSafesWithIndex(uint256 startIndex, uint256 n) view returns (tuple(address token, uint256 amount)[])',
   totalBorrowingAmount: 'function totalBorrowingAmount(address borrowToken) view returns (uint256)',
+  getBorrowTokens: 'function getBorrowTokens() view returns (address[])',
 }
 
 const SAFES_PER_CALL = 50
@@ -19,9 +27,8 @@ const MULTICALL_SIZE = 3
 const CONCURRENCY = 80
 
 const tvl = async (api) => {
-  const { etherFiCashFactory, cashBorrowerHelperContract } = CONFIG
+  const { etherFiCashFactory, cashBorrowerHelperContract } = CONFIG[api.chain]
   const numSafes = (await api.call({ abi: abi.numContractsDeployed, target: etherFiCashFactory })) - 1
-
   const calls = []
   for (let i = 0; i < numSafes; i += SAFES_PER_CALL) {
     calls.push({ target: cashBorrowerHelperContract, params: [i, Math.min(SAFES_PER_CALL, numSafes - i)] })
@@ -54,15 +61,37 @@ const tvl = async (api) => {
       processed += chunk.length * SAFES_PER_CALL
       // api.log(`Processed ${Math.min(processed, numSafes)}/${numSafes} safes (${failures} sub-call failures, ~${failures * SAFES_PER_CALL} safes skipped)`)
     })
+
+  return api.getBalances()
 }
 
 async function borrowed(api) {
-  const usdcScroll = ADDRESSES.scroll.USDC
-  const borrowingAmount = await api.call({ target: CONFIG.cashDebitCore, abi: abi.totalBorrowingAmount, params: [usdcScroll] })
-  api.add(usdcScroll, borrowingAmount)
+  if (api.chain === 'scroll') return;
+  const borrowTokens = await api.call({ target: CONFIG[api.chain].cashDebitCore, abi: abi.getBorrowTokens })
+  const borrowAmounts = await api.multiCall({ target: CONFIG[api.chain].cashDebitCore, abi: abi.totalBorrowingAmount, calls: borrowTokens })
+  for (let i = 0; i < borrowTokens.length; i++) {
+    api.add(borrowTokens[i], borrowAmounts[i])
+  }
+
+  return api.getBalances()
 }
 
-module.exports = {
+const v1Exports = {
   isHeavyProtocol: true,
   scroll: { tvl, borrowed },
+  optimism: { tvl, borrowed },
+
 }
+
+
+const v2Exports = aaveV4Export({
+  optimism: [
+    "0x66753c4e3fC84f1eD0e3C267C927284E9d90C572", // Core Hub
+  ],
+});
+
+module.exports = mergeExports(v1Exports, v2Exports)
+module.exports.hallmarks = [
+  ['2026-04-08', 'Operation is migrated to OP Mainnet']
+]
+delete module.exports.methodology

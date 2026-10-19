@@ -25,7 +25,15 @@ async function tvl() {
 async function staking() {
     const state = await getAaStateVars(AA_ADDRESS, "state").then(({ state }) => state || {});
     const totalStakedBalance = state?.total_staked_balance || 0;
-    const oswapTokenPrice = await executeGetter(AA_ADDRESS, "get_price");
+    let oswapTokenPrice = 0;
+    try {
+        oswapTokenPrice = await executeGetter(AA_ADDRESS, "get_price");
+    } catch (e) {
+        // The AA's get_price getter has been reverting since Aug 2026 ("invalid appreciation coef multiplier"):
+        // no trade has touched the AA for months and its reserve is down to 1 byte, so the token is effectively
+        // worthless. Fall back to 0 instead of failing the whole adapter.
+        if (!e.response?.data?.error?.message?.includes('appreciation coef')) throw e;
+    }
     const totalStakedTVL = (totalStakedBalance / 10 ** OSWAP_TOKEN_DECIMALS) * oswapTokenPrice;
 
     return { 'byteball': totalStakedTVL }

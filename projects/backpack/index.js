@@ -36,6 +36,7 @@ const CHAINS = [
   'tron',
   'aptos',
   'ripple',
+  'eclipse',
   'plasma',
   'fogo',
   'stable',

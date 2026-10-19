@@ -25,7 +25,7 @@ async function crocGenesisTVL(api) {
     "0x472F1bd4F431cEAE95c7f3382f715C0B1961ab8c", // UST
     ADDRESSES.avax.JOE, // JOE
     ADDRESSES.avax.SAVAX, // sAVAX
-    "0xB8d7710f7d8349A506b75dD184F05777c82dAd0C", // ARENA
+    ADDRESSES.avax.ARENA, // ARENA
   ]
 
   return sumTokens2({ api, tokens, owner: crocGenesisAddress, })

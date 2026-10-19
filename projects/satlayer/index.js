@@ -65,10 +65,6 @@ const vaults = {
     {
       tokenAddress: "0x51477A3002ee04B7542aDfe63ccdb50c00Ee5147", // SLAY
       vaultAddresses: ["0xf80361e9f6b5f75b3e9be82bd1b3c87938e773b0"], // 60d SLAY vault
-    },
-    {
-      tokenAddress: "0x51477A3002ee04B7542aDfe63ccdb50c00Ee5147", // SLAY
-      vaultAddresses: ["0xf80361e9f6b5f75b3e9be82bd1b3c87938e773b0"], // 30d SLAY vault
     }
   ],
 };

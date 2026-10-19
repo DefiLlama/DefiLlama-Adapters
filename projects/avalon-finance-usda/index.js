@@ -66,33 +66,30 @@ const getMovementTvl = async (api) => {
 }
 
 module.exports = {
-  methodology: `FBTC, LFBTC as collateral`,
+  methodology: `FBTC as collateral. Avalon-minted wrappers (lfbtc, WFBTC on berachain/kaia, FBTC on Movement) are excluded: deposited by the Avalon team only and USDa has no liquidity.`,
 }
 
 // V2
 Object.keys(v2Config).forEach(chain => {
-  const { poolAddress, lfbtcAddress, fbtcAddress, owners = [], tokens = [] } = v2Config[chain]
+  const { poolAddress, fbtcAddress, owners = [], tokens = [] } = v2Config[chain]
   owners.push(poolAddress)
-  tokens.push(lfbtcAddress, fbtcAddress)
+  // lfbtc is not counted: 100% of supply deposited by the Avalon team, no external holders
+  tokens.push(fbtcAddress)
   module.exports[chain] = {
     tvl: sumTokensExport({ owners, tokens, }),
   }
 })
 
-// V3
+// V3: WFBTC treasuries are not counted, only team deposits and USDa is dead (no liquidity)
 Object.keys(v3Config).forEach(chain => {
-  const { fbtcAddress, treasuryAddress } = v3Config[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ owners: [treasuryAddress], tokens: [ fbtcAddress] }),
+    tvl: () => ({}),
   }
 })
 
-// Movement
+// Movement: FBTC treasury (getMovementTvl) is not counted, only team deposits and USDa is dead (no liquidity)
 Object.keys(v3MoveConfig).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (api) => {
-      const tvl = await getMovementTvl(api)
-      api.add(v3MoveConfig.move.fbtcAddress, tvl)
-    },
+    tvl: () => ({}),
   }
 })

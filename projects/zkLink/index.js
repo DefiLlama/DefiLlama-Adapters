@@ -75,7 +75,7 @@ const config = {
     tokens: [
       ...Object.values(ADDRESSES.manta),
       ADDRESSES.null,
-      "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5", //MANTA
+      ADDRESSES.manta.MANTA, //MANTA
       ADDRESSES.berachain.STONE, //STONE
       "0xbdAd407F77f44F7Da6684B416b1951ECa461FB07", //WUSDM
       "0x34c7Ad65E4163306f8745996688b476914201cE0", //uniETH

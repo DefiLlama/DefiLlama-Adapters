@@ -1,6 +1,80 @@
 const { getProvider } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
-const nxIdlV1 = require('./nx-idl-v1.json')
+const nxIdlV1 = {
+  "version": "0.1.0",
+  "name": "leverage_finance",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "MarginPool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "leveragefi",
+            "type": "publicKey"
+          },
+          {
+            "name": "vault",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeDestination",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenPriceOracle",
+            "type": "publicKey"
+          },
+          {
+            "name": "borrowedTokens",
+            "type": "u64"
+          },
+          {
+            "name": "depositTokens",
+            "type": "u64"
+          },
+          {
+            "name": "depositNotes",
+            "type": "u64"
+          },
+          {
+            "name": "loanNotes",
+            "type": "u64"
+          },
+          {
+            "name": "depositInterest",
+            "type": "u64"
+          },
+          {
+            "name": "loanInterest",
+            "type": "u64"
+          },
+          {
+            "name": "protocolFee",
+            "type": "u64"
+          },
+          {
+            "name": "accruedUntil",
+            "type": "i64"
+          },
+          {
+            "name": "utilizationFlag",
+            "type": "u16"
+          }
+        ]
+      }
+    }
+  ]
+};
 const nxIdlV2 = require('./nx-idl-v2.json');
 
 const NX_PROGRAM_ADDR_V1 = "EHBN9YKtMmrZhj8JZqyBQRGqyyeHw5xUB1Q5eAHszuMt";

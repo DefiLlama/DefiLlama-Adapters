@@ -12,10 +12,16 @@ const { post } = require('../helper/http');
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
   doublecounted: true,
-  methodology: "Calculate sum of spot positions in vaults with unrealized profit and loss",
+  methodology: "Solana: calculate sum of spot positions in vaults with unrealized profit and loss. Ethereum: each ERC-4626 vault is valued at convertToAssets(totalSupply) - the vault deploys its capital out to trading venues, so totalAssets() reads 0 and is not a usable source.",
   solana: {
     tvl,
+  },
+  ethereum: {
+    tvl: evmTvl,
   },
 };
 /**
@@ -40,74 +46,14 @@ async function tvl(api) {
     fetchVaultAddresses(), 
     fetchPositionAddresses()
   ]);
-  const driftUserAddresses = positionAddresses.drift ?? []
-
-  const driftVaultAddresses = vaultAddresses.filter(vault => [DRIFT_VAULT_PROGRAM_ID.toBase58(), CUSTOM_PROGRAM_ID.toBase58()].includes(vault.programId) );
   const voltrVaultAddresses = vaultAddresses.filter(vault => vault.programId === VOLTR_PROGRAM_ID.toBase58());
 
-  const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
-
-  // Get all vault accounts first
-  const accounts = await getMultipleAccounts([...vaultUserAddresses, ...driftUserAddresses])
-  const deserializedData = accounts.filter((accountInfo) => !!accountInfo).map(deserializeUserPositions)
-
-  // Collect unique market indices upfront
-  const allSpotIndices = new Set()
-  const allPerpIndices = new Set()
-  
-  deserializedData.forEach(({ spotPositions, perpPositions }) => {
-    spotPositions?.forEach(pos => allSpotIndices.add(pos.market_index))
-    perpPositions?.forEach(pos => allPerpIndices.add(pos.market_index))
-  })
-
-  // Batch fetch 
-  const allKeys = [
-    ...[...allSpotIndices].map(index => getVaultPublicKey('spot_market', index)),
-    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index)),
-  ]
-  
-  const allAccounts = await getMultipleAccounts(allKeys)
-  
-  // Create lookup maps
-  const spotAccountMap = {}
-  const perpAccountMap = {}
-  
-  let offset = 0
-  ;[...allSpotIndices].forEach((index, i) => {
-    spotAccountMap[index] = allAccounts[i]
-    offset = i + 1
-  })
-  ;[...allPerpIndices].forEach((index, i) => {
-    perpAccountMap[index] = allAccounts[i + offset]
-  })
-
-  // Process positions using the cached account data
-  for (const { spotPositions, perpPositions } of deserializedData) {
-    if (spotPositions?.length) {
-      spotPositions.forEach(position => {
-        const tokenMint = getTokenMintFromMarketIndex(position.market_index)
-        const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index])
-        api.add(tokenMint, adjustedBalance)
-      })
-    }
-
-    if (perpPositions?.length) {
-      perpPositions.map(position => {
-        const baseTokenMint = getPerpTokenMintFromMarketIndex(position.market_index)
-        const { baseBalance, quoteBalance } = processPerpPosition(position)
-        api.add(baseTokenMint, baseBalance)
-
-        const quoteTokenMint = getTokenMintFromMarketIndex(0)
-        api.add(quoteTokenMint, quoteBalance)
-
-        const { cumulativeFundingRateLong, cumulativeFundingRateShort } = getPerpMarketFundingRates(perpAccountMap[position.market_index])
-        const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort
-        const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6)
-        const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6))
-        api.add(quoteTokenMint, fundingRatePnl)
-      })
-    }
-  }
+  // Drift vaults disabled - drift was hacked
+  // const driftUserAddresses = positionAddresses.drift ?? []
+  // const driftVaultAddresses = vaultAddresses.filter(vault => [DRIFT_VAULT_PROGRAM_ID.toBase58(), CUSTOM_PROGRAM_ID.toBase58()].includes(vault.programId) );
+  // const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
+  // const accounts = await getMultipleAccounts([...vaultUserAddresses, ...driftUserAddresses])
+  // ... drift position processing removed ...
 
   // Voltr vaults
   const provider = getProvider();
@@ -146,5 +92,38 @@ async function tvl(api) {
     hyperliquidData = parseInt(hyperliquidData.marginSummary.accountValue);
     api.addCGToken("usd-coin", hyperliquidData);
   }
+}
+
+/**
+ * EVM vaults are ERC-4626 and are listed by the same endpoint as the Solana
+ * ones, carrying `chain` where a Solana vault carries `programId`.
+ *
+ * Valued at convertToAssets(totalSupply), not totalAssets(): the vault deploys
+ * its capital out to the trading venues, so totalAssets() reports what the
+ * contract itself still holds, which is 0 while the shares are outstanding.
+ */
+async function evmTvl(api) {
+  const vaults = (await fetchVaultAddresses())
+    .filter((vault) => vault.chain === api.chain)
+    .map((vault) => vault.address);
+  if (!vaults.length) return;
+
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaults });
+
+  // convertToAssets reverts on an empty vault, so only price the funded ones
+  const funded = vaults
+    .map((target, i) => ({ target, supply: supplies[i] }))
+    .filter((vault) => +vault.supply > 0);
+  if (!funded.length) return;
+
+  const [assets, values] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: funded.map((i) => i.target) }),
+    api.multiCall({
+      abi: 'function convertToAssets(uint256) view returns (uint256)',
+      calls: funded.map((i) => ({ target: i.target, params: [i.supply] })),
+    }),
+  ]);
+
+  values.forEach((value, i) => api.add(assets[i], value));
 }
 

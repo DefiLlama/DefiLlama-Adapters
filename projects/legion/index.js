@@ -18,3 +18,7 @@ const tvl = async (api) => {
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl }
 })
+
+module.exports.hallmarks = [
+  ['2026-09-29', 'Jumper JUMP token sale opens, ~16x oversubscribed'],
+]

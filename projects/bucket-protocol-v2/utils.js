@@ -1,5 +1,9 @@
-const { queryEvents, getObjects } = require("../helper/chain/sui");
+const { getObjectsByType } = require("../helper/chain/sui");
 const ADDRESSES = require("../helper/coreAssets.json");
+
+function innerTypeParam(type) {
+  return type.slice(type.indexOf('<') + 1, type.lastIndexOf('>'));
+}
 
 function parseTypeTag(type){
 	if (!type.includes('::')) return type;
@@ -81,37 +85,25 @@ function normalizeStructTag(type) {
 }
 
 async function getAllVaultIds() {
-   const newVaultEventType =
-  "0x9f835c21d21f8ce519fec17d679cd38243ef2643ad879e7048ba77374be4036e::events::VaultCreated";
-  const res = await queryEvents({eventType: newVaultEventType});
-
-  const collTypes = res.map((d) =>
-    normalizeStructTag(d.coll_type),
-  );
-  const vaultIds = res.map((d) => d.vault_id);
-  const vaultRes = await getObjects(vaultIds);
-  return vaultRes.reduce((acc, vault, idx) => {
-    if (collTypes[idx]) {
-      acc[collTypes[idx]] = vault.fields.id.id
-    }
+  const vaultType =
+  "0x9f835c21d21f8ce519fec17d679cd38243ef2643ad879e7048ba77374be4036e::vault::Vault";
+  const vaultRes = await getObjectsByType(vaultType);
+  return vaultRes.reduce((acc, vault) => {
+    if (!vault) return acc
+    const collType = normalizeStructTag(innerTypeParam(vault.type))
+    acc[collType] = vault.fields.id.id
     return acc
   },{});
 }
 
 async function getAllPoolIds() {
-   const newPSMPoolEventType =
-  "0xc2ae6693383e4a81285136effc8190c7baaf0e75aafa36d1c69cd2170cfc3803::events::NewPsmPool";
-  const res = await queryEvents({eventType: newPSMPoolEventType});
-
-  const collTypes = res.map((d) =>
-    normalizeStructTag(d.coin_type),
-  );
-  const poolIds = res.map((d) => d.pool_id);
-  const poolRes = await getObjects(poolIds);
-  return poolRes.reduce((acc, pool, idx) => {
-    if (collTypes[idx]) {
-      acc[collTypes[idx]] = pool.fields.id.id
-    }
+  const poolType =
+  "0xc2ae6693383e4a81285136effc8190c7baaf0e75aafa36d1c69cd2170cfc3803::pool::Pool";
+  const poolRes = await getObjectsByType(poolType);
+  return poolRes.reduce((acc, pool) => {
+    if (!pool) return acc
+    const collType = normalizeStructTag(innerTypeParam(pool.type))
+    acc[collType] = pool.fields.id.id
     return acc
   },{});
 }

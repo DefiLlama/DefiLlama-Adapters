@@ -8,6 +8,7 @@ const RPC_ENDPOINTS = {
     // 'eos': 'https://eos-mainnet.gateway.tatum.io',
     'wax': 'https://wax.greymass.com',
     'telos': 'https://telos.greymass.com',
+    'proton': 'https://proton.greymass.com',
 }
 
 async function getEosBalance(account_name, chain = "eos") {

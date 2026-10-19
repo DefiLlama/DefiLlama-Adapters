@@ -1,0 +1,154 @@
+{
+  "version": "0.1.0",
+  "name": "payfi_vault",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Pool",
+      "docs": [
+        "A single investment target kvault (or any depositor program) can CPI into:",
+        "deposit -> lands in `pool_liquidity_vault`, receive `share_mint` shares",
+        "back priced off `real_assets()`. A separate, operator-signed `allocate`",
+        "call then pushes liquidity onward to `borrower_wallet` as needed. Mirrors",
+        "the old in-process `PayfiAllocatorState` almost field-for-field — this is",
+        "that same logic, extracted into its own program so kvault can treat it as",
+        "one of (potentially several) generic allocation targets instead of",
+        "hardcoding it."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "poolAdmin",
+            "type": "publicKey"
+          },
+          {
+            "name": "pendingAdmin",
+            "type": "publicKey"
+          },
+          {
+            "name": "operator",
+            "type": "publicKey"
+          },
+          {
+            "name": "borrowerWallet",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "shareMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolLiquidityVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolAuthorityBump",
+            "type": "u64"
+          },
+          {
+            "name": "shareMintBump",
+            "type": "u64"
+          },
+          {
+            "name": "poolLiquidityVaultBump",
+            "type": "u64"
+          },
+          {
+            "name": "reportedNav",
+            "docs": [
+              "Last operator-reported NAV of capital allocated to `borrower_wallet`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "totalSharesIssued",
+            "type": "u64"
+          },
+          {
+            "name": "inflowSinceLastNavUpdate",
+            "docs": [
+              "Combined with `reported_nav`, gives `real_assets()` between NAV updates."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "outflowSinceLastNavUpdate",
+            "type": "u64"
+          },
+          {
+            "name": "pendingDeallocationAmount",
+            "type": "u64"
+          },
+          {
+            "name": "pendingDeallocationRequestedAt",
+            "type": "u64"
+          },
+          {
+            "name": "allowedNavChangeUpper",
+            "type": "u64"
+          },
+          {
+            "name": "allowedNavChangeLower",
+            "type": "u64"
+          },
+          {
+            "name": "lastNavUpdateTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "minimumUpdateDelaySeconds",
+            "type": "u64"
+          },
+          {
+            "name": "isPaused",
+            "type": "u8"
+          },
+          {
+            "name": "skipBoundsCheck",
+            "type": "u8"
+          },
+          {
+            "name": "isInitialized",
+            "type": "u8"
+          },
+          {
+            "name": "paddingFlags",
+            "type": {
+              "array": ["u8", 5]
+            }
+          },
+          {
+            "name": "absoluteCap",
+            "docs": [
+              "Max total assets allocatable to the borrower wallet. 0 = uncapped."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "relativeCapBps",
+            "docs": [
+              "Max assets allocatable, as bps of the pool's current NAV. 0 = uncapped."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "creationTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": ["u64", 16]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": []
+}

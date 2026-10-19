@@ -89,6 +89,7 @@ function getTvlFunction(strategy_type, isDoubleCounted) {
     if (blacklistChains.includes(api.chain)) return {}
 
     let pools = await getInfoListPool(strategy_type, api.chain)
+    if (!pools?.length) return;
     pools = pools.filter(p => !blacklistPools[api.chain] || !blacklistPools[api.chain].includes(p))
     if (!pools?.length) return;
     const tokens = await api.multiCall({ abi: 'address[]:getCurrentTokens', calls: pools, permitFailure: true })

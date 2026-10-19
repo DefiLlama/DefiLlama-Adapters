@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
 async function tvl(api) {
-  const vaults = await get('https://api.parraton.com/v1/vaults')
+  const vaults = await get('https://api.parraton.com/v1/vaults', { timeout: 30000 })
   const tvl =vaults.reduce((acc, vault) => {
     if (vault.tvlUsd > 1e6) return acc // skip vaults with TVL > $1M as they are likely outliers or errors
     acc += Number(vault.tvlUsd)

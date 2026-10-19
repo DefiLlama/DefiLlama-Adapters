@@ -11,28 +11,17 @@ function getFileKey(project, chain) {
   return `${Bucket}/${getKey(project, chain)}`
 }
 
-function getLink(project, chain) {
-  return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
-}
-
 async function getCache(project, chain, { skipCompression } = {}) {
   const Key = getKey(project, chain)
   const fileKey = getFileKey(project, chain)
 
   try {
-    const json = await sdk.cache.readCache(fileKey, { skipCompression })
+    const json = await sdk.cache.readCache(fileKey, { skipCompression, readFromR2Cache: true })
     if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
   } catch (e) {
-    try {
-      const { data: json } = await axios.get(getLink(project, chain))
-      await sdk.cache.writeCache(fileKey, json)
-      return json
-    } catch (e) {
-      sdk.log('failed to fetch data from s3 bucket:', Key)
-      // sdk.log(e)
-      return {}
-    }
+    // sdk.log(e)
+    return {}
   }
 }
 
@@ -68,6 +57,10 @@ async function _setCache(project, chain, json) {
     await setCache(project, chain, json)
 }
 
+function isHtml(data) {
+  return typeof data === 'string' && /^\s*<(!doctype html|html)/i.test(data)
+}
+
 async function getConfig(project, endpoint, { fetcher } = {}) {
   resetCache()
   if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
@@ -87,6 +80,13 @@ async function getConfig(project, endpoint, { fetcher } = {}) {
       if (!json) throw new Error('Invalid data')
 
 
+      // an html page (parked domain, cloudflare error, etc.) should never replace a non-html cache
+      if (isHtml(json)) {
+        const currentCache = await getCache(key, project)
+        if (!isHtml(currentCache))
+          throw new Error('Fetched html config, keeping the old cache: ' + project)
+      }
+
       // check if the the response is a proper json, if not we might have an endpoint issue and we should keep the old cache instead of overwriting it with bad data
       try {
         if (typeof json === 'string') {
@@ -94,17 +94,17 @@ async function getConfig(project, endpoint, { fetcher } = {}) {
         }
       } catch (e) {
         // not json, maybe csv or something else, we just cache it as is
-        const currentCache = await getCache(project, key)
+        const currentCache = await getCache(key, project)
         if (typeof currentCache !== 'string' && Object.keys(currentCache).length > 0) {
           sdk.log(project, 'fetched non-json config, but we have valid json cache, so we keep the old cache')
-          throw new Error('Fetched non-json config, but we have valid json cache, so we keep the old cache: '+ projects)
+          throw new Error('Fetched non-json config, but we have valid json cache, so we keep the old cache: ' + project)
         }
       }
-      
+
       await _setCache(key, project, json)
       return json
-    
-    
+
+
     } catch (e) {
       // sdk.log(e)
       sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)

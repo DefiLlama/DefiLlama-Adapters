@@ -53,14 +53,24 @@ function getAllData() {
     return getConfig('bitstamp', undefined, {
       fetcher: async () => {
         let page = 1
-        let hasMorePages = true
-        let lastItem
+        let emptyRetries = 0
         const walletChainMapping = {}
-        do {
+        // Bitstamp caps per_page at 100; larger values return HTTP 400
+        const PER_PAGE = 100
+        while (true) {
           sdk.log('fetching page', page)
-          const data = await get('https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=1000&page=' + page)
-          const allWallets = Object.values(data.wallets).flat()
-          const currentLastItem = allWallets[allWallets.length - 1]
+          const data = await get(`https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=${PER_PAGE}&page=${page}`, { timeout: 30000 })
+          const allWallets = Object.values(data.wallets ?? {}).flat()
+          // wallet list is appended to over time, so a page can transiently come
+          // back empty mid-list; retry a few times before accepting it as the end
+          if (!allWallets.length) {
+            if (++emptyRetries < 3) {
+              await new Promise(resolve => setTimeout(resolve, 3000))
+              continue
+            }
+            break // several consecutive empty pages => no more wallets
+          }
+          emptyRetries = 0
 
           allWallets.forEach(({ address, network }) => {
             if (!walletChainMapping[network])
@@ -69,9 +79,7 @@ function getAllData() {
           })
 
           page++
-          hasMorePages = !lastItem || currentLastItem.address !== lastItem.address
-          lastItem = currentLastItem
-        } while (hasMorePages)
+        }
 
         Object.entries(walletChainMapping).forEach(([chain, wallets]) => {
           walletChainMapping[chain] = { owners: Object.keys(wallets) }

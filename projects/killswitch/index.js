@@ -15,7 +15,6 @@ module.exports = {
 }
 
 chains.forEach((chain) => {
-  if (chain === 'clv') return module.exports[chain] = { tvl: () => ({}) };
   module.exports[chain] = { tvl }
 })
 

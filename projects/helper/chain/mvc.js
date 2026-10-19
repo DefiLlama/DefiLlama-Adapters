@@ -1,8 +1,8 @@
-const { get } = require('../http')
+const { utxo } = require('@defillama/sdk').chains
 
+// confirmed MVC balance in base units (number)
 async function getMvcBalance(addr) {
-  const res = await get(`https://mainnet.mvcapi.com/address/${addr}/balance`)
-  return res.confirmed
+  return Number(await utxo.getBalance({ chain: 'mvc', address: addr }))
 }
 
 module.exports = {

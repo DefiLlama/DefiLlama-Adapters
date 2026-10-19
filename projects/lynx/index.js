@@ -50,7 +50,7 @@ const config = {
     ['0xf5a27e55c748bcddbfea5477cb9ae924f0f7fd2e', '0xd22c72ab0f4967edb876d84773bff0b60a92e51a'], // TST
     ['0x643b34980e635719c15a2d4ce69571a258f940e9', '0x3552fE61af3F6d3235Dd1CB75402d4281d1FbaC6'], // EUROs
     ['0x894134a25a5faC1c2C26F1d8fBf05111a3CB9487', '0xBe1fa4177fBf43683434CecD5563DA6Ea00FD474'], // GRAI
-    ['0x463913D3a3D3D291667D53B8325c598Eb88D3B0e', '0x1E1F546dF45A82F2a29E709C85331E3974dC26b0'], // SLIZ
+    [ADDRESSES.arbitrum.SLIZ, '0x1E1F546dF45A82F2a29E709C85331E3974dC26b0'], // SLIZ
     ['0xe6af844d5740b6b297b6dd7fb2ce299ee9e3d16f', '0x1E71Fad2d453dAb287Dad8CD003CA24A9d9194EA'], // SCALES
     ['0x249c48e22e95514ca975de31f473f30c2f3c0916', '0x24d6318B87ABB45B62D981693FCF25A5956F41e2'], // USDFI
     ['0x666966ef3925b1c92fa355fda9722899f3e73451', '0x2E2a9b820BDDfD54487f8d5A0Dfd5940D5Dac6A9'], // STABLE
@@ -83,6 +83,16 @@ const config = {
     [ADDRESSES.ethereum.WEETH, '0x66Aaf6Da70dA10aC8dC024E668edcade1C8F5b44'],                // weETH
     ['0xadd353fb2e2c563383ff3272a500f3e7134dafe4', '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // TUNA
   ],
+  sei: [
+    ['0xE30feDd158A2e3b13e9badaeABaFc5516e95e8C7', '0x50Ac664730CdB0485dF09C3f9C269AD48Ccc6836'], // wSEI
+  ],
+  base: [
+    ['0x7FcD174E80f264448ebeE8c88a7C4476AAF58Ea6', '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // wsuperOETHB
+    ['0x764A726d9ceD0433A8D7643335919dEb03a9a935', '0x89030dd230679d27721621b436F24FFEa43cA987'], // POKT
+  ],
+  goat: [
+    [ADDRESSES.goat.BTCB, '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // BTCB
+  ],
 };
 
 Object.keys(config).forEach(chain => {
@@ -91,8 +101,8 @@ Object.keys(config).forEach(chain => {
   };
 });
 
-// Flare TVL is tracked by projects/flamix (same chip contracts)
-// linea/mantle have $0 balance
+// Flare TVL tracked by projects/flamix
+// linea/mantle have $0 balance, goat not yet indexed by DeFiLlama
 ['flare', 'linea', 'mantle'].forEach(chain => {
   module.exports[chain] = { tvl: () => ({}) };
 });

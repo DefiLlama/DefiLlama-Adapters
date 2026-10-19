@@ -7,10 +7,10 @@ const { getConfig } = require('../helper/cache')
 const MasterChefContract = "0xbf513aCe2AbDc69D38eE847EFFDaa1901808c31c";
 const ice = "0xf16e81dce15B08F326220742020379B855B87DF9";
 
-function pool2(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+function pool2() {
+  return async (api) => {
     const balances = {};
-    await addFundsInMasterChef(balances, MasterChefContract, chainBlocks[chain], chain, undefined, poolInfoAbi.poolInfo, [ice]);
+    await addFundsInMasterChef(balances, MasterChefContract, api.block, api.chain, undefined, poolInfoAbi.poolInfo, [ice]);
     return balances;
   };
 }
@@ -20,7 +20,7 @@ const config = {
   polygon: 'https://analytics.back.popsicle.finance/api/v1/polygon/FragolaApy',
 }
 
-async function optimizerV3(time, block, _, {api}) {
+async function optimizerV3(api) {
   const data = await getConfig('popsicle/'+api.chain, config[api.chain])
   const pools = data.map(i => i?.fragolaAddress).filter(i=>i)
   const token0s = await api.multiCall({  abi: 'address:token0', calls: pools})
@@ -31,7 +31,7 @@ async function optimizerV3(time, block, _, {api}) {
     api.add(token1s[i], bal1)
   })
 }
-async function fantomTvl(timestamp, block, chainBlocks, {api}) {
+async function fantomTvl(api) {
   return api.sumTokens({ owner: '0xFDB988aF9ef9D0C430176f972bA82B98b476F3ee', tokens: ['0xddc0385169797937066bbd8ef409b5b3c0dfeb52']})
 }
 
@@ -40,7 +40,7 @@ async function fantomStaking(api) {
     api,
     tokensAndOwners: [
       ['0xf16e81dce15b08f326220742020379b855b87df9', '0xaE2e07276A77DAdE3378046eEd92FfDE3995b0D5'], // ICE
-      [ADDRESSES.fantom.nICE, '0xBC8d95Ab498502242b41fdaD30bDFfC841f436e2'], // nICE
+      ["0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443", '0xBC8d95Ab498502242b41fdaD30bDFfC841f436e2'], // nICE
     ],
   })
 }
@@ -49,17 +49,17 @@ async function fantomStaking(api) {
 module.exports = {
   doublecounted: true,
   ethereum: {
-    pool2: pool2("ethereum"),
+    pool2: pool2(),
     tvl: optimizerV3,
   },
   polygon: {
     tvl: optimizerV3,
   },
   bsc: {
-    pool2: pool2("bsc"),
+    pool2: pool2(),
   },
   fantom: {
-    pool2: pool2("fantom"),
+    pool2: pool2(),
     tvl: fantomTvl,
     staking: fantomStaking
   },

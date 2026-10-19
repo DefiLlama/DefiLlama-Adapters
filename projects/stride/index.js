@@ -136,6 +136,9 @@ function makeTvlFn(chain) {
 module.exports = {
   timetravel: false,
   methodology: "Sum of all the tokens that are liquid staked on Stride",
+  hallmarks: [
+    ['2026-09-29', 'Stride chain shutdown proposed (funding shortfall); redemptions until Oct 12, moving to Osmosis ~Nov 20'],
+  ],
   stride: {
     tvl: async () => ({}), // kept so tvl history doesnt disappear
   },

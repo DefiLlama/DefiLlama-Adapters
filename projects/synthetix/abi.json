@@ -1,6 +1,0 @@
-{
-  "issuanceRatio": "uint256:issuanceRatio",
-  "collateralisationRatio": "function collateralisationRatio(address issuer) view returns (uint256)",
-  "collateral": "function collateral(address account) view returns (uint256)",
-  "totalSupply": "uint256:totalSupply"
-}

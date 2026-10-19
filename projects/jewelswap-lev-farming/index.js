@@ -1,6 +1,5 @@
-const { getNFTs, sumTokens } = require("../helper/chain/elrond");
-const { ResultsParser, AbiRegistry, SmartContract, Address, } = require("@multiversx/sdk-core/out");
-const { ProxyNetworkProvider } = require("@multiversx/sdk-network-providers/out");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getNFTs, sumTokens, queryContractWithAbi } = require("../helper/chain/elrond");
 const JEWEL_ONEDEX_FARM_SC_ABI = require("./jewel-onedex-farm.abi.json");
 const sui = require("../helper/chain/sui");
 
@@ -12,44 +11,18 @@ const FARMS = "erd1qqqqqqqqqqqqqpgqlnxy2hmvs8qxr6ezq2wmggn7ev62cjp6vmusvdral4";
 const FARMS2 = "erd1qqqqqqqqqqqqqpgqx6833qjac6uqztgsa8jhlztexucke0hrdfys6wd7qt";
 const XEXCHANGE_FARMS = "erd1qqqqqqqqqqqqqpgq9slqavjm7pglxgzuskwlvnq53gnk02vndfysq95mpq";
 
-const jewelOnedexFarmAbiRegistry = AbiRegistry.create(JEWEL_ONEDEX_FARM_SC_ABI);
-const jewelOnedexFarmSmartContract = new SmartContract({
-  address: new Address(JEWEL_ONEDEX_FARM_SC_ADDRESS),
-  abi: jewelOnedexFarmAbiRegistry
-});
-
-
-const networkConfigs = {
-  mainnet: {
-    id: "mainnet",
-    chainId: "1",
-    apiUrl: "https://api.multiversx.com",
-    gatewayUrl: "https://gateway.multiversx.com",
-    explorerUrl: "https://explorer.multiversx.com",
-    apiTimeout: 10000
-  }
-};
-
-
-const ELROND_NETWORK = "mainnet";
-const networkConfig = networkConfigs[ELROND_NETWORK];
-
-const proxyProvider = new ProxyNetworkProvider(networkConfig.gatewayUrl, {
-  timeout: networkConfig.apiTimeout
-});
-
 
 // ─── Sui Constants ───
 
 // Sui token types
-const WUSDC = '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN'
-const USDC = '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC'
-const SUI_TOKEN = '0x2::sui::SUI'
-const DEEP = '0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP'
+const WUSDC = ADDRESSES.sui.USDC
+const USDC = ADDRESSES.sui.USDC_CIRCLE
+const SUI_TOKEN = ADDRESSES.sui.SUI
+const DEEP = ADDRESSES.sui.DEEP
 const HIPPO = '0x8993129d72e733985f7f1a00396cbd055bad6f817fee36576ce483c8bbb8b87b::hippo::HIPPO'
 const CETUS = '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS'
 const SCA = '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA'
-const WETH = '0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN'
+const WETH = ADDRESSES.sui.WETH
 
 // Cetus farm pools: [farmPoolId, cetusPoolId, coinTypeA, coinTypeB]
 const CETUS_FARMS = [
@@ -224,30 +197,20 @@ async function elrondTvl(api) {
 }
 
 async function oneDexFarm(api) {
-  const interaction =
-    jewelOnedexFarmSmartContract.methodsExplicit.viewFarms();
-  const query = interaction.check().buildQuery();
-  const queryResponse =
-    await proxyProvider.queryContract(query);
-  const endpointDefinition = interaction.getEndpoint();
-  const { firstValue, returnCode, returnMessage } =
-    new ResultsParser().parseQueryResponse(
-      queryResponse,
-      endpointDefinition
-    );
+  const farms = await queryContractWithAbi({
+    target: JEWEL_ONEDEX_FARM_SC_ADDRESS,
+    funcName: 'viewFarms',
+    outputType: 'List<FarmContext>',
+    abiTypes: JEWEL_ONEDEX_FARM_SC_ABI.types,
+  })
 
-  if (!firstValue || !returnCode.isSuccess()) {
-    throw Error(returnMessage);
-  }
-
-  const values = firstValue.valueOf();
-  const decoded = values.map((value) => ({
-    token0: value.first_token_id.toString(),
-    token1: value.second_token_id.toString(),
-    lpAmount: value.lp_token_amount.toFixed(0),
-    lpSupply: value.lp_token_supply.toFixed(0),
-    token0Supply: value.first_token_reserve.toFixed(0),
-    token1Supply: value.second_token_reserve.toFixed(0)
+  const decoded = farms.map((value) => ({
+    token0: value.first_token_id,
+    token1: value.second_token_id,
+    lpAmount: value.lp_token_amount,
+    lpSupply: value.lp_token_supply,
+    token0Supply: value.first_token_reserve,
+    token1Supply: value.second_token_reserve
   }));
   decoded.forEach(({ token0, token1, lpAmount, lpSupply, token0Supply, token1Supply}) => {
     const ratio = lpAmount / lpSupply

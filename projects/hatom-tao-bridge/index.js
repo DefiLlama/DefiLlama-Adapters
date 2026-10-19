@@ -1,39 +1,14 @@
-const { post } = require('../helper/http')
+const { getSystemAccount } = require('../helper/chain/substrate')
 
 const TREASURY_ADDRESS = "5HZAAREPzwBc4EPWWeTHA2WRcJoCgy4UBk8mwYFWR5BTCNcT";
 
-const TAO_STATS_SUBQUERY = "https://api.subquery.network/sq/TaoStats/bittensor-indexer";
-
-const taoQuery = async () => {
-  const query = `{
-        query{
-            account(id: "${TREASURY_ADDRESS}"){
-                id
-                nodeId
-                balanceTotal
-                balanceStaked
-                balanceFree
-                address
-            }
-        }
-    }`;
-
-  const variables = {};
-
-  return post(TAO_STATS_SUBQUERY, {
-    query,
-    variables,
-  });
-};
+const tvl = async (api) => {
+  const { free, reserved } = await getSystemAccount('bittensor', TREASURY_ADDRESS, { balanceBytes: 8 }) // TAO balances are u64
+  api.addCGToken('bittensor', Number(free + reserved) / 1e9)
+}
 
 module.exports = {
   timetravel: false,
-  bittensor: {
-    tvl: async () => {
-      const { data: { query: { account: { balanceTotal } } } } = await taoQuery();
-      return {
-        bittensor: balanceTotal / 1e9,
-      };
-    },
-  },
+  methodology: 'Value of tao locked in the bridge contract',
+  bittensor: { tvl },
 }

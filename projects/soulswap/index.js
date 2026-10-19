@@ -1,5 +1,4 @@
 const { staking } = require('../helper/staking.js');
-const { underworldLending } = require('./underworld-lending.js')
 const { getUniTVL } = require('../helper/unknownTokens')
 
 const abis = {
@@ -17,15 +16,15 @@ const soul_avax = '0x11d6DD25c1695764e64F439E32cc7746f3945543'
 
 module.exports = {
   misrepresentedTokens: true,
-  fantom:{
+  fantom: {
     staking: staking(farm_fantom, soul_fantom),
     tvl: getUniTVL({ factory: factory_fantom, useDefaultCoreAssets: true, abis, }),
-    borrowed: underworldLending('fantom', true)
+    borrowed: () => ({}), // underworld subgraph is gone, and it reported supply rather than borrows
   },
-  avax:{
+  avax: {
     staking: staking(farm_avax, soul_avax),
     tvl: getUniTVL({ factory: factory_avax, useDefaultCoreAssets: true, abis, }),
-    borrowed: underworldLending('avax', true)
+    borrowed: () => ({}),
   },
-  methodology: "Counts liquidity on the exchange, staked soul, and underworld assets.",
+  methodology: "Counts liquidity on the exchange and staked soul.",
 }

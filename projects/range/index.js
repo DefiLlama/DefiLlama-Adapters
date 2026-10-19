@@ -58,7 +58,10 @@ module.exports = {
 };
 
 // vaults that were deployed through factory but are uninitialized and unused
-const ignoreList  = {mantle : ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"]}
+const ignoreList  = {
+  mantle: ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"],
+  ethereum: ["0xF9ab542616A0C8fA94e41c968622C3b2367F5ad1"], // deprecated vault, reverts token0
+}
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
@@ -72,6 +75,7 @@ Object.keys(config).forEach(chain => {
           eventAbi: 'event VaultCreated(address indexed uniPool, address indexed vault)',
           onlyArgs: true,
           fromBlock,
+          onlyUseExistingCache: true,
         })
         logs.forEach((log) => allLogs.push({ factory, log, chain, factoryType }));
       }

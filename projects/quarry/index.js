@@ -1,12 +1,9 @@
 const { PublicKey } = require("@solana/web3.js");
 const { Program, } = require("@project-serum/anchor");
-const sdk = require('@defillama/sdk')
 
 const { getProvider, } = require("../helper/solana");
 
-async function tvl() {
-  const balances = {}
-
+async function tvl(api) {
   const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
   const provider = getProvider();
   const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
@@ -15,9 +12,9 @@ async function tvl() {
   allQuaries.forEach(({account: i}) =>  {
     const amount = +i.totalTokensDeposited
     if (amount < 1e6) return;
-    sdk.util.sumSingleBalance(balances,i.tokenMintKey.toString(),amount, 'solana')
+    api.add(i.tokenMintKey.toString(), amount)
   })
-  return balances
+  return api.getBalances()
 }
 
 module.exports = {

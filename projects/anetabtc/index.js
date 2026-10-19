@@ -3,14 +3,16 @@ const { getTokensMinted } = require("../helper/chain/cardano/blockfrost");
 
 const cBTC = "4190b2941d9be04acc69c39739bd5acc66d60ccab480d8e20bc87e3763425443"
 
-async function tvl(){
-  return { bitcoin : (await getTokensMinted(cBTC)/100_000_000) }
-}
+const owners = [
+  'bc1qlzygjmqft444gw08624e03umt4ma6x2wu33c2e495vjdy56ufcyskssha9', // multisig vault
+  'bc1qxdl0ynmu3fdvsht8wsmt5vgsgkdt8er6d44c27', // hot vault
+]
 
 module.exports = {
   timetravel: false,
+  bitcoin: { tvl: sumTokensExport({ owners }) },
   cardano: {
-    tvl,
+    tvl: () => ({}),
     staking: sumTokensExport({ tokens: ['b34b3ea80060ace9427bda98690a73d33840e27aaa8d6edb7f0c757a634e455441'], owner: 'addr1w8p79rekquuw5kmdg4z36y9gpnm88k5huddwqluk9mjjeqgc3xmss', logCalls: true })
   },
   ergo: {

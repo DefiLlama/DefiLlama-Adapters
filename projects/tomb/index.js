@@ -39,10 +39,10 @@ async function staking(api) {
 async function lif3GenesisTVL(api) {
   const tokens = [
     ADDRESSES.fantom.WFTM, // WFTM
-    ADDRESSES.fantom.USDC, // USDC
+    "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
     ADDRESSES.fantom.WBTC, // BTC
     '0x74b23882a30290451A17c44f4F05243b6b58C76d', // ETH
-    ADDRESSES.fantom.DAI, // DAI
+    "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", // DAI
     ADDRESSES.fantom.MIM, // MIM
     '0x8d7d3409881b51466b483b11ea1b8a03cded89ae', // BASED
     '0x49c290ff692149a4e16611c694fded42c954ab7a', // BSHARE

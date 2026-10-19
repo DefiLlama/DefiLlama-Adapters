@@ -8,11 +8,19 @@ const ULTRAAddress = '0x50293dd8889b931eb3441d2664dce8396640b419'
 const BurnAbi = "event Burn (address indexed from, uint256 value, string data)"
 const MintAbi = "event Mint (address indexed to, uint256 amount)"
 const SubRedManagement = '0x3797c46db697c24a983222c335f17ba28e8c5b69'
+// third-party tokens listed on the DigiFT price feed, tracked under their own issuers
+const excludedTokens = new Set([
+  uMintAddress, // counted separately below, only the DigiFT-minted part
+  ULTRAAddress, // Libeara
+  '0x530824DA86689C9C17CdC2871Ff29B058345b44a', // STBT, Matrixdock
+  '0x90276e9d4A023b5229E0C2e9D4b2a83fe3A2b48c', // iBENJI, Franklin Templeton
+].map(a => a.toLowerCase()))
+
 async function getTokenList(tokenAPI, chainId) {
   return (await tokenAPI.call({
     target: DFeedPriceAddress,
     abi: tokenListAbi
-  })).filter(item => item[0] == chainId && item[2] == '1').map(item => item[1]).filter(address => address.toLowerCase() !== uMintAddress.toLowerCase());
+  })).filter(item => item[0] == chainId && item[2] == '1').map(item => item[1]).filter(address => !excludedTokens.has(address.toLowerCase()));
 }
 
 async function calculateTokenNetSupply(api, tokenAddress, managementAddress) {
@@ -34,8 +42,6 @@ module.exports = {
       const tokens = await getTokenList(tokenAPI, api.chainId)
       const tokenSupplies = await api.multiCall({  abi: 'uint256:totalSupply', calls: tokens})
       await api.addTokens(tokens, tokenSupplies)
-      await api.removeTokenBalance(ULTRAAddress)
-      await api.removeTokenBalance(uMintAddress)
       //uMint amount
       const netUMintSupply = await calculateTokenNetSupply(api, uMintAddress, SubRedManagement)
       await api.addToken(uMintAddress, netUMintSupply)
