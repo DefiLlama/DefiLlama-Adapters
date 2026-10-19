@@ -12,6 +12,7 @@ async function tvl(api) {
     fromBlock,
     eventAbi: tokenCreatedEvent,
     extraKey: 'token-created',
+    useIndexer: false,
     transform: log => [log.quoteAsset, log.vault],
   })
 
