@@ -58,6 +58,7 @@ const binanceToDefillama = {
   KAIA: 'klaytn',
   SEIEVM: 'sei',
   XTZ: 'tezos',
+  WLD: 'wc',
 }
 
 const withdrawalAddresses = [
@@ -146,7 +147,7 @@ const tvl = async (api) => {
     .map(({ address }) => address)
     .filter(Boolean)
 
-  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava']
+  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
   const isEvm = evmChains.includes(chain)
 
   const lockInfoAddresses = []
