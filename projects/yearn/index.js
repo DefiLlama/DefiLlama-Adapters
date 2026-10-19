@@ -69,8 +69,8 @@ async function remoteOverlap(api, vaults, strategyAbi) {
   const remoteAsset = await remote.call({ target: child, abi: 'address:asset' })
   if (Number(chain) !== 747474 || counterpart.toLowerCase() !== holder ||
       reverse.toLowerCase() !== strategy || destination.toLowerCase() !== child ||
-      asset.toLowerCase() !== ADDRESSES.ethereum.USDC ||
-      remoteAsset.toLowerCase() !== ADDRESSES.katana.VB_USDC)
+      asset.toLowerCase() !== ADDRESSES.ethereum.USDC.toLowerCase() ||
+      remoteAsset.toLowerCase() !== ADDRESSES.katana.VB_USDC.toLowerCase())
     throw new Error('Yearn Katana overlap route changed')
   const debt = await api.call({ target: parent, abi: strategyAbi, params: [strategy] })
   const shares = BigInt(await remote.call({ target: child, abi: 'erc20:balanceOf', params: [holder] }))
@@ -188,7 +188,7 @@ async function getDebts(api, activeVaults) {
     // Registered converters exchange DAI/USDC/USDS at 1:1. Normalize the
     // child's raw asset units into parent units; do not assume equal decimals.
     if (route.parentAsset) {
-      if (parentAsset !== route.parentAsset || childAsset !== route.childAsset) throw new Error('Yearn converter asset changed')
+      if (parentAsset !== route.parentAsset.toLowerCase() || childAsset !== route.childAsset.toLowerCase()) throw new Error('Yearn converter asset changed')
       owned = owned * 10n ** BigInt(route.parentDecimals) / 10n ** BigInt(route.childDecimals)
     } else if (parentAsset !== childAsset) throw new Error('Yearn router asset changed')
     if (owned < BigInt(edge.currentDebt)) edge.currentDebt = owned.toString()
