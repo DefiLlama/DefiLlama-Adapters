@@ -1930,6 +1930,10 @@ const uniV3Configs = {
     // unmodified Uniswap V3 deployment (same pool init code hash); factory owner burned, so protocol fee is permanently off
     ethereum: { factory: '0x00a38533c68327aBE0Cc265436e036066E2D6B38', fromBlock: 25895766 },
   },
+  'vetrade-v3': {
+    start: '2026-10-11',
+    vechain: { factory: '0xc2faf0f48fb7763b28e6f7e415c50b360cc1a096', fromBlock: 26117867 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
