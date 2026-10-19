@@ -1,4 +1,4 @@
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // Asset Controllers hold the native tokens on each asset's base chain
 // and mint/burn the Lucid-wrapped versions on the other chains.
@@ -38,12 +38,21 @@ const config = {
 }
 
 module.exports = {
+  start: '2026-05-19', // last controller deployed 2026-05-18
+  doublecounted: true,
   methodology:
-    'TVL is the native tokens locked in Lucid Asset Controller contracts on each asset\'s base chain. Wrapped Lucid tokens minted on other chains are not counted.',
+    'TVL is the native tokens locked in Lucid Asset Controller contracts on each asset\'s base chain, including the share each controller has deployed to its Aave V3 yield strategy (counted via the strategy\'s aToken balance). Wrapped Lucid tokens minted on other chains are not counted.',
 }
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
-    tvl: sumTokensExport({ tokensAndOwners: config[chain] }),
+    tvl: async (api) => {
+      const tokensAndOwners = [...config[chain]]
+      const strategies = (await api.multiCall({ abi: 'address:yieldStrategy', calls: config[chain].map(([, owner]) => owner) }))
+        .filter((s) => s !== ADDRESSES.null)
+      const aTokens = await api.multiCall({ abi: 'address:aToken', calls: strategies })
+      aTokens.forEach((aToken, i) => tokensAndOwners.push([aToken, strategies[i]]))
+      return api.sumTokens({ tokensAndOwners })
+    },
   }
 })
