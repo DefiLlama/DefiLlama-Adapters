@@ -8,8 +8,7 @@ const config = {
   arbitrum: {
     factories: [
       '0x4FF3262Ba2983Ee8950d9d082f03277a58BF7eb1'
-    ],
-    positionsApi: ['https://arbitrum-nftlp-uniswapv3.up.railway.app/positions'] // UniswapV3
+    ]
   },
   base: {
     factories: [
@@ -18,16 +17,13 @@ const config = {
     ],
     positionsApi: [
       'https://base-nftlp-uniswapv3.up.railway.app/positions', // UniswapV3
-      'https://base-nftlp-aerov3.up.railway.app/positions'     // Aerodrome
     ]
   },
   unichain: {
     factories: ['0x50E7116c4a9624a2d562Ee0Ab5209F3834C15E14'],
-    positionsApi: ['https://unichain-nftlp-uniswapv3.up.railway.app/positions']
   },
   hyperliquid: {
     factories: ['0x171d48161223a3ddb4659e093291f8f32f4e95ef'],
-    positionsApi: ['https://hyperevm-nftlp-hyperswapv3.up.railway.app/positions'] // Hyperswap
 
   }
 };
