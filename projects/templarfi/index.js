@@ -111,6 +111,17 @@ function detectCrossChainToken(tokenId) {
     return { chain: 'flare', token: 'flare:' + ADDRESSES.flare.FXRP }
   }
 
+  // Ethena tokens (USDe, sUSDe, ENA) reach Templar from Stellar through the
+  // LayerZero Stellar <-> Ethereum bridge, so they are attributed to Stellar
+  const stellarEthenaTokens = {
+    'eth-0x4c9edd5852cd905f086c759e8383e09bff1e68b3.omft.near': 'ethereum:0x4c9edd5852cd905f086c759e8383e09bff1e68b3', // USDe
+    'eth-0x9d39a5de30e57443bff2a8307a4256c8797a3497.omft.near': 'ethereum:0x9d39a5de30e57443bff2a8307a4256c8797a3497', // sUSDe
+    'eth-0x57e114b691db790c35207b2e685d4a43181e6061.omft.near': 'ethereum:0x57e114b691db790c35207b2e685d4a43181e6061', // ENA
+  }
+  if (stellarEthenaTokens[tokenId]) {
+    return { chain: 'stellar', token: stellarEthenaTokens[tokenId] }
+  }
+
   // Ethereum tokens via omnichain bridge
   if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
     const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
