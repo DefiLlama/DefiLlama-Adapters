@@ -87,7 +87,12 @@ function getAllData() {
 
         walletChainMapping.avax = walletChainMapping['avalanche-c-chain']
         walletChainMapping.xdc = walletChainMapping['xdc-network']
-        walletChainMapping.ripple = config.ripple
+        walletChainMapping.ripple = {
+          owners: [...new Set([
+            ...config.ripple.owners,
+            ...(walletChainMapping.xrpl?.owners ?? []).map(address => address.split('?')[0]),
+          ])],
+        }
         return walletChainMapping
       }
     })
