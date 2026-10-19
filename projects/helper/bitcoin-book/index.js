@@ -155,6 +155,9 @@ module.exports = {
     // Bitcoin Custodian Addresses
     "131fpYjELat58RVzPp2A9Bo8oNuKiP4vxg",
     "15G6tKbavXQ1ynipkZTPAMjEtuosN1Pkmg",
+    "13btmzTg63MpdozLoyeVYCeRbXe4dWN52a",
+    "1DtXWGnqWrZEk7XQarSkDUidbFdK7bj44n",
+    "1JABsaDFCi28sp2uAmbajNJ2NvEiEMETtM",
     "1Eyg5NRf5dTPeFGZ5CPJ5o6v1a3dYpeZsi",
     "155FvRapVDRbFYxaxGxJ9eCQjgr7X2yC6g",
     "bc1q745ywhqsssknaw8s5ycgkv0gulddnasn4tfsjwgm66tvgp2pqpys0zjzt8",
