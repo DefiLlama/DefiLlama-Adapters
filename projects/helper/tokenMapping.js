@@ -25,7 +25,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
 ]
 const caseSensitiveChains = [...ibcChains, ...svmChains, 'canton', 'mina', 'decred', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', 'aleo',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash', 'qubic', 'constellation', 'supra',
-  'kaspa', 'bsv', 'arweave', 'pi', 'zcash', 'bitcoincash',
+  'kaspa', 'bsv', 'arweave', 'pi', 'zcash', 'bitcoincash', 'gnoland',
 ]
 
 const transformTokens = {
@@ -42,6 +42,11 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  gnoland: {
+    ugnot: { coingeckoId: 'gno-land', decimals: 6 },
+    // wugnot wraps raw ugnot 1:1 despite declaring 0 decimals on-chain.
+    'gno.land/r/gnoland/wugnot.wugnot': { coingeckoId: 'gno-land', decimals: 6 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
