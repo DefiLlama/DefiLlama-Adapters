@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const Bucket = "tvl-adapter-cache";
 const axios = require('axios')
+const { DEFAULT_TIMEOUT } = require('./http')
 const graphql = require('./utils/graphql')
 
 function getKey(project, chain) {
@@ -73,7 +74,7 @@ async function getConfig(project, endpoint, { fetcher } = {}) {
     try {
       let json
       if (endpoint) {
-        json = (await axios.get(endpoint)).data
+        json = (await axios.get(endpoint, { timeout: DEFAULT_TIMEOUT })).data
       } else {
         json = await fetcher()
       }
@@ -122,7 +123,7 @@ async function configPost(project, endpoint, data) {
 
   async function _configPost() {
     try {
-      const { data: json } = await axios.post(endpoint, data)
+      const { data: json } = await axios.post(endpoint, data, { timeout: DEFAULT_TIMEOUT })
       await _setCache(key, project, json)
       return json
     } catch (e) {

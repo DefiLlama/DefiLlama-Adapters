@@ -1,6 +1,7 @@
 require('dotenv').config()
 const axios = require('axios')
 const { getEnv } = require('./env')
+const { DEFAULT_TIMEOUT } = require('./http')
 
 function getApiKey() {
   const raw = getEnv('DUNE_API_KEYS') || ''
@@ -18,7 +19,7 @@ async function getLatestDuneResults(queryId, { pageSize = 1000 } = {}) {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const url = `https://api.dune.com/api/v1/query/${queryId}/results?limit=${pageSize}&offset=${offset}`
-    const { data } = await axios.get(url, { headers })
+    const { data } = await axios.get(url, { headers, timeout: DEFAULT_TIMEOUT })
     const batch = (data && data.result && data.result.rows) || []
     rows = rows.concat(batch)
     if (!batch.length || data.next_offset == null) break
@@ -42,7 +43,7 @@ async function queryDuneSql(sql, { maxWaitMs = 240000 } = {}) {
   const { data: submitted } = await axios.post(
     `${DUNE_API}/query/${PASSTHROUGH_QUERY_ID}/execute`,
     { query_parameters: { fullQuery: sql } },
-    { headers })
+    { headers, timeout: DEFAULT_TIMEOUT })
   const executionId = submitted && submitted.execution_id
   if (!executionId) throw new Error('Dune: no execution_id returned')
 
@@ -50,13 +51,13 @@ async function queryDuneSql(sql, { maxWaitMs = 240000 } = {}) {
   let state
   do {
     await sleep(2000 + Math.floor(Math.random() * 3000))
-    const { data } = await axios.get(`${DUNE_API}/execution/${executionId}/status`, { headers })
+    const { data } = await axios.get(`${DUNE_API}/execution/${executionId}/status`, { headers, timeout: DEFAULT_TIMEOUT })
     state = data.state
   } while ((state === 'QUERY_STATE_PENDING' || state === 'QUERY_STATE_EXECUTING') && Date.now() < deadline)
 
   if (state !== 'QUERY_STATE_COMPLETED') throw new Error(`Dune query did not complete (state: ${state})`)
 
-  const { data } = await axios.get(`${DUNE_API}/execution/${executionId}/results?limit=100000`, { headers })
+  const { data } = await axios.get(`${DUNE_API}/execution/${executionId}/results?limit=100000`, { headers, timeout: DEFAULT_TIMEOUT })
   return (data && data.result && data.result.rows) || []
 }
 

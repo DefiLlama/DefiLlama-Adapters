@@ -1,6 +1,6 @@
 const ADDRESSES = require('../coreAssets.json')
 const axios = require('axios')
-const { get } = require('../http')
+const { get, DEFAULT_TIMEOUT } = require('../http')
 const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
 const { getEnv } = require('../env')
@@ -21,7 +21,7 @@ async function vmQuery({ scAddress, funcName, args = [] }, { retries = 5 } = {})
   for (let attempt = 0; ; attempt++) {
     await waitForQuerySlot()
     try {
-      const { data } = await axios.post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress, funcName, args })
+      const { data } = await axios.post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress, funcName, args }, { timeout: DEFAULT_TIMEOUT })
       return data
     } catch (e) {
       const status = e.response?.status

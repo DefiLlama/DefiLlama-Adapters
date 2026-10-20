@@ -1,17 +1,18 @@
 const axios = require("axios");
 const bs58 = require("bs58").default || require("bs58");
+const { DEFAULT_TIMEOUT } = require("../http");
 
 const EXPLORER_API_HOST = "https://backend.mainnet.alephium.org";
 const NODE_API_HOST = "https://node.mainnet.alephium.org";
 
 async function getAlphBalance(address) {
-  return (await axios.get(`${EXPLORER_API_HOST}/addresses/${address}/balance`))
+  return (await axios.get(`${EXPLORER_API_HOST}/addresses/${address}/balance`, { timeout: DEFAULT_TIMEOUT }))
     .data;
 }
 
 async function getTokensBalance(address) {
   return (
-    await axios.get(`${EXPLORER_API_HOST}/addresses/${address}/tokens-balance`)
+    await axios.get(`${EXPLORER_API_HOST}/addresses/${address}/tokens-balance`, { timeout: DEFAULT_TIMEOUT })
   ).data;
 }
 
@@ -19,7 +20,7 @@ async function contractMultiCall(payload) {
   const result = (
     await axios.post(`${NODE_API_HOST}/contracts/multicall-contract`, {
       calls: payload,
-    })
+    }, { timeout: DEFAULT_TIMEOUT })
   ).data;
   return result.results.map((r) => tryGetCallResult(r));
 }
@@ -33,7 +34,7 @@ function tryGetCallResult(result) {
 
 async function getTokenInfo(tokenId) {
   const [metadata] = (
-    await axios.post(`${EXPLORER_API_HOST}/tokens/fungible-metadata`, [tokenId])
+    await axios.post(`${EXPLORER_API_HOST}/tokens/fungible-metadata`, [tokenId], { timeout: DEFAULT_TIMEOUT })
   ).data;
 
   return metadata;

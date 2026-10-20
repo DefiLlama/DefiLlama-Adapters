@@ -2,6 +2,7 @@ require('dotenv').config()
 const axios = require("axios");
 const pLimit = require("p-limit");
 const { getEnv } = require('./env');
+const { DEFAULT_TIMEOUT } = require('./http');
 
 // Lightweight retry function to replace async-retry
 const retry = async (fn, options = {}) => {
@@ -44,7 +45,8 @@ async function startAlliumQuery(sqlQuery) {
             fullQuery: sqlQuery
         }
     }, {
-        headers: HEADERS()
+        headers: HEADERS(),
+        timeout: DEFAULT_TIMEOUT
     })
 
     return query.data["run_id"]
@@ -52,7 +54,8 @@ async function startAlliumQuery(sqlQuery) {
 
 async function retrieveAlliumResults(queryId) {
     const results = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${queryId}/results?f=json`, {
-        headers: HEADERS()
+        headers: HEADERS(),
+        timeout: DEFAULT_TIMEOUT
     })
     return results.data.data
 }
@@ -74,7 +77,8 @@ async function _queryAllium(sqlQuery) {
             }
 
             const statusReq = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${token[sqlQuery]}/status`, {
-                headers: HEADERS()
+                headers: HEADERS(),
+                timeout: DEFAULT_TIMEOUT
             })
 
             const status = statusReq.data
