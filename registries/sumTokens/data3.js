@@ -1195,4 +1195,18 @@ module.exports = {
       ]
     },
   },
+  "otherwise": {
+    "methodology": "TVL is the balance of each market collateral token held by OTHERWISE's ConditionalTokens contract on Base, which escrows one unit of collateral for every outstanding YES + NO pair until the market is merged or redeemed. The order-book exchange contracts hold nothing between calls.",
+    "start": "2026-10-01",
+    "base": {
+      "owner": "0x80129e9b934b31809215FAE505004aAD500b9538",
+      "tokens": [
+        "0x31C2C14134e6E3B7ef9478297F199331133Fc2d8", // wtSPYM
+        "0xFF05E1bD696900dc6A52CA35Ca61Bb1024eDa8e2", // wtMSTR
+        "0x5cDa0E1CA4ce2af96315f7F8963C85399c172204", // wtCOIN
+        "0x71C66449d2528E23514A9c197BFD55Ae9DB3B714", // wtTSM
+        "0x19F89aaEf8a93f38A974beca9776f09aB844887F", // wtSPCX
+      ]
+    },
+  },
 }
