@@ -563,6 +563,34 @@ async function unwrapSlipstreamV3NFTs({ balances, nftsAndOwners = [], api, owner
   return balances
 }
 
+// Aero (MetaDEX) CL NonfungiblePositionManager ("AERO-CL"), same address on every chain it is deployed on.
+// Its positions(), the CLFactory's getPool(token0, token1, int24 tickSpacing) and the pool's slot0() share the
+// Slipstream layout, so unwrapSlipstreamNFT resolves its positions.
+const metadexCLNFTs = {
+  base: '0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473',
+  optimism: '0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473',
+  robinhood: '0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473',
+}
+
+async function unwrapMetadexCLNFTs({ balances, nftsAndOwners = [], api, owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
+  const chain = api.chain
+  if (!nftsAndOwners.length) {
+    if (!nftAddress) nftAddress = metadexCLNFTs[chain]
+    // no MetadexCL deployment on this chain, so there is nothing to resolve
+    if (!nftAddress) return balances
+
+    if ((!owners || !owners.length) && owner)
+      owners = [owner]
+    owners = getUniqueAddresses(owners, chain)
+    nftsAndOwners = owners.map(o => [nftAddress, o])
+  }
+  const positionIdsByNftAddress = await getPositionIdsByNftAddress({ api, nftsAndOwners, })
+  for (const [nftAddress, positionIds] of Object.entries(positionIdsByNftAddress)) {
+    await unwrapSlipstreamNFT({ balances, positionIds, nftAddress, api, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })
+  }
+  return balances
+}
+
 async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
   const ownersByNFT = {}
   nftsAndOwners.forEach(([nftAddress, owner]) => {
@@ -973,6 +1001,7 @@ async function sumTokens2({
   resolveSlipstream = false,
   resolveSlipstreamV2 = false,
   resolveSlipstreamV3 = false,
+  resolveMetadexCL = false,
   resolveStakewiseDeposits = false,
   uniV3WhitelistedTokens = [],
   uniV3nftsAndOwners = [],
@@ -1128,6 +1157,9 @@ group by
 
   if (resolveSlipstreamV3)
     await unwrapSlipstreamV3NFTs({ balances, api, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
+
+  if (resolveMetadexCL)
+    await unwrapMetadexCLNFTs({ balances, api, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
 
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
@@ -1406,6 +1438,7 @@ module.exports = {
   unwrapDolomiteDeposits,
   unwrapUniswapLPs,
   unwrapSlipstreamNFT,
+  unwrapMetadexCLNFTs,
   unwrapUniswapV3NFT,
   sumTokens,
   genericUnwrapCvx,
