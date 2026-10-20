@@ -75,16 +75,22 @@ module.exports = {
       fetcher: async () => {
         const { data: { natives } } = await get('https://openapi.wbtc.network/public/v1/chains')
         const addresses = new Set()
+        const failed = []
         for (const { chainKey } of natives) {
           try {
             const { result } = await get(`https://wbtc.network/api/chain/${chainKey}/token/wbtc/addresses`)
             result.filter(i => i.chain === 'btc' && i.type === 'custodial' && isValidBitcoinAddress(i.address))
               .forEach(i => addresses.add(i.address))
           } catch (e) {
+            failed.push(chainKey)
             sdk.log('wbtc: skipping chain', chainKey, e.message)
           }
         }
         if (!addresses.size) throw new Error('wbtc: feed returned no custody addresses')
+        // the eth feed alone carries ~95% of the addresses, so a failed chain must not overwrite a good cache
+        const prior = await getCache('config-cache', 'wbtc/custody-addresses')
+        if (failed.length && Array.isArray(prior) && addresses.size < prior.length * 0.9)
+          throw new Error(`wbtc: ${failed.join(', ')} failed and list shrank ${prior.length} -> ${addresses.size}, keeping cache`)
         return [...addresses]
       }
     })
