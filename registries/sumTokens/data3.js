@@ -1127,11 +1127,11 @@ module.exports = {
     }
   },
   "baibai": {
-    "methodology": "TVL is the WETH and USDC held by the BaibaiCustodian contract, which custodies the maker liquidity that BaiBai quotes and settles swaps against.",
+    "methodology": "TVL is the WETH, cbBTC and USDC held by the BaibaiCustodian contract, which custodies the maker liquidity that BaiBai quotes and settles swaps against.",
     "start": "2026-09-05",
     "base": {
       "owner": "0xAaC48FEB93c5C97E0fb3c7C57E1633922A4ACDa3",
-      "tokens": [ADDRESSES.base.WETH, ADDRESSES.base.USDC]
+      "tokens": [ADDRESSES.base.WETH, ADDRESSES.base.cbBTC, ADDRESSES.base.USDC]
     }
   },
   "tacit": {
