@@ -1170,4 +1170,12 @@ module.exports = {
       "tvl": { "owners": ["0x76b91e83f2A12dc52E33f856eeA300E5B3A62c0c", "0x88d163d40D6BFe0Ad2b17f4a90A03053fEbf3014", "0xdfc40D309C0D8f4Cc42863991C8e606eD330e1E8"], "tokens": ["0xe5eBE2AE0a036C955bfF58291826C50F7d670D43"] },
     }
   },
+  "infer": {
+    "methodology": "TVL is the sIMD (staked IMD) collateral locked in the imdUSD CDP vault by borrowers. Minted imdUSD and the Treasury's holdings are not counted.",
+    "start": "2026-10-11",
+    "ethereum": {
+      "owner": "0x0b69F8DA8D8cE521d74Ea69a7A3475B77302EF82",
+      "tokens": ["0x9Efa934D9fAd4AE28c998a40195646b965a97247"]
+    },
+  },
 }
