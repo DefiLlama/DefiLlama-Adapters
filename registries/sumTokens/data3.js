@@ -1178,4 +1178,21 @@ module.exports = {
       "tokens": ["0x9Efa934D9fAd4AE28c998a40195646b965a97247"]
     },
   },
+  "lincoln-protocol": {
+    "methodology": "Each Lincoln privacy pool is an immutable contract holding a single asset (ETH, USDG or a Robinhood tokenized stock). TVL is the on-chain balance of every pool. Route adapters and relays hold no user funds between transactions, so they are not counted.",
+    "start": "2026-10-17",
+    "robinhood": {
+      "ownerTokens": [
+        [[ADDRESSES.null], "0xF9c767CAb9B9A7dE8Dd959967269787880267ab2"], // ETH
+        [["0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"], "0x5Cd4c081eb747406DAb66e22004324600f1928C9"], // USDG
+        [["0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"], "0x4C8BAEb78b032EA3610E0F5D4C8B5Bb4fF5995f7"], // NVDA
+        [["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C"], "0x8a29Db84A20B0A3CA528FAE0F69F50FfD39c6C39"], // SPY
+        [["0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35"], "0xA2078e02A631ae9218DBAa84987a24741bD24d10"], // META
+        [["0x322F0929c4625eD5bAd873c95208D54E1c003b2d"], "0xE8c619705B7452c2281cA8fA675a355846D34BFE"], // TSLA
+        [["0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3"], "0x31Bd720527D9875b444c0946c5795351a56d9d8B"], // GOOGL
+        [["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68"], "0xd4375275F5FA231e238c9FF1237A8e8666Be6B62"], // QQQ
+        [["0xec262a75e413fAfD0dF80480274532C79D42da09"], "0x207Dc4DD4E40Ab280dF9eC10CD5Edf04685e9d88"], // MSTR
+      ]
+    },
+  },
 }
