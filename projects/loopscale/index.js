@@ -1,6 +1,7 @@
 const { PublicKey } = require('@solana/web3.js')
 const { Program, AnchorProvider, BN } = require("@coral-xyz/anchor");
 const { getConnection, } = require('../helper/solana');
+const { addPricedBalances } = require('./pricing');
 const loopscaleIdl = {
   "address": "1oopBoJG58DgkUVKkEzKgyG9dvRmpgeEm1AVjoHkF78",
   "metadata": {"name": "loopscale", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
@@ -334,16 +335,14 @@ async function getDeposits(connection) {
 async function tvl(api) {
   const connection = getConnection();
   const balances = await getDeposits(connection);
-  const data = Object.entries(balances).map(([mint, balance]) => ({ mint, balance }));
-  api.addTokens(data.map(d => d.mint), data.map(d => d.balance));
+  await addPricedBalances(api, balances);
 }
 
 async function borrowed(api) {
   const connection = getConnection();
   const strategies = await getStrategies(connection);
   const outstandingDebt = getOutstandingDebt(strategies);
-  const data = Object.entries(outstandingDebt).map(([mint, balance]) => ({ mint, balance }));
-  api.addTokens(data.map(d => d.mint), data.map(d => d.balance));
+  await addPricedBalances(api, outstandingDebt);
 }
 
 module.exports = {
