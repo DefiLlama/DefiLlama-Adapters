@@ -13,6 +13,36 @@ const withdrawalAddresses = [
   '0xFC6E18E22Ad11592494B3D541bA25Af63A807527',
 ]
 
+// The beacon proxy only answers for the current state, so past dates use the deposits made to
+// these withdrawal addresses: [timestamp of the first deposit that day, cumulative ETH deposited],
+// from the deposit contract's DepositEvent logs.
+const stakedHistory = [
+  [1719325163, 192],    // 2024-06-25
+  [1719871931, 6592],   // 2024-07-01
+  [1719878807, 9792],   // 2024-07-02
+  [1720539071, 9856],   // 2024-07-09
+  [1720628615, 29056],  // 2024-07-10
+  [1720679387, 85056],  // 2024-07-11
+  [1720791587, 91456],  // 2024-07-12
+  [1721048147, 104256], // 2024-07-15
+  [1721396375, 117056], // 2024-07-19
+  [1725282239, 136256], // 2024-09-02
+]
+
+const utcDate = (timestamp) => new Date(timestamp * 1e3).toISOString().slice(0, 10)
+
+// A run for any day but today is a refill
+const isHistoricalRun = (api) => utcDate(api.timestamp) !== utcDate(Math.floor(Date.now() / 1e3))
+
+const liveStakedEth = getStakedEthTVL({ withdrawalAddresses, proxy: true })
+
+async function stakedEth(api) {
+  if (!isHistoricalRun(api)) return liveStakedEth(api)
+  const step = stakedHistory.findLast(([ts]) => api.timestamp >= ts)
+  if (step) api.addGasToken(step[1] * 1e18)
+  return api.getBalances()
+}
+
 module.exports = mergeExports([
   treasuryExports({
     ethereum: {
@@ -21,7 +51,7 @@ module.exports = mergeExports([
       ownTokens: [GLM],
     },
   }),
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses, proxy: true }) } },
+  { ethereum: { tvl: stakedEth } },
 ])
 
-module.exports.methodology = "ETH and GLM held by the Golem Factory treasury, plus the ETH staked in its validators (withdrawal addresses from https://blog.golem.network/eth-staking-tests-summary/)."
+module.exports.methodology = "ETH and GLM held by the Golem Factory treasury, plus the ETH staked in its validators (withdrawal addresses from https://blog.golem.network/eth-staking-tests-summary/). Staked ETH is read from the beacon chain for the current day; past dates use the cumulative deposits made to those withdrawal addresses."
