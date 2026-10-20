@@ -872,7 +872,9 @@ async function sumFilecoinBalances(owners) {
   }));
   const responses = await post("https://api.node.glif.io/rpc/v0", body);
   responses.sort((a, b) => a.id - b.id);
+  if (responses.length !== owners.length) throw new Error(`Filecoin RPC returned ${responses.length} responses for ${owners.length} wallets`);
   return responses.reduce((total, response, index) => {
+    if (response.id !== index) throw new Error(`Filecoin RPC response ${response.id} at position ${index}`);
     if (response.error) throw new Error(`Filecoin RPC error for ${owners[index]}: ${response.error.message}`);
     if (!response.result) throw new Error(`Filecoin RPC returned no actor for ${owners[index]}`);
     return total + BigInt(response.result.Balance);
