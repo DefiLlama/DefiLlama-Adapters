@@ -49,8 +49,10 @@ async function tvl(api) {
   const connection = getConnection()
   const infos = await connection.getMultipleAccountsInfo(PAIRS.map((p) => new PublicKey(p)))
   const now = BigInt(api.timestamp ?? Math.floor(Date.now() / 1000))
+  infos.forEach((info, i) => {
+    if (!info) throw new Error(`Exceed pair account ${PAIRS[i]} not found`)
+  })
   for (const info of infos) {
-    if (!info) continue
     const pair = decodePair(info.data)
     const { value } = await connection.getTokenSupply(new PublicKey(pair.lstMint))
     const rate = exchangeRate(pair, now)
