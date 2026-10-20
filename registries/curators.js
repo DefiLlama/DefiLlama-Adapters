@@ -79,6 +79,11 @@ const configs = {
             '0x510F3b6621D9eA392d4F7632d02aBCf8ba92Bd6F',
           ],
         },
+        arc: {
+          morpho: [
+            '0x7610094B846657dCF166D59e42973db52c7015F9', // Bitwise Premium RWA USDC (Morpho V2); curator "Bitwise" per api.morpho.org
+          ],
+        },
       }
     },
   },
@@ -674,6 +679,7 @@ const configs = {
         arc: {
           morpho: [
             '0x8E357432CC12ff425c36432F312968aEb16112AF', // Galaxy USDC, $89.7M 2026-10-13; curator "Galaxy Curation" per Morpho UI; 100% one MarketV1 market
+            '0x389abDf4355e0cF4f19298179991705a98f21c18', // Galaxy EURC (Morpho V2); curator "Galaxy Curation" per api.morpho.org
           ],
         },
       },

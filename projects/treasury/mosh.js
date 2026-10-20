@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // The Mosh treasury: a Safe on Robinhood Chain that receives Mosh's share of bundle fees and the raise
@@ -9,7 +10,7 @@ module.exports = treasuryExports({
     owners: [MOSH_TREASURY],
     tokens: [
       nullAddress,
-      "0x5fc5360d0400a0fd4f2af552add042d716f1d168", // USDG
+      ADDRESSES.robinhood.USDG, // USDG
       "0xc9a981fee1f9dec688bb123ccdecc63d0debfc4e", // GLD
     ],
     ownTokens: ["0x07ebb29a38fbcb41563817e5e19f2cec619c90d2"], // BUN

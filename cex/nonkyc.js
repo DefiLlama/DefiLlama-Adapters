@@ -31,17 +31,10 @@ module.exports = {
   },
   /*
   bitcoin: 'nonkyc', // remove it for now
-    /*
+    */
   bitcoincash: {
     owners: [
       'qzfew0ck3kxjdytrr2vnycdjnnsyju3pwsrgsupqj2',
-    ]
-  },
-  */ // we dont support bitcoincash on CEX dashboard
-  bsc: {
-    owners: [
-      '0x15d7619c8457e2F89ea28c720b1d7941C245d27e',
-      '0x473ba7D925b147024Ff5F6b19eC802DbB54E8acf'
     ]
   },
   cardano: {
@@ -49,18 +42,16 @@ module.exports = {
       'addr1qy77lfdhpnxyl90t58amp2x3dz0lhgzttmw53g2nxe360x7aht5vw4djzh7jluu6jrl384l6u628ymh4yghgnfgk3kqsjymy5j'
     ]
   },
-  /*
-  dash: {
-    owners: [
-      'XauVSyTHwQiwt5HLiMKEYhCZr9z4dwzyn4'
-    ]
-  }, //// we dont support dash neither doge on CEX dashboard
   doge: {
     owners: [
       'DFbKm2cjt1Y36sKPQc6RQc3MsLmwcccTJx'
     ]
   },
-   */
+  dash: {
+    owners: [
+      'XauVSyTHwQiwt5HLiMKEYhCZr9z4dwzyn4'
+    ]
+  },
   energi: {
     owners: [
       '0x7b4D11b7fABC161bc09E3Ee86C3d34Dff40F5a47',
@@ -73,13 +64,11 @@ module.exports = {
       '0x9a1Dfd705130ef60245d6FC798411f296f641119'
     ],
   },
-   /*
   ethereumclassic: {
     owners: [
       '0x5D738fBf1D8940BBE72Af847d88c517064DE76e7'
     ],
-  }, //we dont support ethclassic on CEX dashboard
-  */
+  },
   flare: {
     owners: [
       '0x5D738fBf1D8940BBE72Af847d88c517064DE76e7',

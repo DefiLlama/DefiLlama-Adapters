@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { getCreateAddress } = require('ethers')
 const getTrackedAssetsAbi = "address[]:getTrackedAssets"
 const dispatcher = '0x07036f5385AE6F4049f7788bD960f9Dd7fecC241'
 const deploymentBlock = 18879113
-const zero = '0x0000000000000000000000000000000000000000'
+const zero = ADDRESSES.null
 
 async function getVaults(api) {
   const block = await api.getBlock()

@@ -694,6 +694,10 @@ const uniV2Configs = {
   },
   'ethervista': {
     ethereum: '0x9a27cb5ae0B2cEe0bb71f9A85C0D60f3920757B4',
+    _options: {
+      fetchBalances: true,
+      permitFailure: true,
+    },
   },
   'ethwswap': {
     ethpow: '0x78376072F4945b2A5450B1A6B41a85ff20034527',

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // TRUSS LP - automated concentrated-liquidity vaults on Aerodrome Slipstream (Base)
 // TVL = idle token0/token1 held by every vault + every Slipstream position the
 // AerodromeAtomicV3 contract has staked in a gauge on the vaults' behalf.
@@ -32,7 +33,7 @@ async function tvl(api) {
   const uniqPools = [...new Set(pools.map(p => p.toLowerCase()))]
   const gauges = await api.multiCall({ target: VOTER, abi: abi.gauges, calls: uniqPools })
   const live = uniqPools.map((p, i) => ({ pool: p, gauge: gauges[i] }))
-    .filter(x => x.gauge && x.gauge !== '0x0000000000000000000000000000000000000000')
+    .filter(x => x.gauge && x.gauge !== ADDRESSES.null)
   if (!live.length) return
 
   const nfpms = await api.multiCall({ abi: 'address:nft', calls: live.map(x => x.gauge) })

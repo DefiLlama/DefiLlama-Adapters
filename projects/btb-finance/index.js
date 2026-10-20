@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
 
@@ -32,10 +33,10 @@ const config = {
     farms: [],
     gaugeVoter: '0x16613524e02ad97eDfeF371bC883F2F5d6C480A5', // Aerodrome voter, for gauges found from logs
     tokens: [
-      '0x4200000000000000000000000000000000000006', // WETH
-      '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
-      '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC
-      '0x940181a94A35A4569E4529A3CDfB74e38FD98631', // AERO
+      ADDRESSES.optimism.WETH_1, // WETH
+      ADDRESSES.base.USDC, // USDC
+      ADDRESSES.ethereum.cbBTC, // cbBTC
+      ADDRESSES.base.AERO, // AERO
     ],
   },
   robinhood: {
@@ -52,12 +53,12 @@ const config = {
     farms: [{ chef: '0x60380925A8b1007F70f60A6A42bffE391374B09a', nft: '0xA79F5775b0B49E51202c48DDF03F380FaA96f641' }], // Giga farm
     voters: [{ voter: '0x7F749fDD351C1Ceed82d76d7699CB631Eb8332a7', nft: '0x07F44c47743A2f36414A82b9F558ECFCf0EEdCEf' }], // UP gauges
     tokens: [
-      '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', // WETH
-      '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', // USDG
+      ADDRESSES.robinhood.WETH, // WETH
+      ADDRESSES.robinhood.USDG, // USDG
       '0x5BaaeC1B70864f01dbdb747358FF59F2E2cCF7D5', // GIGA
       '0x57C0E45cB534413D1C20A4240955d6bB250BB4F1', // UP
       '0xD1e861CC5Eee7eA88649206b74504D78CCD7AEeA', // LUTE
-      '0x39dbed3a2bd333467115de45665cc57f813c4571', // PONS
+      ADDRESSES.robinhood.PONS, // PONS
     ],
   },
 }
@@ -112,7 +113,7 @@ async function enumerated(api, target, owners) {
 async function stakedInGauges(api, voter, owners) {
   const pools = await api.fetchList({ lengthAbi: 'uint256:length', itemAbi: 'function pools(uint256) view returns (address)', target: voter })
   const gauges = (await api.multiCall({ abi: 'function gauges(address) view returns (address)', target: voter, calls: pools }))
-    .filter(g => g && g !== '0x0000000000000000000000000000000000000000')
+    .filter(g => g && g !== ADDRESSES.null)
   const calls = gauges.flatMap(target => owners.map(owner => ({ target, params: [owner] })))
   const staked = await api.multiCall({ abi: 'function stakedValues(address) view returns (uint256[])', calls, permitFailure: true })
   return staked.flat().filter(id => id != null).map(String)

@@ -19,22 +19,20 @@ const VAULTS = {
   ],
 }
 
-const navTvl = (vaults) => async (api) => {
-  const navs = await api.multiCall({ abi: 'uint256:nav', calls: vaults })
+const navTvl = async (api) => {
+  const vaults = VAULTS[api.chain] || []
+  const navs = await api.multiCall({ abi: 'uint256:nav', calls: vaults, permitFailure: true, excludeFailed: true, })
   navs.forEach((nav) => api.addUSDValue(Number(nav) / 1e18))
 }
 
 module.exports = {
   methodology:
-    'TVL is the net asset value locked in each Resu pool. On EVM chains the ' +
-    "pool's OracleVault.nav() returns its value in USD (read from Chainlink / " +
-    'HyperCore oracles); on TON it is the base jetton (tsTON, tsUSDe) held by ' +
-    'each pool. Solana is live on devnet only and is excluded.',
-  base: { tvl: navTvl(VAULTS.base) },
-  arbitrum: { tvl: navTvl(VAULTS.arbitrum) },
-  hyperliquid: { tvl: navTvl(VAULTS.hyperliquid) },
-  monad: { tvl: navTvl(VAULTS.monad) },
-  robinhood: { tvl: navTvl(VAULTS.robinhood) },
+    'TVL is the net asset value locked in each Resu pool',
+  base: { tvl: navTvl },
+  arbitrum: { tvl: navTvl },
+  hyperliquid: { tvl: navTvl },
+  monad: { tvl: navTvl },
+  robinhood: { tvl: navTvl },
   ton: {
     tvl: sumTokensExport({
       owners: [

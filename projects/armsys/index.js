@@ -42,7 +42,7 @@ const RH_POOLS = [
     id: '0x53e74184f024eb01ceb7bbde68866bff3cc3ddf378c78745eb52bdd9ad7bcd91',
     slot0: '0x9c84d52b8bb441beb575d083100f114b0c56b9ce514618366619fcf1f9572272',
     token0: USDG,
-    token1: '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec', // NVDA
+    token1: ADDRESSES.robinhood.NVDA, // NVDA
   },
   {
     id: '0x0703d548618b02c35d53acc889c1edb792aabccde3217004cd7dabb604fad3bd',
@@ -60,7 +60,7 @@ const RH_POOLS = [
   {
     id: '0xdbd476102c84ca90d501b1330b11e9a6c092ab9a811a7f6a45b1d971872fab13',
     slot0: '0x73c3182a3e04b5204c9003d01a04aef154cff075754a41d6a39d64992f01a613',
-    token0: '0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea', // SPCX
+    token0: ADDRESSES.robinhood.SPCX, // SPCX
     token1: USDG,
   },
 ];

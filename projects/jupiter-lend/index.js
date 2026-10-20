@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
 const { getProvider, sumTokens2, getTokenAccountBalances } = require('../helper/solana')
 const { Program } = require("@coral-xyz/anchor");
@@ -26,7 +27,7 @@ const EXCHANGE_PRICE_PRECISION = 1e12
 // these deposits are already counted in ethena's TVL
 const ETHENA_ATOKEN_ACCOUNTS = {
   '6ZaKSZfYLUvbWqDmHKWWZ7wtUo8aMidvE6k8U2oMXvjf': '2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH', // jUSDG -> USDG
-  '5pQu76BCLqLuePsdTdkRKsZA1Ch5YxahGBmHuPxUu1Da': '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo', // jPYUSD -> PYUSD
+  '5pQu76BCLqLuePsdTdkRKsZA1Ch5YxahGBmHuPxUu1Da': ADDRESSES.solana.PYUSD, // jPYUSD -> PYUSD
 }
 async function tvl(api) {
   const tokenReserves = await getData();

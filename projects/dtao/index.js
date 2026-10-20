@@ -44,6 +44,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true, // excluded from defi tvl as not all deposits are from users
   timetravel: false,
   methodology:
     'TVL is the TAO reserve of every subnet dTAO liquidity pool (SubtensorModule.SubnetTAO across all netuids), read from public chain RPC at a single finalized block. Root (netuid 0) is excluded because it is network staking rather than an AMM pool. Subnets whose pools are tracked by their own DefiLlama adapter (currently Chutes, netuid 64) are excluded to avoid double counting. Alpha-side reserves are not counted since most alpha tokens have no listed price.',

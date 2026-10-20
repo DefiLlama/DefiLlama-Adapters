@@ -26,7 +26,7 @@ const BOOK = '0x9b479f47ef25E0Ed2134F38d3c4e1022A8695ed8' // LodestarLoanBook
 
 // ---- verified Flare mainnet token addresses (fork-proven in the audit) ----
 const USDT0 = ADDRESSES.flare.USDT0 // 6dp  - pool asset / borrow currency
-const FXRP = '0xAd552A648C74D49E10027AB8a618A3ad4901c5bE' //  6dp  - XRP (FAssets)
+const FXRP = ADDRESSES.flare.FXRP //  6dp  - XRP (FAssets)
 const SFLR = ADDRESSES.flare.sFLR // 18dp  - Sceptre staked FLR (LST)
 const STXRP = '0x4c18ff3c89632c3dd62e796c0afa5c07c4c1b2b3' //  6dp  - Firelight staked XRP (LST)
 

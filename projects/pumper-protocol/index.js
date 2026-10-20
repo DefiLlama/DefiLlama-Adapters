@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Pumper Protocol (pumper.tools) on Stable.
@@ -18,7 +19,7 @@ const REGISTRY = '0x7Cd190e5Ba34C1Ec8FE07F78EddB026719940492'
 const V4_POOL_MANAGER = '0x3F95674d4C0c2FB1525DA536e0A57f4A86902665'
 
 const PUMPER = '0xd86800D5b021F5D79350C2F742Bbb1ecc010Bf82'
-const USDT0 = '0x779Ded0c9e1022225f8E0630b35a9b54bE713736'
+const USDT0 = ADDRESSES.xlayer.USDT0
 const WGUSDT = '0x817997Ca8394E26CCE3dE3A076a4889b27DbF9dE'
 const QUOTE_TOKENS = [USDT0, WGUSDT]
 // PumperRewardLocker: staked PUMPER

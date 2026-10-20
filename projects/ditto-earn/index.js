@@ -13,7 +13,7 @@ const RECEIVERS = {
   '0x7817548BE174C22DecDe831Ea9d514927fD0D286': 25730917, // pilot, Ethereum
   '0x73e97D42f341713e2ED10E55964C066d924a8106': 26040404, // V2, Ethereum
 };
-const ZERO = '0x0000000000000000000000000000000000000000';
+const ZERO = ADDRESSES.null;
 /** Deduplicate custody addresses case-insensitively and exclude the zero address. */
 const unique = addresses => [...new Set(addresses.map(address => address.toLowerCase()))].filter(address => address !== ZERO);
 

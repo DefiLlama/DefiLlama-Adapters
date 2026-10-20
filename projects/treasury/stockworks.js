@@ -13,7 +13,7 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 // balances alone reports ~$100 against ~$30k actually held. So we read the
 // controller's own position getters and convert liquidity to token amounts.
 const CONTROLLER = "0x37bBFeD61d9A8C3743D3E7318e635c37c9abdf8e"; // SpcxQuoteController
-const SPCX = "0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa";
+const SPCX = ADDRESSES.robinhood.SPCX;
 const USDG = ADDRESSES.robinhood.USDG;
 
 // SPCXSTR itself is the protocol's own token and is deliberately NOT counted.

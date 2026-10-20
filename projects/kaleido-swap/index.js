@@ -10,8 +10,8 @@ const LENDING = '0xE4e7f16DB22e6bb2E505fbC504d7B2B4B995A6E3' // Kaleido lending 
 const WRAPPED_NATIVE = '0x8c6c0A4C5500c2bC196383B4D85feb7f08a5C75b'
 
 const FEES = [100, 500, 3000, 10000]
-const ZERO = '0x0000000000000000000000000000000000000000'
-const SENTINEL = '0x0000000000000000000000000000000000000001'
+const ZERO = ADDRESSES.null
+const SENTINEL = ADDRESSES.linea.WETH_1
 
 // Pools are found with the factory's getPool for every pair of known Arc tokens (DefiLlama's Arc core assets plus
 // every token the Kaleido lending market has registered), in one batched call. Event logs are not used: Arc's public

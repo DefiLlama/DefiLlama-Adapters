@@ -1,10 +1,17 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
-// Vaults by collection — Aetheryn joins this list when its vault deploys.
+// Vaults by collection.
 const VAULTS = [
   "0xb78edcb4de39355747c62e6d55209c01a2294ad8", // Genesis Vault
 ];
+// Aetheryn birth vaults: each Aetheryn's MON is held here until its owner redeems it.
+const AETHERYN_BIRTH_VAULTS = [
+  "0xa54221b56837d5f3707d0ed9883a01edf7dae2cf", // Aetheryn Birth Vault (Breeding v3)
+  "0xad2a6cbdb2c1b01c19d52585eee75b8e86f9989a", // Aetheryn Birth Vault (Breeding v4)
+];
 const WETH = ADDRESSES.robinhood.WETH.toLowerCase()
+const MON = "0x7c646a41572b441527169c576ef0c0a40c667777"
 
 async function tvl(api) {
   const assetRegistry = await api.call({ abi: 'address:assetRegistry', target:'0xb78edcb4de39355747c62e6d55209c01a2294ad8' });
@@ -25,8 +32,9 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "Value of stock tokens and holder-backed WETH held in STOCKMON vaults, excluding WETH claimable by the protocol treasury",
+  methodology: "TVL is the value of stock tokens and holder-backed WETH held in STOCKMON vaults, excluding WETH claimable by the protocol treasury. Staking is the MON held in the Aetheryn birth vaults (Breeding v3 and v4) that backs each Aetheryn",
   robinhood: {
-    tvl
+    tvl,
+    staking: sumTokensExport({ owners: AETHERYN_BIRTH_VAULTS, tokens: [MON] }),
   },
 };

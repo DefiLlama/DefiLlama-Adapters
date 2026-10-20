@@ -12,8 +12,8 @@ importers:
         specifier: ^0.30.1
         version: 0.30.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@defillama/sdk':
-        specifier: 5.0.238
-        version: 5.0.238(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        specifier: 5.0.242
+        version: 5.0.242(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@project-serum/anchor':
         specifier: ^0.26.0
         version: 0.26.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -269,8 +269,8 @@ packages:
     peerDependencies:
       '@solana/web3.js': ^1.68.0
 
-  '@defillama/sdk@5.0.238':
-    resolution: {integrity: sha512-wkSVkSgWstwG4DCd4KcyTZT+8551v+0Leo2yL6yMmeKY0iEzA2p0c1NBwP3IOQVdLVdK0ahVFrWpWY3p/cPpjQ==}
+  '@defillama/sdk@5.0.242':
+    resolution: {integrity: sha512-dDODx5N6hN3zBViMd5Pr8HS2+SGC774g4xQTaQLukP8cPOkCkYVfpLPm++WpeSpPCwgFcd4S9B1sxvJhfkXkTA==}
     peerDependencies:
       '@solana/web3.js': '>=1.73.0'
     peerDependenciesMeta:
@@ -1941,7 +1941,7 @@ snapshots:
       bn.js: 5.2.2
       buffer-layout: 1.2.2
 
-  '@defillama/sdk@5.0.238(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@defillama/sdk@5.0.242(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@aws-sdk/client-s3': 3.913.0
       '@elastic/elasticsearch': 8.19.1(supports-color@7.2.0)
