@@ -42,10 +42,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  // wugnot wraps ugnot 1:1 (6 decimals); not priced under gnoland by the coins service yet
   gnoland: {
-    ugnot: { coingeckoId: 'gno-land', decimals: 6 },
-    // wugnot wraps raw ugnot 1:1 despite declaring 0 decimals on-chain.
-    'gno.land/r/gnoland/wugnot.wugnot': { coingeckoId: 'gno-land', decimals: 6 },
+    'gno.land:r:gnoland:wugnot.wugnot': { coingeckoId: 'gno-land', decimals: 6 },
   },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
