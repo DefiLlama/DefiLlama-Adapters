@@ -1,14 +1,12 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 /**
- * Syn DAO DeFiLlama TVL Adapter
+ * Syn DAO Treasury Adapter
  * 
- * Tracks on-chain USDC locked across Syn DAO smart contracts on Arc Mainnet:
- * 1. Syn DAO Central Treasury (Three-Way Match Release Valve)
- * 2. Active Crowdfund & Milestone Escrow Contracts
+ * Tracks on-chain USDC held across Syn DAO treasury and escrow contracts on Arc Mainnet.
  */
 
-// Canonical Token Addresses on Arc Mainnet
+// Canonical USDC on Arc Mainnet
 const ARC_USDC = '0x3600000000000000000000000000000000000000';
 
 // Syn DAO Central Treasury Contract
@@ -28,6 +26,9 @@ const ESCROW_CONTRACTS = [
   '0x3b56457A3f647CDf04Db064BD6f1Da9e883C185c', // Zenith Eco-Track AI Agent
 ];
 
+// Governance Token
+const SYN_TOKEN = '0x8f4b429794ABa4607d177b100Cc5e481D22d0ad4';
+
 async function tvl(api) {
   return sumTokens2({
     api,
@@ -36,12 +37,21 @@ async function tvl(api) {
   });
 }
 
+async function ownTokens(api) {
+  return sumTokens2({
+    api,
+    owners: [TREASURY_CONTRACT],
+    tokens: [SYN_TOKEN],
+  });
+}
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology:
-    'Counts USDC held in Syn DAO treasury and active milestone escrow contracts on Arc Mainnet.',
+    'Counts USDC held in the Syn DAO treasury and active milestone escrow contracts on Arc Mainnet.',
   arc: {
     tvl,
+    ownTokens,
   },
 };
