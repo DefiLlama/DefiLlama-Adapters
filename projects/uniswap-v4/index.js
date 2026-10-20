@@ -37,6 +37,7 @@ const config = {
     '0x7083609fce4d1d8dc0c979aab8c869ea2c873402', // DOT was hacked
     '0x44f161ae29361e332dea039dfa2f404e0bc5b5cc', // H hacked 2026-06-08
     '0xac531eb26ca1d21b85126de8fb87e80e09002dcf', // fake SAND mispriced on BSC (~$5.6B phantom TVL)
+    '0xbe8d9ec5d3c9313e4af08d50b6f85af76a69a1f1', // USDB mispriced, same coingecko asset blacklisted on arc
 
   ] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1, useIndexerSql: true },
