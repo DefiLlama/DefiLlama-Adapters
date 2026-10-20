@@ -29,10 +29,10 @@ const vaultRegistry = {
 async function calculateDynaVaultTVL(api, chainId) {
   if (vaultRegistry[chainId] == undefined) return;
 
-  const dynaVaults = await api.call({
+  const dynaVaults = (await api.call({
     abi: 'function allVaults() view returns (tuple(address vault, uint8 VaultType, bool active)[] memory)',
     target: vaultRegistry[chainId]
-  });
+  })).filter(vault => vault.active === true);
 
   const assets = await api.multiCall({
     abi: "function asset() view returns (address)",
