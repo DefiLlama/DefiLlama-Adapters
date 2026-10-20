@@ -1,5 +1,4 @@
 const { get } = require('../helper/http')
-const { getFixBalances } = require('../helper/portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const RPC = 'https://rpc.gno.land'
@@ -48,7 +47,6 @@ async function tvl(api) {
     })
   if (errors.length) throw errors[0]
   results.flat().forEach(({ token, amount }) => api.add(token, amount))
-  return getFixBalances('gnoland')(api.getBalances())
 }
 
 async function staking(api) {
