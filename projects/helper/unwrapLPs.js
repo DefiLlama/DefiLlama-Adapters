@@ -584,14 +584,15 @@ async function unwrapMetadexCLNFTs({ balances, nftsAndOwners = [], api, owner, n
     owners = getUniqueAddresses(owners, chain)
     nftsAndOwners = owners.map(o => [nftAddress, o])
   }
-  const positionIdsByNftAddress = await getPositionIdsByNftAddress({ api, nftsAndOwners, })
+  // before the position manager is deployed (historical runs) balanceOf has no code to call; count that as no positions
+  const positionIdsByNftAddress = await getPositionIdsByNftAddress({ api, nftsAndOwners, permitFailure: true, })
   for (const [nftAddress, positionIds] of Object.entries(positionIdsByNftAddress)) {
     await unwrapSlipstreamNFT({ balances, positionIds, nftAddress, api, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })
   }
   return balances
 }
 
-async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
+async function getPositionIdsByNftAddress({ api, nftsAndOwners, permitFailure = false, }) {
   const ownersByNFT = {}
   nftsAndOwners.forEach(([nftAddress, owner]) => {
     nftAddress = normalizeAddress(nftAddress, api.chain)
@@ -602,7 +603,7 @@ async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
   const positionIdsByNftAddress = {}
   for (let [nftAddress, owners] of Object.entries(ownersByNFT)) {
     owners = Array.from(owners)
-    const positionIdBalances = await api.multiCall({ abi: 'erc20:balanceOf', target: nftAddress, calls: owners })
+    const positionIdBalances = await api.multiCall({ abi: 'erc20:balanceOf', target: nftAddress, calls: owners, permitFailure })
     const positionIdCalls = []
     positionIdBalances.forEach((idCount, i) => {
       const count = +idCount
@@ -632,6 +633,17 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
+  if ((!positionIds || positionIds.length === 0) && owner) {  // if positionIds are not provided and owner address is passed
+    const nftPositions = await api.call({ target: nftIdFetcher, params: owner, abi: 'erc20:balanceOf' })
+    positionIds = (await api.multiCall({
+      abi: uniV3ABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+      calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
+    }))
+  }
+
+  // nothing to value, so the position manager and its factory are never called
+  if (!positionIds?.length) return balances
+
   let factory
   if (isShadow) {
     const deployer = await api.call({ target: nftAddress, abi: 'address:deployer' })
@@ -640,14 +652,6 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
     const factoryKey = getFactoryKey(chain, nftAddress)
     if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: uniV3ABI.factory, })
     factory = (await factories[factoryKey])
-  }
-
-  if ((!positionIds || positionIds.length === 0) && owner) {  // if positionIds are not provided and owner address is passed
-    const nftPositions = await api.call({ target: nftIdFetcher, params: owner, abi: 'erc20:balanceOf' })
-    positionIds = (await api.multiCall({
-      abi: uniV3ABI.tokenOfOwnerByIndex, target: nftIdFetcher,
-      calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
-    }))
   }
 
   const positionsAbi = isShadow ? shadowV3PositionsABI : slipstreamNftABI.positions
