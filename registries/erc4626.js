@@ -135,6 +135,8 @@ const configs = {
   'paimon': { bsc: ['0x8505c32631034A7cE8800239c08547e0434EdaD9'], },
   'sova': { base: ['0xdFc4047620bd71F3dd781f1048f6890b76281D36'], },
   'altura': {
+    // vault has held no liquidity and paid no withdrawals since 2026-06-23; totalAssets() is an oracle NAV re-reported unchanged since then
+    deadFrom: '2026-06-24',
     hyperliquid: ['0xd0Ee0CF300DFB598270cd7F4D0c6E0D8F6e13f29'],
   },
   'lendle-vault-allocator': {
