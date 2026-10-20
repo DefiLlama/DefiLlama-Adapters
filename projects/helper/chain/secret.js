@@ -58,8 +58,11 @@ class SecretClient {
   }
 
   async getCodeHashByContractAddr(contract) {
-    if (!this.codeHashes[contract])
-      this.codeHashes[contract] = fetchCodeHash(this)
+    if (!this.codeHashes[contract]) {
+      const promise = fetchCodeHash(this)
+      this.codeHashes[contract] = promise
+      promise.catch(() => { if (this.codeHashes[contract] === promise) delete this.codeHashes[contract] })
+    }
 
     return this.codeHashes[contract]
 
