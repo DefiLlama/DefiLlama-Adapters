@@ -522,6 +522,8 @@ module.exports = {
     "1HDnsptgeJ6fYFHCgd1TFzLSRpuVcV51GL",
     "1Nb9NUVWpjruzafXh2uKK5v5xxEEL1hPrH",
     "1P7o14PYsuiaj57DUDWoeD8f36fsc4VgVf",
+    "bc1qknl6p2cmw30cyx3fz4sdvjjqf6sj682qndcerk",
+    "bc1q3krff4s70lx4wfgnrr0ux2c09flcp5rgs2d8k6",
   ],
   cakeDefi: ["3GcSHxkKY8ADMWRam51T1WYxYSb2vH62VL"],
   coindcx: [

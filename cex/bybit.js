@@ -16,7 +16,7 @@ const CHAIN_MAP = {
   Manta: 'manta', Litecoin: 'litecoin', Dogecoin: 'doge', Cosmos: 'cosmos', Celo: 'celo',
   Polkadot: 'polkadot', KLAY: 'klaytn', KAIA: 'klaytn', KAVAEVM: 'kava', EOS: 'eos', Dydx: 'dydx', Sonic: 'sonic',
   HyperEVM: 'hyperliquid', PLASMA: 'plasma', MONAD: 'monad', Cardano: 'cardano', Starknet: 'starknet',
-  SEIEVM: 'sei', HBAR: 'hedera', STABLE: 'stable',
+  SEIEVM: 'sei', HBAR: 'hedera', STABLE: 'stable', Bera: 'berachain',
 }
 
 async function fetchLatestCsv() {
@@ -86,8 +86,15 @@ const STATIC_OWNERS = {
   starknet: ['0x076601136372fcdbbd914eea797082f7504f828e122288ad45748b0c8b0c9696'],
 }
 
+// Chains whose PoR balance sits in a token that has no default list in helper/cex.js
+const EXTRA_TOKENS = {
+  berachain: ['0x0000000000000000000000000000000000000000', '0x779Ded0c9e1022225f8E0630b35a9b54bE713736'], // BERA, USDT0
+}
+
 module.exports = { bitcoin: 'bybit' }
 for (const slug of new Set(Object.values(CHAIN_MAP)))
   module.exports[slug] = { owners: async () => (await getOwners())[slug] || [] }
 for (const [slug, owners] of Object.entries(STATIC_OWNERS))
   module.exports[slug] = { owners }
+for (const [slug, tokens] of Object.entries(EXTRA_TOKENS))
+  module.exports[slug].tokens = tokens
