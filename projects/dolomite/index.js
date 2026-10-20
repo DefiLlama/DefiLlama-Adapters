@@ -49,6 +49,7 @@ const config = {
     margin: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D', blacklistedTokens: [
       '0xda5e1988097297dcdc1f90d4dfe7909e847cbef6', // WLFI - almost all of it is supplied by WLFI team multisig
       '0x8af3b9d0e53186ae13b32fd783f42663bf48d389', // WLFIcx - concrete-issued WLFI, the deposit is already counted in concrete-xyz
+      '0x852724426b2851487b278a3377449bf26b06c1ba', // BTCcx - concrete-issued custodial BTC, the deposit is already counted in concrete-xyz (ctBTCcxPrime)
     ]
   },
   polygon_zkevm: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },
