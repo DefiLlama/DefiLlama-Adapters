@@ -3,13 +3,23 @@ const { get } = require('../helper/http')
 const TVL_URL = 'https://api.cctools.network/api/markets/temple/tvl'
 const FETCH_OPTS = { headers: { 'User-Agent': 'DefiLlama-Adapter (temple)' } }
 
+// DefiLlama prints the CoinGecko symbol of the id passed to addCGToken.
+// CCTools still sends the underlying price proxy for these two (pax-gold,
+// kinesis-silver). Their own listings are ember-gold (EXAU) and ember-silver
+// (EXAG). BETH has no Canton CoinGecko coin, so its feed id is left as-is.
+const coingeckoIdBySymbol = {
+  eXAU: 'ember-gold',
+  eXAG: 'ember-silver',
+}
+
 async function tvl(api) {
   const feed = await get(TVL_URL, FETCH_OPTS)
   if (!feed || !Array.isArray(feed.assets) || feed.assets.length === 0)
     throw new Error('temple: CCTools feed returned no assets')
 
   for (const asset of feed.assets) {
-    if (!asset.coingeckoId)
+    const coingeckoId = coingeckoIdBySymbol[asset.symbol] || asset.coingeckoId
+    if (!coingeckoId)
       throw new Error(`temple: no coingecko id for ${asset.symbol}`)
 
     // Amounts are already decimal-adjusted; do not scale them again.
@@ -19,7 +29,7 @@ async function tvl(api) {
     
     if (feed.amountsAreScaled !== true) throw new Error('temple: CCTools feed amounts are not scaled')
 
-    api.addCGToken(asset.coingeckoId, deposited)
+    api.addCGToken(coingeckoId, deposited)
   }
 }
 
