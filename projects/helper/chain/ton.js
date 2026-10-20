@@ -55,13 +55,13 @@ async function getJettonsInfo(tokens) {
 
 const sumTokensAccount = rateLimited(_sumTokensAccount)
 
-async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false, useTonApiForPrices = true }) {
+async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false, useTonApiForPrices = true, sleepMs }) {
   if (!api) throw new Error('api is required')
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners, api.chain)
 
-  if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
+  if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners, sleepMs })
   if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return sumTokens2({ api, })
 
   for (const addr of owners) {
@@ -104,18 +104,25 @@ async function addJettonBalances({ api, jettonAddress, addresses, chunkSize = 39
   }
 }
 
-async function addTonBalances({ api, addresses }) {
+// toncenter v3 accountStates is GET-only and 414s past ~64k url chars: friendly addresses are 48 chars vs 66 raw,
+// so 1200 per request fits (raw form caps out around 600). There is no on-chain multicall on TON.
+// sleepMs: extra pause between chunks on top of the sdk's per-service pacing; pass 0 for large lists
+async function addTonBalances({ api, addresses, sleepMs = 3000, chunkSize = 1200 }) {
   api.log('Fetching TON balances', { addresses: addresses.length })
-  const chunks = sliceIntoChunks(addresses, 399)
+  addresses = addresses.map(a => {
+    try { return ton.normalizeAddress(a) } catch (e) { return a }
+  })
+  const chunks = sliceIntoChunks(addresses, chunkSize)
   let i = 0
   for (const chunk of chunks) {
-    api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
+    if (i % 50 === 0) api.log('Fetching TON balances', { chunk: i, chunks: chunks.length })
+    i++
     const { accounts } = await ton.toncenterGet({ path: 'accountStates', params: { address: chunk.join(','), include_boc: false } })
     accounts.forEach(({ balance }) => {
       api.add(ADDRESSES.null, balance)
     })
-    if (addresses.length > 199) {
-      await sleep(3000)
+    if (addresses.length > 199 && sleepMs) {
+      await sleep(sleepMs)
     }
   }
 }

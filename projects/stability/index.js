@@ -16,6 +16,11 @@ const config = {
   },
   sonic: {
     vaultManager: '0x589a504f2ee9d054b483c700fa814863d639381e',
+    // vaults lending USDC into insolvent Silo markets (0 liquidity, unwithdrawable); their claim compounds as phantom interest
+    blacklistedVaults: [
+      '0x8913582701B7c80E883F9E352c1653a16769B173', // C-USDC-S1 -> Silo xUSD/USDC (Stream-impacted)
+      '0xd248c4b6Ec709FEeD32851A9F883AfeaC294aD30', // C-USDC.e-S3 -> Silo PT-wstkscUSD-29MAY2025/USDC
+    ],
   },
 }
 
@@ -24,7 +29,8 @@ Object.keys(config).forEach(chain => {
     tvl: async function (api) {
       // Stability Platform Vaults
       // Get all vaults
-      const vaults = await api.call({        abi: abi.vaultAddresses,        target: config[chain].vaultManager      });
+      const blacklist = new Set((config[chain].blacklistedVaults ?? []).map(v => v.toLowerCase()))
+      const vaults = (await api.call({        abi: abi.vaultAddresses,        target: config[chain].vaultManager      })).filter(v => !blacklist.has(v.toLowerCase()));
 
       // Get strategy addresses
       const strategies = await api.multiCall({ abi: abi.strategy, calls: vaults, })
@@ -35,3 +41,4 @@ Object.keys(config).forEach(chain => {
     },
   }
 })
+module.exports.deadFrom = '2026-04-01'

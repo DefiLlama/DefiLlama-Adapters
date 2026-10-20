@@ -149,4 +149,4 @@ module.exports = treasuryExports({
   }
 });
 
-module.exports.ethereum.tvl = async (api)=>karpatKeyTvl(api, "Balancer DAO", "BAL")
+// module.exports.ethereum.tvl = async (api)=>karpatKeyTvl(api, "Balancer DAO", "BAL")

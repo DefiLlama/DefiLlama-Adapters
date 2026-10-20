@@ -1,8 +1,18 @@
 const { unwrapNFTs } = require('./utils')
 const { getConfig: getConfigCache } = require('../helper/cache')
+const { get } = require('../helper/http')
 
+// the api answers failures with HTTP 200 + { is_success: false, data: {} }; throwing on those keeps getConfig
+// from caching the error over the last good farm list (it fell back to the cache instead)
 async function getConfig(chainId) {
-  const data = await getConfigCache('izumi-liquidbox/'+chainId, `https://izumi.finance/api/v1/farm/compute?chainId=${chainId}`);
+  const data = await getConfigCache('izumi-liquidbox/' + chainId, undefined, {
+    fetcher: async () => {
+      const res = await get(`https://api.izumi.finance/api/v1/farm/compute?chainId=${chainId}`)
+      if (!res?.is_success || !res.data?.contracts) throw new Error(`izumi farm api error for ${chainId}: ${res?.error_code}`)
+      return res
+    }
+  });
+  if (!data?.data?.contracts) throw new Error(`izumi farm config unavailable for chain ${chainId} (api failing, no good cached copy)`)
   return data.data;
 }
 
@@ -16,6 +26,7 @@ const chains =  {
 };
 
 module.exports = {
+  deadFrom: "2026-09-30", // farms sunset?
   // ownTokens: ['IZI', 'IUSD'],
 }
 

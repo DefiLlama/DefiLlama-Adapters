@@ -79,4 +79,5 @@ async function borrowed(api) {
 module.exports = {
   methodology: 'TVL is calculated as the total collateral locked in active loans. Borrowed represents the total outstanding loan principal.',
   base: { tvl, borrowed },
+  deadFrom: "2026-10-11",  // project pivoted?
 };

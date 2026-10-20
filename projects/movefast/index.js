@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { GraphQLClient } = require("graphql-request");
 const { getResources } = require("../helper/chain/aptos");
 

@@ -41,6 +41,7 @@ function getTvl(chain, isPool2) {
 const chainKeys = Object.keys(indexExports).filter(chain => typeof indexExports[chain] === 'object' && indexExports[chain].tvl)
 
 module.exports = {
+  deadFrom: "2026-09-30", // farms sunset?
   timetravel: false,
   misrepresentedTokens: true,
   ...getExports("izumi", chainKeys, ['pool2']),

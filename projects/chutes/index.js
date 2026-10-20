@@ -21,6 +21,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true, // not all deposits here are from the users, it includes protocol emissions
   timetravel: false,
   methodology: 'Counts the TAO reserves of the Chutes (netuid 64) dTAO liquidity pool, read from SubtensorModule.SubnetTAO on public chain RPC.',
   bittensor: { tvl },

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport, getMorphoVaults } = require("../helper/curators");
 const { getConfig } = require('../helper/cache')
 const { getProvider, getTokenSupplies } = require('../helper/solana')
@@ -75,7 +76,7 @@ const customConfig = {
   solana: {
     // Earn side of the Sentora-curated market on the JupLend Ethena deployment
     juplend: [
-      { fToken: '7T1qPZUPdaEhfQ6tXLvFeCoehyDfzdk76XbszbXyqgjx', mint: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo' }, // jlePYUSD -> PYUSD
+      { fToken: '7T1qPZUPdaEhfQ6tXLvFeCoehyDfzdk76XbszbXyqgjx', mint: ADDRESSES.solana.PYUSD }, // jlePYUSD -> PYUSD
     ],
   },
 }

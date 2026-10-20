@@ -548,7 +548,7 @@ module.exports = {
   },
   "sparkdex-perps": {
     "flare": {
-      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,ADDRESSES.flare.sFLR,ADDRESSES.morph.USDT0,"0xad552a648c74d49e10027ab8a618a3ad4901c5be"] },
+      "tvl": { "owners": ["0x74DA11B3Bb05277CF1cd3572a74d626949183e58"], "tokens": [ADDRESSES.flare.WFLR,ADDRESSES.flare.sFLR,ADDRESSES.morph.USDT0,ADDRESSES.flare.FXRP] },
     },
   },
   "corex": {
@@ -855,7 +855,7 @@ module.exports = {
   "deepstate": {
     methodology: "TVL is the value of USDG, NVDA, and DEEP held by the Deepstate router as collateral for resting orders or as matched proceeds awaiting maker claims.",
     "robinhood": {
-      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"] },
+      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.NVDA] },
       "staking": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": ["0x1DA24f6Bb623b9d1aFEae3F3146659A2662D6d27", "0xbfb7b3Ff3D498a559b946B836d26F0E168f273D5"] },
     }
   },
@@ -1008,13 +1008,13 @@ module.exports = {
     "robinhood": {
       "tokensAndOwners": [
         // audited build, 2026-09-18, maturity 2027-12-31
-        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
+        [ADDRESSES.robinhood.AAPL, "0x131179E65Ab5C0538f5191920233Fd9Dc31930d1"], // AAPL-DEC27
         ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0xa0f77015E46e45c1A12B73466A08711a28Dac1A7"], // SPY-DEC27
         ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0xAb8e536C9E7c76C1045EDEb6096e9B37B26B4372"], // QQQ-DEC27
         ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x1aC9599B91973A3d5d75F7594a47382223FEC0F5"], // PFE-DEC27
         ["0x92FD66527192E3e61d4DDd13322Aa222DE86F9B5", "0x1d44BB0E2D09C35Cc116270E45F8782E7B51fF52"], // SGOV-DEC27
         // launch build, 2026-09-02..04, still redeemable
-        ["0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
+        [ADDRESSES.robinhood.AAPL, "0x4C3B4CDd55b2E9e60eefcD93234A77D4AD53e365"], // AAPL-MAR27
         ["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C", "0x38EAE2c04F65861cD17914100125826de2b735c7"], // SPY-MAR27
         ["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68", "0x16daFbB03C4EF20967043185255532A8cadf79Ba"], // QQQ-MAR27
         ["0x7066A64c24e4206CD62E83bf198c1E7EB361F51e", "0x0Fd9c2DCABf7780D051a519c654eb13Afec5a975"], // PFE-MAR28
@@ -1061,9 +1061,9 @@ module.exports = {
     "robinhood": {
       "owner": "0x3504aA69ca9C5A5Bc3dA312a6c761e9633251cFc", // ReserveVault
       "tokens": [
-        "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", // NVDA
-        "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", // AAPL
-        "0x322F0929c4625eD5bAd873c95208D54E1c003b2d", // TSLA
+        ADDRESSES.robinhood.NVDA, // NVDA
+        ADDRESSES.robinhood.AAPL, // AAPL
+        ADDRESSES.robinhood.TSLA, // TSLA
       ]
     },
   },
@@ -1169,5 +1169,30 @@ module.exports = {
     "bsc": {
       "tvl": { "owners": ["0x76b91e83f2A12dc52E33f856eeA300E5B3A62c0c", "0x88d163d40D6BFe0Ad2b17f4a90A03053fEbf3014", "0xdfc40D309C0D8f4Cc42863991C8e606eD330e1E8"], "tokens": ["0xe5eBE2AE0a036C955bfF58291826C50F7d670D43"] },
     }
+  },
+  "infer": {
+    "methodology": "TVL is the sIMD (staked IMD) collateral locked in the imdUSD CDP vault by borrowers. Minted imdUSD and the Treasury's holdings are not counted.",
+    "start": "2026-10-11",
+    "ethereum": {
+      "owner": "0x0b69F8DA8D8cE521d74Ea69a7A3475B77302EF82",
+      "tokens": ["0x9Efa934D9fAd4AE28c998a40195646b965a97247"]
+    },
+  },
+  "lincoln-protocol": {
+    "methodology": "Each Lincoln privacy pool is an immutable contract holding a single asset (ETH, USDG or a Robinhood tokenized stock). TVL is the on-chain balance of every pool. Route adapters and relays hold no user funds between transactions, so they are not counted.",
+    "start": "2026-10-17",
+    "robinhood": {
+      "ownerTokens": [
+        [[ADDRESSES.null], "0xF9c767CAb9B9A7dE8Dd959967269787880267ab2"], // ETH
+        [["0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"], "0x5Cd4c081eb747406DAb66e22004324600f1928C9"], // USDG
+        [["0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"], "0x4C8BAEb78b032EA3610E0F5D4C8B5Bb4fF5995f7"], // NVDA
+        [["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C"], "0x8a29Db84A20B0A3CA528FAE0F69F50FfD39c6C39"], // SPY
+        [["0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35"], "0xA2078e02A631ae9218DBAa84987a24741bD24d10"], // META
+        [["0x322F0929c4625eD5bAd873c95208D54E1c003b2d"], "0xE8c619705B7452c2281cA8fA675a355846D34BFE"], // TSLA
+        [["0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3"], "0x31Bd720527D9875b444c0946c5795351a56d9d8B"], // GOOGL
+        [["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68"], "0xd4375275F5FA231e238c9FF1237A8e8666Be6B62"], // QQQ
+        [["0xec262a75e413fAfD0dF80480274532C79D42da09"], "0x207Dc4DD4E40Ab280dF9eC10CD5Edf04685e9d88"], // MSTR
+      ]
+    },
   },
 }

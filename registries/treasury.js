@@ -1322,7 +1322,7 @@ const configs = {
     zora: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
     metis: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
     celo: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
-    conflux: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
+    // conflux: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
     ronin: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
     lisk: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
     berachain: { owners: ['0x21AD6EF3979638D8E73747F22B92c4AAdE145d82'] },
@@ -1345,7 +1345,7 @@ const configs = {
     robinhood: {
       owners: ['0x2FE3C1cc641B2463CEE2857Ac520E111fbE11fDF'],
       ownTokens: ['0x26E82171eb01204eE114e2B8C34Be035B8bc029E'],
-      tokens: [nullAddress, ADDRESSES.robinhood.USDG, '0x322F0929c4625eD5bAd873c95208D54E1c003b2d']
+      tokens: [nullAddress, ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.TSLA]
     },
   },
   'treasury/comdex': {
@@ -4088,11 +4088,11 @@ const configs = {
         ADDRESSES.robinhood.USDG,
         '0x59F95461E68e0c77605299791E1449f175165B54', // NET/USDG POL
         '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG (ERC-4626)
-        '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec', // NVDA
-        '0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea', // SPCX
-        '0xaf3d76f1834a1d425780943c99ea8a608f8a93f9', // AAPL
+        ADDRESSES.robinhood.NVDA, // NVDA
+        ADDRESSES.robinhood.SPCX, // SPCX
+        ADDRESSES.robinhood.AAPL, // AAPL
         '0xe93237c50d904957cf27e7b1133b510c669c2e74', // MSFT
-        '0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3', // GOOGL
+        ADDRESSES.robinhood.GOOGL, // GOOGL
         '0x6330d8c3178a418788df01a47479c0ce7ccf450b', // COIN
       ],
       ownTokens: ['0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'], // NET
@@ -6626,6 +6626,18 @@ const configs = {
       ],
       owners: ["0xb056b9a45f09b006ec7a69770a65339586231a34"],
       ownTokens: ["0x6b5204b0be36771253cc38e88012e02b752f0f36"],
+    },
+  },
+  'treasury/infer': {
+    ethereum: {
+      owners: ['0x6Ac8fF96Fb8DCF5d79A8eF1E59D9AC23f2BD27Bc'],
+      tokens: [
+        '0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7', // IMD
+        '0x9Efa934D9fAd4AE28c998a40195646b965a97247', // sIMD
+        ADDRESSES.ethereum.USDC,
+      ],
+      ownTokens: ['0x53d0eA0A685220718Dc6a0a6e4617194C6F37921', '0x61aAF8a992A3143e2B0C9cB0030b9fE702854a25'], // INFER, imdUSD
+      fetchCoValentTokens: false,
     },
   },
   'treasury/zyber-swap': {

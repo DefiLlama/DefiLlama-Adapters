@@ -19,7 +19,7 @@ const RESERVES = {
     { token: ADDRESSES.ethereum.WBTC, wrapper: '0x1A5730c71576D77048E9FdC79DD40e4B1E8Fe042' }, // WBTC -> ftWBTC
     { token: '0x5DD1A7A369e8273371d2DBf9d83356057088082c', wrapper: '0x7127BB9d9ad0f47B8dA9087e634D67F3946F840E' }, // FT   -> ftFT
     { token: ADDRESSES.ethereum.WSTETH, wrapper: '0x01980BD1B58313bD3767f6adc75Af8b6464f3db7' }, // wstETH -> ftWstETH (stakedNative)
-    { token: '0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E', wrapper: '0xa41686c6018056b44a7027f4c912e6153cfb5c63' }, // crvUSD -> ftcrvUSD
+    { token: ADDRESSES.ethereum.CRVUSD, wrapper: '0xa41686c6018056b44a7027f4c912e6153cfb5c63' }, // crvUSD -> ftcrvUSD
     { token: '0x0655977FEb2f289A4aB78af67BAB0d17aAb84367', wrapper: '0xefab1b1856bbe0b6d78f2552614e34efad1eb6c6' }, // scrvUSD -> ftscrvUSD
     { token: ADDRESSES.ethereum.USDG, wrapper: '0x8b419a64d95738b3dfcb55a35da7918dfd366bb0' }, // USDG -> ftUSDG
     { token: ADDRESSES.ethereum.sUSDe, wrapper: '0xbc940f911744670523c3d4ebc56e1e28489591d7' }, // sUSDe -> ftsUSDe
@@ -33,7 +33,7 @@ const RESERVES = {
     { token: ADDRESSES.bsc.FDUSD, wrapper: '0x41cb54680d1baa26b85bc97641854e59964dbe38' }, // FDUSD -> ftFDUSD
     { token: ADDRESSES.bsc.ETH, wrapper: '0x5625ad05ed1031dceff37b3383fdd17b202a4f74' }, // ETH -> ftETH
     { token: ADDRESSES.bsc.BTCB, wrapper: '0x440be5cb3663c8d33fd29d5fcf1ad78d684e4dcd' }, // BTCB -> ftBTCB
-    { token: '0xa2E3356610840701BDf5611a53974510Ae27E2e1', wrapper: '0xfcce797c51da526156b14faa6a9d0e44af570a62' }, // wBETH -> ftwBETH
+    { token: ADDRESSES.bsc.wBETH, wrapper: '0xfcce797c51da526156b14faa6a9d0e44af570a62' }, // wBETH -> ftwBETH
     { token: '0x205812CdBed920aFf76C6580abD681a46D11efc7', wrapper: '0xee62f248c22f279a39252727e0a17052d85ac7f6' }, // QQQB -> ftQQQB
   ],
 }

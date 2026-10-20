@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ethers } = require('ethers')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2, addUniV3LikePosition, unwrapSlipstreamNFT } = require('../helper/unwrapLPs')
@@ -33,8 +34,8 @@ const rangeId = (poolKey, tickLower, tickUpper) =>
 // Everything else the vaults deal in is discovered from their own positions
 // rather than hardcoded, so a new listing needs no change here.
 const BASE_TOKENS = [
-  '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', // USDG
-  '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', // WETH
+  ADDRESSES.robinhood.USDG, // USDG
+  ADDRESSES.robinhood.WETH, // WETH
 ]
 
 async function tvl(api) {

@@ -1924,6 +1924,12 @@ const uniV3Configs = {
     methodology: 'Value of the tokens held in the Ouro DEX V3 pools on Robinhood Chain, discovered from factory PoolCreated events. Position NFTs staked in the Ouro farms are not added again.',
     robinhood: { factory: '0x9a8442cb89fE713ce7C2f22852e61fBFFeE97EcF', fromBlock: 72056673 },
   },
+  'communityv3': {
+    start: '2026-09-03', // factory deployed at block 25895766
+    methodology: 'Value of the tokens held in every CommunityV3 pool on Ethereum, discovered from factory PoolCreated events.',
+    // unmodified Uniswap V3 deployment (same pool init code hash); factory owner burned, so protocol fee is permanently off
+    ethereum: { factory: '0x00a38533c68327aBE0Cc265436e036066E2D6B38', fromBlock: 25895766 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
