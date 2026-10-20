@@ -8,7 +8,7 @@ const { nullAddress } = require("../helper/tokenMapping")
 //     collateral, and shorters borrow the stock from it;
 //   - a USDG market: USDG is the loan asset and the Borro stock vault's shares (bNVDA etc.) are the
 //     collateral, so a lender can borrow USDG against the stock it has lent.
-// Ten Morpho Vault V2s (one per stock plus a USDG vault) supply these markets through their adapters.
+// Thirteen Morpho Vault V2s (one per stock plus a USDG vault) supply these markets through their adapters.
 //
 // The deployment is shared with other curators (Longbow and others), so the singleton's token
 // balances cannot be attributed by a token union; the markets are enumerated instead and each is
@@ -43,6 +43,10 @@ const desks = {
   PLTR: ["0xFE9419E70e5481F7a2dDddc18f856b09b3687B27", "0x85571555a4d98cb7efaf91ffd5a9d6b2db33d4a631c6b16633e537ac6cb4b590", "0x405485f81cee0d066bd29d3556b17f5c50b01f542314d52ca93612f1d0a315ca"],
   SPCX: ["0x1261210E19052157fCe2064D9aa9A2140Bd89791", "0x4219a85fc09ae2ff5d3aa29013c67c89142f80a9c71d5c15ed7dbf9f6e14ae81", "0xb7da3d3030524ffc9438524054d4adf337904e228a842f8b35bf472ad16426e6"],
   GME: ["0x328461fB01F54C2Ab73909EA947c583d0dC24C3d", "0xde233c6decb5b2ad4a2fd63ef8c95ee9b1934c0bd849e87fb5604e845ceb2c82", "0x75d38c9976e6d899662a19a39ac679cfbf711edb6e8ea4762ad2746c480f894c"],
+  // added 2026-10-16 (deploy block 90133902)
+  AAPL: ["0x24Fe7bCAEB75bC2202A42ECD48a177a27782c64a", "0x5242d7dcb608526f2f76b3f6914b9adf34634cdf67220c54bfce0718540c4550", "0x4cb59d58f0752990c41de36de0fe47a28179f50e69eae0cc727011162614ddcc"],
+  GOOGL: ["0xf0731B1022ABD1e3f543Cfd837C7eBA42ED60E4f", "0x5826469e3b7df54fe18c921aafe850865552bc79b366a90ad0dc23c330ee0b75", "0x3abd7c179f694a9b3cf1008c97aa005ace5c6378e0298007154c563d3fd5b1a1"],
+  MSFT: ["0x8032C80a7817a3C4C401b096515B27b2CedA4e71", "0x00f685fcd58b2a04c6953ac74b5d6b8f288e45e9a393077acf6711d6c51957bf", "0x098b730c59fbac64a01db3d3e0751386c2a68ced08754170a74ffdb9c6d0ed57"],
 }
 
 const vaults = [USDG_VAULT, ...Object.values(desks).map((d) => d[0])]
@@ -72,7 +76,8 @@ function borrowerCache({ cache, logs }) {
 
 async function collateralByMarket(api) {
   const toBlock = (await api.getBlock()) - 200 // the log cache is append-only, stay clear of reorgs at the tip
-  const pairs = await getLogs2({ api, target: MORPHO, eventAbi: supplyCollateralAbi, fromBlock: FROM_BLOCK, toBlock, extraKey: "borro-borrowers", customCacheFunction: borrowerCache })
+  // the cache keeps only pairs for markets listed when it read the logs; the key changes when markets are added
+  const pairs = await getLogs2({ api, target: MORPHO, eventAbi: supplyCollateralAbi, fromBlock: FROM_BLOCK, toBlock, extraKey: "borro-borrowers-v2", customCacheFunction: borrowerCache })
   const calls = pairs.map((p) => ({ params: p.split(":") }))
   const positions = await api.multiCall({ target: MORPHO, abi: positionAbi, calls })
   const net = {}
