@@ -96,6 +96,7 @@ module.exports = {
       "addr1qx7ulwm3gkfxdxzsvsd3a8j8tfxql2j75tc572wk73zyz9kg6jsax3gztqfqneqsw05k7vl4r74zt9aaxe93gsxdx8lqjzrfdz",
       "addr1q9pnql2ut22sw3695jxcegfu8f273jyw78u8605tlx3gj0vf7nsu5v2rrpxpxwsx5ekxx07m3yy4jry5v706aqa4gklq7mwa54",
       "addr1qx7tz48uycv3aeawm3fvkjl3hsy8gvxmmwplv6v6tcsvstm76dn2mjkc8mdyccz5aulxe436dxyhkajj3exp92u6vaesqjs8wq",
+      "addr1q93nv57v0xdfedm3c7p0wtd4nkrazdrfnkly9f0jk2uzq5trxefuc7v6njmhr3uz7ukmt8v86y6xn8d7g2jl9v4cypgs5jfku3",
     ],
   },
   algorand: {
