@@ -6628,6 +6628,18 @@ const configs = {
       ownTokens: ["0x6b5204b0be36771253cc38e88012e02b752f0f36"],
     },
   },
+  'treasury/infer': {
+    ethereum: {
+      owners: ['0x6Ac8fF96Fb8DCF5d79A8eF1E59D9AC23f2BD27Bc'],
+      tokens: [
+        '0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7', // IMD
+        '0x9Efa934D9fAd4AE28c998a40195646b965a97247', // sIMD
+        ADDRESSES.ethereum.USDC,
+      ],
+      ownTokens: ['0x53d0eA0A685220718Dc6a0a6e4617194C6F37921', '0x61aAF8a992A3143e2B0C9cB0030b9fE702854a25'], // INFER, imdUSD
+      fetchCoValentTokens: false,
+    },
+  },
   'treasury/zyber-swap': {
     arbitrum: {
       tokens: [
