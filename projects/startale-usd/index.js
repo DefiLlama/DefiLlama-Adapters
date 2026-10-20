@@ -9,6 +9,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  misrepresentedTokens: true, // $M backing is reported as USDSC
   methodology: 'TVL is the $M balance held by the USDSC (Startale USD) M0 extension contract on Soneium, which is the collateral backing every minted USDSC. $M is valued 1:1 as USDSC, since $M is not priced on Soneium.',
   start: '2025-11-19',
   soneium: { tvl },
