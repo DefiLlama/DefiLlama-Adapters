@@ -1209,4 +1209,12 @@ module.exports = {
       ]
     },
   },
+  "bb84": {
+    "methodology": "TVL is the USDC, EURC and ETH escrowed in the bb84 rollup's OptimismPortal on Ethereum, which locks the L1 side of every deposit until it is withdrawn from the L2.",
+    "start": "2026-09-30",
+    "ethereum": {
+      "owner": "0x83226921d6afb31f706b7840bca12655396f136c",
+      "tokens": [ADDRESSES.ethereum.USDC, "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c", ADDRESSES.null], // USDC, EURC, ETH
+    },
+  },
 }
