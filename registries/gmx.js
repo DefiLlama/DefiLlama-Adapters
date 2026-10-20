@@ -395,10 +395,11 @@ const configs = {
       eventEmitter: '0xDb17B211c34240B014ab6d61d4A31FA0C0e20c26',
       fromBlock: 32162455,
     },
-    btnx: {
-      eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
-      fromBlock: 117906,
-    },
+    // GMX sunset its Botanix deployment on 2026-08-01
+    // btnx: {
+    //   eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
+    //   fromBlock: 117906,
+    // },
     megaeth: {
       eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
       fromBlock: 5661063,
