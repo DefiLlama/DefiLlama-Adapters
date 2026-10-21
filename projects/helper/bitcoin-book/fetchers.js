@@ -168,6 +168,9 @@ module.exports = {
 
         while (hasMore) {
           const { addresses: data, has_more } = await get(`${API_URL}?limit=${BATCH_SIZE}&offset=${offset}`);
+          if (!Array.isArray(data)) throw new Error(`lombard: bad address page at offset ${offset}`)
+          if (has_more && data.length < BATCH_SIZE)
+            throw new Error(`lombard: short page (${data.length}) at offset ${offset} with has_more set`)
           const newAddresses = data.map(a => a.btc_address);
 
           allAddresses.push(...newAddresses);
