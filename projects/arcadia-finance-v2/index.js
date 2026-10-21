@@ -19,7 +19,7 @@ const config = {
     wsSlipNFT: "0xD74339e0F10fcE96894916B93E5Cc7dE89C98272".toLowerCase(),
     wsSlipV2NFT: "0x147a2ccbaf4521ad209a2875ae0b3c496f4b25a4".toLowerCase(),
     wsSlipV3NFT: "0x9189BC25f8faC157B4D87b0b3c14F56bA1477d53".toLowerCase(),
-    metadexCLNFT: "0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473",
+    metadexCLNFT: "0x4857DB576eE0e45F10525eC59527BfD10beeC60b",
     sMetadexCLNFT: "0x0f34F7F7B558F43a821AF4181f0F8e5bC4B74892".toLowerCase(),
     wsMetadexCLNFT: "0x323808A037628F2BaF4F42784E011FCf9C49A88b".toLowerCase(),
     wMetadexNFT: "0x7cb5383BBa39b1634DA39f104364203846c240d9".toLowerCase(), // WrappedMetadex03AM
@@ -47,7 +47,7 @@ const config = {
     sSlipV3NFT: "0xF6a87d944204bb5Fdb9CF5534c03c46895f78eCd".toLowerCase(),
     wsSlipNFT: "0xD74339e0F10fcE96894916B93E5Cc7dE89C98272".toLowerCase(),
     wsSlipV3NFT: "0xC4D3d804ed64C1f78097799208D46b1db4252749".toLowerCase(),
-    metadexCLNFT: "0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473",
+    metadexCLNFT: "0x4857DB576eE0e45F10525eC59527BfD10beeC60b",
     sMetadexCLNFT: "0x0f34F7F7B558F43a821AF4181f0F8e5bC4B74892".toLowerCase(),
     wsMetadexCLNFT: "0x323808A037628F2BaF4F42784E011FCf9C49A88b".toLowerCase(),
     wMetadexNFT: "0x7cb5383BBa39b1634DA39f104364203846c240d9".toLowerCase(), // WrappedMetadex03AM
@@ -67,7 +67,7 @@ const config = {
     uniNFT: "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3",
     uniV4NFT: "0x58daec3116aae6D93017bAAea7749052E8a04fA7",
     // Robinhood has Aero's Metadex (CL and vanilla pools) but no Slipstream V1-V3 or Aerodrome V1 deployment.
-    metadexCLNFT: "0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473",
+    metadexCLNFT: "0x4857DB576eE0e45F10525eC59527BfD10beeC60b",
     sMetadexCLNFT: "0x0f34F7F7B558F43a821AF4181f0F8e5bC4B74892".toLowerCase(),
     wsMetadexCLNFT: "0x323808A037628F2BaF4F42784E011FCf9C49A88b".toLowerCase(),
     wMetadexNFT: "0x7cb5383BBa39b1634DA39f104364203846c240d9".toLowerCase(), // WrappedMetadex03AM

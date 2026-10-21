@@ -567,9 +567,9 @@ async function unwrapSlipstreamV3NFTs({ balances, nftsAndOwners = [], api, owner
 // Its positions(), the CLFactory's getPool(token0, token1, int24 tickSpacing) and the pool's slot0() share the
 // Slipstream layout, so unwrapSlipstreamNFT resolves its positions.
 const metadexCLNFTs = {
-  base: '0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473',
-  optimism: '0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473',
-  robinhood: '0xc84bB45D43CD25D02b83B4C085eaA4e08da8f473',
+  base: '0x4857DB576eE0e45F10525eC59527BfD10beeC60b',
+  optimism: '0x4857DB576eE0e45F10525eC59527BfD10beeC60b',
+  robinhood: '0x4857DB576eE0e45F10525eC59527BfD10beeC60b',
 }
 
 async function unwrapMetadexCLNFTs({ balances, nftsAndOwners = [], api, owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
