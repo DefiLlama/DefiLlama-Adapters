@@ -144,6 +144,7 @@ const defaultTokens = {
     '0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f', // TRAC
     '0xeD35af169aF46a02eE13b9d79Eb57d6D68C1749e', // OMI
     '0xb0076de78dc50581770bba1d211ddc0ad4f2a241', // EDGEX
+    '0x66761fa41377003622aee3c7675fc7b5c1c2fac5', // CPOOL
   ],
   tron: [
     nullAddress,
@@ -282,12 +283,18 @@ const defaultTokens = {
     "0x1Ba42e5193dfA8B03D15dd1B86a3113bbBEF8Eeb", // ZEC
     "0x000Ae314E2A2172a039B26378814C252734f556A", // ASTER
     "0x9d10a1ec41Fe7878429BB457e31F9b050D38c633", // BDX
+    "0xc69b16cf18cea1e5d0bb6a1a9db802097790ddd2", // CNPY
+    "0x277add739c6e0477616948357af9e79fe1ec9b80", // AEON
 
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
     ["tethertether", "USDT", "tether"],
     ["core.vaulta", "A", "vaulta"],
+  ],
+  citrea: [
+    nullAddress,
+    '0x547afd93b9c47d552059feb556909e017f8a9b25',  // CTR
   ],
   arbitrum: [
     nullAddress,
@@ -318,6 +325,9 @@ const defaultTokens = {
     '0xed6e000def95780fb89734c07ee2ce9f6dcaf110', // EDGE
     '0xfb31f85a8367210b2e4ed2360d2da9dc2d2ccc95', // EDEL
     '0xc0634090F2Fe6c6d75e61Be2b949464aBB498973', // KEETA
+    '0x11030f79109269d796fd0fb956d6244e502757f7', // CTR
+    '0xb095274743941e953c746f9c228da9c18bb6ec29', // LAPTOP
+    '0x5ab3d4c385b400f3abb49e80de2faf6a88a7b691', // FLOCK
   ],
   avax: [
     nullAddress,
