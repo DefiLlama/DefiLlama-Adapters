@@ -1,11 +1,48 @@
 const { getFactoryTvl } = require("../terraswap/factoryTvl");
+const { queryContract, getBalance2, sumCW20Tokens } = require("../helper/chain/cosmos");
 
 // terraswap-style CosmWasm factory on Injective
 const factory = "inj1k9lcqtn3y92h4t3tdsu7z8qx292mhxhgsssmxg";
+// CosmWasm CLMM (concentrated liquidity) factory, each pool contract holds its own tokens
+// https://github.com/choice-exchange/choice_exchange/blob/main/deployed_contracts.md
+const clmmFactory = "inj1k58yqvsww97asl6eajx0lja6np03naddfc6cs7";
+
+async function getClmmPools(chain) {
+  const pools = [];
+  let start_after;
+  while (true) {
+    const page = await queryContract({ contract: clmmFactory, chain, data: { get_all_pools: { start_after, limit: 100 } } });
+    pools.push(...page);
+    if (page.length < 100) return pools;
+    const last = page[page.length - 1];
+    start_after = [last.token0, last.token1, last.fee];
+  }
+}
+
+async function clmmTvl(api) {
+  const pools = await getClmmPools(api.chain);
+  for (const { pool_address, token0, token1 } of pools) {
+    // tokens are prefixed `n:` (bank denom) or `c:` (cw20); only the pool's own pair is counted
+    const tokens = [token0, token1];
+    const denoms = tokens.filter((t) => t.startsWith("n:")).map((t) => t.slice(2));
+    const cw20s = tokens.filter((t) => t.startsWith("c:")).map((t) => t.slice(2));
+    if (denoms.length) {
+      const balances = await getBalance2({ owner: pool_address, chain: api.chain, tokens: denoms });
+      // `erc20:0x..` bank denoms are MultiVM Token Standard twins of the Injective EVM erc20
+      Object.entries(balances).forEach(([denom, amount]) => api.add(denom.startsWith("erc20:") ? denom.slice(6) : denom, amount));
+    }
+    if (cw20s.length) await sumCW20Tokens({ api, owner: pool_address, tokens: cw20s });
+  }
+}
+
+async function tvl(api) {
+  await clmmTvl(api);
+  return getFactoryTvl(factory)(api);
+}
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: "Liquidity on the DEX: the reserves of every pair contract created by the Choice Exchange v1 (CosmWasm) factory on Injective.",
-  injective: { tvl: getFactoryTvl(factory) },
+  methodology: "Liquidity on the DEX: the reserves of every pair contract created by the Choice Exchange v1 (CosmWasm) factory on Injective, plus the tokens held by every pool of its CosmWasm CLMM factory.",
+  injective: { tvl },
 };
