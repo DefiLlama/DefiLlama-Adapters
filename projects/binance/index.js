@@ -26,12 +26,14 @@ const binanceToDefillama = {
   AVAX: 'avax',
   ARB: 'arbitrum',
   ARBITRUM: 'arbitrum',
+  ARC: 'arc',
   AVAXC: 'avax',
   LTC: 'litecoin',
   MATIC: 'polygon',
   OP: 'optimism',
   OPTIMISM: 'optimism',
   RON: 'ronin',
+  ROBINHOOD: 'robinhood',
   XRP: 'ripple',
   SOL: 'solana',
   DOT: 'polkadot',
@@ -147,7 +149,7 @@ const tvl = async (api) => {
     .map(({ address }) => address)
     .filter(Boolean)
 
-  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
+  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'arc', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'robinhood', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
   const isEvm = evmChains.includes(chain)
 
   const lockInfoAddresses = []
