@@ -9,7 +9,8 @@ const VAULTS = [
 ]
 // v2: EpochFund strategy funds (covered call, wheel, ...), every one listed in this registry
 const V2_REGISTRY = '0x868502F926AE068B61EA9CC55042A9F962651e76'
-// Deposits require staking HEDGE in this gate
+const V2_REGISTRY_BLOCK = 88943541 // 2026-10-15, registry deployment
+// HEDGE staking: gates v1 deposits; stakers are paid a share of the funds' protocol fee
 const HEDGE = '0x3f9108a3bECa998C14c6dda822a7e8EaEb88E20D'
 const HEDGE_STAKING_GATE = '0x48ae41142bb0Ddd18DC49BD659b55207FAcE64d8'
 
@@ -29,6 +30,7 @@ async function v1Tvl(api) {
 }
 
 async function v2Tvl(api) {
+  if (await api.getBlock() < V2_REGISTRY_BLOCK) return
   const funds = await api.call({ abi: 'address[]:vaults', target: V2_REGISTRY })
   if (!funds.length) return
   const read = (fields) => Promise.all(fields.map((f) => api.multiCall({ abi: `uint256:${f}`, calls: funds })))
@@ -56,7 +58,7 @@ async function staking(api) {
 
 module.exports = {
   methodology:
-    "TVL counts what depositors own in each Stock Yield vault. v1 vaults are read from managedBalances(): the stock token (active, queued for the next epoch, and redeemed but not yet claimed) plus earned premiums not yet claimed, in USDG. v2 funds, discovered from the v2 VaultRegistry, are read from stockHeld/usdgHeld (NAV, including assets locked as option collateral), pendingStock/pendingUsdg (queued deposits) and reservedStock/reservedUsdg (redeemed but not yet claimed). The option buyer's premium is counted once the epoch settles and it is credited to depositors; the protocol fee, the buyer's exercised stock and the separately funded exit pool are excluded. Staking counts HEDGE staked in the deposit gate shared by v1 and v2, priced by its CoinGecko id.",
+    "TVL counts what depositors own in each Stock Yield vault. v1 vaults are read from managedBalances(): the stock token (active, queued for the next epoch, and redeemed but not yet claimed) plus earned premiums not yet claimed, in USDG. v2 funds, discovered from the v2 VaultRegistry, are read from stockHeld/usdgHeld (NAV, including assets locked as option collateral), pendingStock/pendingUsdg (queued deposits) and reservedStock/reservedUsdg (redeemed but not yet claimed). In both versions the option buyer's premium is held in escrow until the epoch settles and counted once it is credited to depositors; the protocol fee, the buyer's exercised stock and the separately funded exit pool are excluded. Staking counts HEDGE staked in the HEDGE staking contract (the v1 deposit gate), priced by its CoinGecko id.",
   start: 1791614176, // 2026-10-10 06:36:16 UTC, first vault's deployment block 84792706
   robinhood: {
     tvl,
