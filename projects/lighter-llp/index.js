@@ -23,5 +23,5 @@ module.exports = {
   start: '2025-01-18',
   doublecounted: true,
   methodology: 'LLP total equity, including spot assets, from Lighter’s official API at the latest completed UTC-day boundary. Backing assets are also counted by Lighter Bridge.',
-  ethereum: { tvl },
+  zklighter: { tvl },
 }
