@@ -262,6 +262,7 @@ const defaultTokens = {
     '0xd69a4b260ef021ccd4e1c5f5a4fb522b032ce831', // MCAT
     '0x10d4183389e99233db3cc981c43443ebd28ebd5e', // DGAI
     '0x3d4f0513e8a29669b960f9dbca61861548a9a760', // BANANAS
+    '0x444045b0ee1ee319a660a5e3d604ca0ffa35acaa', // BTW
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
