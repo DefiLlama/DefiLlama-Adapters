@@ -878,9 +878,17 @@ module.exports = {
       "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
     }
   },
+  "startale-usd": {
+    "methodology": "TVL is the $M balance held by the USDSC (Startale USD) M0 extension contract on Soneium, which is the collateral backing every minted USDSC.",
+    "start": "2025-11-19",
+    "soneium": {
+      "tvl": { "owners": ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
+    }
+  },
   "startale-earn": {
     "methodology": "TVL is the USDSC held by the Startale Earn vault on Soneium.",
     "start": "2025-11-25",
+    "doublecounted": true,
     "soneium": {
       "tvl": { "owners": ["0xfdeb7e9f59cad080d9158ff850ce79bcf6cdd5f0"], "tokens": ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a"] },
     }
