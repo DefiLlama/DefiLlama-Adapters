@@ -385,6 +385,17 @@ const config = {
       "aleo18lpsmdx0hzwhw6ejaad5j8hjngwddyn0ap8ws8cr0z7gls4k4s9qz5ww07"
     ]
   },
+  "casper": {
+    "owners": [
+      "0202f89b7f0329ef356ad5315f03f5ac2ec0eb248055a806b4b4465132b96a879b86",
+      "0203f3f44c9e80e2cedc1a2909631a3adea8866ee32187f74d0912387359b0ff36a2",
+    ]
+  },
+  "flux": {
+    "owners": [
+      "t1YvimnGBmVA7xDiPnqwbKsvujmSJz4X5m2",
+    ]
+  },
   "allora": {
     "owners": [
       "allo155svs6sgxe55rnvs6ghprtqu0mh69kehdq4wh6",

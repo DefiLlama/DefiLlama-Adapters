@@ -61,6 +61,8 @@ const helpers = {
   "iota": require("./chain/iota"),
   "mina": require("./chain/mina"),
   "decred": require("./chain/decred"),
+  "casper": require("./chain/casper"),
+  "flux": require("./chain/flux"),
 }
 
 svmChains.forEach(chain => {
