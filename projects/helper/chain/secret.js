@@ -2,8 +2,7 @@ const { endPoints } = require('./cosmos');
 const EnigmaUtils = require('../utils/enigma')
 const host = endPoints.secret
 const { toBase64, fromBase64, fromUtf8, } = EnigmaUtils
-const axios = require('axios')
-const { DEFAULT_TIMEOUT } = require('../http')
+const http = require('../http')
 let client
 
 function getClient() {
@@ -53,8 +52,7 @@ class SecretClient {
   }
 
   async get(api, queryParams = {}) {
-    const { data } = await axios.get(this.nodeURL + api, { params: queryParams, timeout: DEFAULT_TIMEOUT })
-    return data
+    return http.get(this.nodeURL + api, { params: queryParams })
   }
 
   async getCodeHashByContractAddr(contract) {

@@ -1,7 +1,6 @@
 const ADDRESSES = require('../coreAssets.json')
-const axios = require("axios")
 const sdk = require('@defillama/sdk')
-const { DEFAULT_TIMEOUT } = require('../http')
+const { get } = require('../http')
 const chain = 'ergo'
 
 const API_HOST = 'https://api.ergoplatform.com/api/v1'
@@ -9,15 +8,11 @@ const API_HOST = 'https://api.ergoplatform.com/api/v1'
 const nullAddress = ADDRESSES.null
 
 async function queryTree({ address, params = {}}) {
-  const { data } = await axios.get(`${API_HOST}/boxes/unspent/byErgoTree/${address}`, {
-    params,
-    timeout: DEFAULT_TIMEOUT,
-  })
-  return data
+  return get(`${API_HOST}/boxes/unspent/byErgoTree/${address}`, { params })
 }
 
 async function getTokens({ address, balances = {}, tokens = [], blacklistedTokens = [] }) {
-  const { data: { confirmed: { nanoErgs, tokens: tokenData}}} = await axios.get(`${API_HOST}/addresses/${address}/balance/total`, { timeout: DEFAULT_TIMEOUT })
+  const { confirmed: { nanoErgs, tokens: tokenData}} = await get(`${API_HOST}/addresses/${address}/balance/total`)
   tokenData.push({ tokenId: nullAddress, amount: nanoErgs ?? 0 })
   tokenData.forEach(({ tokenId, amount }) => {
     if (tokens.length && !tokens.includes(tokenId)) return; // sum only whitelistedTokens
