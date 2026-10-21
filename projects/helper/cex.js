@@ -263,6 +263,26 @@ const defaultTokens = {
     '0x10d4183389e99233db3cc981c43443ebd28ebd5e', // DGAI
     '0x3d4f0513e8a29669b960f9dbca61861548a9a760', // BANANAS
     '0x444045b0ee1ee319a660a5e3d604ca0ffa35acaa', // BTW
+    '0x570a5d26f7765ecb712c0924e4de545b89fd43df', // SOL
+    "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47", // ADA
+    "0xba2ae424d960c26247dd6c32edc70b295c744c43", // DOGE
+    "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD", // LINK
+    "0x7083609fce4d1d8dc0c979aab8c869ea2c873402", // DOT
+    "0x2859e4544c4bb03966803b044a93563bd2d0dd4d", // SHIB
+    "0x4338665cbb7b2485a8855a139b75d5e34ab0db94", // LTC
+    "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe", // XRP
+    "0xa2b726b1145a4773f68593cf171187d8ebe4d495", // INJ
+    "0x1fa4a73a3f0133f0025378af00236f3abdee5d63", // NEAR
+    "0x6FDcdfef7c496407cCb0cEC90f9C5Aaa1Cc8D888", // VET
+    "0xfb6115445Bff7b52FeB98650C87f44907E58f802", // AAVE
+    "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce", // BEAM
+    "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", // CAKE
+    "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153", // FIL
+    "0x43C934A845205F0b514417d757d7235B8f53f1B9", // XLM
+    "0x1Ba42e5193dfA8B03D15dd1B86a3113bbBEF8Eeb", // ZEC
+    "0x000Ae314E2A2172a039B26378814C252734f556A", // ASTER
+    "0x9d10a1ec41Fe7878429BB457e31F9b050D38c633", // BDX
+
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -296,6 +316,8 @@ const defaultTokens = {
     '0x16ee7ecac70d1028e7712751e2ee6ba808a7dd92', // FUN
     '0xe0cd4cacddcbf4f36e845407ce53e87717b6601d', // ICNT
     '0xed6e000def95780fb89734c07ee2ce9f6dcaf110', // EDGE
+    '0xfb31f85a8367210b2e4ed2360d2da9dc2d2ccc95', // EDEL
+    '0xc0634090F2Fe6c6d75e61Be2b949464aBB498973', // KEETA
   ],
   avax: [
     nullAddress,
@@ -399,6 +421,7 @@ const defaultTokens = {
     ADDRESSES.aptos.USDC,
     ADDRESSES.aptos.USDT,
     ADDRESSES.aptos.USDt,
+    ADDRESSES.aptos.USDC_3,
     '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US', // US
     ADDRESSES.aptos.USD1, // USD1
     '0x2a8227993a4e38537a57caefe5e7e9a51327bf6cd732c1f56648f26f68304ebc', // KGEN
@@ -538,19 +561,21 @@ function cexExports(config) {
     }
     if (chain === 'ton') options.onlyWhitelistedTokens = true
     if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
-    exportObj[chain] = { tvl: async (api) => {
-      // supports dynamic owners lists passed as a function
-      const owners = typeof options.owners === 'function' ? await options.owners(api) : options.owners
-      let tokens = options.tokens
-      const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
-      if (binanceTokensOnChain.length) {
-        console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
-        tokens = [...(options.tokens ?? []), ...binanceTokensOnChain]
+    exportObj[chain] = {
+      tvl: async (api) => {
+        // supports dynamic owners lists passed as a function
+        const owners = typeof options.owners === 'function' ? await options.owners(api) : options.owners
+        let tokens = options.tokens
+        const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
+        if (binanceTokensOnChain.length) {
+          console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
+          tokens = [...(options.tokens ?? []), ...binanceTokensOnChain]
+        }
+        const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
+        if (chain === 'solana') runtimeOptions.solOwners = owners
+        return sumTokensExport(runtimeOptions)(api)
       }
-      const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
-      if (chain === 'solana') runtimeOptions.solOwners = owners
-      return sumTokensExport(runtimeOptions)(api)
-    } }
+    }
   })
   if (config.bep2) {
     exportObj.bsc = exportObj.bsc ?? { tvl: () => ({}) }
