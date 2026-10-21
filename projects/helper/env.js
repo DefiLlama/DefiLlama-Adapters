@@ -88,6 +88,8 @@ const DEFAULTS = {
   // p2p/everstake neon proxies are gone (dns), thirdweb refuses the chain; blockscout's eth-rpc proxy still serves it
   NEON_EVM_RPC: 'https://neon.blockscout.com/api/eth-rpc',
   THORCHAIN_LCD: 'https://gateway.liquify.com/chain/thorchain_api',
+  INITIA_LCD: 'https://rest.initia.xyz',
+  KUSAMA_ASSETHUB_SUBSTRATE_RPC: 'https://kusama-asset-hub-rpc.polkadot.io,https://statemine.api.onfinality.io/public',
 }
 
 const ENV_KEYS = [

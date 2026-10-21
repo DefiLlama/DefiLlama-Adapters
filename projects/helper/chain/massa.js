@@ -119,7 +119,14 @@ async function getAddresssDataStoreKeys(address, prefix, is_final) {
 
 }
 
+// native MAS balances (final_balance is already in whole coins)
+async function sumTokens({ api, owners = [] }) {
+  const res = await request('get_addresses', owners)
+  for (const { final_balance } of res) api.addCGToken('massa', parseFloat(final_balance))
+}
+
 module.exports = {
+  sumTokens,
   queryKey,
   u8ArrayToString,
   getTokenBalances,
