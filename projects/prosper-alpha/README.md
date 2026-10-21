@@ -1,5 +1,7 @@
 # Prosper
 
+![Prosper logo](./logo.jpg)
+
 The protocol's requested display name on DefiLlama is **Prosper**.
 
 Prosper is a launchpad for strategy-linked market tokens on Pharos.
