@@ -899,6 +899,12 @@ module.exports = {
       "tvl": { "owners": ["0x8Ae2D8A767c3d59219556b83d4e8385514b6d72B", "0xa4B90fb94B2bBdf1D66A8191E883D0F57BbC6D0b"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH] },
     }
   },
+  "urm": {
+    "methodology": "TVL is the collateral users have deposited into URM CDP positions (RAGE, HESTIA, Ultraround), held in the per-collateral adapter contracts. URM itself is excluded. Protocol-owned reserves in the Fortress are tracked as treasury.",
+    "base": {
+      "tvl": { "tokensAndOwners": [["0xc0df50143EA93AeC63e38A6ED4E92B378079eA15", "0x099072418d0100ff2ced5598f97d42b96f8ea7fe"], ["0xBC7755a153E852CF76cCCDdb4C2e7c368f6259D8", "0xce76cb3239fcb25fd4814c8a4abc563b4ac74c1e"], ["0x5baBfc2F240bc5De90Eb7e19D789412dB1dEc402", "0x0db24c8674cda319e18a5e81fc960b0a2a30a3b1"]] },
+    }
+  },
   "termix": {
     "methodology": "TVL is USDC and USDT held across the escrow (funded jobs not yet settled), staking (provider stakes) and campaign-vault contracts on BSC and Base.",
     "start": "2026-07-02",
