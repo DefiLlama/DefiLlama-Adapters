@@ -20,7 +20,8 @@ async function tvl(api) {
   if (!(lbtcBackingInBTC > 0)) throw new Error(`lombard-btcb: bad staking vault balance: ${data?.balance}`)
   
   // vault base balance is a subset of the deposit addresses, so a gross below it means a short read
-  if (!(balances.bitcoin > lbtcBackingInBTC))
+  // (equality is legitimate: it just means every deposited sat backs LBTC and this adapter nets to 0)
+  if (!(balances.bitcoin >= lbtcBackingInBTC))
     throw new Error(`lombard-btcb: gross ${balances.bitcoin} BTC below LBTC backing ${lbtcBackingInBTC} BTC`)
 
   balances.bitcoin = balances.bitcoin - lbtcBackingInBTC
