@@ -1217,4 +1217,11 @@ module.exports = {
       "tokens": [ADDRESSES.ethereum.USDC, "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c", ADDRESSES.null], // USDC, EURC, ETH
     },
   },
+  "usdf": {
+    "methodology": "TVL is the USDG held by the USDF token contract on Robinhood Chain. USDF is minted 1:1 against USDG deposited into the contract and redeemed for it with withdrawTo, so the contract's USDG balance backs the whole supply.",
+    "robinhood": {
+      "owner": "0x4A35a5eC2A50A4d2957B2F2366E017f526cAB318",
+      "tokens": ["0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"], // USDG
+    },
+  },
 }
