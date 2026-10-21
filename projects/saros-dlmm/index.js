@@ -74,6 +74,7 @@ const blacklistedTokens = new Set([
   'SarosY6Vscao718M4A778z4CGtvcwcGef5M9MEH1LGL', // projects own token, no enough liqudity on the other side of the pool
   'uniBKsEV37qLRFZD7v3Z9drX6voyiCM8WcaePqeSSLc', // uniBTC wash trading
   'CtzPWv73Sn1dMGVU3ZtLv9yWSyUAanBni19YWDaznnkn', // XBTC was trading
+  'DR5cCdABB5sZjyVF7i3mestghxGzvHawQk35sP9QFNjf', // BFBTC
 ]);
 
 async function tvl() {
