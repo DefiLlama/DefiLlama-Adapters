@@ -42,9 +42,7 @@ const OWNER_BATCH_SIZE = 30;
 const ECHELON_CONCURRENCY = 4;
 const HYPERION_LP_CONCURRENCY = 8;
 const RESOURCE_CONCURRENCY = 4;
-const FULLNODE_CONCURRENCY = 2;
-const FULLNODE_INTERVAL_MS = 200;
-const RATE_LIMIT_WINDOW_MS = 300_000;
+const FULLNODE_CONCURRENCY = 4;
 
 /** Known Hyperion pools used by Yield AI safes (token_a/token_b = pool canonical order). */
 const YIELD_AI_HYPERION_POOLS = [
@@ -124,38 +122,17 @@ async function retryAsync(fn, attempts = 5) {
   throw lastError;
 }
 
-/** Pace all fullnode reads together; the SDK handles transport retries and pagination. */
+/**
+ * Cap all fullnode reads together. The SDK already retries transient errors (429, 5xx, timeouts);
+ * a rate limit that outlasts those retries fails the run instead of stalling it into a timeout.
+ */
 function createFullnodeReader() {
-  const requests = pLimit(FULLNODE_CONCURRENCY);
-  const starts = pLimit(1);
-  let nextStart = 0;
+  const limit = pLimit(FULLNODE_CONCURRENCY);
   let reads = 0;
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  async function read(fn) {
-    for (let attempt = 0; ; attempt++) {
-      try {
-        return await requests(async () => {
-          await starts(async () => {
-            // Another in-flight request can extend the shared cooldown while this sleeps.
-            while (Date.now() < nextStart) await sleep(nextStart - Date.now());
-            nextStart = Date.now() + FULLNODE_INTERVAL_MS;
-          });
-          reads++;
-          return await fn();
-        });
-      } catch (e) {
-        if ((e.status ?? e.response?.status) !== 429 || attempt === 1) throw e;
-        const header = e.response?.headers?.["retry-after"];
-        const seconds = header == null ? NaN : Number(header);
-        const retryAt = Date.parse(header);
-        const delay = Number.isFinite(seconds)
-          ? Math.max(1000, seconds * 1000)
-          : Number.isFinite(retryAt) ? Math.max(1000, retryAt - Date.now()) : RATE_LIMIT_WINDOW_MS;
-        nextStart = Math.max(nextStart, Date.now() + delay);
-        sdk.log(`Yield AI: fullnode quota exhausted, waiting ${Math.ceil(delay / 1000)}s before retrying`);
-      }
-    }
-  }
+  const read = (fn) => limit(() => {
+    reads++;
+    return fn();
+  });
   return {
     view: (options) => read(() => function_view(options)),
     resources: (safe) => read(() => getResources(safe, "aptos")),
