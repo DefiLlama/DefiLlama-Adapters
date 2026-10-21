@@ -1,8 +1,6 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const ARC_USDC = '0x3600000000000000000000000000000000000000';
-const ARC_EURC = '0xbEf5f6d51CB62b58e6A8f77868681825C6fe21c1';
-const ARC_CIRBTC = '0x171A4217b86A807A64eB94757Db6849fb4bDbAA0';
 const SYN_TOKEN = '0x8f4b429794ABa4607d177b100Cc5e481D22d0ad4';
 
 const TREASURY_CONTRACT = '0x8205e9782Fe54fD2aaD895b436B695db169F3d7B';
@@ -24,7 +22,7 @@ async function tvl(api) {
   return sumTokens2({
     api,
     owners: [TREASURY_CONTRACT, ...ESCROW_CONTRACTS],
-    tokens: [ARC_USDC, ARC_EURC, ARC_CIRBTC, nullAddress],
+    tokens: [ADDRESSES.arc.USDC, ADDRESSES.arc.EURC, ADDRESSES.arc.cirBTC, nullAddress],
   });
 }
 
