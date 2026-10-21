@@ -60,7 +60,4 @@ module.exports = {
     ['2026-09-07', 'Osmosis market sunset'],
   ],
   solana: { tvl, borrowed },
-  nolus: { tvl: () => ({}) },
-  neutron: { tvl: () => ({}) },
-  osmosis: { tvl: () => ({}) },
 }
