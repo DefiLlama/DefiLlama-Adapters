@@ -80,8 +80,8 @@ async function _queryAllium(sqlQuery) {
             if (status === "success") {
                 return retrieveAlliumResults(token[sqlQuery])
             } else if (status === "failed") {
-                console.log(`Query ${sqlQuery} failed`, statusReq.data)
-                bail(new Error(`Query ${sqlQuery} failed, error ${JSON.stringify(statusReq.data)}`))
+                console.log(`Query ${sqlQuery} failed`, status)
+                bail(new Error(`Query ${sqlQuery} failed, error ${JSON.stringify(status)}`))
                 return;
             }
             throw new Error("Still running")
