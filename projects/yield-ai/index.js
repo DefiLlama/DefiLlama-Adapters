@@ -28,6 +28,11 @@ const DLP_VAULT =
 const DLP_SHARE =
   "0x119860710560b43277b7663ff587081d57f167e2c156de7d60c483028bf9b146";
 const USDC = ADDRESSES.aptos.USDC_3;
+// These direct balances are intentionally excluded from Yield AI TVL.
+const EXCLUDED_DIRECT_ASSETS = new Set([
+  "0xfaf4e633ae9eb31366c9ca24214231760926576c7b625313b3688b5e900731f6::staking::ThalaAPT",
+  "0x51964f09020498a1421a2a3bafe8e1d9fa72574b60446486c599bc6f3e9fae29::echelon_coin::ELON",
+]);
 
 const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const INDEXER_PAGE_SIZE = 100; // the indexer caps responses at 100 rows
@@ -543,6 +548,7 @@ async function tvl(api) {
       );
 
       for (const row of rows) {
+        if (EXCLUDED_DIRECT_ASSETS.has(row.asset_type)) continue;
         const amtStr = toIntegerString(row.amount);
         if (!amtStr || amtStr === "0" || /^-/.test(amtStr)) continue;
 
@@ -614,5 +620,5 @@ module.exports = {
   isHeavyProtocol: true,
   doublecounted: true,
   aptos: { tvl },
-  methodology: "Counts fungible-asset balances on Yield AI safe addresses, including native APT (Aptos indexer), Echelon supply positions held by safes, and open Hyperion CLMM LP positions. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Hyperion and Decibel are also tracked as separate protocols (doublecounted: true).",
+  methodology: "Counts fungible-asset balances on Yield AI safe addresses, including native APT (Aptos indexer), Echelon supply positions held by safes, and open Hyperion CLMM LP positions. Direct ThalaAPT and ELON balances are excluded. Decibel DLP vault shares (held or posted as Echelon collateral) are counted as USDC at the vault's on-chain net asset value per share. Echelon, Hyperion and Decibel are also tracked as separate protocols (doublecounted: true).",
 };
