@@ -86,7 +86,7 @@ const evmOwners = [
   "0xa4856e07d14045014b2c3fece5460bd37b310f10", // add on 05/10/2026
 ]
 
-const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos","avax","polygon","metis","kava","klaytn","base","hyperliquid","sonic","morph"]
+const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos","avax","polygon","metis","kava","klaytn","base","hyperliquid","sonic","morph","plasma","robinhood","arc","sei","monad","linea","scroll","wc","megaeth"]
 
 const config = {
   tron: {
