@@ -1,8 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // [underlying, StrategyManager, LayerZero OFT / OFTAdapter] per vault.
 // Strategies are read from StrategyManager.getStrategies(), so new ones are picked up automatically.
-// Every strategy is an ERC4626 whose shares are held by the StrategyManager.
+// Every strategy is an ERC4626 dedicated to the vault, so its totalAssets is counted.
 const config = {
   base: [
     [ADDRESSES.base.USDC, '0xf7E745658fa6f1fe8f2CAb47861a273991Cd3374', '0xd7abc360dfcf1b6dd0a03138235e12a2bc1c1c8b'],
@@ -17,14 +18,10 @@ const config = {
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
-      for (const [token, sm] of config[chain]) {
-        const strategies = await api.call({ abi: 'address[]:getStrategies', target: sm })
-        const shares = await api.multiCall({ abi: 'erc20:balanceOf', calls: strategies.map(target => ({ target, params: [sm] })) })
-        const assets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: strategies.map((target, i) => ({ target, params: [shares[i]] })) })
-        api.add(token, assets)
-      }
+      const strategies = await api.multiCall({ abi: 'address[]:getStrategies', calls: config[chain].map(([, sm]) => sm) })
+      await api.erc4626Sum({ calls: strategies.flat(), isOG4626: true })
       // Idle funds sitting in the StrategyManager and in the bridge contracts
-      return api.sumTokens({ tokensAndOwners: config[chain].flatMap(([token, sm, oft]) => [[token, sm], [token, oft]]) })
+      return sumTokens2({ api, tokensAndOwners: config[chain].flatMap(([token, sm, oft]) => [[token, sm], [token, oft]]) })
     }
   }
 })
