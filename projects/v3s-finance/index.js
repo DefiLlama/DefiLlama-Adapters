@@ -1,4 +1,4 @@
-const { stakingPriceLP } = require("../helper/staking");
+const { staking } = require("../helper/staking");
 const { masterchefExports, } = require('../helper/unknownTokens');
 
 const { pool2 } = require('../helper/pool2');
@@ -24,6 +24,6 @@ module.exports = mergeExports([masterchefExports({
 }), {
   cronos: {
     pool2: pool2(vShareRewardsAddr, pool2LPs),
-    staking: stakingPriceLP(boardroom, vshare, vShareCroAddress, "wrapped-cro")
+    staking: staking(boardroom, vshare)
   },
 }])

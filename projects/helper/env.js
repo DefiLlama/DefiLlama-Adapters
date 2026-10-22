@@ -38,6 +38,7 @@ const DEFAULTS = {
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
+  DARWINIA_RPC: "https://rpc.darwinia.network",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   SHIDO_RPC: 'https://shidoscan.net/api/eth-rpc',
   ACE_RPC: 'https://explorer-endurance.fusionist.io/api/eth-rpc',
