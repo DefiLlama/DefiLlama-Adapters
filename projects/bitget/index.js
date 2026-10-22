@@ -87,6 +87,7 @@ const evmOwners = [
   "0xa4856e07d14045014b2c3fece5460bd37b310f10", // add on 05/10/2026
   "0x46852e1ff32739ddd2623bd06b27ca39f1143cc7", // add on 21/10/2026
   "0x95047fe21071e8038810975cfc9ee6da7dee33a4", // add on 21/10/2026
+  "0x43f17ce0473709e9f5c91cf950811171a248556d", 
 ]
 
 const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos","avax","polygon","metis","kava","klaytn","base","hyperliquid","sonic","morph","plasma","robinhood","arc","sei","monad","linea","scroll","wc","megaeth"]
