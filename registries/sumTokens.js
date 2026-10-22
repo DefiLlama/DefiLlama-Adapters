@@ -20431,6 +20431,13 @@ const configs = {
       }
     },
   },
+  "newsight": {
+    "methodology": "TVL is the USDC collateral held in NewSight's Vault on Pharos backing prediction-market bets and split positions. User account balances and trading fees sent to the separate fee collector are excluded.",
+    "pharos": {
+      "owner": "0x768b959191ce5876cabbbc014a08d72615bdde54",
+      "token": ADDRESSES.pharos.USDC
+    },
+  },
   "nexion": {
     "methodology": "TVL is farm deposits. Lending TVL and borrowed are tracked separately in the nexion-lending adapter. Staking is NEON locked in staking contracts (V1 + V2).",
     "pulse": {
