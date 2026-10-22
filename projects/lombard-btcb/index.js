@@ -17,10 +17,14 @@ async function tvl(api) {
   )
   
   const lbtcBackingInBTC = Number(data.balance) / 1e8
+  if (!(lbtcBackingInBTC > 0)) throw new Error(`lombard-btcb: bad staking vault balance: ${data?.balance}`)
   
-  if (balances.bitcoin) {
-    balances.bitcoin = balances.bitcoin - lbtcBackingInBTC
-  }
+  // vault base balance is a subset of the deposit addresses, so a gross below it means a short read
+  // (equality is legitimate: it just means every deposited sat backs LBTC and this adapter nets to 0)
+  if (!(balances.bitcoin >= lbtcBackingInBTC))
+    throw new Error(`lombard-btcb: gross ${balances.bitcoin} BTC below LBTC backing ${lbtcBackingInBTC} BTC`)
+
+  balances.bitcoin = balances.bitcoin - lbtcBackingInBTC
 
   return balances
 }

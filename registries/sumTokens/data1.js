@@ -379,6 +379,17 @@ module.exports = {
         ADDRESSES.starknet.ETH,
         ADDRESSES.starknet.USDT
       ]
+    },
+    "arc": {
+      "owners": [
+        "0x4445AACaCC2dE174B77b37Eb27529ce0B36bC580",
+        "0x89103959Eef431bEa308027b8A5073c5ddc867A2"
+      ],
+      "tokens": [
+        ADDRESSES.arc.USDC,
+        ADDRESSES.arc.WETH,
+        ADDRESSES.arc.cirBTC
+      ]
     }
   },
   "Duality": {

@@ -120,7 +120,16 @@ async function getTokenPriceUsd(tokenSymbol, tokenContract) {
   return exchangeRate.price
 }
 
+// native XPR balances of named accounts
+async function sumTokens({ api, owners = [] }) {
+  for (const owner of owners) {
+    const [balance] = (await getCurrencyBalance('eosio.token', owner, 'XPR')) ?? []
+    api.addCGToken('proton', parseFloat(balance ?? '0'))
+  }
+}
+
 module.exports = {
+  sumTokens,
   getTableRows,
   getCurrencyBalance,
   getAllOracleData,

@@ -29,6 +29,12 @@ const helpers = {
   "arweave": require("./chain/arweave"),
   "pi": require("./chain/pi"),
   "polkadot": require("./chain/polkadot"),
+  "kusama": require("./chain/kusama"),
+  "filecoin": require("./chain/filecoin"),
+  "neo3": require("./chain/neo3"),
+  "ontology": require("./chain/ontology"),
+  "proton": require("./chain/proton"),
+  "massa": require("./chain/massa"),
   "acala": require("./chain/acala"),
   "bifrost": require("./chain/bifrost"),
   "aelf": require("./chain/aelf"),
@@ -55,6 +61,8 @@ const helpers = {
   "iota": require("./chain/iota"),
   "mina": require("./chain/mina"),
   "decred": require("./chain/decred"),
+  "casper": require("./chain/casper"),
+  "flux": require("./chain/flux"),
 }
 
 svmChains.forEach(chain => {

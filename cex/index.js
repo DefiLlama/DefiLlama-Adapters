@@ -2169,7 +2169,9 @@ const configs = {
     bitcoin: {
       owners: [
         "3PUAxZ26mF8Ub1oQrc7TK7NvTe93KaNQZP",
-        "bc1q068k89wp2dt3v7wrp8uyscd3llvz6tytz3ve8pd4e2f6z9a5kdjqtqe505"
+        "bc1q068k89wp2dt3v7wrp8uyscd3llvz6tytz3ve8pd4e2f6z9a5kdjqtqe505",
+        "37d9BCaP6kDqZEuRrF2Cp4etu62M4R5b9o",
+        "37xfkbus1PjR621UF1zQLodcFKfVnNLUaU"
       ]
     },
     ethereum: {

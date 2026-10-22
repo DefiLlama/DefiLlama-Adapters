@@ -44,7 +44,7 @@ async function get(endpoint, options = {}) {
 }
 
 async function getWithMetadata(endpoint) {
-  return axios.get(endpoint)
+  return axios.get(endpoint, { timeout: DEFAULT_TIMEOUT })
 }
 
 async function post(endpoint, body, options) {
@@ -122,6 +122,7 @@ async function proxiedFetch(url) {
   });
   const { data } = await client
     .get(url.toString(), {
+      timeout: DEFAULT_TIMEOUT,
       proxy: {
         protocol: "https",
         host,
@@ -133,6 +134,7 @@ async function proxiedFetch(url) {
 }
 
 module.exports = {
+  DEFAULT_TIMEOUT,
   get,
   getCache,
   post,

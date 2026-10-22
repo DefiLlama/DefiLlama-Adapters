@@ -21,11 +21,11 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'provenance', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band', 'axiome', 'allora',
   'celestia', 'dydx', 'dungeon', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion', 'zigchain', 'thorchain',
-  'akash', 'fetchhub'
+  'akash', 'fetchhub', 'initia',
 ]
 const caseSensitiveChains = [...ibcChains, ...svmChains, 'canton', 'mina', 'decred', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', 'aleo',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash', 'qubic', 'constellation', 'supra',
-  'kaspa', 'bsv', 'arweave', 'pi', 'zcash', 'bitcoincash', 'gnoland',
+  'kaspa', 'bsv', 'arweave', 'pi', 'zcash', 'flux', 'bitcoincash', 'gnoland', 'kusama', 'filecoin', 'neo3', 'ontology', 'proton',
 ]
 
 const transformTokens = {
@@ -51,6 +51,10 @@ const fixBalancesTokens = {
   // azig is not priced under zigchain:azig by the coins service yet
   zigchain: {
     azig: { coingeckoId: 'zignaly', decimals: 18 },
+  },
+  // the coins service has no platon:<null address> entry for the gas token
+  platon: {
+    [ADDRESSES.null]: { coingeckoId: 'platon-network', decimals: 18 },
   },
 }
 

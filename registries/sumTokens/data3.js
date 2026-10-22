@@ -878,9 +878,17 @@ module.exports = {
       "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
     }
   },
+  "startale-usd": {
+    "methodology": "TVL is the $M balance held by the USDSC (Startale USD) M0 extension contract on Soneium, which is the collateral backing every minted USDSC.",
+    "start": "2025-11-19",
+    "soneium": {
+      "tvl": { "owners": ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
+    }
+  },
   "startale-earn": {
     "methodology": "TVL is the USDSC held by the Startale Earn vault on Soneium.",
     "start": "2025-11-25",
+    "doublecounted": true,
     "soneium": {
       "tvl": { "owners": ["0xfdeb7e9f59cad080d9158ff850ce79bcf6cdd5f0"], "tokens": ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a"] },
     }
@@ -889,6 +897,12 @@ module.exports = {
     "methodology": "TVL is the sum of USDG and WETH balances held by VeiledHood's Veiledhood and VeilSwap vault contracts on Robinhood Chain, read directly on-chain. Per-user balances are tracked off-chain via a Merkle-committed ledger, but the vault's aggregate token balances are public and require no private state to compute.",
     "robinhood": {
       "tvl": { "owners": ["0x8Ae2D8A767c3d59219556b83d4e8385514b6d72B", "0xa4B90fb94B2bBdf1D66A8191E883D0F57BbC6D0b"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH] },
+    }
+  },
+  "urm": {
+    "methodology": "TVL is the collateral users have deposited into URM CDP positions (RAGE, HESTIA, Ultraround), held in the per-collateral adapter contracts. URM itself is excluded. Protocol-owned reserves in the Fortress are tracked as treasury.",
+    "base": {
+      "tvl": { "tokensAndOwners": [["0xc0df50143EA93AeC63e38A6ED4E92B378079eA15", "0x099072418d0100ff2ced5598f97d42b96f8ea7fe"], ["0xBC7755a153E852CF76cCCDdb4C2e7c368f6259D8", "0xce76cb3239fcb25fd4814c8a4abc563b4ac74c1e"], ["0x5baBfc2F240bc5De90Eb7e19D789412dB1dEc402", "0x0db24c8674cda319e18a5e81fc960b0a2a30a3b1"]] },
     }
   },
   "termix": {
@@ -1217,7 +1231,18 @@ module.exports = {
       "tokens": [ADDRESSES.ethereum.USDC, "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c", ADDRESSES.null], // USDC, EURC, ETH
     },
   },
-  "veil-zk": {
+
+  "nova-markets": {
+    "methodology": "TVL is the USDC deposited in the Conviction Pool, the nUSDC vault that takes the other side of every trade on Nova's markets, plus the USDC collateral of open trades held by Nova's trading contract on Arbitrum. Contracts: https://docs.nova.markets/contracts.md",
+    "start": "2026-09-20",
+    "arbitrum": {
+      "tokensAndOwners": [
+        [ADDRESSES.arbitrum.USDC_CIRCLE, "0x9cA80193712F372e2ff33A00127292884F6F8598"], // Conviction Pool (nUSDC vault)
+        [ADDRESSES.arbitrum.USDC_CIRCLE, "0x1410FA3F87F6A6ea221E5D2aB608C23005eC34f3"], // trading contract (diamond)
+      ]
+    },
+  },
+   "veil-zk": {
     "methodology": "Tokens held in Veil's shielded-pool vaults: every SPL and Token-2022 vault is a token account owned by the program's vault_authority PDA. The protocol's own token, $VEIL, is excluded.",
     "solana": {
       "owner": "A8Qjyh2nWgEUkTQAAmghxE7u7nJ4xarQybDpTxWJdU4S", // vault_authority PDA of program FmsMbXrQXr1mARn45Cm52sdrwAWHDxqF8473t6woq9DP

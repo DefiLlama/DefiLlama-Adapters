@@ -1,15 +1,16 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 /**
- * Umbrae runs two AMM designs on Base, both deployed from factories that expose
- * the same enumeration surface (`allPairsLength()` / `allPairs(uint256)`) and
- * whose pairs expose `tokenX()` / `tokenY()`:
+ * Umbrae runs two AMM designs, both deployed from factories that expose the
+ * same enumeration surface (`allPairsLength()` / `allPairs(uint256)`) and whose
+ * pairs expose `tokenX()` / `tokenY()`:
  *
  *  - DLMM  — a Liquidity Book style discrete-bin concentrated-liquidity AMM.
- *            Two generations are live: the original factory, which is paused
- *            for trading but still open for LP withdrawals (so it still holds
- *            user funds and must be counted), and the current v2 factory.
- *  - DAMM  — a dynamic-fee constant-product AMM.
+ *            On Base two generations are live: the original factory, which is
+ *            paused for trading but still open for LP withdrawals (so it still
+ *            holds user funds and must be counted), and the current v2 factory.
+ *            Robinhood Chain runs the same DLMM v2 contracts from its own factory.
+ *  - DAMM  — a dynamic-fee constant-product AMM (Base only).
  *
  * In both designs the pair contract custodies the liquidity directly, so TVL is
  * the pair's balance of its own two tokens.
@@ -18,11 +19,16 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 // historical blocks where a later factory does not exist yet, and calling
 // `allPairsLength()` on an empty address reverts, so factories are filtered by
 // block before they are queried.
-const factories = [
-  { factory: '0x17Da44dcbdffD8c715be7A368E19F252C2940Fee', fromBlock: 43528312 }, // DLMM, original deployment (withdrawal-only)
-  { factory: '0x9DBB9289d0D75508b5D8EE01FfE4eb7c412F733b', fromBlock: 50392460 }, // DLMM v2
-  { factory: '0xD14322b444415d78DBBF646BB369Ec325a1aCD5c', fromBlock: 45693740 }, // DAMM v4
-]
+const config = {
+  base: [
+    { factory: '0x17Da44dcbdffD8c715be7A368E19F252C2940Fee', fromBlock: 43528312 }, // DLMM, original deployment (withdrawal-only)
+    { factory: '0x9DBB9289d0D75508b5D8EE01FfE4eb7c412F733b', fromBlock: 50392460 }, // DLMM v2
+    { factory: '0xD14322b444415d78DBBF646BB369Ec325a1aCD5c', fromBlock: 45693740 }, // DAMM v4
+  ],
+  robinhood: [
+    { factory: '0xea3a13d8734b53A322181885E8c6C3D82FFb3A02', fromBlock: 88948093 }, // DLMM v2, deployed 2026-10-15
+  ],
+}
 
 const abi = {
   allPairsLength: 'uint256:allPairsLength',
@@ -33,14 +39,14 @@ const abi = {
 
 /**
  * Read pool token balances without calling factories before their deployment.
- * @param {import('@defillama/sdk').ChainApi} api Snapshot-bound Base RPC client.
+ * @param {import('@defillama/sdk').ChainApi} api Snapshot-bound RPC client for one configured chain.
  * @returns {Promise<object>} Underlying token balances for DefiLlama pricing.
  */
 async function tvl(api) {
   const tokensAndOwners = []
   const block = await api.getBlock()
 
-  for (const { factory, fromBlock } of factories) {
+  for (const { factory, fromBlock } of config[api.chain]) {
     if (block < fromBlock) continue
 
     const pairs = await api.fetchList({
@@ -62,9 +68,12 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is the sum of both pair tokens held by every liquidity pool Umbrae has deployed on Base. Pools are enumerated on chain from the three pair factories (the original DLMM factory, which is paused for trading but still holds withdrawable LP funds; the current DLMM v2 factory; and the DAMM v4 factory) via allPairsLength()/allPairs(), and each pool contributes its own balance of tokenX and tokenY. DLMM is a Liquidity Book style discrete-bin concentrated-liquidity AMM and DAMM is a dynamic-fee constant-product AMM; in both, the pair contract custodies liquidity directly, so no LP unwrapping is required.',
+    'TVL is the sum of both pair tokens held by every liquidity pool Umbrae has deployed on Base and Robinhood Chain. Pools are enumerated on chain from the pair factories via allPairsLength()/allPairs(): on Base, the original DLMM factory (paused for trading but still holding withdrawable LP funds), the current DLMM v2 factory and the DAMM v4 factory; on Robinhood Chain, the DLMM v2 factory. Each pool contributes its own balance of tokenX and tokenY. DLMM is a Liquidity Book style discrete-bin concentrated-liquidity AMM and DAMM is a dynamic-fee constant-product AMM; in both, the pair contract custodies liquidity directly, so no LP unwrapping is required.',
   start: '2026-03-18', // 2026-03-18, Base block 43528312 — first DLMM factory deployment
   base: {
+    tvl,
+  },
+  robinhood: {
     tvl,
   },
 }

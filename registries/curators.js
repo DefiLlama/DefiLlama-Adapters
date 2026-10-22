@@ -1554,6 +1554,8 @@ const configs = {
             "0xb09f761cb13baca8ec087ac476647361b6314f98", // Lagoon: Flagship cbBTC
             "0x7a12D4B719F5aA479eCD60dEfED909fb2A37e428", // Lagoon: RockSolid Looped ETH Vault
             "0xce0b790ae0d8cf91e01f3fb69025e14569b574f3", // Lagoon: Tulipa USDC
+            "0xaa1d6fa2bc21d5518dcbb0fa37e07b44c9899d26", // Ember: Tulipa Multi-Asset RWA (tulPRWA)
+            "0xbfda6fb6e61bdeb2a2ce3befebbd4939d0d828aa", // Ember: Enigma ONE USD, co-managed with Hilbert
           ],
         },
         berachain: {
@@ -1591,6 +1593,7 @@ const configs = {
         base: {
           erc4626: [
             "0x61a8606e04d350dfa1d1aaa68b37260746ae47d4", // Creditcoop: Tulipa Credit Vault
+            "0x9c2dcdbdb3f0a0f628d1112bbcabd9ae75353df3", // Ember: Syntetika BTC Hilbert Basis+ (hBTC), co-managed with Hilbert
           ]
         }
       }

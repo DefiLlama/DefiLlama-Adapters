@@ -1,7 +1,7 @@
 
 const { getCache, setCache, } = require('../cache');
 const sdk = require('@defillama/sdk');
-const { default: axios } = require('axios');
+const { get } = require('../http');
 const ethers = require("ethers")
 
 const cacheFolder = 'logs'
@@ -222,7 +222,7 @@ async function getLogsFromEtherscanAPI({ address, fromBlock, toBlock, api, topic
   if (!topic0.startsWith('0x')) topic0 = ethers.id(topic0)
   const apiKey = process.env.SDK_ETHERSCAN_API_KEY
 
-  const { data } = await axios.get('https://api.etherscan.io/v2/api', {
+  const data = await get('https://api.etherscan.io/v2/api', {
     params: {
       address,
       fromBlock,

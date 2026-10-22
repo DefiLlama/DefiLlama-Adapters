@@ -7,11 +7,11 @@ const erc20 = require('./abis/erc20.json');
 const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
-  return axios.get(url)
+  return axios.get(url, { timeout: http.DEFAULT_TIMEOUT })
 }
 
 async function postURL(url, data) {
-  return axios.post(url, data)
+  return axios.post(url, data, { timeout: http.DEFAULT_TIMEOUT })
 }
 
 function createIncrementArray(length) {

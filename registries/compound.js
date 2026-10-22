@@ -649,6 +649,11 @@ const configs = {
   },
   'kyros-finance': {
     robinhood: [{ comptroller: '0x5f3Da5a8bCF26011e95CA2D03aFc6E0C54D4F0c9', cether: '0x73940Df7412C3c04aF3975BE26652B467BAE65A3' }],
+  },
+  'kinetixdao': {
+    methodology: 'TVL counts the underlying tokens (KKUB and USDT) held as cash by every market listed by the KINETIXDAO Comptroller on KUB Chain, i.e. supplied minus borrowed. Native KUB is wrapped to KKUB by the gateway before it is supplied, so it is counted as KKUB. Borrowed counts the totalBorrows of each market and is not included in TVL.',
+    start: '2026-10-08',
+    bitkub: [{comptroller: '0xc5DD9f1cE32f19C0a76a924F681914A8D10E8008'},]
   }
 }
 

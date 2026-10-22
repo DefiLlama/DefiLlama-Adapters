@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
+const avaxX = require("../helper/chain/avaxX");
 
 const evmOwners = [
   "0x0639556f03714a74a5feeaf5736a4a64ff70d206",
@@ -84,9 +85,12 @@ const evmOwners = [
   "0xb3e8a3b17c50f077685bcdef2ca496e54d91c4bd",
   "0x4cad1efbfd5f0848e0c3c14fab23f92b2fa81f17",
   "0xa4856e07d14045014b2c3fece5460bd37b310f10", // add on 05/10/2026
+  "0x46852e1ff32739ddd2623bd06b27ca39f1143cc7", // add on 21/10/2026
+  "0x95047fe21071e8038810975cfc9ee6da7dee33a4", // add on 21/10/2026
+  "0x43f17ce0473709e9f5c91cf950811171a248556d", 
 ]
 
-const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos","avax","polygon","metis","kava","klaytn","base","hyperliquid","sonic","morph"]
+const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos","avax","polygon","metis","kava","klaytn","base","hyperliquid","sonic","morph","plasma","robinhood","arc","sei","monad","linea","scroll","wc","megaeth"]
 
 const config = {
   tron: {
@@ -120,6 +124,9 @@ const config = {
       "TUktrKwLLGGjks6DoN1zGta8muskbd9tnk",
       "TFfNrnZzHVMQ7DsHLvcTyvZheqabG4KW4W",
       "TKCFasXqJw3ezQiF1qYWYd78Edfb2NvpBV",
+      "TBf14pAU2aZ2kYjnfwDgcVDF2nH6kVHhkZ", // add on 21/10/2026
+      "TJxe1MWrb5ppk3beWArqU2Dwg3jvhGUGx5", // add on 21/10/2026
+      "THxgDFGkDejK452u9uumRY3W1KCjj6dk2Y", // add on 21/10/2026
     ],
   },
   bitcoin: {
@@ -131,6 +138,9 @@ const config = {
       "rGDreBvnHrX1get7na3J4oowN19ny4GzFn",
       "rwTTsHVUDF8Ub2nzV2oAeWxfJzUvobXLEf",
       "rMCVBYFYtVJy6F4gUSd7RrM8GXApM6MNDN", // add on 05/10/2026
+      "rGxYmmME93guyy4HuNv1bRf6gak8vGNN4B", // add on 21/10/2026
+      "rnQ3YeYzjkLS1oum4FZ9HXzAksm23CaQGS", // add on 21/10/2026
+      "rUKr6eh6emrKDg12rT3XDMrAbyeu8r2BnU", // add on 21/10/2026
     ],
   },
   solana: {
@@ -150,6 +160,9 @@ const config = {
       "8ZPaybdHeNwpoxmU1ALcbLoE3eK443Jq4emk82VCscag",
       "3RtJvxpkok13LGQsQ3Ye4QvCkbP3ioMpra7ccuf9XqsF", // add on 18/09/2026
       "Bk57qr4wSvzCqGKHD2vAc6n88oHyDoD8b3HnvGEF5iQN", // add on 18/09/2026
+      "3NCT4RE6ix2Qfdw1c5kfNYBfJmVHPcJd9cABQ6aP6Zzg", // add on 21/10/2026
+      "7ScZfANFtjzDZWk94DLb2eZUs8zBgYmnotYrsDd1MfYv", // add on 21/10/2026
+      "HnxVDcZamsojYy3AFZndHEtQ9y5sf1H1V1pyLYyWk3BN", // add on 21/10/2026
     ],
   },
   doge: {
@@ -161,6 +174,7 @@ const config = {
   near: {
     owners: [
       '241754260760e04e3a90acf27b1c54296b81e52a3b21fab8347ae88066946092', // add on 05/10/2026
+      '454e9a19b4552d08132efb9db354f8cdb1ceb155d8c2c9806f6cb15d947187cf', // add on 21/10/2026
     ],
   },
   starknet: {
@@ -229,6 +243,8 @@ const config = {
   cardano: {
     owners: [
       "Ae2tdPwUPEZKnykUqXyYQxqJSnADNkm4ELUnyqZUBHcCrNJVDqozLYCt9Jv",
+      "addr1q8cxktsw8qm8zqj0ru28s9q8yxgqlznejhtku7e22ww2xe8sdvhquwpkwypy78c50q2qwgvsp798n9whdeaj55uu5djqyhdfkl", // add on 21/10/2026
+      "Ae2tdPwUPEYzbrfg1PRAMswDuoY3VusBRyVEWhE4QBp2CMj8QZc6HcVEiB8", // add on 21/10/2026
     ]
   },
   sui: {
@@ -238,11 +254,98 @@ const config = {
       "0x9529d8d9621874f60e342e3f0f049157eda68b2d5085f6526b9fced8913b97a8",
       "0x3a1520d6be3a16f89655f542f6e5b050d3065ff67d7287ed8005259c4a0b36b7",
       "0x98252cfb5f8481cc4e395deb88000ffff5ab8fdd870be91fc48abfa83ec21a10",
+      "0x344d78ea46fb432ec42e29dbfc29bbad017b3400d9b4d55711d62448f996c9b5", // add on 21/10/2026
     ]
   },
+  // chains below added on 21/10/2026 from the bitget address list (wallets under 10k usd left out)
+  xdc: { owners: ["0x68c34a122c3b632e7ecd39f553dd5ffc1433f45b"] }, // xdc68c34a122c3b632e7ecd39f553dd5ffc1433f45b
+  harmony: { owners: ["0xb09dd9c27da4cbbf28f92109eb13615b34257fd3"] }, // one1kzwansna5n9m728eyyy7kymptv6z2l7n92uudx
+  fetchhub: { owners: ["fetch1s3l4s5f2j79872qjtt9f3p86vxxyf6g854lw4v"] },
+  zcash: { owners: ["t1Xd1Lx2EXi2qwE1Kpc2F95TE2VrdKuJriY"] },
+  bittensor: {
+    owners: [
+      "5ELWnR5A7DUmmqHsYPA3iZMFu1BX3gceruEqFPtsmTkCqR7J",
+      "5HbDZ6ULuwZegAMSPaS2kaUfBLMDaht5t48RcDrQATSgGCAR",
+    ],
+  },
+  pi: { owners: ["GDFNWH6ZFJVHJDLBMNOUT35X4EEKQVJAO3ZDL4NL7VQJLC4PJOQFWJ75"] },
+  aptos: {
+    owners: [
+      "0x48d1db7cb8529f17c88300515ed068bb8bbf01e6bd60ac81071d1160562a5144",
+      "0xbabf76f1e6ac1af9c2666c07be12f90b188ed484fcef0bf1408961b5461373e9",
+    ],
+  },
+  litecoin: { owners: ["LSm75uocx76va8UvrVqyTztkWwXDvjS416"] },
+  stellar: { owners: ["GBD6CUO335LQMOIZ53CE3L6QJ3X3DAQVC7F5TWE2BKI7AQWTHDUHFNJ4"] },
+  hedera: { owners: ["0.0.4735544"] },
+  kaspa: { owners: ["kaspa:qqywx2wszmnrsu0mzgav85rdwvzangfpdj9j3ady9jpr7hu4u8c2wl9wqgd6j"] },
+  polkadot: {
+    owners: [
+      "1hBczpJHSWrEejKT5hevU3h2oBKNBpY26zPo7jTpVanj3JV",
+      "13KjpoC6rn9NsKzweB5p68oBcsp77NvMSGdp6BZTMHjHTupB",
+      "15u2N1pqWr56teREjQTP5M3tk1SPQjEoUAV6jFfcQCoVy3S5",
+    ],
+  },
+  injective: { owners: ["inj18seg7en3tdhy4ugvfv3s93srapdlkkpv6z56r4"] },
+  icp: { owners: ["bad030b417484232fd2019cb89096feea3fdd3d9eb39e1d07bcb9a13c7673464"] },
+  algorand: { owners: ["5622JWBD3TDOJUTGFIB3H3TI4JE5ARW7W3WQL6JIJQ5ATFQISRSBVKOD6U"] },
+  canton: { owners: ["bg::1220ea89032d4307c135ff8dadbb0b52f9326cd337a7208b0ac4a357bb254acee9de"] },
+  celestia: { owners: ["celestia1jm9gwpdk0v69kva9hepgnprfjl3u2z4duh9ver"] },
+  bsv: { owners: ["12ov5BL4NbCn8GsdeV6fdPa5HrHGsdAopK"] },
+  qubic: {
+    owners: [
+      "EXNRRBDPYFQPXFPXCMUHZVEEBRQCBEAUDYUBHKGTRCKHVSRAQXWHQCXDLZXL",
+      "JAKDBYHQOUICADHMNZMCMQIUVLZCTCCGEYNLBBGPBFNNTVZZCBCIMWICCFHN",
+      "YVUFYVKKSHOXACARARSIKCBJMFZAFHTGUNAALZAFOFBAXOCJEPBYKTCCDEMJ",
+      "VYHFEIJMNILNIBWYRRBXEQNGKFGAKFRVYQTYZTBIADXKBQASXKICMYAEZXBG",
+      "WZQYIRBZASLIIFBIDJZFEUMUEWACTSNKVBRPLUKJZFGCSUTKHDCYXJYERBIE",
+      "OQGNMLUVQCMUBETYQXBJMBPDTJIARHYVUZOAZBKSNGESLFHFQYLWNULFTZDM",
+      "QGBXYBWVPJBKUFWZLUSNYQBAWVQDIDBWVBXGWUHYTABALTDSNTCEKPVGKXTA",
+      "LVGVWADWLDEBIFIASRDFSBKKXIFALOZOSCCFSLIGNDKIYHWUKZPPQNBFPSSF",
+    ],
+  },
+  arweave: { owners: ["kvxXYE6q7v6LrmQJLBEQZ2abWDdVyjQDERqM1YeMvf0"] },
+  conflux: { owners: ["cfx:aam5xn1e71juzwgs4e94t3yghj1ayw1b56zxk7bv8u"] },
+  terra: {
+    owners: [
+      "terra1j95fa7sdyudcw2rf96kyxdv42l90k0x8xtc8c3",
+      "terra1vq3dyzwxrhlwxkl9ld8yjxzpedcs75h7w3afr2",
+    ],
+  },
+  cosmos: { owners: ["cosmos134amdum68rsfv4wpkanx253vw6zkmmfa3ssrxa"] },
+  stacks: { owners: ["SP28TC4FHYSX63N7FTV56A6GJE5B0W79W1WXJ9262"] },
+  eos: { owners: ["bitgeteosdep"] },
+  oasis: { owners: ["oasis1qpfpj0fr6tv3k54p2euddyj6lezm5tfqhv3qjtd6"] },
+  thorchain: { owners: ["thor1ye3jyw5nfnjrch4wk7zxuuxvx3wjuv9nsyumpr"] },
+  dydx: { owners: ["dydx1zgx5m9ly6fzt4y9tdlnxa70u96fr5ygjxjzmhg"] },
+  nervos: { owners: ["ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqt9xmgc7s0x0ly43qpzev2er4w4320lwdgw4anh7"] },
+  mina: { owners: ["B62qkoFGnaoAzVayqjkMYaP6ZiGrSnzSUovCdnJFfosEEKBsxEcJmrs"] },
+  alephium: { owners: ["1GS8Hv3Fxm2Zduxek9Kr85LL1qAC4tDzbVaUiJbcex3qV"] },
+  xion: { owners: ["xion1gaym9l53jwp5na0kpv8h5r5kuxs0zpw22ugx6v"] },
+  babylon: { owners: ["bbn1fge5jh75e9psm7qses6fm76sh4xyes3tfye9fj"] },
+  elrond: { owners: ["erd1w547kw69kpd60vlpr9pe0pn9nnqeljrcaz73znenjpgt0h3qlqqqm3szxj"] },
+  tezos: { owners: ["tz1SCKYfZFZYYnL2fXqnLxdCtxBMLuYVG79s"] },
+  mantra: { owners: ["mantra16l5qsgzjueayxa2z78eee53lv3t0kfy3z68pqc"] },
+  orai: { owners: ["orai1y2ex6nyqy2yktaa68qtmyctlgqu2cddy0yccpr"] },
+  astar: { owners: ["ao2MGHJeJFCcnUEJbz9vrNX3UMf4MFgR6TF7vCJcP3s5vzx"] },
+  osmosis: { owners: ["osmo1tulvk3qsrt9u3h28z3mt83v97n37as5r2v5w3l"] },
+  band: { owners: ["band15m7nzph3v9wvlehjl2gqmhp2avfut6ha3dx3y9"] },
+  allora: { owners: ["allo1m2dqn8adrjw9pennccf8v3ttw0ulytzhpuk7ax"] },
+  initia: { owners: ["init150mx83aq0jsuczew768maz2dv8krr8zufk6ye0"] },
+  kusama: { owners: ["HEcm1Y7gSPStrk4LZJmc9dZCuoX4XAKmoGPPymt95CBiCqr"] },
+  filecoin: { owners: ["f1lxiy73hwgaketpmclhvbtmlkiwtvdif4agotcdq"] },
+  neo3: { owners: ["NcrhQoW3a5FrB1mUUKAwvWXhPt9cUWU5qr"] },
+  ontology: { owners: ["Adt17RqjNdMw2qwFixEwsoruQ1J18VKfDw"] },
+  proton: { owners: ["bitgetxpr"] },
+  massa: { owners: ["AU1sxVCyy9E7f3nr1HSwbgNQH7SUuQUnb4BXxCzwMzYdRijZi1qY"] },
+  platon: { owners: ["0x685e9a095deeca5023eba2c292f7fe671f9a6da7"] }, // lat1dp0f5z2aam99qglt5tpf9al7vu0e5md8t5n5ys
 };
 
+// Avalanche X-Chain wallet, counted on the avax chain next to the C-Chain balances
+const avaxXChainOwners = ["X-avax1y9gqplplrrmpqdqgp0k6ketpufny2k9vxnlfry"]
+
 evmChains.forEach(chain => { config[chain] = { owners: [...evmOwners] } })
+config.kava.owners.push("0x602e1c0d892ab4fecb472863b05acd8b1ac4fc01") // kava1vqhpcrvf9260aj689p3mqkkd3vdvflqp0vc469, add on 21/10/2026
 config.ethereum.blacklistedTokens = [
   "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
 ]
@@ -255,4 +358,5 @@ const withdrawalAddresses = [
 module.exports = mergeExports([
   cexExports(config),
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+  { avax: { tvl: avaxX.sumTokensExport({ owners: avaxXChainOwners }) } },
 ])

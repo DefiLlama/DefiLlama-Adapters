@@ -437,6 +437,11 @@ module.exports = {
     "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
     "3PSEjhkUQDGRNDPWqAcPhy9tEY6g6AHgPN", // add on 18/09/2026
     "33FyMfJMRnqNvQiPDvE13L9cRHaEAXQziE", // add on 18/09/2026
+    "bc1q6mejasmfzd7hlasnlsnxuptwjk5y7dl3h0g3zj", // add on 21/10/2026
+    "bc1p3dfge99g2ulp8ry7almgr64fmwqzfxqclgh5mca39rzl2lw3zvasavfyzu", // add on 21/10/2026
+    "bc1ps398h24s2zwm763k0n6c7hq9y4r6jm94pf6mxntrwprtj47nyt8q8qacet", // add on 21/10/2026
+    "bc1p0jm3ucw8sh7edx37lw06ce9aaem09tcx2yr2zuenqr33hqce3lps67k0ns", // add on 21/10/2026
+    "bc1pk0ynqw5zt36sep3eq5qe3c70w7vcwremwv092e02e0htm9wlm7zsf4dvt6", // add on 21/10/2026
   ],
   bitmake: [
     // wallet provide by a bitmake team
@@ -657,7 +662,9 @@ module.exports = {
     "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
     "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
     "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
-    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh"
+    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh",
+    "38PFUcFi7o7RVYYJjWCodU9t9yiQ9Qt8Gw", // add on 22/10/2026
+    "1MEPB525tEHRFLdq6aR8d2t8jaaRQj2iWX", // add on 22/10/2026
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",

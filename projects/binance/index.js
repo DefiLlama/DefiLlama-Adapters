@@ -26,12 +26,14 @@ const binanceToDefillama = {
   AVAX: 'avax',
   ARB: 'arbitrum',
   ARBITRUM: 'arbitrum',
+  ARC: 'arc',
   AVAXC: 'avax',
   LTC: 'litecoin',
   MATIC: 'polygon',
   OP: 'optimism',
   OPTIMISM: 'optimism',
   RON: 'ronin',
+  ROBINHOOD: 'robinhood',
   XRP: 'ripple',
   SOL: 'solana',
   DOT: 'polkadot',
@@ -80,6 +82,24 @@ const withdrawalAddresses = [
   '0xd27b39cb25fed854f9fce3a4e451f96e62089e48',
   '0x6357e4bdaff733dfe8f50d12d07c03b3bed0884b',
 ]
+const binanceBridgedTokens = [
+  '0x570a5d26f7765ecb712c0924e4de545b89fd43df', // SOL
+  "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47", // ADA
+  "0xba2ae424d960c26247dd6c32edc70b295c744c43", // DOGE
+  "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD", // LINK
+  "0x7083609fce4d1d8dc0c979aab8c869ea2c873402", // DOT
+  "0x2859e4544c4bb03966803b044a93563bd2d0dd4d", // SHIB
+  "0x4338665cbb7b2485a8855a139b75d5e34ab0db94", // LTC
+  "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe", // XRP
+  "0xa2b726b1145a4773f68593cf171187d8ebe4d495", // INJ
+  "0x1fa4a73a3f0133f0025378af00236f3abdee5d63", // NEAR
+  "0x6FDcdfef7c496407cCb0cEC90f9C5Aaa1Cc8D888", // VET
+  "0xfb6115445Bff7b52FeB98650C87f44907E58f802", // AAVE
+  "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce", // BEAM
+  "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153", // FIL
+  "0x43C934A845205F0b514417d757d7235B8f53f1B9", // XLM
+  "0x1Ba42e5193dfA8B03D15dd1B86a3113bbBEF8Eeb", // ZEC
+]
 
 const chainToNetworks = {}
 for (const [network, chain] of Object.entries(binanceToDefillama)) {
@@ -90,14 +110,19 @@ for (const [network, chain] of Object.entries(binanceToDefillama)) {
 }
 
 const perChainConfig = {
-  ethereum: { blacklistedTokens: [
-    ADDRESSES.ethereum.BNB,
-    ADDRESSES.bsc.wBETH, // wBETH, we are already counting staked ETH via withdrawal addresses, so we don't want to double count it
-  ] },
-  bsc: { blacklistedTokens: [
-    ADDRESSES.bsc.TUSD,
-    ADDRESSES.bsc.wBETH, // wBETH
-  ] },
+  ethereum: {
+    blacklistedTokens: [
+      ADDRESSES.ethereum.BNB,
+      ADDRESSES.bsc.wBETH, // wBETH, we are already counting staked ETH via withdrawal addresses, so we don't want to double count it
+    ]
+  },
+  bsc: {
+    blacklistedTokens: [
+      ADDRESSES.bsc.TUSD,
+      ADDRESSES.bsc.wBETH, // wBETH
+      ...binanceBridgedTokens,
+    ]
+  },
   solana: { blacklistedTokens: ['7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY', 'CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt'] },
 }
 
@@ -147,7 +172,7 @@ const tvl = async (api) => {
     .map(({ address }) => address)
     .filter(Boolean)
 
-  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
+  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'arc', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'robinhood', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
   const isEvm = evmChains.includes(chain)
 
   const lockInfoAddresses = []

@@ -1,7 +1,7 @@
 require('dotenv').config()
-const axios = require("axios");
 const pLimit = require("p-limit");
 const { getEnv } = require('./env');
+const { get, post } = require('./http');
 
 // Lightweight retry function to replace async-retry
 const retry = async (fn, options = {}) => {
@@ -39,7 +39,7 @@ const HEADERS = () => ({
 })
 
 async function startAlliumQuery(sqlQuery) {
-    const query = await axios.post(`https://api.allium.so/api/v1/explorer/queries/phBjLzIZ8uUIDlp0dD3N/run-async`, {
+    const query = await post(`https://api.allium.so/api/v1/explorer/queries/phBjLzIZ8uUIDlp0dD3N/run-async`, {
         parameters: {
             fullQuery: sqlQuery
         }
@@ -47,14 +47,14 @@ async function startAlliumQuery(sqlQuery) {
         headers: HEADERS()
     })
 
-    return query.data["run_id"]
+    return query["run_id"]
 }
 
 async function retrieveAlliumResults(queryId) {
-    const results = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${queryId}/results?f=json`, {
+    const results = await get(`https://api.allium.so/api/v1/explorer/query-runs/${queryId}/results?f=json`, {
         headers: HEADERS()
     })
-    return results.data.data
+    return results.data
 }
 
 async function _queryAllium(sqlQuery) {
@@ -73,16 +73,15 @@ async function _queryAllium(sqlQuery) {
                 throw new Error("Couldn't get a token from allium")
             }
 
-            const statusReq = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${token[sqlQuery]}/status`, {
+            const status = await get(`https://api.allium.so/api/v1/explorer/query-runs/${token[sqlQuery]}/status`, {
                 headers: HEADERS()
             })
 
-            const status = statusReq.data
             if (status === "success") {
                 return retrieveAlliumResults(token[sqlQuery])
             } else if (status === "failed") {
-                console.log(`Query ${sqlQuery} failed`, statusReq.data)
-                bail(new Error(`Query ${sqlQuery} failed, error ${JSON.stringify(statusReq.data)}`))
+                console.log(`Query ${sqlQuery} failed`, status)
+                bail(new Error(`Query ${sqlQuery} failed, error ${JSON.stringify(status)}`))
                 return;
             }
             throw new Error("Still running")

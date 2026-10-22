@@ -1,7 +1,6 @@
 const { getConfig, getCache, setCache, } = require('../cache')
-const axios = require('axios');
 const { getEnv } = require('../env')
-const { get } = require('../http')
+const { get, post } = require('../http')
 const sdk = require('@defillama/sdk')
 
 const abi = { getQualifiedUserInfo: 'function getQualifiedUserInfo(address _user) view returns ((bool locked, string depositAddress, string withdrawalAddress) info)' }
@@ -40,7 +39,7 @@ module.exports = {
     return btc
   },
   exsatCreditStaking: async () => {
-    const { data: response } = await axios.post('https://rpc-us.exsat.network/v1/chain/get_table_rows', {
+    const response = await post('https://rpc-us.exsat.network/v1/chain/get_table_rows', {
       json: true,
       code: "custody.xsat",
       scope: "custody.xsat",
@@ -168,6 +167,9 @@ module.exports = {
 
         while (hasMore) {
           const { addresses: data, has_more } = await get(`${API_URL}?limit=${BATCH_SIZE}&offset=${offset}`);
+          if (!Array.isArray(data)) throw new Error(`lombard: bad address page at offset ${offset}`)
+          if (has_more && data.length < BATCH_SIZE)
+            throw new Error(`lombard: short page (${data.length}) at offset ${offset} with has_more set`)
           const newAddresses = data.map(a => a.btc_address);
 
           allAddresses.push(...newAddresses);
@@ -190,8 +192,8 @@ module.exports = {
     const API_URL = 'https://dashboard.pumpbtc.xyz/api/dashboard/asset/tokenowners'
     return getConfig('pumpbtc/v2', undefined, {
       fetcher: async () => {
-        const { data } = await axios.get(API_URL)
-        return data.data.bitcoin.owners
+        const { data } = await get(API_URL)
+        return data.bitcoin.owners
       }
     })
   },
@@ -226,7 +228,7 @@ module.exports = {
       let hasMore = true;
 
       while (hasMore) {
-        const { data: response } = await axios.post(API2_URL, {
+        const response = await post(API2_URL, {
           "json": true,
           "code": "brdgmng.xsat",
           "scope": custody_id,
@@ -266,8 +268,7 @@ module.exports = {
   btnx: async () => {
     const staticAddresses = await getConfig('btnx', undefined, {
       fetcher: async () => {
-        const { data } = await axios.get('https://sidecar.botanixlabs.com/api/addressList', {
-        })
+        const data = await get('https://sidecar.botanixlabs.com/api/addressList')
         return data.map(address => address)
       }
     })
@@ -289,8 +290,8 @@ module.exports = {
   binanceFetcher: async () => {
     const staticAddresses = await getConfig('binance-cex/btc', undefined, {
       fetcher: async () => {
-        const { data } = await axios.get('https://www.binance.com/bapi/apex/v1/public/apex/market/por/address')
-        return data.data.filter(i => i.network === 'BTC').map(item => item.address)
+        const { data } = await get('https://www.binance.com/bapi/apex/v1/public/apex/market/por/address')
+        return data.filter(i => i.network === 'BTC').map(item => item.address)
       }
     })
     return Array.from(new Set(staticAddresses))
@@ -298,8 +299,8 @@ module.exports = {
   vishwa: async () => {
     const staticAddresses = await getConfig('vishwa', undefined, {
       fetcher: async () => {
-        const { data } = await axios.get('https://vault.vishwalab.com/vapi/btc/address')
-        return data.data
+        const { data } = await get('https://vault.vishwalab.com/vapi/btc/address')
+        return data
       }
     })
     return Array.from(new Set(staticAddresses))
@@ -307,7 +308,7 @@ module.exports = {
   yala: async () => {
     const staticAddresses = await getConfig('yala/bitcoin', undefined, {
       fetcher: async () => {
-        const { data } = await axios.get('https://raw.githubusercontent.com/yalaorg/yala-defillama/refs/heads/main/config.json')
+        const data = await get('https://raw.githubusercontent.com/yalaorg/yala-defillama/refs/heads/main/config.json')
         return data.bitcoin
       }
     })
