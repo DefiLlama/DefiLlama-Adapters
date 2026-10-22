@@ -1429,7 +1429,17 @@ const configs = {
     "robinhood": {
       staking: ["0x7F1d2b117aBac121f99cEED7f80e5925fFF37A53", "0xFE936755185353b63a81dD72b47533Eb6021018E"]
     }
-  }
+  },
+  'array-capital': {
+    arbitrum: {
+      staking: ['0x1b91b24d12C934383f25aa07C2c9C9666accf39e', '0x164731cd270daa4a94bc70761e53320e48367b8b'], // masterchef, token
+    },
+  },
+  'o2-dao': {
+    avax: {
+      staking: ['0x50971d6B5a3CCd79C516f914208C67C8104977dF', '0xAA2439DBAd718c9329a5893A51a708C015F76346'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)

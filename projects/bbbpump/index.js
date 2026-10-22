@@ -3,7 +3,6 @@ const {
   sumTokens2,
   sumTokensExport,
 } = require("../helper/unwrapLPs");
-const { stakingPriceLP } = require("../helper/staking");
 const sdk = require("@defillama/sdk");
 const { pool2 } = require("../helper/pool2");
 
@@ -32,11 +31,13 @@ module.exports = {
         resolveLP: true,
       }),
     ]),
-    staking: sdk.util.sumChainTvls([
-      stakingPriceLP(MegadropBBB, BBB,  XDC_BBB_LP, "wrapped-xdc"),
-      stakingPriceLP(lpStake, psXDC,  XDC_psXDC_LP, "wrapped-xdc"),
-      stakingPriceLP(lpStake, bpsXDC,  XDC_bpsXDC_LP, "wrapped-xdc"),
-    ]),
+    staking: sumTokensExport({
+      tokensAndOwners: [
+        [BBB, MegadropBBB],
+        [psXDC, lpStake],
+        [bpsXDC, lpStake],
+      ],
+    }),
     pool2: sdk.util.sumChainTvls([
       pool2(lpStake, XDC_BBB_LP),
       pool2(lpStake, XDC_bpsXDC_LP),
