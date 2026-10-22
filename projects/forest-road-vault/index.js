@@ -13,10 +13,8 @@ async function tvl(api) {
 
 async function borrowed(api) {
   // Both values are 18-decimal USDfr value; USDC uses 6 decimals.
-  const [principal, impairment] = await Promise.all([
-    api.call({ target: RESERVE_MANAGER, abi: 'uint256:deployedPrincipal' }),
-    api.call({ target: RESERVE_MANAGER, abi: 'uint256:totalPrincipalImpairment' }),
-  ])
+  const principal = await api.call({ target: RESERVE_MANAGER, abi: 'uint256:deployedPrincipal' })
+  const impairment = await api.call({ target: RESERVE_MANAGER, abi: 'uint256:totalPrincipalImpairment' })
   const net = BigInt(principal) - BigInt(impairment)
   if (net > 0n) api.add(ADDRESSES.ethereum.USDC, (net / 10n ** 12n).toString())
 }
