@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
-const WDOOM_TOKEN = '0x930A51b09612A75e2C9640111f6632D094d5a781'
+const WDOOM_TOKEN = '0x623c84A5E04bF715018203334b0eFE41696eBC3E'
 const UNISWAP_V3_POOL = '0xf7217329574249d7b389404aECF2C582662F3659'
 
 module.exports = {
