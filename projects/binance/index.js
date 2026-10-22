@@ -117,28 +117,31 @@ const perChainConfig = {
     ]
   },
   bsc: {
+    ownTokens: [nullAddress], // BNB
     blacklistedTokens: [
       ADDRESSES.bsc.TUSD,
       ADDRESSES.bsc.wBETH, // wBETH
       ...binanceBridgedTokens,
     ]
   },
+  op_bnb: { ownTokens: [nullAddress] }, // BNB
   solana: { blacklistedTokens: ['7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY', 'CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt'] },
 }
 
 function buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens) {
   const base = perChainConfig[chain] || {}
-  let { tokensAndOwners, tokens, blacklistedTokens, fungibleAssets } = base
+  let { tokensAndOwners, tokens, blacklistedTokens = [], fungibleAssets, ownTokens = [], ...rest } = base
 
   if (!tokensAndOwners && !tokens && chain !== 'solana') {
     tokens = defaultTokens[chain]
     if (!tokens) tokens = [nullAddress]
   }
 
-  if (!blacklistedTokens) blacklistedTokens = []
+  // BNB is reported under ownTokens instead of tvl
+  blacklistedTokens = [...ownTokens, ...blacklistedTokens]
   if (wrappedTokens && wrappedTokens.length) blacklistedTokens.push(...wrappedTokens)
 
-  const options = { ...base, owners, tokens, chain, blacklistedTokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
+  const options = { ...rest, tokensAndOwners, owners, tokens, chain, blacklistedTokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
 
   if (binanceTokensOnChain && binanceTokensOnChain.length) {
     if (!options.tokens) options.tokens = []
@@ -158,7 +161,7 @@ function buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens) {
   return options
 }
 
-const tvl = async (api) => {
+async function getOwners(api) {
   const chain = api.chain.toLowerCase()
   const networks = chainToNetworks[chain]
 
@@ -193,16 +196,30 @@ const tvl = async (api) => {
   })
 
   const owners = [...new Set([...contracts, ...lockInfoAddresses])]
+  return { owners, wrappedTokens }
+}
 
+const tvl = async (api) => {
+  const chain = api.chain.toLowerCase()
+  const { owners, wrappedTokens } = await getOwners(api)
   const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
   const options = buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens)
 
   return await sumTokensExport(options)(api)
 }
 
+const ownTokens = async (api) => {
+  const chain = api.chain.toLowerCase()
+  const { owners } = await getOwners(api)
+  return await sumTokensExport({ chain, owners, tokens: perChainConfig[chain].ownTokens, permitFailure: true })(api)
+}
+
 const chainExports = {}
 const chains = new Set(Object.values(binanceToDefillama))
-chains.forEach((chain) => { chainExports[chain] = { tvl } })
+chains.forEach((chain) => {
+  chainExports[chain] = { tvl }
+  if (perChainConfig[chain]?.ownTokens) chainExports[chain].ownTokens = ownTokens
+})
 
 const ethStakedExport = { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } }
 

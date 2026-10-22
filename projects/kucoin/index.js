@@ -4,6 +4,7 @@ const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   ethereum: {
+    ownTokens: ['0xf34960d9d60be18cC1D5Afc1A6F012A723a28811'], // KCS
     owners: [
       "0x061f7937b7b2bc7596539959804f86538b6368dc",
       "0x1692e170361cefd1eb7240ec13d048fd9af6d667",
@@ -132,6 +133,7 @@ const config = {
     ],
   },
   kcc: {
+    ownTokens: ['0x0000000000000000000000000000000000000000'], // KCS (native)
     owners: [
       "0x14ea40648fc8c1781d19363f5b9cc9a877ac2469",
       "0x2a8c8b09bd77c13980495a959b26c1305166a57f",

@@ -91,6 +91,12 @@ const EXTRA_TOKENS = {
   berachain: ['0x0000000000000000000000000000000000000000', '0x779Ded0c9e1022225f8E0630b35a9b54bE713736'], // BERA, USDT0
 }
 
+// MNT, reported under ownTokens instead of tvl
+const OWN_TOKENS = {
+  ethereum: ['0x3c3a81e81dc49A522A592e7622A7E711c06bf354'],
+  mantle: ['0x0000000000000000000000000000000000000000'],
+}
+
 module.exports = { bitcoin: 'bybit' }
 for (const slug of new Set(Object.values(CHAIN_MAP)))
   module.exports[slug] = { owners: async () => (await getOwners())[slug] || [] }
@@ -98,3 +104,5 @@ for (const [slug, owners] of Object.entries(STATIC_OWNERS))
   module.exports[slug] = { owners }
 for (const [slug, tokens] of Object.entries(EXTRA_TOKENS))
   module.exports[slug].tokens = tokens
+for (const [slug, tokens] of Object.entries(OWN_TOKENS))
+  module.exports[slug].ownTokens = tokens

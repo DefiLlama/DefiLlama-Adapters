@@ -349,6 +349,8 @@ config.kava.owners.push("0x602e1c0d892ab4fecb472863b05acd8b1ac4fc01") // kava1vq
 config.ethereum.blacklistedTokens = [
   "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
 ]
+config.ethereum.ownTokens = ["0x54d2252757e1672eead234d27b1270728ff90581"] // BGB
+config.morph.ownTokens = ["0x389C08Bc23A7317000a1FD76c7c5B0cb0b4640b5"] // BGB
 
 const withdrawalAddresses = [
   '0x334cf9ceef9178c7a9bb5495ac8790e9bed316a3',
