@@ -1231,7 +1231,7 @@ module.exports = {
       "tokens": [ADDRESSES.ethereum.USDC, "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c", ADDRESSES.null], // USDC, EURC, ETH
     },
   },
-  "nova-perps": {
+  "nova-markets": {
     "methodology": "TVL is the USDC deposited in the Conviction Pool, the nUSDC vault that takes the other side of every trade on Nova's markets, plus the USDC collateral of open trades held by Nova's trading contract on Arbitrum. Contracts: https://docs.nova.markets/contracts.md",
     "start": "2026-09-20",
     "arbitrum": {
