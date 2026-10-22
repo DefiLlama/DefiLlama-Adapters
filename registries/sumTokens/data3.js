@@ -1217,4 +1217,11 @@ module.exports = {
       "tokens": [ADDRESSES.ethereum.USDC, "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c", ADDRESSES.null], // USDC, EURC, ETH
     },
   },
+  "veil-zk": {
+    "methodology": "Tokens held in Veil's shielded-pool vaults: every SPL and Token-2022 vault is a token account owned by the program's vault_authority PDA. The protocol's own token, $VEIL, is excluded.",
+    "solana": {
+      "owner": "A8Qjyh2nWgEUkTQAAmghxE7u7nJ4xarQybDpTxWJdU4S", // vault_authority PDA of program FmsMbXrQXr1mARn45Cm52sdrwAWHDxqF8473t6woq9DP
+      "blacklistedTokens": ["HgTGdc29D5bDMrDvsCLnorxz899VyDj7ZN7FPa6vpump"], // $VEIL
+    },
+  },
 }
