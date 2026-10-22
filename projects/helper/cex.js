@@ -329,6 +329,11 @@ const defaultTokens = {
     '0xb095274743941e953c746f9c228da9c18bb6ec29', // LAPTOP
     '0x5ab3d4c385b400f3abb49e80de2faf6a88a7b691', // FLOCK
   ],
+  arc: [
+    nullAddress,
+    ADDRESSES.arc.USDC,
+    ADDRESSES.arc.cirBTC,
+  ],
   avax: [
     nullAddress,
     ADDRESSES.avax.USDt, // USDT
