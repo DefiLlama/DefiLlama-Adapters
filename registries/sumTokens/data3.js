@@ -1231,6 +1231,7 @@ module.exports = {
       "tokens": [ADDRESSES.ethereum.USDC, "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c", ADDRESSES.null], // USDC, EURC, ETH
     },
   },
+
   "nova-markets": {
     "methodology": "TVL is the USDC deposited in the Conviction Pool, the nUSDC vault that takes the other side of every trade on Nova's markets, plus the USDC collateral of open trades held by Nova's trading contract on Arbitrum. Contracts: https://docs.nova.markets/contracts.md",
     "start": "2026-09-20",
@@ -1239,6 +1240,13 @@ module.exports = {
         [ADDRESSES.arbitrum.USDC_CIRCLE, "0x9cA80193712F372e2ff33A00127292884F6F8598"], // Conviction Pool (nUSDC vault)
         [ADDRESSES.arbitrum.USDC_CIRCLE, "0x1410FA3F87F6A6ea221E5D2aB608C23005eC34f3"], // trading contract (diamond)
       ]
+    },
+  },
+   "veil-zk": {
+    "methodology": "Tokens held in Veil's shielded-pool vaults: every SPL and Token-2022 vault is a token account owned by the program's vault_authority PDA. The protocol's own token, $VEIL, is excluded.",
+    "solana": {
+      "owner": "A8Qjyh2nWgEUkTQAAmghxE7u7nJ4xarQybDpTxWJdU4S", // vault_authority PDA of program FmsMbXrQXr1mARn45Cm52sdrwAWHDxqF8473t6woq9DP
+      "blacklistedTokens": ["HgTGdc29D5bDMrDvsCLnorxz899VyDj7ZN7FPa6vpump"], // $VEIL
     },
   },
 }
