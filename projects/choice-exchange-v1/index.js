@@ -1,5 +1,6 @@
+const sdk = require("@defillama/sdk");
 const { getFactoryTvl } = require("../terraswap/factoryTvl");
-const { queryContract, getBalance2, sumCW20Tokens } = require("../helper/chain/cosmos");
+const { queryContract, getBalance2, getBalance } = require("../helper/chain/cosmos");
 
 // terraswap-style CosmWasm factory on Injective
 const factory = "inj1k9lcqtn3y92h4t3tdsu7z8qx292mhxhgsssmxg";
@@ -21,6 +22,8 @@ async function getClmmPools(chain) {
 
 async function clmmTvl(api) {
   const pools = await getClmmPools(api.chain);
+  let cw20Queries = 0;
+  let cw20Failures = 0;
   for (const { pool_address, token0, token1 } of pools) {
     // tokens are prefixed `n:` (bank denom) or `c:` (cw20); only the pool's own pair is counted
     const tokens = [token0, token1];
@@ -31,8 +34,19 @@ async function clmmTvl(api) {
       // `erc20:0x..` bank denoms are MultiVM Token Standard twins of the Injective EVM erc20
       Object.entries(balances).forEach(([denom, amount]) => api.add(denom.startsWith("erc20:") ? denom.slice(6) : denom, amount));
     }
-    if (cw20s.length) await sumCW20Tokens({ api, owner: pool_address, tokens: cw20s });
+    // the factory accepts any cw20 address, so a token that fails the balance query only skips that balance
+    for (const token of cw20s) {
+      cw20Queries++;
+      try {
+        api.add(token, await getBalance({ token, owner: pool_address, chain: api.chain }));
+      } catch (e) {
+        cw20Failures++;
+        sdk.log(`choice clmm: cw20 balance query failed for ${token} in ${pool_address}`);
+      }
+    }
   }
+  // every cw20 query failing points to an LCD problem, not a bad token
+  if (cw20Queries && cw20Failures === cw20Queries) throw new Error("choice clmm: all cw20 balance queries failed");
 }
 
 async function tvl(api) {
