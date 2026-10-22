@@ -1,11 +1,20 @@
 const { sumERC4626VaultsExport2 } = require('../projects/helper/erc4626')
 const { buildProtocolExports } = require('./utils')
 
-function erc4626ExportFn(chainConfigs) {
+// Chain config: an array of vault addresses, or { vaults, stakingVaults?, tokenAbi?, balanceAbi?, permitFailure? }.
+// Abis default to the OG 4626 asset()/totalAssets(); set tokenAbi/balanceAbi (per chain or in _options)
+// for vaults that expose them under other names. stakingVaults are summed the same way into the staking bucket.
+const chainExtraKeys = new Set(['vaults', 'stakingVaults', 'tvl', 'staking', 'pool2', 'borrowed', 'vesting'])
+
+function erc4626ExportFn(chainConfigs, options = {}) {
   const result = {}
   Object.entries(chainConfigs).forEach(([chain, config]) => {
-    const vaults = Array.isArray(config) ? config : config.vaults
-    result[chain] = { tvl: sumERC4626VaultsExport2({ vaults }) }
+    const { vaults = [], stakingVaults = [] } = Array.isArray(config) ? { vaults: config } : config
+    const opts = { ...options }
+    if (!Array.isArray(config))
+      for (const [k, v] of Object.entries(config)) if (!chainExtraKeys.has(k)) opts[k] = v
+    result[chain] = { tvl: vaults.length ? sumERC4626VaultsExport2({ vaults, ...opts }) : () => ({}) }
+    if (stakingVaults.length) result[chain].staking = sumERC4626VaultsExport2({ vaults: stakingVaults, ...opts })
   })
   return result
 }
@@ -528,6 +537,21 @@ const configs = {
     start: '2026-09-29',
     methodology: 'Counts LP assets reported by totalAssets() in the Ace.Pro V5 shared HYPE and USDC liquidity vaults on HyperEVM. Excludes round escrow, claimable payouts and protocol revenue held for the team and treasury, Lucky Draw prize pools and legacy vaults.',
     hyperliquid: ['0xd39C426bd1a40b5cdB89B8CEb8464C4f78AbB29d', '0xf725Ac947c7B3EF790a3E68e2Ca2Fb48ce4023eD'],
+  },
+  // --- custom-abi vaults (migrated 2026-10-22) ---
+  'deq': {
+    ethereum: { vaults: ['0x3742f3Fcc56B2d46c7B8CA77c23be60Cd43Ca80a'], tokenAbi: 'avail', balanceAbi: 'assets' },
+  },
+  'electrowizy': {
+    polygon: { vaults: ['0x663819aB31cB6204a2A732996549B702DeC38aa9'], tokenAbi: 'address:stakingToken', balanceAbi: 'uint256:totalStaked' },
+  },
+  'smiliee-gbera': {
+    berachain: { vaults: ['0x3f7755117f1fec1981aefb01887240dbf5f2ebce'], tokenAbi: 'wbera', balanceAbi: 'totalAssets' },
+  },
+  'sapien-vault': {
+    methodology: 'TVL is SAPIEN held by the Base ERC-4626 Sapien PoQ Vault, measured on-chain via totalAssets(). Protocol-owned SAPIEN in RewardsController is excluded.',
+    start: '2026-04-07',
+    base: { vaults: [], stakingVaults: ['0x60Bf63729f688287a450299962b36Cef0aFfaa42'] },
   },
 }
 
