@@ -19,19 +19,6 @@ const ABI = {
   staked: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)',
 };
 
-// DefiLlama's price API has no price for the new AERO yet. Each new AERO was issued 1:1 for
-// the old Aerodrome AERO, so it is reported under coingecko:aerodrome-finance until then.
-// Once base:<AERO_TOKEN> is priced, delete this function and its call.
-function priceNewAeroAsAerodrome(api) {
-  const key = `base:${AERO_TOKEN.toLowerCase()}`;
-  let raw = 0;
-  for (const [token, balance] of Object.entries(api.getBalances()))
-    if (token.toLowerCase() === key) raw += Number(balance);
-  if (!raw) return;
-  api.removeTokenBalance(AERO_TOKEN);
-  api.addCGToken('aerodrome-finance', raw / 1e18);
-}
-
 async function tvl(api) {
   // AERO side of the protocol-owned AERO/iAERO liquidity held by the Peg Defender
   await sumTokens2({ api, owner: PEG_DEFENDER, tokens: [POOL_V2], resolveLP: true });
@@ -40,12 +27,10 @@ async function tvl(api) {
   // AERO permanently staked on the Aero VotingEscrow
   const stakes = await api.multiCall({ target: AERO_VOTING_ESCROW, abi: ABI.staked, calls: STAKE_IDS });
   stakes.forEach(({ amount }) => api.add(AERO_TOKEN, amount));
-
-  priceNewAeroAsAerodrome(api);
 }
 
 module.exports = {
-  methodology: 'TVL is the AERO permanently staked on the Aero VotingEscrow that backs iAERO, plus the AERO side of the AERO/iAERO liquidity owned by the Peg Defender. iAERO itself is excluded. Until DefiLlama prices the new Aero AERO token, it is valued as Aerodrome AERO, which it replaced 1:1.',
+  methodology: 'TVL is the AERO permanently staked on the Aero VotingEscrow that backs iAERO, plus the AERO side of the AERO/iAERO liquidity owned by the Peg Defender. iAERO itself is excluded.',
   base: {
     tvl
   }
