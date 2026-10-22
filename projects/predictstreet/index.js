@@ -1,5 +1,6 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const VAULT_FACTORY = '0xc16B8b190064451c2FeEb2e77c4B2aC4c7009552'
 const CONDITIONAL_TOKENS = '0xD28B8295Cd57F205e4d080Ff4c6d23C06a9EEe3a' // locks collateral backing open positions
@@ -23,11 +24,14 @@ async function tvl(api) {
   const clones = wcols.filter(a => a && a !== ADDRESSES.null)
 
   const owners = [CONDITIONAL_TOKENS].concat(vaults, clones)
+  console.log(owners.len)
   // sum idle USDC.e in all vaults, ConditionalTokens, and neg-risk WrappedCollateral clones
-  await api.sumTokens({ owners, tokens: [ADDRESSES.adi.USDC_e] }) // USDC.e
+  return sumTokens2({ api, owners, token: ADDRESSES.adi.USDC_e, sumChunkSize: 5000})
+  // await api.sumTokens({ owners, tokens: [ADDRESSES.adi.USDC_e] }) // USDC.e
 }
 
 module.exports = {
+  isHeavyProtocol: true,
   methodology:
     'TVL is the USDC.e (bridged USDC) collateral held by PredictStreet: the idle balance of every ' +
     'user vault (vaults enumerated via VaultCreated events), plus collateral locked in the ConditionalTokens ' +
