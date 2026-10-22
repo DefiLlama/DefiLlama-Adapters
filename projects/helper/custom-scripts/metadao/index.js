@@ -225,10 +225,15 @@ async function getSplTokenAccountBalance(connection, vaultPk) {
 }
 
 
+/**
+ * Fetches all DAO accounts from the Futarchy AMM program.
+ */
 async function getAllDaos() {
   const PROGRAM_ID = 'FUTARELBfJfQ8RDGhg1wdhddq1odMAJUePHFuBYfUxKq' // Futarchy AMM program
   const provider = getProvider()
   const idl = await Program.fetchIdl(PROGRAM_ID, provider)
+  idl.instructions = []
+  idl.accounts = idl.accounts.filter(i => i.name === 'Dao')
   const program = new Program(idl, PROGRAM_ID, provider)
   const data = await program.account.dao.all()
 
