@@ -1,93 +1,63 @@
-const axios = require('axios')
-axios.defaults.headers.common['User-Agent'] = 'DefiLlama-Nolus-Adapter/1.0 (https://defillama.com)'
-const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
-const { sleep } = require('../helper/utils')
+const { get } = require('../helper/http')
 
-// Admin contract that holds a registry of all active protocols
-const ADMIN_CONTRACT = 'nolus1gurgpv8savnfw66lckwzn4zk7fp394lpe667dhu7aw48u40lj6jsqxf8nd'
+const ETL = 'https://etl.nolus.network/api'
 
-const query = (contract, data) => queryContract({ contract, chain: 'nolus', data })
-
-async function getProtocols() {
-  const names = await query(ADMIN_CONTRACT, { protocols: {} })
-  const protocols = []
-  for (const name of names) {
-    await sleep(200)
-    const details = await query(ADMIN_CONTRACT, { protocol: name })
-    const { leaser, lpp, oracle } = details?.contracts ?? {}
-    if (![leaser, lpp, oracle].every(address => typeof address === 'string' && address.length > 0))
-      throw new Error(`[admin] incomplete contracts for ${name}`)
-    protocols.push({ name, network: details.network, leaser, lpp, oracle })
-  }
-  return protocols
+// The ETL serves token amounts in display units with exactly `decimals` fractional digits; DefiLlama needs base units
+function toBaseUnits(amount, decimals, label) {
+  if (typeof amount !== 'string') throw new Error(`[etl] ${label}: no amount (${amount}), its pair has no scale`)
+  const [whole, fraction = ''] = amount.split('.')
+  if (!/^\d+$/.test(whole) || !/^\d*$/.test(fraction) || fraction.length > decimals)
+    throw new Error(`[etl] ${label}: ${amount} is not a decimal with at most ${decimals} places`)
+  return BigInt(whole + fraction.padEnd(decimals, '0'))
 }
 
-async function getCurrencies(oracle) {
-  const currencies = await query(oracle, { currencies: {} })
-  return Array.isArray(currencies) ? currencies : []
-}
-
-// Returns the Solana mint address of a currency; the adapter prices everything through it
-function getMint(currencies, ticker, protocolName) {
-  const currency = currencies.find(c => c?.ticker === ticker)
-  if (!currency?.dex_symbol) throw new Error(`[oracle] missing currency info for ${ticker} (${protocolName})`)
-  return currency.dex_symbol
-}
-
-// `balance` is the available pool liquidity; `total_principal_due` is the principal lent out to leases.
-// Only the available balance goes into tvl, since the borrowed funds are already
-// represented by the lease positions on Solana; the principal due is reported under borrowed.
-async function addLppBalance(api, protocol, field) {
-  const ticker = await query(protocol.lpp, { lpn: [] })
-  const currencies = await getCurrencies(protocol.oracle)
-  const lppBalance = await query(protocol.lpp, { lpp_balance: [] })
-  api.add(`solana:${getMint(currencies, ticker, protocol.name)}`, lppBalance?.[field]?.amount ?? 0, { skipChain: true })
-}
-
-const lppExport = (field) => async (api) => {
-  for (const protocol of await getProtocols()) {
-    await sleep(300)
-    await addLppBalance(api, protocol, field)
+// Resolves each (protocol, ticker) to the Solana mint and decimals the ETL lists it under
+async function getCurrencies() {
+  const { currencies } = await get(`${ETL}/currencies/active`)
+  const byPair = {}
+  for (const { ticker, protocols } of currencies)
+    for (const { protocol, dex_symbol, decimal_digits } of protocols)
+      if (dex_symbol) byPair[`${protocol}:${ticker}`] = { mint: dex_symbol, decimals: decimal_digits }
+  return (protocol, ticker) => {
+    const currency = byPair[`${protocol}:${ticker}`]
+    if (!currency) throw new Error(`[etl] no Solana mint for ${ticker} under ${protocol}`)
+    return currency
   }
 }
 
-async function addLeaseTvl(api, protocol) {
-  const currencies = await getCurrencies(protocol.oracle)
-  const { config } = await query(protocol.leaser, { config: {} })
-  if (!config?.lease_code) throw new Error(`[leaser] missing lease_code for ${protocol.name}`)
-  const leases = await queryContracts({ chain: 'nolus', codeId: config.lease_code })
-  const states = await queryManyContracts({ contracts: leases, chain: 'nolus', data: { state: {} } })
-  for (const state of states) {
-    const opened = state?.opened?.amount
-    if (!opened) continue
-    api.add(getMint(currencies, opened.ticker, protocol.name), opened.amount)
+function addAmount(api, currencyOf, protocol, ticker, amount) {
+  const { mint, decimals } = currencyOf(protocol, ticker)
+  api.add(mint, toBaseUnits(amount, decimals, `${ticker} under ${protocol}`).toString())
+}
+
+async function tvl(api) {
+  const currencyOf = await getCurrencies()
+  const { protocols: pools } = await get(`${ETL}/pools`)
+  for (const pool of pools) {
+    const { decimals } = currencyOf(pool.protocol, pool.lpn)
+    const label = `${pool.lpn} pool under ${pool.protocol}`
+    const available = toBaseUnits(pool.supplied_token_amount, decimals, label) - toBaseUnits(pool.borrowed_token_amount, decimals, label)
+    api.add(currencyOf(pool.protocol, pool.lpn).mint, available.toString())
   }
+  for (const { holdings } of await get(`${ETL}/open-positions-by-token`))
+    for (const { protocol, ticker, amount } of holdings)
+      addAmount(api, currencyOf, protocol, ticker, amount)
+}
+
+async function borrowed(api) {
+  const currencyOf = await getCurrencies()
+  const { protocols: pools } = await get(`${ETL}/pools`)
+  for (const pool of pools)
+    addAmount(api, currencyOf, pool.protocol, pool.lpn, pool.borrowed_token_amount)
 }
 
 module.exports = {
-  methodology: 'TVL is the idle liquidity in the lending pools plus the collateral held in open lease positions. Borrowed is the outstanding principal owed to the pools.',
+  timetravel: false,
+  methodology: 'TVL is the liquidity available in the lending pools plus the assets held by open margin positions, both read as token amounts from the Nolus ETL (etl.nolus.network), which indexes the on-chain state. Borrowed is the amount lent out of the lending pools.',
   hallmarks: [
     ['2026-04-02', 'Neutron market sunset'],
     ['2026-08-27', 'Solana market launch'],
     ['2026-09-07', 'Osmosis market sunset'],
   ],
-  nolus: {
-    tvl: lppExport('balance'),
-    borrowed: lppExport('total_principal_due'),
-  },
-  solana: {
-    tvl: async (api) => {
-      const protocols = (await getProtocols()).filter(p => p.network === 'Solana')
-      for (const protocol of protocols) {
-        await sleep(2000)
-        await addLeaseTvl(api, protocol)
-      }
-    }
-  },
-  neutron: { 
-    tvl: () => ({})
-  },
-  osmosis: {
-    tvl: () => ({})
-  },
+  solana: { tvl, borrowed },
 }
