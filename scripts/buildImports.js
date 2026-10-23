@@ -1,10 +1,13 @@
 const fs = require("fs")
 const { execSync } = require("child_process")
 const { get } = require("../projects/helper/http")
-const { allProtocols } = require("../registries/index.js")
+const { allProtocols, registryErrors } = require("../registries/index.js")
 // const { setCache, getCache } = require("../projects/helper/cache")
 
 async function run() {
+  if (registryErrors.length)
+    throw new AggregateError(registryErrors, 'Cannot build a complete manifest: registry loading failed')
+
   // await getCache('defi-configs', 'tvlModules')
   const configs = await get('https://api.llama.fi/_fe/static/configs')
 
@@ -35,7 +38,7 @@ async function run() {
       moduleMap[modulePath] = mockedModule
       addedModules.add(moduleKey)
     } catch (e) {
-      console.error(`Error processing module ${moduleKey} at path ${modulePath}:`, e)
+      throw new Error(`Error processing module ${moduleKey} at path ${modulePath}`, { cause: e })
     }
   }
 
@@ -43,10 +46,7 @@ async function run() {
     let pModule = protocol.module.replace(/\.js$/, '').replace(/\/index$/, '').replace(/\/api$/, '')
 
     const modulePath = `../projects/${protocol.module}`
-    let moduleObject = undefined
-    try {
-      moduleObject = require(modulePath)
-    } catch (e) { }
+    let moduleObject = loadModule(modulePath)
 
     if (moduleObject && allProtocols[pModule])
       console.warn(`Warning: ${protocol.module} exists in both projects folder and registry. Using projects version.`)
@@ -76,13 +76,13 @@ async function run() {
       pModule = file.replace(/\.js$/, '')
     }
 
-    if (addedModules.has(pModule)) continue
+    if (!importPath || addedModules.has(pModule)) continue
 
     let moduleObject = undefined
     try {
-      moduleObject = require(importPath)
+      moduleObject = loadModule(importPath)
     } catch (e) {
-      console.error(`Error importing module ${pModule} from path ${importPath}:`, e)
+      throw new Error(`Error importing module ${pModule} from path ${importPath}`, { cause: e })
     }
 
     addModule({ moduleObject, modulePath, moduleKey: pModule, warnOnMissing: false })
@@ -134,6 +134,19 @@ run().catch((e) => {
   process.exit(1)
 })
 
+
+// A missing adapter may legitimately live in the registry (or be dead).
+// Resolve separately so a missing dependency inside an existing adapter is fatal.
+function loadModule(modulePath) {
+  let resolvedPath
+  try {
+    resolvedPath = require.resolve(modulePath)
+  } catch (e) {
+    if (e.code === 'MODULE_NOT_FOUND') return
+    throw e
+  }
+  return require(resolvedPath)
+}
 
 function convertHallmarkStrings(hallmarks) {
   if (!Array.isArray(hallmarks)) return hallmarks

@@ -31,6 +31,9 @@ jobs:
         run: pnpm install
 
 
+      - name: Test buildImports completeness offline
+        run: node --test scripts/buildImports.test.js
+
       - name: Run buildImports script
         run: node scripts/buildImports.js
 
