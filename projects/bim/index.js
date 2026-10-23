@@ -1,4 +1,5 @@
 const utils = require('../helper/utils');
+const { unwrapLPsAuto } = require('../helper/unwrapLPs');
 
 
 const vaultsEndpoint = "https://staking-api.bim.finance/vaults";
@@ -16,6 +17,13 @@ const chains = {
     "plasma": "plasma",
     "arbitrum": "arbitrum",
     "avax": "avax",
+}
+
+// Tokens without a DefiLlama price, valued through an equivalent CoinGecko asset
+const cgFallbacks = {
+  base: {
+    '0x877014e21c32fea108b6a1f45f367efc9a2d9b9f': { cgId: 'alchemix-usd', decimals: 18 }, // alUSDb
+  },
 }
 
 let _response;
@@ -48,6 +56,16 @@ function fetchChain(chain) {
     const tokens = chainVaults.map((vault) => vault.tokenAddress)
 
     api.add(tokens, balances)
+    // vault want tokens are often AMM LPs (e.g. Aero basic pools) that DefiLlama does not price: value them from their reserves
+    await unwrapLPsAuto({ api })
+
+    const fallbacks = cgFallbacks[chain] ?? {}
+    for (const [token, { cgId, decimals }] of Object.entries(fallbacks)) {
+      const amount = api.getBalances()[`${chain}:${token}`]
+      if (!amount) continue
+      api.removeTokenBalance(token)
+      api.addCGToken(cgId, amount / 10 ** decimals)
+    }
   }
 }
 
