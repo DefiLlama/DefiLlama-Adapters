@@ -1,4 +1,4 @@
-const { sui } = require("../helper/chain/rpcProxy");
+const sui = require("../helper/chain/sui");
 const { getConfig } = require("../helper/cache");
 const {sumERC4626Vaults} = require("../helper/erc4626");
 
@@ -27,14 +27,20 @@ async function suiTvl(api) {
     if (!suiVault || blacklistedVaults.includes(suiVault.address) || !suiVault.receiptCoin?.address?.includes('::')) {
       continue;
     }
-    const vaultTvl = await sui.query({
-      target: `${SUI_PACKAGE_ID}::vault::get_vault_tvl`,
-      contractId: suiVault.address,
+    const initialSharedVersion = await sui.getInitialSharedVersion(suiVault.address);
+    const txBlockBytes = sui.buildProgrammableMoveCallBytes({
+      packageId: SUI_PACKAGE_ID,
+      module: "vault",
+      functionName: "get_vault_tvl",
       typeArguments: [suiVault.baseDepositCoin.address, suiVault.receiptCoin.address],
-      sender:
-        "0xbaef681eafe323b507b76bdaf397731c26f46a311e5f3520ebb1bde091fff295",
+      sharedObjects: [{ objectId: suiVault.address, initialSharedVersion, mutable: false }],
     });
-    api.add(suiVault.baseDepositCoin.address, vaultTvl);
+    const result = await sui.devInspectTransactionBlock(txBlockBytes);
+    const vaultTvl = result?.results?.[0]?.returnValues?.[0]?.[0];
+    if (!Array.isArray(vaultTvl) || vaultTvl.length !== 8) {
+      throw new Error(`Unexpected get_vault_tvl return for ${suiVault.address}: ${JSON.stringify(result?.error ?? result?.results)}`);
+    }
+    api.add(suiVault.baseDepositCoin.address, sui.fromU64(vaultTvl).toString());
   }
 }
 
