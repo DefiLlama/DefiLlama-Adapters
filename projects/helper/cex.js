@@ -296,13 +296,16 @@ const defaultTokens = {
     nullAddress,
     '0x547afd93b9c47d552059feb556909e017f8a9b25',  // CTR
   ],
+  radixdlt: [
+    ADDRESSES.radixdlt.XRD,
+  ],
   arbitrum: [
     nullAddress,
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
     ADDRESSES.arbitrum.DAI, // DAI
     ADDRESSES.arbitrum.aidoge, //aidoge
-    '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
+    // '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
     ADDRESSES.arbitrum.LPT, //lpt
     '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
@@ -349,6 +352,7 @@ const defaultTokens = {
   ],
   near: [
     'usdt.tether-token.near',
+    '17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1', // USDC (native)
   ],
   optimism: [
     nullAddress,
