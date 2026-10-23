@@ -30,6 +30,7 @@ const config = {
   zora: { factory: "0x0575338e4c17006ae181b47900a84404247ca30f", fromBlock: 25434534 },
   wc: { factory: "0xb1860d529182ac3bc1f51fa2abd56662b7d13f33", fromBlock: 9111872 },
   ink: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 4580556 },
+  celo: { factory: "0x288dc841a52fca2707c6947b3a777c5e56cd87bc", fromBlock: 43985163 },
   soneium: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 2473300, useIndexerSql: true },
   avax: { factory: "0x06380c0e0912312b5150364b9dc4542ba0dbbc85", fromBlock: 56195376, useIndexerSql: true },
   bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, useIndexerSql: true, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343', '0x8145eb83744aac883b68ae34060bebb5031d8f5c',
