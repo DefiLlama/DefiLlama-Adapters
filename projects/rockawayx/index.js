@@ -62,7 +62,8 @@ const configs = {
         '0x93e0F9d502eEfce8D34924ab3478C7EA0CBC5a2E',
         '0x9C57E02bC31e7e463f439353D97bd8f42F5a7F9c',
         '0xD6d4b804014EF27836dBe9f8f6Bf6c71251548Ec',
-        '0xc207d3f66537D7F66456808379A0E560cF20Da36'
+        '0xc207d3f66537D7F66456808379A0E560cF20Da36',
+        '0x195B3a57dd0480534c84A5607a52a92304fA81f2'
       ],
       upshiftV2: [
         '0xcd69123b3FBBfC666E1f6a501da27B564C00De54', // Upshift Tori
@@ -111,7 +112,8 @@ const configs = {
     },
     monad: {
       morpho: [
-        '0xA2fa4CeD4E2d448D084f5a15011b3564922119d6'
+        '0xA2fa4CeD4E2d448D084f5a15011b3564922119d6',
+        '0xBD6d56b5b1b535B92D4A0A8C0a9e6Cfd9b545167'
       ],
       midasTokens: [
         '0x6CF55183eA297ba200Cf88419Bba156EBA2Ed206'
