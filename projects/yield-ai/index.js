@@ -1,10 +1,8 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { aQuery, function_view, getResources } = require("../helper/chain/aptos");
-const { GraphQLClient, gql } = require("graphql-request");
+const { aQuery, function_view } = require("../helper/chain/aptos");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
 const sdk = require('@defillama/sdk');
-const { getEnv } = require("../helper/env");
 const pLimit = require("p-limit");
 
 const VAULT =
@@ -15,7 +13,6 @@ const ECHELON =
 
 const ECHELON_VAULT_RESOURCE = `${ECHELON}::lending::Vault`;
 const HYPERION_LP_RESOURCE = `${VAULT}::vault::VaultHyperionLp`;
-const SAFE_RESOURCE = `${VAULT}::vault::VaultPosition`;
 
 const HYPERION_DEX =
   "0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c";
@@ -34,15 +31,13 @@ const EXCLUDED_DIRECT_ASSETS = new Set([
   "0x51964f09020498a1421a2a3bafe8e1d9fa72574b60446486c599bc6f3e9fae29::echelon_coin::ELON",
 ]);
 
-const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const INDEXER_PAGE_SIZE = 100; // the indexer caps responses at 100 rows
 const INDEXER_TIMEOUT_MS = 30_000;
 const PAGE_SIZE = 50;
-const OWNER_BATCH_SIZE = 30;
-const ECHELON_CONCURRENCY = 4;
+const OWNER_BATCH_SIZE = 100; // indexer latency is per request, not per owner
 const HYPERION_LP_CONCURRENCY = 8;
-const RESOURCE_CONCURRENCY = 4;
-const FULLNODE_CONCURRENCY = 4;
+const RESOURCE_CONCURRENCY = 8;
+const FULLNODE_CONCURRENCY = 8;
 
 /** Known Hyperion pools used by Yield AI safes (token_a/token_b = pool canonical order). */
 const YIELD_AI_HYPERION_POOLS = [
@@ -58,17 +53,34 @@ const YIELD_AI_HYPERION_POOLS = [
 ];
 
 // Native APT is included: the indexer reports coin and FA APT as one 0x1::aptos_coin::AptosCoin row.
-const FA_BALANCES_QUERY = gql`
+// Empty stores are kept so their storage_id can be told apart from position objects.
+const FA_BALANCES_QUERY = `
   query YieldAiFaBalances($addresses: [String!]!, $limit: Int!, $offset: Int!) {
     current_fungible_asset_balances(
-      where: { owner_address: { _in: $addresses }, amount: { _gt: "0" } }
+      where: { owner_address: { _in: $addresses } }
       order_by: [{ owner_address: asc }, { storage_id: asc }]
       limit: $limit
       offset: $offset
     ) {
       owner_address
+      storage_id
       amount
       asset_type
+    }
+  }
+`;
+
+// Live objects owned by safes: fungible stores plus open LP positions (closed positions are deleted).
+const LIVE_OBJECTS_QUERY = `
+  query YieldAiObjects($addresses: [String!]!, $limit: Int!, $offset: Int!) {
+    current_objects(
+      where: { owner_address: { _in: $addresses }, is_deleted: { _eq: false } }
+      order_by: [{ owner_address: asc }, { object_address: asc }]
+      limit: $limit
+      offset: $offset
+    ) {
+      owner_address
+      object_address
     }
   }
 `;
@@ -102,29 +114,10 @@ function normalizeObjectAddress(obj) {
 }
 
 /**
- * Exponential backoff with jitter, for indexer requests only. Fullnode reads go through the SDK,
- * which already retries transient errors (429, 5xx, timeouts) and skips deterministic ones such
- * as Move aborts; wrapping those again multiplies the delays and can stall the run.
- */
-async function retryAsync(fn, attempts = 5) {
-  let lastError;
-  for (let i = 0; i < attempts; i += 1) {
-    try {
-      return await fn();
-    } catch (e) {
-      lastError = e;
-      if (i + 1 < attempts) {
-        const delay = Math.min(8000, 500 * 2 ** i) * (0.5 + Math.random() / 2);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-    }
-  }
-  throw lastError;
-}
-
-/**
  * Cap all fullnode reads together. The SDK already retries transient errors (429, 5xx, timeouts);
  * a rate limit that outlasts those retries fails the run instead of stalling it into a timeout.
+ * Resources are read one type at a time: listing an account's resources needs the statekeys index,
+ * which some nodes in the rotation lack.
  */
 function createFullnodeReader() {
   const limit = pLimit(FULLNODE_CONCURRENCY);
@@ -135,10 +128,30 @@ function createFullnodeReader() {
   });
   return {
     view: (options) => read(() => function_view(options)),
-    resources: (safe) => read(() => getResources(safe, "aptos")),
+    // null when the account does not hold the resource
+    resource: (account, type) => read(() => sdk.chains.aptos.getResource({ chain: "aptos", account, type })),
     query: (path) => read(() => aQuery(path, "aptos")),
     get reads() { return reads; },
   };
+}
+
+/** Paged indexer query over safe owners; the SDK retries and sends APTOS_API_KEY. */
+async function queryIndexerByOwners(query, key, owners) {
+  const rows = [];
+  for (const batch of sliceIntoChunks(owners, OWNER_BATCH_SIZE)) {
+    for (let offset = 0; ; offset += INDEXER_PAGE_SIZE) {
+      const data = await sdk.chains.aptos.indexerQuery({
+        chain: "aptos",
+        query,
+        variables: { addresses: batch, limit: INDEXER_PAGE_SIZE, offset },
+        timeout: INDEXER_TIMEOUT_MS,
+      });
+      const page = data?.[key] ?? [];
+      rows.push(...page);
+      if (page.length < INDEXER_PAGE_SIZE) break;
+    }
+  }
+  return rows;
 }
 
 function unwrapScalar(res) {
@@ -394,15 +407,16 @@ async function fetchRegisteredSafes(reader) {
   for (let start = 0; start < total; start += PAGE_SIZE) {
     const limit = Math.min(PAGE_SIZE, total - start);
     const pageRaw = await reader.view({
-      // Owner/policy are unused by TVL. Check existence during the resource read instead.
-      functionStr: `${VAULT}::vault::get_safes_range`,
+      // exists is object::object_exists<VaultPosition>: a registry entry can outlive its object
+      functionStr: `${VAULT}::vault::get_safes_range_info`,
       args: [String(start), String(limit)],
       chain: "aptos",
     });
-    for (const address of unwrapVector(pageRaw)) {
+    for (const info of unwrapVector(pageRaw)) {
+      if (info?.exists !== true) continue;
       // The view returns some safes without leading zeros; the indexer matches owner_address as an
       // exact 64-hex string, so an unpadded safe would silently lose its fungible-asset balances.
-      const s = padAptosAddress(address);
+      const s = padAptosAddress(info.safe_address);
       if (s) safeOut.push(s);
     }
   }
@@ -410,134 +424,89 @@ async function fetchRegisteredSafes(reader) {
   return { safeAddresses: [...new Set(safeOut)] };
 }
 
-/** A fully paginated resource read replaces both per-safe existence views. */
-async function fetchSafeResources(reader, safeAddresses) {
-  const { results } = await PromisePool.withConcurrency(RESOURCE_CONCURRENCY)
-    .for(safeAddresses)
-    .handleError((e) => { throw e; })
-    .process(async (safe) => {
-      let resources;
-      try {
-        resources = await reader.resources(safe);
-      } catch (e) {
-        // A registry entry can outlive its object. Other read failures remain fatal.
-        if ((e.status ?? e.response?.status) === 404 && e.errorCode === "account_not_found") return null;
-        throw e;
-      }
-      if (!Array.isArray(resources)) throw new Error(`Invalid resources for safe ${safe}`);
-      // Matches get_safes_range_info's object::object_exists<VaultPosition> check.
-      if (!resources.some(({ type }) => type === "0x1::object::ObjectCore") ||
-          !resources.some(({ type }) => type === SAFE_RESOURCE)) return null;
-      const vault = resources.find(({ type }) => type === ECHELON_VAULT_RESOURCE);
-      if (vault && (!vault.data || typeof vault.data !== "object"))
-        throw new Error(`Invalid Echelon resource for safe ${safe}`);
-      return {
-        safe,
-        echelonVault: vault?.data,
-        hasHyperion: resources.some(({ type }) => type === HYPERION_LP_RESOURCE),
-      };
-    });
-  return results.filter(Boolean);
-}
-
-async function sumEchelonSafePositions(api, safeResources, addDlpAsUsdc, reader) {
-  const marketMetadataCache = new Map();
+/**
+ * Echelon collateral is stored as market shares. Shares are summed per market across safes and
+ * converted with one shares_to_coins view per market, instead of one account_coins view per position.
+ */
+async function sumEchelonSafePositions(api, safeAddresses, addDlpAsUsdc, reader) {
+  const sharesByMarket = new Map();
   let adds = 0;
-  const totalsByAsset = new Map();
 
-  async function getMarketMetadata(market) {
-    if (!marketMetadataCache.has(market)) {
-      const metadata = await reader.view({
-        functionStr: `${ECHELON}::lending::market_asset_metadata`,
-        args: [market],
-        chain: "aptos",
-      });
-      marketMetadataCache.set(
-        market,
-        padAptosAddress(normalizeObjectAddress(metadata))
-      );
-    }
-    return marketMetadataCache.get(market);
-  }
-
-  await PromisePool.withConcurrency(ECHELON_CONCURRENCY)
-    .for(safeResources.filter(({ echelonVault }) => echelonVault))
+  await PromisePool.withConcurrency(RESOURCE_CONCURRENCY)
+    .for(safeAddresses)
     .handleError((e) => { throw e; }) // a failed read must fail the run, not drop the safe's TVL
-    .process(async ({ safe, echelonVault }) => {
-      const collaterals = echelonVault.collaterals?.data || [];
+    .process(async (safe) => {
+      const vault = await reader.resource(safe, ECHELON_VAULT_RESOURCE);
+      if (vault == null) return;
+      if (typeof vault !== "object") throw new Error(`Invalid Echelon resource for safe ${safe}`);
 
-      for (const collateral of collaterals) {
-        const market = padAptosAddress(
-          normalizeObjectAddress(collateral?.key)
-        );
-        if (!market) continue;
-
-        const coins = await reader.view({
-          functionStr: `${ECHELON}::lending::account_coins`,
-          args: [safe, market],
-          chain: "aptos",
-        });
-        const amount = toIntegerString(coins);
-        if (!amount || amount === "0") continue;
-
-        const asset = await getMarketMetadata(market);
-        if (!asset) continue;
-
+      for (const collateral of vault.collaterals?.data || []) {
+        const market = padAptosAddress(normalizeObjectAddress(collateral?.key));
+        const shares = toIntegerString(collateral?.value);
+        if (!market || !shares || shares === "0") continue;
         adds += 1;
-        const prev = totalsByAsset.get(asset) || 0n;
-        totalsByAsset.set(asset, prev + BigInt(amount));
-        if (asset === DLP_SHARE) await addDlpAsUsdc(amount);
-        else api.add(asset, amount);
+        sharesByMarket.set(market, (sharesByMarket.get(market) || 0n) + BigInt(shares));
       }
     });
+
+  const totalsByAsset = new Map();
+  for (const [market, shares] of sharesByMarket) {
+    const coins = await reader.view({
+      functionStr: `${ECHELON}::lending::shares_to_coins`,
+      args: [market, shares.toString()],
+      chain: "aptos",
+    });
+    const amount = toIntegerString(coins);
+    if (!amount || amount === "0") continue;
+
+    const metadata = await reader.view({
+      functionStr: `${ECHELON}::lending::market_asset_metadata`,
+      args: [market],
+      chain: "aptos",
+    });
+    const asset = padAptosAddress(normalizeObjectAddress(metadata));
+    if (!asset) continue;
+
+    totalsByAsset.set(asset, (totalsByAsset.get(asset) || 0n) + BigInt(amount));
+    if (asset === DLP_SHARE) await addDlpAsUsdc(amount);
+    else api.add(asset, amount);
+  }
 
   return { adds, totalsByAsset };
 }
 
 async function tvl(api) {
   const reader = createFullnodeReader();
-  const registered = await fetchRegisteredSafes(reader);
-  const safeResources = await fetchSafeResources(reader, registered.safeAddresses);
-  const safeAddresses = safeResources.map(({ safe }) => safe);
+  const { safeAddresses } = await fetchRegisteredSafes(reader);
   if (!safeAddresses.length) return;
   const addDlpAsUsdc = createDlpAdder(api, reader);
   const { adds: echelonAdds, totalsByAsset: echelonTotalsByAsset } =
-    await sumEchelonSafePositions(api, safeResources, addDlpAsUsdc, reader);
-
-  // the SDK sends the same key on fullnode views
-  const indexerHeaders = {};
-  const apiKey = getEnv("APTOS_API_KEY");
-  if (apiKey) indexerHeaders.Authorization = `Bearer ${apiKey}`;
-  const graphQLClient = new GraphQLClient(INDEXER_URL, { headers: indexerHeaders });
+    await sumEchelonSafePositions(api, safeAddresses, addDlpAsUsdc, reader);
 
   const faTotalsByAsset = new Map();
+  const storeIds = new Set();
+  const balances = await queryIndexerByOwners(FA_BALANCES_QUERY, "current_fungible_asset_balances", safeAddresses);
 
-  for (const batch of sliceIntoChunks(safeAddresses, OWNER_BATCH_SIZE)) {
-    for (let offset = 0; ; offset += INDEXER_PAGE_SIZE) {
-      // a fresh signal per attempt, so a hung request is aborted and retried instead of
-      // blocking the run forever
-      const { current_fungible_asset_balances: rows = [] } = await retryAsync(() =>
-        graphQLClient.request({
-          document: FA_BALANCES_QUERY,
-          variables: { addresses: batch, limit: INDEXER_PAGE_SIZE, offset },
-          signal: AbortSignal.timeout(INDEXER_TIMEOUT_MS),
-        })
-      );
+  for (const row of balances) {
+    storeIds.add(row.storage_id);
+    if (EXCLUDED_DIRECT_ASSETS.has(row.asset_type)) continue;
+    const amtStr = toIntegerString(row.amount);
+    if (!amtStr || amtStr === "0" || /^-/.test(amtStr)) continue;
 
-      for (const row of rows) {
-        if (EXCLUDED_DIRECT_ASSETS.has(row.asset_type)) continue;
-        const amtStr = toIntegerString(row.amount);
-        if (!amtStr || amtStr === "0" || /^-/.test(amtStr)) continue;
+    const prev = faTotalsByAsset.get(row.asset_type) || 0n;
+    faTotalsByAsset.set(row.asset_type, prev + BigInt(amtStr));
 
-        const prev = faTotalsByAsset.get(row.asset_type) || 0n;
-        faTotalsByAsset.set(row.asset_type, prev + BigInt(amtStr));
+    if (padAptosAddress(row.asset_type) === DLP_SHARE) await addDlpAsUsdc(amtStr);
+    else api.add(row.asset_type, amtStr);
+  }
 
-        if (padAptosAddress(row.asset_type) === DLP_SHARE) await addDlpAsUsdc(amtStr);
-        else api.add(row.asset_type, amtStr);
-      }
-
-      if (rows.length < INDEXER_PAGE_SIZE) break;
-    }
+  // Any live object a safe owns that is not a fungible store is an open LP position, so only those
+  // safes are read for Hyperion, and only their live positions (closed ones are deleted objects).
+  const liveObjectsBySafe = new Map();
+  for (const { owner_address, object_address } of await queryIndexerByOwners(LIVE_OBJECTS_QUERY, "current_objects", safeAddresses)) {
+    if (storeIds.has(object_address)) continue;
+    if (!liveObjectsBySafe.has(owner_address)) liveObjectsBySafe.set(owner_address, new Set());
+    liveObjectsBySafe.get(owner_address).add(padAptosAddress(object_address));
   }
 
   let hyperionAdds = 0;
@@ -545,16 +514,21 @@ async function tvl(api) {
   const tickCache = new Map();
 
   await PromisePool.withConcurrency(HYPERION_LP_CONCURRENCY)
-    .for(safeResources.filter(({ hasHyperion }) => hasHyperion))
+    .for([...liveObjectsBySafe])
     .handleError((e) => { throw e; }) // required position reads must not drop Hyperion TVL
-    .process(async ({ safe }) => {
+    .process(async ([safe, liveObjects]) => {
+      // also excludes safes whose only live position is on Thala
+      const lp = await reader.resource(safe, HYPERION_LP_RESOURCE);
+      if (!lp || Number(lp.open_count) === 0) return;
+
       const positionsRaw = await reader.view({
         functionStr: `${VAULT}::vault::get_hyperion_positions`,
         args: [safe],
         chain: "aptos",
       });
 
-      const positionAddresses = unwrapPositionAddresses(positionsRaw);
+      const positionAddresses = unwrapPositionAddresses(positionsRaw)
+        .filter((p) => liveObjects.has(padAptosAddress(p)));
       if (!positionAddresses.length) return;
 
       for (const positionAddr of positionAddresses) {
