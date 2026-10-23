@@ -15,7 +15,7 @@ async function staking(api) {
 
 module.exports = {
   methodology: 'Every currency has its own vault, the counterparty of every position in it, funded by the protocol: the vaults\' house capital and fee revenue are tracked as treasury, so no TVL is counted. Staking counts the $OVER staked in the staking contract.',
-  start: '2026-10-20',
+  start: '2026-09-17', // the first stake: block 65482061, 2026-09-17 15:41 UTC (the $OVER TGE that day)
   robinhood: {
     tvl: () => ({}),
     staking,
