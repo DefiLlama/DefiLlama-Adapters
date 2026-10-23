@@ -4,21 +4,22 @@ const { nullAddress } = require('../helper/tokenMapping')
 
 const NATIVE_PLACEHOLDER = ADDRESSES.GAS_TOKEN_2
 
-const config = {
-  bsc: {
-    marketListUrl:
-      'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=bsc',
-  },
-  ethereum: {
-    marketListUrl:
-      'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=ethereum',
-  },
+const chains = ['bsc', 'ethereum']
+
+// API caps pageSize at 200, so page until `total` is reached
+async function fetchAllMarkets(chain) {
+  const list = []
+  for (let page = 1; ; page++) {
+    const url = `https://api.lista.org/api/moolah/borrow/marketList?page=${page}&pageSize=200&chain=${chain}`
+    const { data } = await getConfig(`lista/marketList-${chain}-p${page}`, url)
+    const rows = data?.list ?? []
+    list.push(...rows)
+    if (!rows.length || list.length >= (data?.total ?? 0)) return list
+  }
 }
 
 async function getSmartLendingMarketIds(api) {
-  const { marketListUrl } = config[api.chain]
-  const { data } = await getConfig('lista/marketList-' + api.chain, marketListUrl)
-  const list = data?.list ?? []
+  const list = await fetchAllMarkets(api.chain)
   return list
     .filter((m) => m.chain === api.chain)
     .filter((m) => m.isSmartLending === true)
@@ -81,6 +82,6 @@ module.exports = {
     'TVL = sum of token0 and token1 balances in each smart lending market swapPool (two collateral assets). Data from Moolah market list + market basic info API.',
 }
 
-Object.keys(config).forEach((chain) => {
+chains.forEach((chain) => {
   module.exports[chain] = { tvl }
 })

@@ -3,12 +3,22 @@ const { getConfig } = require('../helper/cache')
 const config = {
   bsc: {
     vault: '0x8F73b65B4caAf64FBA2aF91cC5D4a2A1318E5D8C',
-    marketListUrl: 'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=bsc',
   },
   ethereum: {
     vault: '0xf820fB4680712CD7263a0D3D024D5b5aEA82Fd70',
-    marketListUrl: 'https://api.lista.org/api/moolah/borrow/marketList?page=1&pageSize=1000&chain=ethereum',
   },
+}
+
+// API caps pageSize at 200, so page until `total` is reached
+async function fetchAllMarkets(chain) {
+  const list = []
+  for (let page = 1; ; page++) {
+    const url = `https://api.lista.org/api/moolah/borrow/marketList?page=${page}&pageSize=200&chain=${chain}`
+    const { data } = await getConfig(`lista/marketList-${chain}-p${page}`, url)
+    const rows = data?.list ?? []
+    list.push(...rows)
+    if (!rows.length || list.length >= (data?.total ?? 0)) return list
+  }
 }
 
 const abi = {
@@ -19,9 +29,7 @@ const abi = {
 }
 
 async function getMarketList(api) {
-  const { marketListUrl } = config[api.chain]
-  const { data } = await getConfig('lista/marketList-' + api.chain, marketListUrl)
-  const list = data?.list ?? []
+  const list = await fetchAllMarkets(api.chain)
   return list.filter((m) => m.chain === api.chain)
 }
 
