@@ -243,6 +243,12 @@ const uniV3Configs = {
       fromBlock: 3579833,
     },
   },
+  'bitblocks-finance-v3': {
+    bsc: {
+      factory: '0xa83f730fd076574f9ad6b54af653ab9e4743d3ac',
+      fromBlock: 127693063,
+    },
+  },
   'bitswap-bb-v3': {
     bouncebit: {
       factory: '0x30a326d09E01d7960a0A2639c8F13362e6cd304A',
