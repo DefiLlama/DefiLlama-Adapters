@@ -7,6 +7,9 @@ module.exports = aaveV4Export({
     "0x943827DCA022D0F354a8a8c332dA1e5Eb9f9F931", // Prime Hub
     "0x62d63197660c080236193CA60b70E49A08E90368", // Global Dollar Hub
   ],
+  base: [
+    "0xa4d5947Eb727A052bae69C593FfC84247EC9864E", // Equities Hub
+  ],
   avax: [
     "0xd07369fAE4A5BB13c9Ce446B052c7867B1AbDf6e", // Core Hub
   ],
@@ -14,3 +17,5 @@ module.exports = aaveV4Export({
     "0x17288dfc86205301064577b98B02b81017e6F79C", // Core Hub
   ],
 });
+
+module.exports.base.start = '2026-09-18'; // hub proxy deployed 2026-09-18
