@@ -1,4 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { staking } = require('../helper/staking')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Stock Yield by HedgeHood: weekly covered-call vaults on Robinhood Chain stock tokens.
 // v1: BrokerEpochVault holds depositors' stock, sells one weekly call against it to a quoted
@@ -32,36 +34,22 @@ async function v1Tvl(api) {
 async function v2Tvl(api) {
   if (await api.getBlock() < V2_REGISTRY_BLOCK) return
   const funds = await api.call({ abi: 'address[]:vaults', target: V2_REGISTRY })
-  if (!funds.length) return
-  const read = (fields) => Promise.all(fields.map((f) => api.multiCall({ abi: `uint256:${f}`, calls: funds })))
-  const [stocks, usdgs] = await Promise.all(['stock', 'usdg'].map((f) => api.multiCall({ abi: `address:${f}`, calls: funds })))
-  // Depositor assets: NAV (stockHeld/usdgHeld, including what is locked as option collateral), queued deposits
-  // (pending*) and redeemed or refunded assets not yet claimed (reserved*). The option buyer's escrowed premium
-  // (engineEscrow) and what engines owe counterparties (engineStock/engineUsdg) sit outside NAV and are left out.
-  const stockParts = await read(['stockHeld', 'pendingStock', 'reservedStock'])
-  const usdgParts = await read(['usdgHeld', 'pendingUsdg', 'reservedUsdg'])
-  funds.forEach((_, i) => {
-    stockParts.forEach((part) => api.add(stocks[i], part[i]))
-    usdgParts.forEach((part) => api.add(usdgs[i], part[i]))
-  })
+  const stocks = await api.multiCall({ abi: 'address:stock', calls: funds })
+  const usdgs = await api.multiCall({ abi: 'address:usdg', calls: funds })
+  return sumTokens2({ api, tokensAndOwners: funds.flatMap((fund, i) => [[stocks[i], fund], [usdgs[i], fund]]) })
 }
 
 async function tvl(api) {
-  await Promise.all([v1Tvl(api), v2Tvl(api)])
-}
-
-// HEDGE trades only in a Uniswap V4 pool the coins server does not price, so it is priced by its CoinGecko id
-async function staking(api) {
-  const staked = await api.call({ abi: 'erc20:balanceOf', target: HEDGE, params: [HEDGE_STAKING_GATE] })
-  api.addCGToken('hedgehood', staked / 1e18)
+  await v1Tvl(api)
+  await v2Tvl(api)
 }
 
 module.exports = {
   methodology:
-    "TVL counts what depositors own in each Stock Yield vault. v1 vaults are read from managedBalances(): the stock token (active, queued for the next epoch, and redeemed but not yet claimed) plus earned premiums not yet claimed, in USDG. v2 funds, discovered from the v2 VaultRegistry, are read from stockHeld/usdgHeld (NAV, including assets locked as option collateral), pendingStock/pendingUsdg (queued deposits) and reservedStock/reservedUsdg (redeemed but not yet claimed). In both versions the option buyer's premium is held in escrow until the epoch settles and counted once it is credited to depositors; the protocol fee, the buyer's exercised stock and the separately funded exit pool are excluded. Staking counts HEDGE staked in the HEDGE staking contract (the v1 deposit gate), priced by its CoinGecko id.",
+    "TVL counts what depositors own in each Stock Yield vault. v1 vaults are read from managedBalances(): the stock token (active, queued for the next epoch, and redeemed but not yet claimed) plus earned premiums not yet claimed, in USDG. v2 funds, discovered from the v2 VaultRegistry, count the stock token and USDG each fund holds. Staking counts HEDGE staked in the HEDGE staking contract.",
   start: 1791614176, // 2026-10-10 06:36:16 UTC, first vault's deployment block 84792706
   robinhood: {
     tvl,
-    staking,
+    staking: staking(HEDGE_STAKING_GATE, HEDGE),
   },
 }
