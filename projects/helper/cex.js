@@ -561,7 +561,7 @@ function cexExports(config) {
   }
   if (btcExport) exportObj.bitcoin = { tvl: btcExport }
   chains.forEach(chain => {
-    let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = config[chain]
+    let { tokensAndOwners, owners, tokens, blacklistedTokens = [], fungibleAssets, ownTokens = [], ...rest } = config[chain]
 
     if (!tokensAndOwners && !tokens && chain !== 'solana') {
       tokens = defaultTokens[chain]
@@ -571,7 +571,7 @@ function cexExports(config) {
       }
     }
 
-    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens }
+    const options = { ...rest, tokensAndOwners, owners, tokens, chain, blacklistedTokens: [...ownTokens, ...blacklistedTokens] }
     if (svmChainsSet.has(chain)) options.solOwners = owners // count native balances on all SVM chains
     if (chain === 'solana') {
       if (!options.blacklistedTokens) options.blacklistedTokens = []
@@ -593,6 +593,14 @@ function cexExports(config) {
         const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
         if (chain === 'solana') runtimeOptions.solOwners = owners
         return sumTokensExport(runtimeOptions)(api)
+      }
+    }
+
+    if (ownTokens.length > 0) {
+      exportObj[chain].ownTokens = async (api) => {
+        let owners = typeof options.owners === 'function' ? await options.owners(api) : options.owners
+        if (!owners) owners = [...new Set(tokensAndOwners.map(([, owner]) => owner))]
+        return sumTokensExport({ chain, owners, tokens: ownTokens, permitFailure: true })(api)
       }
     }
   })

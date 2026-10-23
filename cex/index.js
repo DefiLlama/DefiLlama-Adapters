@@ -850,6 +850,7 @@ const configs = {
   'crypto-com': {
     bitcoin: "cryptoCom",
     ethereum: {
+      ownTokens: ['0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b'], // CRO
       owners: [
         "0x72a53cdbbcc1b9efa39c834a540550e23463aacb",
         "0x6262998ced04146fa42253a5c0af90ca02dfd2a3",
@@ -1656,6 +1657,7 @@ const configs = {
   },
   'nexo-cex': {
     ethereum: {
+      ownTokens: ['0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206'], // NEXO
       owners: [
         "0x8fd589aa8bfa402156a6d1ad323fec0ecee50d9d",
         "0xb60c61dbb7456f024f9338c739b02be68e3f545c",
@@ -2254,6 +2256,7 @@ const configs = {
   'woo-cex': {
     bitcoin: "wooCEX",
     ethereum: {
+      ownTokens: ['0x4691937a7508860F876c9c0a2a617E7d9E945D4B'], // WOO
       owners: [
         "0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df",
         "0x63DFE4e34A3bFC00eB0220786238a7C6cEF8Ffc4",
@@ -2262,6 +2265,7 @@ const configs = {
       ]
     },
     fantom: {
+      ownTokens: ['0x6626c47c00F1D87902fc13EECfaC3ed06D5E8D8a'], // WOO
       owners: [
         "0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df",
         "0x63DFE4e34A3bFC00eB0220786238a7C6cEF8Ffc4",
@@ -2270,6 +2274,7 @@ const configs = {
       ]
     },
     avax: {
+      ownTokens: ['0xabc9547b534519ff73921b1fba6e672b5f58d083'], // WOO
       owners: [
         "0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df",
         "0x63DFE4e34A3bFC00eB0220786238a7C6cEF8Ffc4",
@@ -2278,6 +2283,7 @@ const configs = {
       ]
     },
     bsc: {
+      ownTokens: ['0x4691937a7508860F876c9c0a2a617E7d9E945D4B'], // WOO
       owners: [
         "0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df",
         "0x63DFE4e34A3bFC00eB0220786238a7C6cEF8Ffc4",
@@ -2286,6 +2292,7 @@ const configs = {
       ]
     },
     arbitrum: {
+      ownTokens: ['0xcAFcD85D8ca7Ad1e1C6F82F651fA15E33AEfD07b'], // WOO
       owners: [
         "0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df",
         "0x63DFE4e34A3bFC00eB0220786238a7C6cEF8Ffc4",
@@ -2294,6 +2301,7 @@ const configs = {
       ]
     },
     polygon: {
+      ownTokens: ['0x1B815d120B3eF02039Ee11dC2d33DE7aA4a8C603'], // WOO
       owners: [
         "0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df",
         "0x63DFE4e34A3bFC00eB0220786238a7C6cEF8Ffc4",
@@ -2302,6 +2310,7 @@ const configs = {
       ]
     },
     optimism: {
+      ownTokens: ['0x871f2F2ff935FD1eD867842FF2a7bfD051A5E527'], // WOO
       owners: [
         "0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df",
         "0x63DFE4e34A3bFC00eB0220786238a7C6cEF8Ffc4",
