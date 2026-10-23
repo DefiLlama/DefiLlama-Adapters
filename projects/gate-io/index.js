@@ -59,6 +59,9 @@ const config = {
       "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0",
       "0x76bbb8D5dbedde9cB34882c9588DFa9dEF00B8bc",
       "0xccc5eeebe15291620be733997af60735618548d7",
+      "0x6667cfe4698500cec4ed2cf22a9d6dbf15aec81d",
+      "0x1e2012e21086C96256CC32F5939Ad8b5e7489Afb",
+      "0x6b9C05B935BdAddDDFfa6C315483e02401f31307",
     ]
   },
   // USDC is arc's gas token, so the native balance already is the USDC balance
@@ -109,7 +112,18 @@ const config = {
       "0xa2df23519a6059dbc6f027f6cf8e59bdaecaf56f",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
       "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
-      "0xfb8072675ba65fa4157921ff1e522132a33eabb5"
+      "0xfb8072675ba65fa4157921ff1e522132a33eabb5",
+      // polymarket wallets
+      "0xc3576be9f63e4f44231e2aef4c6418c255ace998",
+      "0x8c9a40369fa7c0b89c93471220bbaa3a0f5cc0e4",
+      "0x22b1084664833f846a945e13464e4907537ff1b9",
+      "0x8262e577176a1363eaee7fbba1965d38b21180f3",
+      "0x9e3614d08cb75318820b4b10d9f995ada175f0b0",
+      "0x1389b35399a49195f55b16f7348c07a1554e25ed",
+      "0x4dc3bda32a72eadae470e580188b61fa36e9ccea",
+      "0xa561cd8e2f3ae87d109ac5adde3d39f36e4b96f1",
+      "0x2b0a8c481c2d125b2721b3ea0d4f2804270f0b8f",
+      "0x8f39b3617e99f7c429742830208d0ed1f2b66726"
     ]
   },
   "fantom": {
@@ -200,7 +214,10 @@ const config = {
       // "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
       "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN",
       "AGrghB4tNEJhWsPoQ73We5KAvgp6q512BkBx6fqY4i4b",
-      "DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp"
+      "DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp",
+      "5zzEaL86dT4cTz6reodbz6Rg9Wvet18216DTiWGEVLFG",
+      "J2f6waBNipqqn2k6d9uw3bwpbapGr2pLKZd9mDczCgfz",
+      "82KzHDyeqYckpoppcby7ZyWvWUyEwHLxDWfCTSMG6dn9"
     ]
   },
   "ripple": {
@@ -1127,7 +1144,12 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
       "0xe12532a4cea82aac737a91b80be82d33eadb4c2b",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      "0xe698de9a0c0e592f236a063451f34f0e6c000f55",
+      "0x02e6f748644aeddcae70e39e70f596de33abf73f",
+      "0x4517b5e9651577bdd2130807f2e8741311c95bab",
+      "0xba0c6f04871984eb0503f83eec00f6af76603c51",
+      "0x7642d3730563fbbad9de74cb6c8f74b7dc9a6af0"
     ]
   },
   "icon": {
@@ -2087,7 +2109,14 @@ const solanaLsts = {
 
 // HyperCore spot balances sit off the EVM, so the hyperliquid entry in `config`
 // (a plain EVM balance lookup) never sees them
-const hypercoreSpotOwners = ['0x0d0707963952f2fba59dd06f2b425ace40b492fe']
+const hypercoreSpotOwners = [
+  '0x0d0707963952f2fba59dd06f2b425ace40b492fe',
+  '0xe698de9a0c0e592f236a063451f34f0e6c000f55',
+  '0x02e6f748644aeddcae70e39e70f596de33abf73f',
+  '0x4517b5e9651577bdd2130807f2e8741311c95bab',
+  '0xba0c6f04871984eb0503f83eec00f6af76603c51',
+  '0x7642d3730563fbbad9de74cb6c8f74b7dc9a6af0',
+]
 
 // kava's cosmos-side owners, counted by the earn export rather than `config.kava`
 const kavaCosmosOwners = [
