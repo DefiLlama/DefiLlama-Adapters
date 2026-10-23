@@ -51,6 +51,9 @@ const fixBalancesTokens = {
   // azig is not priced under zigchain:azig by the coins service yet
   zigchain: {
     azig: { coingeckoId: 'zignaly', decimals: 18 },
+    // USDC.inj (Circle USDC bridged from Injective over channel-12); replaces Noble USDC.n
+    // keyed as ibc:<hash>: transformBalances rewrites ibc/<hash> to that form before the lookup
+    'ibc:6C6F5A015608CF3951DFE6A117390210AB825BF0CC1AD33B2B100B05529A9B6B': { coingeckoId: 'usd-coin', decimals: 6 },
   },
   // the coins service has no platon:<null address> entry for the gas token
   platon: {
