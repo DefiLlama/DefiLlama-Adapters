@@ -25,10 +25,12 @@ async function tvl(api) {
     )
   )
 
-  const total = responses.reduce(
-    (sum, data) => sum.plus(data.balance || 0),
-    new BigNumber(0)
-  )
+  const total = responses.reduce((sum, data) => {
+    if (data == null || data.balance == null)
+      throw new Error('Oduwa explorer response is missing balance')
+
+    return sum.plus(data.balance)
+  }, new BigNumber(0))
 
   api.add(
     'coingecko:oduwa-coin',
