@@ -27,6 +27,8 @@ const adapterRoutes = [
   '../cex/index.js',
 ]
 const allProtocols = {}
+// Keep best-effort loading for existing consumers; manifest builds check these.
+const registryErrors = []
 
 for (const route of adapterRoutes) {
   try {
@@ -44,6 +46,7 @@ for (const route of adapterRoutes) {
     Object.assign(allProtocols, adapters)
   } catch (error) {
     console.error(`Error loading adapter from ${route}:`, error)
+    registryErrors.push(new Error(`Error loading adapter from ${route}`, { cause: error }))
   }
 }
 
@@ -56,4 +59,5 @@ module.exports = {
   allProtocols,
   deadAdapters,
   adapterRoutes,
+  registryErrors,
 };
