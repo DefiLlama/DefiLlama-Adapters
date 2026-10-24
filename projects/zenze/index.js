@@ -16,7 +16,8 @@ const sumCurves = (isZnzf) => async (api) => {
   const tokensAndOwners = isZnzf ? [] : [[ADDRESSES.null, ZNZF_CURVE]];
   for (const { quote, curve } of logs)
     if ((quote.toLowerCase() === ZNZF) === isZnzf) tokensAndOwners.push([quote, curve]);
-  return sumTokens2({ api, tokensAndOwners });
+  // the factory accepts any quote address, so a non-ERC20 quote must not break the sum
+  return sumTokens2({ api, tokensAndOwners, permitFailure: true });
 };
 
 module.exports = {
