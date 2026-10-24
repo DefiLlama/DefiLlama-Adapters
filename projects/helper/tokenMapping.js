@@ -25,7 +25,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
 ]
 const caseSensitiveChains = [...ibcChains, ...svmChains, 'canton', 'mina', 'decred', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', 'aleo',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash', 'qubic', 'constellation', 'supra',
-  'kaspa', 'bsv', 'arweave', 'pi', 'zcash', 'flux', 'bitcoincash', 'gnoland', 'kusama', 'filecoin', 'neo3', 'ontology', 'proton',
+  'kaspa', 'bsv', 'arweave', 'pi', 'zcash', 'flux', 'bitcoincash', 'gnoland', 'kusama', 'filecoin', 'neo3', 'ontology', 'proton', 'oduwa',
 ]
 
 const transformTokens = {
@@ -42,6 +42,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  oduwa: {
+    [ADDRESSES.null]: { coingeckoId: 'oduwa-coin', decimals: 8 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
