@@ -154,8 +154,9 @@ function tvl(isBorrowed) {
             api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
         ])
 
-        vaults.forEach((_, i) => {
-            if (!underlyings[i] || !totalAssets[i] || liquidity[i] == null) return
+        vaults.forEach((vault, i) => {
+            if (!underlyings[i] || !totalAssets[i]) return
+            if (liquidity[i] == null) throw new Error(`balanceOf failed for vault ${vault}`)
             isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], liquidity[i])
         })
     }
