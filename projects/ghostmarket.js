@@ -15,7 +15,7 @@ async function tvl() {
 
   const options = {
       method: "post",
-      url: "https://n3seed1.ngd.network:10332",
+      url: "https://mainnet1.neo.coz.io:443",
       maxRedirects: 0, // Do not follow redirects to plaintext HTTP.
       data: query,
     };
