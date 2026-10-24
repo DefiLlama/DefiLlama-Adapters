@@ -25,6 +25,10 @@ module.exports = [
                     selector: 'CallExpression[callee.object.name="api"][callee.property.value="getLogs"]',
                     message: "Use the getLogs2 helper instead of api.getLogs(...).",
                 },
+                {
+                    selector: 'CallExpression[callee.object.name="api"][callee.property.type="TemplateLiteral"][callee.property.expressions.length=0][callee.property.quasis.0.value.cooked="getLogs"]',
+                    message: "Use the getLogs2 helper instead of api.getLogs(...).",
+                },
             ],
         },
     }

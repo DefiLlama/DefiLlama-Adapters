@@ -13,6 +13,8 @@ const cases = [
   ['a multiline call', 'api.getLogs(\n  options\n)\n', true],
   ['an optional call', 'api?.getLogs?.()\n', true],
   ['a computed call', 'api["getLogs"]()\n', true],
+  ['a static template-literal call', 'api[`getLogs`]()\n', true],
+  ['a dynamic template-literal call', 'api[`get${suffix}`]()\n', false],
 ]
 
 for (const [name, source, restricted] of cases) {
