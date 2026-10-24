@@ -17,5 +17,3 @@ module.exports = aaveV4Export({
     "0x17288dfc86205301064577b98B02b81017e6F79C", // Core Hub
   ],
 });
-
-module.exports.base.start = '2026-09-18'; // hub proxy deployed 2026-09-18
