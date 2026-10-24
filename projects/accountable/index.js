@@ -130,6 +130,11 @@ async function getVaults(api) {
     return Array.from(vaults)
 }
 
+/**
+ * Builds a TVL or borrowed handler for Accountable vaults.
+ * @param {boolean} isBorrowed When true, counts supplied assets minus idle vault liquidity.
+ * @returns {Function} DefiLlama adapter handler.
+ */
 function tvl(isBorrowed) {
     return async (api) => {
         const vaults = await getVaults(api)
@@ -149,8 +154,9 @@ function tvl(isBorrowed) {
             api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
         ])
 
-        vaults.forEach((_, i) => {
+        vaults.forEach((vault, i) => {
             if (!underlyings[i] || !totalAssets[i]) return
+            if (liquidity[i] == null) throw new Error(`balanceOf failed for vault ${vault}`)
             isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], liquidity[i])
         })
     }
