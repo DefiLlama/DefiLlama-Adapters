@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-
+require("dotenv").config();
 const handleError = require('./utils/handleError')
 const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
 
@@ -9,7 +9,6 @@ process.on('unhandledRejection', handleError)
 process.on('uncaughtException', handleError)
 
 const path = require("path");
-require("dotenv").config();
 const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
   blocks: { getBlocks },
@@ -130,7 +129,7 @@ function validateHallmarks(hallmark) {
   const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
   // registry keys can be namespaced (e.g. `treasury/gmx`); preserve the full
   // key so a treasury entry isn't shadowed by a same-named protocol adapter.
-  const registryKey = process.argv[2].replace(/\.js$/, '').replace(/\/index$/, '').replace(/^projects\//, '')
+  const registryKey = path.relative(__dirname, passedFile).replace(/\.js$/, '').replace(/\/index$/, '').replace(/^projects\//, '')
 
   // throw error if module doesnt start with lowercase letters
   if (!/^[a-z]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
