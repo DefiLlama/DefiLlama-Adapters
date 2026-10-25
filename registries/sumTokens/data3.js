@@ -1193,7 +1193,7 @@ module.exports = {
     },
   },
   "lincoln-protocol": {
-    "methodology": "Each Lincoln privacy pool is an immutable contract holding a single asset (ETH, USDG/USDe, a Robinhood tokenized stock, or the protocol tokens LINCOLN/SPCX). TVL is the on-chain balance of every pool. Route adapters and relays hold no user funds between transactions, so they are not counted.",
+    "methodology": "Each Lincoln privacy pool is an immutable contract holding a single asset (ETH, USDG/USDe, a Robinhood tokenized stock, or the protocol tokens LINCOLN/SPCX). TVL is the on-chain balance of every pool. Route adapters and relays hold no user funds between transactions, so they are not counted",
     "start": "2026-10-17",
     "robinhood": {
       "ownerTokens": [
