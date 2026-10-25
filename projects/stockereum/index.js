@@ -9,6 +9,7 @@ const { tickToPrice } = require('../helper/utils/tick')
 
 // https://docs.uniswap.org/contracts/v4/deployments
 const STATE_VIEW = '0x7ffe42c4a5deea5b0fec41c94c136cf115597227'
+const STOCKER = '0x75e2fc69ff2ac12af65ba7d321bbf4f878c535d2' // protocol token, itself launched on the v2 hook
 
 const hooks = [
   {
@@ -37,30 +38,37 @@ function quoteAmount({ sp, tickLower, tickUpper, liquidity, quoteIsCurrency0 }) 
   return quoteIsCurrency0 ? amount0 : amount1
 }
 
-async function tvl(api) {
-  for (const { hook, fromBlock, launchOpened } of hooks) {
-    const launches = await getLogs2({ api, target: hook, eventAbi: launchOpened, fromBlock })
-    if (!launches.length) continue
-    const slot0s = await api.multiCall({ abi: getSlot0Abi, target: STATE_VIEW, calls: launches.map(l => l.poolId) })
-    launches.forEach((l, i) => {
-      const sqrtP = Number(slot0s[i].sqrtPriceX96)
-      if (!sqrtP) return
-      const quote = l.quote.toLowerCase()
-      // v4 sorts currencies by address; the launched token is the other side
-      const quoteIsCurrency0 = quote < l.token.toLowerCase()
-      const amount = quoteAmount({
-        sp: sqrtP / 2 ** 96,
-        tickLower: Number(l.tickLower),
-        tickUpper: Number(l.tickUpper),
-        liquidity: Number(l.liquidity),
-        quoteIsCurrency0,
-      })
-      if (amount > 0) api.add(quote, amount)
+// launches quoted in another Stockereum launch hold only launched tokens; STOCKER-quoted ones go to staking
+const sumQuotes = (isStaking) => async (api) => {
+  const all = []
+  for (const { hook, fromBlock, launchOpened } of hooks)
+    all.push(...await getLogs2({ api, target: hook, eventAbi: launchOpened, fromBlock }))
+  const launched = new Set(all.map(l => l.token.toLowerCase()))
+  const launches = all.filter(l => {
+    const quote = l.quote.toLowerCase()
+    return isStaking ? quote === STOCKER : !launched.has(quote)
+  })
+  if (!launches.length) return
+  const slot0s = await api.multiCall({ abi: getSlot0Abi, target: STATE_VIEW, calls: launches.map(l => l.poolId) })
+  launches.forEach((l, i) => {
+    const sqrtP = Number(slot0s[i].sqrtPriceX96)
+    if (!sqrtP) return
+    const quote = l.quote.toLowerCase()
+    // v4 sorts currencies by address; the launched token is the other side
+    const quoteIsCurrency0 = quote < l.token.toLowerCase()
+    const amount = quoteAmount({
+      sp: sqrtP / 2 ** 96,
+      tickLower: Number(l.tickLower),
+      tickUpper: Number(l.tickUpper),
+      liquidity: Number(l.liquidity),
+      quoteIsCurrency0,
     })
-  }
+    if (amount > 0) api.add(quote, amount)
+  })
 }
 
 module.exports = {
-  methodology: 'TVL is the quote asset (tokenized stocks, ETH, USDC and other registered quotes) held by the locked Uniswap v4 liquidity position of every Stockereum launch, valued at the live pool price. The launched tokens themselves are not counted.',
-  ethereum: { tvl },
+  methodology: 'TVL is the quote asset (tokenized stocks, ETH, USDC and other registered quotes) held by the locked Uniswap v4 liquidity position of every Stockereum launch, valued at the live pool price. The launched tokens themselves are not counted, nor are launches quoted in another Stockereum launch. Launches quoted in STOCKER, the protocol token, are counted as staking. Marked doublecounted because the positions already sit inside Uniswap v4 TVL on Ethereum.',
+  doublecounted: true,
+  ethereum: { tvl: sumQuotes(false), staking: sumQuotes(true) },
 }
