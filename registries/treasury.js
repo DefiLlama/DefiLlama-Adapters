@@ -4143,6 +4143,7 @@ const configs = {
       owners: [
         'GRbpmTbmDeGn8BXHXb1jfEeUT6sGAt7Da44YpWxCS8nr', // ops wallet
         'FrXTvkebakR2oNctgsHz1yeijmu9wTZifL3FmffJP5xJ', // team wallet
+        '2Xkx9CgdeTiHNZ9Fb5nmjQsGK6TbbJkenVZnvrKC8x1w', // Solana pool treasury, receives swept protocol fees
       ],
       ownTokens: ['HuAXPyDWDaMYFKuwQHpqL1oPnj93zdzWmtvFGzCeCUa7'], // MASK
     },
