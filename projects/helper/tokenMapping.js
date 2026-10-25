@@ -42,6 +42,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+    // WUSDC wraps VYRE's native USDC gas token 1:1; the chain configures it at 18 decimals
+  vyre: {
+    '0xf892e07468ee3cca58795c265de4dfaa3d3b04dc': { coingeckoId: 'usd-coin', decimals: 18 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
