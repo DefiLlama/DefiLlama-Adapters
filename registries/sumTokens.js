@@ -12733,6 +12733,22 @@ const configs = {
       }
     },
   },
+  "darkpool": {
+    "methodology": "Coins shielded into the DARKPOOL private pool: every reserve token account of the pool state on Solana, and ETH, WETH and USDG held by the pool contract on Robinhood Chain. Shielded $DARKPOOL, the protocol's own token, is counted under staking.",
+    "solana": {
+      "tvl": {
+        "owner": "9aM43RjPFqpzTia2mMcMEoKTm9gjpD56tDhWTirUY9yy",
+        "blacklistedTokens": ["fCUBpdeRn76xfRaa4UPHDauGeRG3EvMB3MjuRgdpump"]
+      },
+      "staking": {
+        "tokenAccounts": ["A5rCK2MaqCrEtDKabvLZKofGRhxVMSkE2RQCa7caEaXa"]
+      }
+    },
+    "robinhood": {
+      "owner": "0xEB66bd2d7d29f1F29a19C88cE4b2035D4571076E",
+      "tokens": [ADDRESSES.null, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG]
+    },
+  },
   "deadbox": {
     "methodology": "Counts WETH, wstETH, and rETH deposited as collateral in DRP.",
     "ethereum": {
