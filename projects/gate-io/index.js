@@ -8,7 +8,6 @@ const { unwrapDolomiteDeposits } = require("../helper/unwrapLPs.js");
 const { addHypercoreSpotBalances } = require("../helper/chain/hyperliquid.js");
 const { sumTokens: cosmosSumTokens } = require("../helper/chain/cosmos.js");
 const { addThetaBalances } = require("../helper/chain/theta.js");
-const avaxX = require("../helper/chain/avaxX");
 
 const config = {
   "ethereum": {
@@ -78,7 +77,11 @@ const config = {
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0xba7946e3aeffe2145e68cd227f113e0038d43d9b",
       "0xb05ebe4b470c4fbc0a5f4a6293741c7985c6a016",
-      "0x20ddf011b00e6f134ae10bdb73146500a69c453e"
+      "0x20ddf011b00e6f134ae10bdb73146500a69c453e",
+
+      // Avalanche X-Chain wallet, counted on the avax chain next to the C-Chain balances
+      'X-avax155svs6sgxe55rnvs6ghprtqu0mh69kehk3zye7',
+
     ]
   },
   "arbitrum": {
@@ -1473,10 +1476,10 @@ const config = {
   },
   "okexchain": {
     "owners": [
-  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+      //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
   "ontology": {
@@ -2199,11 +2202,13 @@ Object.entries(earnReceiptTokens).forEach(([chain, { owners }]) => {
   if (!cfg.owners.length) delete config[chain]
 })
 
-const stakedEthTvl = getStakedEthTVL({ withdrawalAddresses: [
-  '0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9',
-  '0xD6A8047940a1F71df5f809919c10D9Ba0A88786e',
-  '0xB04B2B81f65baCc8f29F411A1344f78Bff7A36A2',
-], sleepTime: 20_000, size: 200, proxy: true })
+const stakedEthTvl = getStakedEthTVL({
+  withdrawalAddresses: [
+    '0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9',
+    '0xD6A8047940a1F71df5f809919c10D9Ba0A88786e',
+    '0xB04B2B81f65baCc8f29F411A1344f78Bff7A36A2',
+  ], sleepTime: 20_000, size: 200, proxy: true
+})
 
 // mergeExports sums the *returned* balances, so every tvl has to hand them back
 const earnTvl = fn => async (api) => {
@@ -2215,10 +2220,12 @@ const gateEarnTvl = {
   ethereum: {
     tvl: earnTvl(async (api) => {
       await stakedEthTvl(api)
-      await unwrapDolomiteDeposits({ api, owners: [
-        '0x37E1BF9Ab62E523f358daFacA86151519F0a2f8D',
-        '0xe39BA3F5BCbF0eF7ED31A07e799B8D2010c885CF',
-      ], })
+      await unwrapDolomiteDeposits({
+        api, owners: [
+          '0x37E1BF9Ab62E523f358daFacA86151519F0a2f8D',
+          '0xe39BA3F5BCbF0eF7ED31A07e799B8D2010c885CF',
+        ],
+      })
       await api.sumTokens(earnReceiptTokens.ethereum)
     }),
   },
@@ -2255,11 +2262,7 @@ Object.entries(earnReceiptTokens).forEach(([chain, args]) => {
   gateEarnTvl[chain] = { tvl: earnTvl(api => api.sumTokens(args)) }
 })
 
-// Avalanche X-Chain wallet, counted on the avax chain next to the C-Chain balances
-const avaxXChainOwners = ['X-avax155svs6sgxe55rnvs6ghprtqu0mh69kehk3zye7']
-
 module.exports = mergeExports([
   cexExports(config),
   gateEarnTvl,
-  { avax: { tvl: avaxX.sumTokensExport({ owners: avaxXChainOwners }) } },
 ]);

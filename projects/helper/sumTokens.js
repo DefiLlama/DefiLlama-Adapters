@@ -3,6 +3,7 @@ const { get, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const { svmChains, svmChainsSet, } = require('./svmChainConfig')
 const sdk = require('@defillama/sdk')
+const avaxX = require('./chain/avaxX')
 
 const { xrpl } = sdk.chains
 
@@ -110,6 +111,7 @@ async function sumTokens(options) {
 
   if (token) tokens = [token]
   if (owner) owners = [owner]
+  if (chain === 'avax') owners = await addAvaxXChainBalances(options, owners)
   const evmAddressExceptions = new Set(['tron', 'xdc'])
   const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
@@ -184,6 +186,24 @@ async function sumTokens(options) {
     toa = toa.map(i => i.join('¤'))
     return getUniqueAddresses(toa, chain).map(i => i.split('¤'))
   }
+}
+
+// Avalanche X-Chain (AVM) owners (X-avax1...) are invisible to the C-Chain evm path: count their native AVAX
+// straight into api.balances and hand only the remaining 0x owners back to the evm flow
+const isAvaxXChainAddress = (address) => /^(X-)?avax1[a-z0-9]{38}$/i.test(address)
+
+async function addAvaxXChainBalances(options, owners) {
+  const xOwners = owners.filter(isAvaxXChainAddress)
+  if (!xOwners.length) return owners
+  const { api } = options
+  if (!api) throw new Error('avax X-Chain owners require an api object')
+  await avaxX.sumTokens({ api, owners: xOwners.map(i => i.startsWith('X-') ? i : 'X-' + i) })
+  owners = owners.filter(i => !isAvaxXChainAddress(i))
+  options.owners = owners
+  delete options.owner
+  if (options.tokensAndOwners?.length)
+    options.tokensAndOwners = options.tokensAndOwners.filter(([, o]) => !isAvaxXChainAddress(o))
+  return owners
 }
 
 // XRP balance in whole XRP (0 for unfunded accounts); the sdk rotates public XRPL nodes and retries
