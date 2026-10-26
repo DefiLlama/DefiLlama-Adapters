@@ -63,7 +63,7 @@ const configV3 = {
 }
 
 const methodology = [
-  'Silo V3 addresses are retrieved from SiloFactory NewSilo() events.',
+  'Silo V3 addresses are retrieved from SiloFactory NewSilo() events (on Injective, from SiloFactory idToSiloConfig()).',
   'TVL is calculated as the balance of underlying assets across all deployed silos.',
   'It excludes borrowed assets and is equal to the sum of current liquidity and protected deposits.',
   'The total borrowed amount across all deployed silos, including accrued interest, obtained via the getDebtAssets() function'
