@@ -29175,6 +29175,16 @@ const configs = {
       ]
     },
   },
+  "vistapex": {
+    "methodology": "TVL is the USDC held in the Vistapex Perps DepositPool contract on Avalanche, where traders deposit their collateral.",
+    "start": "2026-10-20",
+    "avax": {
+      "owner": "0x4D1bE1E2EdB9d6053d6054Ecf343d232B16f146F", // DepositPool
+      "tokens": [
+        ADDRESSES.avax.USDC
+      ]
+    },
+  },
   "volcano": {
     "blast": {
       "tokensAndOwners": [
