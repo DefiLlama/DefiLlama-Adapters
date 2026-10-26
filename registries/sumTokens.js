@@ -20769,6 +20769,19 @@ const configs = {
     base: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.base.USDC] },
     bsc: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT] },
     robinhood: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null] },
+    solana: {
+      solOwners: ['xVm2WXtsMh1h41HKgAS2Dymf5ex1GggWbqUeefXUsJg'], // SOL vault of the Nullmask program (Ee6we6Bnbok55FzHfa8fU8td7NDwbKa1qgLehP4iH1Uj)
+      tokenAccounts: [ // coin vaults (CoinAdded events)
+        'J4bbJ55i4fJdJW7cFkscdZCmjUyBiuEB6S2ShtxBdAtw', // USDC
+        '9pVrF5ZsgGUrn9daeER9z7nuL5oKP2wc9D6yQD2LMhDh', // USDT
+        'G7C4Lj4Czq1PNdDJxUMJ1tzDSyHfwSgjZmb5YVWzi6RR', // ETH (Wormhole)
+        'FE8eTQNYqmBZNbphrGGmGCFeKHQywJXfGMMyhGXKvAAs', // CATE
+        '8rxkTsT3GUwfs4hsAff3gFXkriVi7DKyJmdQmdNrd4Xp', // STONK
+        'Gu3P5k38yNuTwveBMAbAUwv3j4WgkLvAYY4VmWu3FrRb', // ANSEM
+        'GX2ZF54gADs5AwvXACmqnkES5rVjUKhk3BLfAkJedvYf', // HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR
+        'aNLM273xCFiKRY7YQRtNagLmc2MrhateUTgqYvuQHVS', // Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk
+      ],
+    },
   },
   "numbers": {
     "misrepresentedTokens": true,
