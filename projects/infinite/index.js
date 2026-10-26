@@ -15,14 +15,29 @@ const ITP_STAKED_ABI = "function getVaultInfo() view returns (uint256, uint256, 
 const STSATO_ON_ETHEREUM = '0xdeE7f7A032326148E65EC3068F1c9b29E26B75b3'
 const SATO_ON_ETHEREUM = '0x829f4B62EEBE12Af653b4dD4fFc480966F7d7f09'
 
-// === Auto-compounder vault contracts and their corresponding LP tokens (Optimism) ===
+// === Velodrome auto-compounder vaults (Optimism); each vault reports its LP via want() ===
 const AUTO_COMPOUNDERS = [
-  { vault: "0x569D92f0c94C04C74c2f3237983281875D9e2247", lp: "0xC04754F8027aBBFe9EeA492C9cC78b66946a07D1" }, // ITP/VELO
-  { vault: "0xFCEa66a3333a4A3d911ce86cEf8Bdbb8bC16aCA6", lp: "0x3d5cbc66c366a51975918a132b1809c34d5c6fa2" }, // ITP/DHT
-  { vault: "0x2811a577cf57A2Aa34e94B0Eb56157066717563f", lp: "0xdAD7B4C48b5B0BE1159c674226BE19038814eBf6" }, // ITP/wstETH
-  { vault: "0x8A2e22BdA1fF16bdEf27b6072e087452fa874b69", lp: "0x79F1af622FE2C636a2d946F03A62D1DfC8cA6de4" }, // ITP/OP
-  { vault: "0x3092F8dE262F363398F15DDE5E609a752938Cc11", lp: "0x93e40C357C4Dc57b5d2B9198a94Da2bD1C2e89cA" }, // ITP/WBTC
-  { vault: "0xC4628802a42F83E5bce3caB05A4ac2F6E485F276", lp: "0x7e019a99f0dee5796db59c571ae9680c9c866a8e" }, // ITP/USDC
+  "0x569D92f0c94C04C74c2f3237983281875D9e2247", // ITP/VELO
+  "0xFCEa66a3333a4A3d911ce86cEf8Bdbb8bC16aCA6", // ITP/DHT
+  "0x2811a577cf57A2Aa34e94B0Eb56157066717563f", // ITP/wstETH
+  "0x8A2e22BdA1fF16bdEf27b6072e087452fa874b69", // ITP/OP
+  "0x3092F8dE262F363398F15DDE5E609a752938Cc11", // ITP/WBTC
+  "0xC4628802a42F83E5bce3caB05A4ac2F6E485F276", // ITP/USDC
+];
+
+// === Aero auto-compounder factories (v2). Only vaults the DAO marks official are counted. ===
+const AERO_FACTORIES = {
+  optimism: "0x337Fe450bCD603B1c637AB0F4C073d926a1aE3Dc",
+  base: "0xB60ce95161506EeC22A2D68A784DD21cf78adcA9",
+}
+
+// === Uniswap V3 auto-compounder vaults (Base); each holds one position NFT plus idle tokens ===
+const UNIV3_VAULTS = [
+  { vault: "0xf0e3305e81744e4dfa2d01c0a145814357a89018", pool: "0x16A1E7F62b702d84AAa0D1f534121DE9d17B0E18" }, // ITP/USDC
+  { vault: "0xD248B1e882c4444674D83eF912713113B719f7Ce", pool: "0x95cb82d517a1ce4e6ac4312bcf718cd0ee9f3884" }, // cbEGGS/WETH
+  { vault: "0x2fe57c7a0978d5bA39461572b87db41131b43646", pool: "0x33840ce3817ef3f79da49ec70e4653c4ae20ee3f" }, // ITP/cbXRP
+  { vault: "0xa1bca9f6d9618348e7c33284082e2959a3449aa8", pool: "0x750813fbFBD24310A31e9dcaE3b143C75F241344" }, // ITP/cbEGGS
+  { vault: "0xd75d5d3ef0880ff25fd66d4fdf5b461ffb97674d", pool: "0x3819e346E6347d75ceF0CfFd3FF41489f543a9Cc" }, // ITP/AERO
 ];
 
 // === cbEGGS Contract (Base) - owned by Infinite Trading ===
@@ -73,21 +88,57 @@ const getStakedTVL = async (api) => {
   api.addUSDValue(stakedTVL)
 }
 
-// Auto-compounder TVL: fetches LP token balances from vaults and unwraps them
-const getAutoCompounderTVL = async (api) => {
-  // Get the LP token balances held by all auto-compounder vault contracts
-  const balances = await api.multiCall({
-    abi: "uint256:balance",
-    calls: AUTO_COMPOUNDERS.map(ac => ac.vault),
-  });
+// Velodrome auto-compounders: LP each vault holds (vault.balance()), in the LP vault.want() reports
+const addVelodromeCompounders = async (api) => {
+  const [lps, balances] = await Promise.all([
+    api.multiCall({ abi: "address:want", calls: AUTO_COMPOUNDERS }),
+    api.multiCall({ abi: "uint256:balance", calls: AUTO_COMPOUNDERS }),
+  ])
+  lps.forEach((lp, i) => api.add(lp, balances[i]))
+}
 
-  // Add LP tokens and their balances to the API
-  AUTO_COMPOUNDERS.forEach((ac, i) => {
-    api.add(ac.lp, balances[i]);
-  });
+// Aero auto-compounders: every official vault from the v2 factory; LP held idle plus staked in the gauge
+const addAeroVaults = async (api) => {
+  const factory = AERO_FACTORIES[api.chain]
+  if (!factory) return
+  const count = await api.call({ target: factory, abi: "uint256:vaultCount" })
+  const vaults = await api.multiCall({
+    target: factory,
+    abi: "function vaults(uint256) view returns (address)",
+    calls: Array.from({ length: Number(count) }, (_, i) => i),
+  })
+  const official = await api.multiCall({
+    target: factory,
+    abi: "function isOfficial(address) view returns (bool)",
+    calls: vaults,
+  })
+  const ours = vaults.filter((_, i) => official[i])
+  if (!ours.length) return
+  const [assets, staked] = await Promise.all([
+    api.multiCall({ abi: "address:asset", calls: ours }),
+    api.multiCall({ abi: "uint256:stakedLp", calls: ours }),
+  ])
+  const idle = await api.multiCall({
+    abi: "erc20:balanceOf",
+    calls: ours.map((vault, i) => ({ target: assets[i], params: [vault] })),
+  })
+  assets.forEach((lp, i) => api.add(lp, BigInt(idle[i]) + BigInt(staked[i])))
+}
 
-  // Unwrap LP tokens to get underlying asset values
-  return sumTokens2({ api, resolveLP: true });
+// Uniswap V3 auto-compounders (Base): position NFTs held by the vaults plus their idle pool tokens
+const addUniV3Vaults = async (api) => {
+  const pools = UNIV3_VAULTS.map(v => v.pool)
+  const [token0s, token1s] = await Promise.all([
+    api.multiCall({ abi: "address:token0", calls: pools }),
+    api.multiCall({ abi: "address:token1", calls: pools }),
+  ])
+  return sumTokens2({
+    api,
+    resolveLP: true, // also unwraps Aero LP added earlier for this chain
+    resolveUniV3: true,
+    owners: UNIV3_VAULTS.map(v => v.vault),
+    tokensAndOwners: UNIV3_VAULTS.flatMap((v, i) => [[token0s[i], v.vault], [token1s[i], v.vault]]),
+  })
 }
 
 // dHEDGE managed vaults TVL: Infinite Trading manages dHEDGE vaults across chains (protocol TVL)
@@ -143,13 +194,15 @@ const getStsatoTVL = async (api) => {
 }
 
 module.exports = {
-  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens on Optimism), dHEDGE vaults managed by the DAO across multiple chains (~$300k AUM), cbEGGS.finance protocol TVL (ETH backing on Base), and stSATO TVL on Ethereum from on-chain SATO backing via getBacking(). cbEGGS is owned by Infinite Trading.",
+  methodology: "Tracks ITP staking vault TVL; Velodrome auto-compounder vaults on Optimism (LP each vault holds, unwrapped); Aero auto-compounder vaults on Optimism and Base (every DAO-official vault from the Aero v2 factories: LP held idle plus staked in the gauge, unwrapped); Uniswap V3 auto-compounder vaults on Base (position NFTs plus idle tokens); dHEDGE vaults managed by the DAO across multiple chains; cbEGGS.finance protocol TVL (ETH backing on Base); and stSATO TVL on Ethereum from on-chain SATO backing via getBacking(). cbEGGS is owned by Infinite Trading.",
   ethereum: {
     tvl: getStsatoTVL,
   },
   optimism: {
     tvl: async (api) => {
-      await getAutoCompounderTVL(api)
+      await addVelodromeCompounders(api)
+      await addAeroVaults(api)
+      await sumTokens2({ api, resolveLP: true })
       await getDhedgeVaultsTVL(api)
       return api.getBalances()
     },
@@ -164,6 +217,8 @@ module.exports = {
   base: {
     tvl: async (api) => {
       await getCbEggsTVL(api)
+      await addAeroVaults(api)
+      await addUniV3Vaults(api)
       await getDhedgeVaultsTVL(api)
       return api.getBalances()
     }
