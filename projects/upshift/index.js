@@ -43,14 +43,11 @@ const suiVaultsToInclude = [
   "0x30844745c8197fdaf9fe06c4ffeb73fe05c092ce0040674a3758dbfcb032a1f4",
 ];
 
-// Stellar (Soroban) vaults — August/Gami tokenized vaults (OZ FungibleVault).
-// total_assets() = idle balance + strategy balances + deployed capital; and
-// query_asset() returns the underlying token's Soroban contract address, which
-// DefiLlama prices directly (the USDC/XLM SACs are already in coreAssets).
-const stellarVaultsToInclude = [
-  "CCL3WITWFFXIHV2I52ECV5DPIEOFSTU3PBPR53ILPLF2IP5KHECXRUTY", // Gami earnUSDC
-  "CC6TRAPQD3NK7THUKWPV5SL2JHKQGNXZVB6S6MVYFSLRWAKEFUWZKZ7J", // Gami earnXLM
-];
+// Stellar (Soroban) vaults — tokenized vaults (OZ FungibleVault), listed by the
+// API under chain -3. total_assets() = idle balance + strategy balances + deployed
+// capital; query_asset() returns the underlying token's Soroban contract address,
+// which DefiLlama prices directly (the USDC/XLM SACs are already in coreAssets).
+const STELLAR_CHAIN_ID = -3;
 
 // V1 vault types (ERC4626 compatible)
 const v1VaultTypes = ['tokenizedVault', 'lendingPool'];
@@ -136,7 +133,13 @@ const suiVaultsTvl = async (api) => {
 }
 
 const stellarVaultsTvl = async (api) => {
-  for (const vault of stellarVaultsToInclude) {
+  const vaults = await getConfig('upshift/vaults', vaultsApiEndpoint);
+  const addresses = vaults
+    .filter(v => v.status === 'active' && v.chain === STELLAR_CHAIN_ID && !v.underlying_vault_address)
+    .filter(v => !/staging/i.test(v.vault_name ?? ''))
+    .map(v => v.address);
+
+  for (const vault of addresses) {
     const asset = await callSoroban(vault, 'query_asset')
     const totalAssets = await callSoroban(vault, 'total_assets')
     api.add(asset, totalAssets.toString())
