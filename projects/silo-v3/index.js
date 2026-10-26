@@ -54,6 +54,7 @@ const configV3 = {
     factories: [
       {
         // public injective rpcs are pruned and return no logs for old blocks, so silos are read from the factory ids instead
+        START_BLOCK: 155660036,
         SILO_FACTORY: '0x39021662ef7679845e6851e38e01912f556a861f',
         useSiloIds: true,
       },
@@ -88,6 +89,7 @@ async function getSilos(api) {
   for (const factory of configV3[api.chain].factories) {
     const { SILO_FACTORY, START_BLOCK, useSiloIds } = factory
     if (useSiloIds) {
+      if (api.block && api.block < START_BLOCK) continue
       siloAddresses.push(...await getSilosFromIds(api, SILO_FACTORY))
       continue
     }
