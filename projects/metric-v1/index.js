@@ -1,3 +1,6 @@
+// Changes to Metric TVL methodology require further approval before merging:
+// a Trueo market depends on this data.
+
 // Metric V1 pools (the DefiLlama listing that pairs with dimension-adapters
 // dexs/metric-v1). Two MetricOmmPoolFactory generations, both deployed through
 // CreateX to the same address on every chain; pools hold their own token0/token1
