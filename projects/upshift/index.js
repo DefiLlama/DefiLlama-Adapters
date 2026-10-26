@@ -134,6 +134,9 @@ const suiVaultsTvl = async (api) => {
 
 const stellarVaultsTvl = async (api) => {
   const vaults = await getConfig('upshift/vaults', vaultsApiEndpoint);
+  // getConfig falls back to the cache on fetch failure, and a cache miss yields {}.
+  // Throw instead of reporting zero Stellar TVL.
+  if (!Array.isArray(vaults)) throw new Error('upshift: vault list unavailable');
   const addresses = vaults
     .filter(v => v.status === 'active' && v.chain === STELLAR_CHAIN_ID && !v.underlying_vault_address)
     .filter(v => !/staging/i.test(v.vault_name ?? ''))
