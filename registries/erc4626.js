@@ -529,6 +529,12 @@ const configs = {
     methodology: 'Counts LP assets reported by totalAssets() in the Ace.Pro V5 shared HYPE and USDC liquidity vaults on HyperEVM. Excludes round escrow, claimable payouts and protocol revenue held for the team and treasury, Lucky Draw prize pools and legacy vaults.',
     hyperliquid: ['0xd39C426bd1a40b5cdB89B8CEb8464C4f78AbB29d', '0xf725Ac947c7B3EF790a3E68e2Ca2Fb48ce4023eD'],
   },
+  'wstdiem': {
+    start: '2026-06-11',
+    doublecounted: true,
+    methodology: 'Counts DIEM in the wstDIEM vault via totalAssets(): idle DIEM plus DIEM the vault has staked on Venice or is unstaking, minus DIEM owed to queued redemptions.',
+    base: ['0xe49FA849cB37b0e7A42B2335e333fb99474167ba'],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
