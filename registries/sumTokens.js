@@ -29624,6 +29624,28 @@ const configs = {
       }
     },
   },
+  "xitcoin": {
+    "methodology": "TVL counts the CRO held by the Xitcoin Market (payments for sold positions not yet withdrawn by their sellers). Staking counts the XTC held by the Xitcoin Vault: users' locked positions (including those listed for sale on the Market) and the Vault's XTC reward reserve.",
+    "start": "2026-10-08",
+    "cronos": {
+      "tvl": {
+        "owners": [
+          "0x0ea3df26F143017d4057B69734F9a99446C636FC"
+        ],
+        "tokens": [
+          ADDRESSES.null
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x7396C304bC7Ba6B169F8aC230C9e63Da8B77Fd15"
+        ],
+        "tokens": [
+          "0xe45fe733bc8617fa6dac8437fc44b5fffa949991"
+        ]
+      }
+    },
+  },
   "xlsd": {
     "methodology": "TVL of Staked ETH & LSD tokens in the StakingPool contracts",
     "arbitrum": {
