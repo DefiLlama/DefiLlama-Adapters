@@ -4,7 +4,7 @@ const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getMorphoVaults } = require("../helper/curators");
-const { config } = require("./config");
+const { config, retiredChains } = require("./config");
 const { getExcludedMarketIds, getExcludedAssets, getExcludedVaults } = require("./exclusions");
 
 const eventAbis = {
@@ -221,4 +221,8 @@ async function fetchPriceMap(api, addresses) {
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl, borrowed }
+})
+
+retiredChains.forEach((chain) => {
+  module.exports[chain] = { tvl: () => ({}), borrowed: () => ({}) }
 })
