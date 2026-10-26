@@ -20,7 +20,8 @@ module.exports = {
   hallmarks: [
     ["2024-09-30", "Fusion Vaults Rollout"],
     ["2025-10-24", "Fusion Points Program Launch"],
-    ["2025-11-04", "xUSD Depeg DeFi Contagion"]
+    ["2025-11-04", "xUSD Depeg DeFi Contagion"],
+    ["2026-01-07", "Arbitrum vault exploit resolved: 100% of funds returned"]
   ],
   ethereum: { tvl },
   arbitrum: { tvl },
