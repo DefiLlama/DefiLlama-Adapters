@@ -12,10 +12,6 @@ const config = {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
     fromBlock: 296446593,
   },
-  fraxtal: {
-    morphoBlue: "0xa6030627d724bA78a59aCf43Be7550b4C5a0653b",
-    fromBlock: 15317931,
-  },
   ink: {
     morphoBlue: "0x857f3EefE8cbda3Bc49367C996cd664A880d3042",
     fromBlock: 4078776,
@@ -28,25 +24,9 @@ const config = {
     morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
     fromBlock: 66931042,
   },
-  scroll: {
-    morphoBlue: "0x2d012EdbAdc37eDc2BC62791B666f9193FDF5a55",
-    fromBlock: 12842868,
-  },
   wc: {
     morphoBlue: "0xE741BC7c34758b4caE05062794E8Ae24978AF432",
     fromBlock: 9025669,
-  },
-  mode: {
-    morphoBlue: "0xd85cE6BD68487E0AaFb0858FDE1Cd18c76840564",
-    fromBlock: 19983370,
-  },
-  corn: {
-    morphoBlue: "0xc2B1E031540e3F3271C5F3819F0cC7479a8DdD90",
-    fromBlock: 251401,
-  },
-  hemi: {
-    morphoBlue: "0xa4Ca2c2e25b97DA19879201bA49422bc6f181f42",
-    fromBlock: 1188872,
   },
   sonic: {
     morphoBlue: "0xd6c916eB7542D0Ad3f18AEd0FCBD50C582cfa95f",
@@ -91,17 +71,9 @@ const config = {
     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
     fromBlock: 1308542,
   },
-  zircuit: {
-    morphoBlue: "0xA902A365Fe10B4a94339B5A2Dc64F60c1486a5c8",
-    fromBlock: 14640172,
-  },
   abstract: {
     morphoBlue: "0xc85CE8ffdA27b646D269516B8d0Fa6ec2E958B55",
     fromBlock: 13947713,
-  },
-  btr: {
-    morphoBlue: "0xaea7eff1bd3c875c18ef50f0387892df181431c6",
-    fromBlock: 13516997,
   },
   bsc: {
     morphoBlue: "0x01b0Bd309AA75547f7a37Ad7B1219A898E67a83a",
@@ -119,10 +91,6 @@ const config = {
     morphoBlue: "0xc9cDAc20FCeAAF616f7EB0bb6Cd2c69dcfa9094c",
     fromBlock: 166036723,
     onlyUseExistingCache: true,
-  },
-  btnx: {
-    morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
-    fromBlock: 450759,
   },
   monad: {
     morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
