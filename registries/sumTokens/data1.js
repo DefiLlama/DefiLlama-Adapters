@@ -737,7 +737,7 @@ module.exports = {
     // MegaPump v3: a bonding curve is quoted in ETH, USDm or MEGA (chosen at creation). The factory
     // (UUPS proxy) holds the quote of every active curve; it moves to the DEX pool at graduation,
     // where megapump-dex (registries/uniswapV2.js) counts it.
-    methodology: "Value of the ETH, USDm and MEGA held by the MegaPump factory: the quote currency of every active bonding curve.",
+    methodology: "Value of the ETH, USDm and MEGA held by the MegaPump factory: the quote currency of every active bonding curve, plus fees not yet claimed or withdrawn.",
     megaeth: {
       owner: '0xB6bC3988d62D2979b3ab7AABCcf3c9443f7dAbc4',
       tokens: [ADDRESSES.null, ADDRESSES.megaeth.USDm, ADDRESSES.megaeth.MEGA],
