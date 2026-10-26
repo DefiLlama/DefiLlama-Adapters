@@ -42,6 +42,21 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  // Overlayer wrap tokens mint and redeem 1:1 with the underlying stable after decimals are scaled.
+  // One T+ / C+ / G+ token equals one USDT / USDC / USDG. Bridged OFTs use the same peg.
+  ethereum: {
+    '0xbfae8c8500cd35b652373a3ad5baa0d604a05a29': { coingeckoId: 'tether', decimals: 18 }, // T+
+    '0xb17ee7d061e076ff1ad6bd2141888cfb39c0ccdc': { coingeckoId: 'usd-coin', decimals: 18 }, // C+
+    '0xd4e1caf200b29585aadc9af39c16d57c8c82ebf1': { coingeckoId: 'global-dollar', decimals: 18 }, // G+
+  },
+  base: {
+    '0xee1f83e766235db707ab7658b3e232e9f6baf959': { coingeckoId: 'usd-coin', decimals: 18 }, // C+
+    '0x07126b6d292f1ecf79d87c0371cfaa749b1b4f95': { coingeckoId: 'global-dollar', decimals: 18 }, // G+
+  },
+  robinhood: {
+    '0xec71db1f6eb1d8184534cde41e5a14e246ace57a': { coingeckoId: 'tether', decimals: 18 }, // T+
+    '0x2d4ed1202514c226f87304a5bcb771261481f73a': { coingeckoId: 'global-dollar', decimals: 18 }, // G+
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
