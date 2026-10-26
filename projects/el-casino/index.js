@@ -19,6 +19,14 @@ const FACTORIES = [
   '0x10e02DD0F131Cbb55a97fef5b724541B8A6b378C', '0x6751dD9ADBCE7913Fea529FDe5E561422D017725', '0x553220711d5683205a2644a77755Ba6f7E34b31b',
   '0x25Ac8B77B8e32B1eA9C431127679e4Ff11eC4FA4', '0x7C7ad1370a26E1a7e67A778E9C9820637f76BC1d', '0x796d695569520BE3963CB620A3a3c53b92B606a4',
   '0x64D84eAcEdEe214995d1b30febD8720131DAEE9f', '0x2935fDb03C2F4f4fb32D29032F46357706519268', '0x6dFF48299Ac1Ff559DcEdDDf28AF3B1e5140c6A4',
+  // V6 game factories (CasinoHubV6 0x66DF90B6B074f7c49906c2bB0A8E5bf3773879d0 — the launchpad's rooms and every new room)
+  '0x55190a1B037dD5dA29031A18D18ECf1Ea77f13E3', '0x3f9367C890e814c90d500b0e8723E8aE5dd6B99F', '0xBb175854C08cB7D18217C2F67Aaf235F421D94d3',
+  '0xa7Ce2300509c68F0Eca46CbdAa7ea83fA01932D3', '0xF330BFcceE1b36338dD7e9556679979Bf75FEAd7', '0xB6BBA1643290632E88eDDE60BF4b9bD6670FcEF9',
+  '0x08a24d597A748b9BEE85EEcD215c903af7BB231b', '0x3c397832A08Bb0AaDD9DE604B2dB1642BbfE1a7D', '0x83Ba15145eB74bF54c0bEdd1C8D3Be9509a2B600',
+  '0xa9e48A8774A0e2F577b8C49DF2b12aF7Bdb8B0BF', '0xEA203b5813A145f542feD223533bD97c210A67dC', '0x58fCEe7fedB9a324a3C1570d2644EC4C87Be44E3',
+  '0x67a98f0A0A73d697c9EcE3F310E28ffc89c491b8', '0xff6f1a93B662e6E6EB73632B3b9ce8fBFA15083e', '0x5c5Df8cc39CAb5790981a6AB4E1C016397973111',
+  '0x69EeAB0020EbD064AFAA8e35D0E64f6b8a2842b4', '0xa17bF3952C23c19e9B0c3F017eBACa3006216fFd', '0x542bb8E1f9Ed0E0a523910B18843f5da22711D2F',
+  '0x5bffd94d0AE1d2fC9C78f5909f43dF700552029c', '0xf7EdFECB155E4065C7F8684820B21503098b05B8',
 ]
 const getGames = 'function getGames(uint256 offset, uint256 limit) view returns (tuple(address gameAddress, address owner, address creator, address token, string tokenLogoUrl, string betName, uint256 createdAt)[])'
 const PAGE = 200
@@ -36,7 +44,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Sums the tokens held by every EL-Casino room, listed from the V4 and V5 game factories: each room\'s token pool pays winnings and is funded by stakers ("become the house"). Rooms whose pool is in $ELCAS, the protocol\'s own token, are excluded.',
+  methodology: 'Sums the tokens held by every EL-Casino room, listed from the V4, V5 and V6 game factories: each room\'s token pool pays winnings and is funded by stakers ("become the house"). Rooms whose pool is in $ELCAS, the protocol\'s own token, are excluded.',
   start: '2026-09-01',
   robinhood: { tvl },
 }
