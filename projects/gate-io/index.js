@@ -5,7 +5,6 @@ const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { cosmosStaked, suiStaked, aptosStaked, nearStaked, bittensorStaked, confluxStaked, cardanoStaked, algorandStaked, starknetStaked, aleoStaked, neo3Staked } = require("../helper/stakingHelper");
 const { sumTokens2: solanaSumTokens } = require("../helper/solana");
 const { unwrapDolomiteDeposits } = require("../helper/unwrapLPs.js");
-const { addHypercoreSpotBalances } = require("../helper/chain/hyperliquid.js");
 const { sumTokens: cosmosSumTokens } = require("../helper/chain/cosmos.js");
 const { addThetaBalances } = require("../helper/chain/theta.js");
 
@@ -2110,17 +2109,6 @@ const solanaLsts = {
   tokens: ['gateMurAxe4YFoUR6J63gXGKtkbTfdkMdLjZrCmThFP'], // gtSOL
 }
 
-// HyperCore spot balances sit off the EVM, so the hyperliquid entry in `config`
-// (a plain EVM balance lookup) never sees them
-const hypercoreSpotOwners = [
-  '0x0d0707963952f2fba59dd06f2b425ace40b492fe',
-  '0xe698de9a0c0e592f236a063451f34f0e6c000f55',
-  '0x02e6f748644aeddcae70e39e70f596de33abf73f',
-  '0x4517b5e9651577bdd2130807f2e8741311c95bab',
-  '0xba0c6f04871984eb0503f83eec00f6af76603c51',
-  '0x7642d3730563fbbad9de74cb6c8f74b7dc9a6af0',
-]
-
 // kava's cosmos-side owners, counted by the earn export rather than `config.kava`
 const kavaCosmosOwners = [
   'kava155svs6sgxe55rnvs6ghprtqu0mh69kehlxmsky',
@@ -2240,7 +2228,6 @@ const gateEarnTvl = {
   starknet: { tvl: earnTvl(api => starknetStaked(api, earnOnlyOwners.starknet)) },
   aleo: { tvl: earnTvl(api => aleoStaked(api, earnOnlyOwners.aleo)) },
   neo3: { tvl: earnTvl(api => neo3Staked(api, earnOnlyOwners.neo3)) },
-  hyperliquid: { tvl: earnTvl(api => addHypercoreSpotBalances({ api, owners: hypercoreSpotOwners })) },
   // kava runs a cosmos chain alongside its EVM. sumTokens picks one helper per
   // chain, so config.kava can only carry the 0x owners - the kava1... ones are
   // summed here instead and mergeExports adds the two together.
