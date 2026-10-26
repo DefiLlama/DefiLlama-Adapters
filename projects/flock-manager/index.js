@@ -23,6 +23,7 @@ const LEND_FACTORY = '0x8F50BCb1f34D22adAe05955E1994b0153603cB16'
 const VAULT_FACTORY = '0x4c2302416bf50B4F11dDEE7A8feA2D1BA96d8EfE'
 // Deployed 2026-10-24 at block 96985642, after the adapter's start date.
 const GIGA_VAULT_FACTORY = '0x1955e758aDb00a75Bc1A471082254d13Ab8D1347'
+const GIGA_VAULT_FACTORY_START = 1792868400 // 2026-10-24 19:00 UTC, just after the deploy block
 const RVH = '0x96765066f6a040a21EB027167D2315B707c82633'
 
 const abi = {
@@ -77,14 +78,11 @@ async function getUpdexStaked(api) {
 }
 
 async function getGigaStaked(api) {
-  // Before the factory existed the length call reverts; report nothing for
-  // those blocks instead of failing the whole adapter.
-  const length = await api.call({ target: GIGA_VAULT_FACTORY, abi: abi.allVaultsLength, permitFailure: true })
-  if (!length || Number(length) === 0) return { lps: [], staked: [] }
-  const vaults = await api.multiCall({
+  if (api.timestamp < GIGA_VAULT_FACTORY_START) return { lps: [], staked: [] }
+  const vaults = await api.fetchList({
+    lengthAbi: abi.allVaultsLength,
+    itemAbi: abi.allVaults,
     target: GIGA_VAULT_FACTORY,
-    abi: abi.allVaults,
-    calls: [...Array(Number(length)).keys()],
   })
   const lps = await api.multiCall({ abi: abi.underlying, calls: vaults })
   const chefs = await api.multiCall({ abi: abi.chef, calls: vaults })
@@ -135,7 +133,6 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  timetravel: true,
   doublecounted: true,
   // Both factories went live on 2026-10-01 (blocks 77687484 and 77687985) and
   // the first market followed at 77688034. Starting on the 2nd rather than
