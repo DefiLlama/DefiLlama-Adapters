@@ -72,20 +72,30 @@ const getMarket = async (api) => {
 
 // morpho keeps no per-market collateral total, so sum position(id, user).collateral over every account
 // that ever supplied collateral to the market. position, not the logs' net: liquidations seize collateral
-// without emitting WithdrawCollateral. One log query covers all the markets (topic1 = any of the ids); the
-// cache key changes with the market set, so a new excluded market costs one rescan.
+// without emitting WithdrawCollateral. One query per market, keyed by that id alone: a key covering the
+// whole set changes whenever the set does, which rescans every market from the deployment block, and a
+// scan that fails there silently stops subtracting. Scoped this way each cache stays warm and a newly
+// excluded market only scans itself. Single-value topic1 also survives the indexer, which flattens arrays.
 const getMarketsCollateral = async (api, ids) => {
   const { morphoBlue } = config[api.chain]
   const collateralById = new Map(ids.map((id) => [id, 0n]))
   if (!ids.length) return collateralById
-  const sortedIds = [...ids].sort()
-  const extraKey = `collateral-${ethers.id(sortedIds.join(',')).slice(2, 18)}`
-  const logs = await getMorphoLogs(api, { eventAbi: eventAbis.supplyCollateral, topics: [supplyCollateralTopic, sortedIds], extraKey })
-  const calls = [...new Set(logs.map((log) => `${log.id.toLowerCase()}:${log.onBehalf.toLowerCase()}`))].map((key) => ({ params: key.split(':') }))
-  const positions = await api.multiCall({ target: morphoBlue, calls, abi: abi.morphoBlueFunctions.position })
+  const logsByMarket = await Promise.all(ids.map((id) => getMorphoLogs(api,
+    { eventAbi: eventAbis.supplyCollateral, topics: [supplyCollateralTopic, id], extraKey: `collateral-${id}` })))
+  const calls = []
+  logsByMarket.forEach((logs, i) => {
+    // id comes from the market we queried for, not the log: a provider that widens the topic filter then
+    // costs extra calls that return zero collateral, instead of attributing them to an unknown market
+    new Set(logs.map((log) => log.onBehalf.toLowerCase())).forEach((user) => calls.push({ params: [ids[i], user] }))
+  })
+  const positions = await api.multiCall({ target: morphoBlue, calls, abi: abi.morphoBlueFunctions.position, permitFailure: true })
+  // a partial read understates the collateral and so overstates tvl by a plausible-looking amount;
+  // throw instead and let the caller keep the previous behaviour, which at least is a known one
+  const failed = positions.filter((i) => i === null).length
+  if (failed) throw new Error(`${failed}/${calls.length} position calls failed`)
   positions.forEach((position, i) => {
     const id = calls[i].params[0]
-    collateralById.set(id, collateralById.get(id) + BigInt(position.collateral))
+    collateralById.set(id, (collateralById.get(id) ?? 0n) + BigInt(position.collateral))
   })
   return collateralById
 }
