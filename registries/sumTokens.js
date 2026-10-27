@@ -20979,6 +20979,13 @@ const configs = {
       "token": ADDRESSES.null
     },
   },
+  "olive-exchange": {
+    "timetravel": false,
+    "methodology": "TVL is the sum of the tokens held in Olive's liquidity pool vaults: liquidity providers' deposits plus traders' collateral and premiums.",
+    "solana": {
+      "owner": "83Tc25SyGq87ENozzYjAVJLamYV98MgHiZXTnpY2Tfj3"
+    },
+  },
   "olivedao": {
     "polygon": {
       "tokensAndOwners": [
