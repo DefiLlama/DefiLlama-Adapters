@@ -240,12 +240,16 @@ function validateHallmarks(hallmark) {
     })
   }).filter(p => p !== undefined && Array.isArray(p)).flat().filter(p => p !== undefined)
 
-  await util.runInPromisePool({
+  // print how many http requests (rpc per chain, coins, indexer...) the adapter made, to spot heavy adapters locally
+  const runTracked = sdk.callStats
+    ? (fn) => sdk.callStats.run({ application: 'tvl', type: 'test', name: moduleArg }, fn, { print: true, skipElastic: true })
+    : (fn) => fn()
+  await runTracked(() => util.runInPromisePool({
     items: tvlPromises,
     concurrency: 5,
     processor: async (p) => p(),
     permitFailure: false,
-  })
+  }))
   Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
     if (usdTvls[tvlType] === undefined) {
       usdTvls[tvlType] = storedKeys.reduce(

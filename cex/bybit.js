@@ -79,11 +79,26 @@ function parseOwnersByChain(csv) {
 
 const getOwners = () => getConfig('bybit-por', undefined, { fetcher: async () => parseOwnersByChain(await fetchLatestCsv()) })
 
-// chains Bybit doesn't list in its PoR CSV but still hold balances
+// wallets missing from (or on chains absent from) Bybit's PoR CSV; merged with the CSV owners per chain
 const STATIC_OWNERS = {
   cardano: ['addr1v8mn6dmk7tf9u26kr09a05lmvc9j4k9d940a88ta3hdczqgyt7whl'],
   fantom: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40'],
   starknet: ['0x076601136372fcdbbd914eea797082f7504f828e122288ad45748b0c8b0c9696'],
+}
+
+// union of the CSV and static owners for a chain, deduped after the same normalization the CSV gets
+// (TON bounceable/non-bounceable forms collapse, hex addresses compare case-insensitively)
+function mergeOwners(slug, ...lists) {
+  const seen = new Set()
+  const out = []
+  for (const a of lists.flat()) {
+    const normalized = normalizeAddress(a, slug)
+    const key = normalized.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(normalized)
+  }
+  return out
 }
 
 // Chains whose PoR balance sits in a token that has no default list in helper/cex.js
@@ -92,9 +107,7 @@ const EXTRA_TOKENS = {
 }
 
 module.exports = { bitcoin: 'bybit' }
-for (const slug of new Set(Object.values(CHAIN_MAP)))
-  module.exports[slug] = { owners: async () => (await getOwners())[slug] || [] }
-for (const [slug, owners] of Object.entries(STATIC_OWNERS))
-  module.exports[slug] = { owners }
+for (const slug of new Set([...Object.values(CHAIN_MAP), ...Object.keys(STATIC_OWNERS)]))
+  module.exports[slug] = { owners: async () => mergeOwners(slug, (await getOwners())[slug] || [], STATIC_OWNERS[slug] || []) }
 for (const [slug, tokens] of Object.entries(EXTRA_TOKENS))
   module.exports[slug].tokens = tokens
