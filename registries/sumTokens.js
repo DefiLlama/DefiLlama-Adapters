@@ -21377,6 +21377,28 @@ const configs = {
       ]
     },
   },
+  "overlayer": {
+    "doublecounted": true,
+    "methodology": "TVL is the USDT, USDC and USDG backing T+, C+ and G+, counted as the stablecoin and Aave aToken balances of each backing contract and wrap contract on Ethereum. Collateral is supplied to Aave, so it is marked doublecounted. Bridged OFT supply and staked vault shares are claims on the same backing and are not counted again.",
+    "ethereum": {
+      "owners": [
+        "0xBb32471973caD2f6317a7f366628A90e0A94a03f", // T+ backing
+        "0xBfaE8C8500cD35B652373a3Ad5BaA0D604A05a29", // T+
+        "0xeF2a40901a9A985eb028a0B927b427dA9BAD2aCa", // C+ backing
+        "0xB17EE7D061e076ff1aD6bd2141888CFb39C0Ccdc", // C+
+        "0x51366973e57c3fec58319812e9d148dE4F772f37", // G+ backing
+        "0xD4E1CAF200b29585aADc9AF39c16D57C8c82EbF1" // G+
+      ],
+      "tokens": [
+        ADDRESSES.ethereum.USDT,
+        "0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a", // aEthUSDT
+        ADDRESSES.ethereum.USDC,
+        "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c", // aEthUSDC
+        ADDRESSES.ethereum.USDG,
+        "0x7c0477d085ECb607CF8429f3eC91Ae5E1e460F4F" // aEthUSDG
+      ]
+    },
+  },
   "oxiswap": {
     "methodology": "TVL is calculated by summing the value of all tokens held in the pair contract.",
     "timetravel": false,
