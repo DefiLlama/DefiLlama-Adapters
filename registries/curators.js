@@ -1787,6 +1787,20 @@ const configs = {
         },
       }
     }
+  },
+  "hedgehood-share-lending": {
+    config: {
+      methodology: 'Counts the USDG deposited in the Morpho Vault V2 curated by HedgeHood (hhUSDG), including what it has lent out. The vault lends only into the Morpho Blue market that takes HedgeHood Stock Yield fund shares (hhNVDA-CC) as collateral. The pledged shares are not counted: their underlying NVDA and USDG are already counted under HedgeHood Stock Yield.',
+      start: '2026-10-27', // hhUSDG deployed at block 98846901, 2026-10-27 00:56 UTC
+      blockchains: {
+        robinhood: {
+          // deployed by an EOA, then handed to the HedgeHood Safe (owner and curator), so listed explicitly
+          morpho: [
+            '0x54Bc097643BB9fd4ab004f11859893655529E954', // HedgeHood USDG Lending (hhUSDG)
+          ],
+        },
+      }
+    }
   }
 }
 
