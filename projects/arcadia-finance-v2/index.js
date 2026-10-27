@@ -221,8 +221,8 @@ async function fetchAssetData(accountGroup, chainId) {
         const retryAfter = error.response?.headers?.['retry-after'];
         const seconds = Number(retryAfter);
         const headerDelay = Number.isFinite(seconds) ? seconds * 1000 : Date.parse(retryAfter) - Date.now();
-        // cap at 30s: a long wait should fail the chain loudly, not stall the run
-        const delay = headerDelay > 0 && headerDelay <= 30000 ? headerDelay : 1000 * 2 ** attempt;
+        // clamp valid Retry-After to 30s max: wait the full allowed time instead of short backoff
+        const delay = headerDelay > 30000 ? 30000 : headerDelay > 0 ? headerDelay : 1000 * 2 ** attempt;
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
