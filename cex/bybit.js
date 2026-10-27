@@ -48,7 +48,7 @@ function isValidAddress(a, slug) {
 // the CSV lists some TON wallets in both bounceable (EQ..) and non-bounceable (UQ..) form, normalize so they dedupe
 function normalizeAddress(a, slug) {
   if (slug === 'ton') return tonAddress(a).toString()
-  return a
+  return a.startsWith('0x') ? a.toLowerCase() : a
 }
 
 function parseOwnersByChain(csv) {
@@ -79,6 +79,16 @@ function parseOwnersByChain(csv) {
 
 const getOwners = () => getConfig('bybit-por', undefined, { fetcher: async () => parseOwnersByChain(await fetchLatestCsv()) })
 
+const SUPPLEMENTAL_OWNERS = {
+  ethereum: ['0x31cc188c4c8db0bb5d30ff7c74e04c4d64d81e1b'],
+  sui: [
+    '0x74385b8eeb0cdf1d4849e340b00f79058b4aa9228322839b327f37a5c784a293',
+    '0x7814f6a9f08290a6c000830549c95061fea8d56a9014daeadd5388b3da798930',
+    '0x438342fcc00c286a57e0fd3df760e9e0b45f4c2d296de7372b939bc1e145b521',
+  ],
+  ton: ['UQDGbHH9Gxgldhg_ZuWDIRACd0S5BX8Y_8IjgnlWRACuPE4U'],
+}
+
 // chains Bybit doesn't list in its PoR CSV but still hold balances
 const STATIC_OWNERS = {
   cardano: ['addr1v8mn6dmk7tf9u26kr09a05lmvc9j4k9d940a88ta3hdczqgyt7whl'],
@@ -92,8 +102,14 @@ const EXTRA_TOKENS = {
 }
 
 module.exports = { bitcoin: 'bybit' }
-for (const slug of new Set(Object.values(CHAIN_MAP)))
-  module.exports[slug] = { owners: async () => (await getOwners())[slug] || [] }
+for (const slug of new Set(Object.values(CHAIN_MAP))) {
+  module.exports[slug] = {
+    owners: async () => {
+      const owners = [...((await getOwners())[slug] || []), ...(SUPPLEMENTAL_OWNERS[slug] || [])]
+      return [...new Set(owners.map(owner => normalizeAddress(owner, slug)))]
+    }
+  }
+}
 for (const [slug, owners] of Object.entries(STATIC_OWNERS))
   module.exports[slug] = { owners }
 for (const [slug, tokens] of Object.entries(EXTRA_TOKENS))
