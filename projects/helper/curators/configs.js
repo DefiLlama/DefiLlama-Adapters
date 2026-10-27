@@ -50,6 +50,12 @@ const ABI = {
     collateral: 'address:collateral',
     totalStake: 'uint256:totalStake',
   },
+  aaveV4Hub: {
+    getAssetCount: 'uint256:getAssetCount',
+    getAssetUnderlyingAndDecimals: 'function getAssetUnderlyingAndDecimals(uint256) view returns (address, uint8)',
+    getAddedAssets: 'function getAddedAssets(uint256) view returns (uint256)',
+    getAssetDeficitRay: 'function getAssetDeficitRay(uint256) view returns (uint256)',
+  },
 }
 
 const MorphoConfigs = {

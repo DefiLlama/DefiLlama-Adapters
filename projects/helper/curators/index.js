@@ -547,6 +547,21 @@ async function getCuratorTvlSymbioticVault(api, vaults) {
   api.add(assets, totalStakes.map(v => v || 0))
 }
 
+// Aave V4 hubs: getAddedAssets() is what the spokes supplied (liquidity + swept + owed, net of fees),
+// but it keeps bad debt in as deficit until it is covered, so the deficit is taken out
+async function getCuratorTvlAaveV4Hub(api, hubs) {
+  const RAY = 10n ** 27n
+  const assetCounts = await api.multiCall({ abi: ABI.aaveV4Hub.getAssetCount, calls: hubs })
+  const calls = hubs.flatMap((hub, i) => Array.from({ length: Number(assetCounts[i]) }, (_, assetId) => ({ target: hub, params: [assetId] })))
+  const assets = await api.multiCall({ abi: ABI.aaveV4Hub.getAssetUnderlyingAndDecimals, calls })
+  const added = await api.multiCall({ abi: ABI.aaveV4Hub.getAddedAssets, calls })
+  const deficits = await api.multiCall({ abi: ABI.aaveV4Hub.getAssetDeficitRay, calls })
+  assets.forEach(([underlying], i) => {
+    const amount = BigInt(added[i]) - BigInt(deficits[i]) / RAY
+    if (amount > 0n) api.add(underlying, amount)
+  })
+}
+
 async function getNested4626Vaults(api, vaults) {
   const vaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
   const nestedVaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaultAsset, permitFailure: true })
@@ -722,6 +737,11 @@ async function getCuratorTvl(api, vaults) {
   // market price (e.g. EtherFi's "Liquid Euro" weEUR)
   if (vaults.midasTokens) {
     await getCuratorTvlMidasToken(api, vaults.midasTokens)
+  }
+
+  // aave v4 hubs where the curator is the hub's risk curator
+  if (vaults.aaveV4Hubs) {
+    await getCuratorTvlAaveV4Hub(api, vaults.aaveV4Hubs)
   }
 
   const shareVaults = [...booked, ...(vaults.accountableVaults || [])] // only vaults whose reads succeeded

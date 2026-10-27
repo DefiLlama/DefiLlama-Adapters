@@ -104,6 +104,9 @@ const curatorExport = getCuratorExport({
       morpho: ethereumMorphoVaults,
       morphoVaultOwners: ethereumMorphoVaultOwners,
       boringVaults: ethereumBoringVaults,
+      aaveV4Hubs: [
+        '0xD138FcB0E8C52fDbB2Ac4573FA4d8925cf11e9c2', // Sentora hub
+      ],
     },
     ink: {
       boringVaults: [
