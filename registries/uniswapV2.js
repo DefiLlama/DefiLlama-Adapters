@@ -3265,6 +3265,20 @@ const uniV2Configs = {
     methodology: 'Value of the tokens held in the Ouro DEX V2 pairs on Robinhood Chain, enumerated from the factory. LP tokens staked in the Ouro farms are not added again.',
     robinhood: '0xaf0660Fd4d96F4e925AE85eba7A90a74C727fA2F',
   },
+  'topaz-amm': {
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      hasStablePools: true,
+    },
+    bsc: '0x65E6cD0eF5D3467030103cf3d433034E570b5784',
+    robinhood: '0x1E3aC31cF96b20619c913384C9bf6010A824fB95',
+    base: '0x1E3aC31cF96b20619c913384C9bf6010A824fB95',
+    ethereum: '0x1E3aC31cF96b20619c913384C9bf6010A824fB95',
+    arc: '0x1E3aC31cF96b20619c913384C9bf6010A824fB95',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
