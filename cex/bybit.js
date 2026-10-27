@@ -48,7 +48,7 @@ function isValidAddress(a, slug) {
 // the CSV lists some TON wallets in both bounceable (EQ..) and non-bounceable (UQ..) form, normalize so they dedupe
 function normalizeAddress(a, slug) {
   if (slug === 'ton') return tonAddress(a).toString()
-  return a.startsWith('0x') ? a.toLowerCase() : a
+  return a
 }
 
 function parseOwnersByChain(csv) {
@@ -79,7 +79,11 @@ function parseOwnersByChain(csv) {
 
 const getOwners = () => getConfig('bybit-por', undefined, { fetcher: async () => parseOwnersByChain(await fetchLatestCsv()) })
 
-const SUPPLEMENTAL_OWNERS = {
+// chains Bybit doesn't list in its PoR CSV but still hold balances
+const STATIC_OWNERS = {
+  cardano: ['addr1v8mn6dmk7tf9u26kr09a05lmvc9j4k9d940a88ta3hdczqgyt7whl'],
+  fantom: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40'],
+  starknet: ['0x076601136372fcdbbd914eea797082f7504f828e122288ad45748b0c8b0c9696'],
   ethereum: ['0x31cc188c4c8db0bb5d30ff7c74e04c4d64d81e1b'],
   sui: [
     '0x74385b8eeb0cdf1d4849e340b00f79058b4aa9228322839b327f37a5c784a293',
@@ -89,28 +93,21 @@ const SUPPLEMENTAL_OWNERS = {
   ton: ['UQDGbHH9Gxgldhg_ZuWDIRACd0S5BX8Y_8IjgnlWRACuPE4U'],
 }
 
-// chains Bybit doesn't list in its PoR CSV but still hold balances
-const STATIC_OWNERS = {
-  cardano: ['addr1v8mn6dmk7tf9u26kr09a05lmvc9j4k9d940a88ta3hdczqgyt7whl'],
-  fantom: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40'],
-  starknet: ['0x076601136372fcdbbd914eea797082f7504f828e122288ad45748b0c8b0c9696'],
-}
-
 // Chains whose PoR balance sits in a token that has no default list in helper/cex.js
 const EXTRA_TOKENS = {
   berachain: ['0x0000000000000000000000000000000000000000', '0x779Ded0c9e1022225f8E0630b35a9b54bE713736'], // BERA, USDT0
 }
 
 module.exports = { bitcoin: 'bybit' }
-for (const slug of new Set(Object.values(CHAIN_MAP))) {
-  module.exports[slug] = {
-    owners: async () => {
-      const owners = [...((await getOwners())[slug] || []), ...(SUPPLEMENTAL_OWNERS[slug] || [])]
-      return [...new Set(owners.map(owner => normalizeAddress(owner, slug)))]
-    }
-  }
+for (const slug of new Set(Object.values(CHAIN_MAP)))
+  module.exports[slug] = { owners: async () => (await getOwners())[slug] || [] }
+for (const [slug, owners] of Object.entries(STATIC_OWNERS)) {
+  const csvOwners = module.exports[slug]?.owners
+  module.exports[slug] = { owners: csvOwners ? async () => {
+    const discovered = await csvOwners()
+    const known = new Set(discovered.map(owner => normalizeAddress(owner, slug).toLowerCase()))
+    return [...discovered, ...owners.filter(owner => !known.has(normalizeAddress(owner, slug).toLowerCase()))]
+  } : owners }
 }
-for (const [slug, owners] of Object.entries(STATIC_OWNERS))
-  module.exports[slug] = { owners }
 for (const [slug, tokens] of Object.entries(EXTRA_TOKENS))
   module.exports[slug].tokens = tokens
