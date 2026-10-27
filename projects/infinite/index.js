@@ -31,6 +31,12 @@ const AERO_FACTORIES = {
   base: "0xB60ce95161506EeC22A2D68A784DD21cf78adcA9",
 }
 
+// ITP per chain; Aero vault LP paired with it goes to pool2
+const ITP = {
+  optimism: ITP_ON_OPTIMISM,
+  base: "0xBA8CD87120aCA631F59231f9fD6c5469BbEE3440",
+}
+
 // === Uniswap V3 auto-compounder vaults (Base); each holds one position NFT plus idle tokens ===
 const UNIV3_VAULTS = [
   { vault: "0xf0e3305e81744e4dfa2d01c0a145814357a89018", pool: "0x16A1E7F62b702d84AAa0D1f534121DE9d17B0E18" }, // ITP/USDC
@@ -98,7 +104,7 @@ const addVelodromeCompounders = async (api) => {
 }
 
 // Aero auto-compounders: every official vault from the v2 factory; LP held idle plus staked in the gauge
-const addAeroVaults = async (api) => {
+const addAeroVaults = async (api, isPool2) => {
   const factory = AERO_FACTORIES[api.chain]
   if (!factory) return
   const count = await api.call({ target: factory, abi: "uint256:vaultCount" })
@@ -118,14 +124,22 @@ const addAeroVaults = async (api) => {
     api.multiCall({ abi: "address:asset", calls: ours }),
     api.multiCall({ abi: "uint256:stakedLp", calls: ours }),
   ])
-  const idle = await api.multiCall({
-    abi: "erc20:balanceOf",
-    calls: ours.map((vault, i) => ({ target: assets[i], params: [vault] })),
+  const [idle, token0s, token1s] = await Promise.all([
+    api.multiCall({
+      abi: "erc20:balanceOf",
+      calls: ours.map((vault, i) => ({ target: assets[i], params: [vault] })),
+    }),
+    api.multiCall({ abi: "address:token0", calls: assets }),
+    api.multiCall({ abi: "address:token1", calls: assets }),
+  ])
+  const itp = ITP[api.chain].toLowerCase()
+  assets.forEach((lp, i) => {
+    const pairsItp = [token0s[i], token1s[i]].some(t => t.toLowerCase() === itp)
+    if (pairsItp === isPool2) api.add(lp, BigInt(idle[i]) + BigInt(staked[i]))
   })
-  assets.forEach((lp, i) => api.add(lp, BigInt(idle[i]) + BigInt(staked[i])))
 }
 
-// Uniswap V3 auto-compounders (Base): position NFTs held by the vaults plus their idle pool tokens
+// Uniswap V3 auto-compounders (Base): position NFTs held by the vaults plus their idle pool tokens; every pool pairs ITP or cbEGGS
 const addUniV3Vaults = async (api) => {
   const pools = UNIV3_VAULTS.map(v => v.pool)
   const [token0s, token1s] = await Promise.all([
@@ -194,17 +208,22 @@ const getStsatoTVL = async (api) => {
 }
 
 module.exports = {
-  methodology: "Tracks ITP staking vault TVL; Velodrome auto-compounder vaults on Optimism (LP each vault holds, unwrapped); Aero auto-compounder vaults on Optimism and Base (every DAO-official vault from the Aero v2 factories: LP held idle plus staked in the gauge, unwrapped); Uniswap V3 auto-compounder vaults on Base (position NFTs plus idle tokens); dHEDGE vaults managed by the DAO across multiple chains; cbEGGS.finance protocol TVL (ETH backing on Base); and stSATO TVL on Ethereum from on-chain SATO backing via getBacking(). cbEGGS is owned by Infinite Trading.",
+  methodology: "TVL: Aero auto-compounder vaults on Optimism and Base whose LP does not pair ITP (every DAO-official vault from the Aero v2 factories: LP held idle plus staked in the gauge, unwrapped); dHEDGE vaults managed by the DAO across multiple chains; cbEGGS.finance protocol TVL (ETH backing on Base); and stSATO TVL on Ethereum from on-chain SATO backing via getBacking(). cbEGGS is owned by Infinite Trading. Pool2: auto-compounder vaults holding ITP- or cbEGGS-paired liquidity (Velodrome and ITP-paired Aero vaults on Optimism, ITP-paired Aero vaults and Uniswap V3 position NFTs plus idle tokens on Base). Staking: ITP staking vault.",
+  doublecounted: true,
   ethereum: {
     tvl: getStsatoTVL,
   },
   optimism: {
     tvl: async (api) => {
-      await addVelodromeCompounders(api)
-      await addAeroVaults(api)
+      await addAeroVaults(api, false)
       await sumTokens2({ api, resolveLP: true })
       await getDhedgeVaultsTVL(api)
       return api.getBalances()
+    },
+    pool2: async (api) => {
+      await addVelodromeCompounders(api)
+      await addAeroVaults(api, true)
+      return sumTokens2({ api, resolveLP: true })
     },
     staking: getStakedTVL
   },
@@ -217,10 +236,14 @@ module.exports = {
   base: {
     tvl: async (api) => {
       await getCbEggsTVL(api)
-      await addAeroVaults(api)
-      await addUniV3Vaults(api)
+      await addAeroVaults(api, false)
+      await sumTokens2({ api, resolveLP: true })
       await getDhedgeVaultsTVL(api)
       return api.getBalances()
-    }
+    },
+    pool2: async (api) => {
+      await addAeroVaults(api, true)
+      return addUniV3Vaults(api)
+    },
   },
 }
