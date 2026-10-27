@@ -174,6 +174,7 @@ const tvl = async (api) => {
 
   const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'arc', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'robinhood', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
   const isEvm = evmChains.includes(chain)
+  const porAddresses = new Set(contracts.map(a => a.toLowerCase()))
 
   const lockInfoAddresses = []
   const wrappedTokens = []
@@ -182,6 +183,7 @@ const tvl = async (api) => {
       if (!networks.includes(li.network.toUpperCase())) return
       if (!li.address || /^[A-Z0-9]+-[A-Z0-9]+$/i.test(li.address)) return
       if (isEvm && (!/^0x[0-9a-fA-F]{40}$/.test(li.address))) return
+      if (porAddresses.has(li.address.toLowerCase())) return // already in PoR, sometimes lowercased (invalid on case-sensitive chains like LTC)
       lockInfoAddresses.push(li.address)
     });
     (token.wrapInfo || []).forEach(wi => {
