@@ -206,9 +206,9 @@ module.exports = {
     },
   },
   "aquabank": {
-    "methodology": "TVL is calculated from the total supply of bUSDT, bUSDC, and bAUSD, each fully backed 1:1 by stablecoins deposited into Benqi and Euler vaults.",
+    "methodology": "TVL is calculated from the yield-bearing protocol token balances held by AquaBank minting contracts, representing the stablecoins backing bUSDT, bUSDC, and bAUSD across Benqi, Euler, and Aave V3.",
     "avax": {
-      "tvl": { "owners": ["0x7D336B49879a173626E51BFF780686D88b8081ec","0xb06DE2E9a339d201661045b7D845De3d20373b4F","0xcCB7De5b7788de551E3b85b50e4834D5B7e3F27c","0x61E8f77eD693d3edeCBCc2dd9c55c1d987c47775"], "tokens": ["0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF","0xa446938b0204Aa4055cdFEd68Ddf0E0d1BAB3E9E","0xB715808a78F6041E46d61Cb123C9B4A27056AE9C","0x190D94613A09ad7931FcD17CD6A8F9B6B47ad414"] },
+      "tvl": { "owners": ["0x7D336B49879a173626E51BFF780686D88b8081ec","0xb06DE2E9a339d201661045b7D845De3d20373b4F","0xcCB7De5b7788de551E3b85b50e4834D5B7e3F27c","0x61E8f77eD693d3edeCBCc2dd9c55c1d987c47775","0xa62BF981Ad60bF389f6935585b7861a8EF4D404f","0x01C72156E8265182A728c51A30Caa70F263E4D66","0x1958a8026389F35EaBDeBd9093D960eda15d36B0"], "tokens": ["0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF","0xa446938b0204Aa4055cdFEd68Ddf0E0d1BAB3E9E","0xB715808a78F6041E46d61Cb123C9B4A27056AE9C","0x190D94613A09ad7931FcD17CD6A8F9B6B47ad414","0x625E7708f30cA75bfd92586e17077590C60eb4cD","0x724dc807b04555b71ed48a6896b6F41593b8C637","0x6ab707Aca953eDAeFBc4fD23bA73294241490620"] },
     },
   },
   "unit": {
