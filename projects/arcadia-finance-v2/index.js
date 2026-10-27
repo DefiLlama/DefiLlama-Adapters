@@ -199,6 +199,14 @@ async function uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft, }) {
   await unwrapSlipstreamNFT({ api, positionIds: sSlipNftIds, nftAddress: nft, });
 }
 
+/**
+ * Fetch spot asset data for one group of accounts from Arcadia's API.
+ * Retries network errors, 429 and 5xx up to three times, then throws so a
+ * failed group is never dropped from the chain total.
+ * @param {string[]} accountGroup account addresses sent in a single request
+ * @param {number} chainId Arcadia chain id
+ * @returns {Promise<object>} API response
+ */
 async function fetchAssetData(accountGroup, chainId) {
   const addressParams = accountGroup.map(addr => `account_addresses=${addr}`).join('&');
   let lastError;
@@ -207,6 +215,8 @@ async function fetchAssetData(accountGroup, chainId) {
       return await utils.fetchURL(`https://api.arcadia.finance/v1/api/accounts/spot_asset_data?${addressParams}&chain_id=${chainId}`);
     } catch (error) {
       lastError = error;
+      const status = error.response?.status;
+      if (status && status !== 429 && status < 500) throw error;
       if (attempt < 2) {
         const retryAfter = error.response?.headers?.['retry-after'];
         const seconds = Number(retryAfter);
@@ -220,6 +230,10 @@ async function fetchAssetData(accountGroup, chainId) {
   throw lastError;
 }
 
+/**
+ * Sums the value of every Arcadia account plus the protocol's own pools on one chain.
+ * @param {object} api DefiLlama ChainApi
+ */
 async function tvl (api) {
   const chainConfig = config[api.chain];
   const { factory, pools, uniNFT, uniV4NFT, slipNFT, slipV2NFT, slipV3NFT, wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, sSlipV3NFT, alienBaseNFT, wsSlipNFT, wsSlipV2NFT, wsSlipV3NFT, metadexCLNFT, sMetadexCLNFT, wsMetadexCLNFT, wMetadexNFT, sMetadexNFT, wMetadexSpotNFT, wsMetadexNFT, resolveSlipstreamV2, resolveSlipstreamV3, chainId } = chainConfig;
