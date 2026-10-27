@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
+const ethers = require("ethers")
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
@@ -8,27 +9,31 @@ const { config, retiredChains } = require("./config");
 const { getExcludedMarketIds, getExcludedAssets, getExcludedVaults } = require("./exclusions");
 
 const eventAbis = {
-  createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)'
+  createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)',
+  supplyCollateral: 'event SupplyCollateral(bytes32 indexed id, address indexed caller, address indexed onBehalf, uint256 assets)',
 }
+const supplyCollateralTopic = ethers.id('SupplyCollateral(bytes32,address,address,uint256)')
 
 const nullAddress = ADDRESSES.null
 
-const getMarket = async (api) => {
-  const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
-  const useIndexer = api.chain === 'monad' ? true : false
-  const extraKey = 'reset-v2'
+const chainsWithTroublePullingLogs = new Set(['tac', 'sei'])
 
-  let logs = [];
-  const chainsWithTroublePullingLogs = new Set(['tac', 'sei'])
-  if (chainsWithTroublePullingLogs.has(api.chain)) {
-    try {
-      logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
-    } catch (e) {
-      logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache: true, useIndexer })
-    }
-  } else {
-    logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
+// on chains whose rpcs struggle with log ranges, fall back to the existing cache rather than fail
+const getMorphoLogs = async (api, params) => {
+  const { morphoBlue, fromBlock, onlyUseExistingCache, } = config[api.chain]
+  const useIndexer = api.chain === 'monad' ? true : false
+  const options = { api, target: morphoBlue, fromBlock, onlyArgs: true, onlyUseExistingCache, useIndexer, ...params }
+  if (!chainsWithTroublePullingLogs.has(api.chain)) return getLogs(options)
+  try {
+    return await getLogs(options)
+  } catch (e) {
+    return getLogs({ ...options, onlyUseExistingCache: true })
   }
+}
+
+const getMarket = async (api) => {
+  const { morphoBlue, blacklistedMarketIds = [] } = config[api.chain]
+  const logs = await getMorphoLogs(api, { eventAbi: eventAbis.createMarket, extraKey: 'reset-v2' })
 
   if (api.chain === 'sei') {
     const existingIds = new Set(logs.map(i => i.id.toLowerCase()))
@@ -65,12 +70,31 @@ const getMarket = async (api) => {
   return { markets: all.filter((id) => !excluded.has(id)), excludedMarkets: all.filter((id) => excluded.has(id)) }
 }
 
+// morpho keeps no per-market collateral total, so sum position(id, user).collateral over every account
+// that ever supplied collateral to the market. position, not the logs' net: liquidations seize collateral
+// without emitting WithdrawCollateral. One log query covers all the markets (topic1 = any of the ids); the
+// cache key changes with the market set, so a new excluded market costs one rescan.
+const getMarketsCollateral = async (api, ids) => {
+  const { morphoBlue } = config[api.chain]
+  const collateralById = new Map(ids.map((id) => [id, 0n]))
+  if (!ids.length) return collateralById
+  const sortedIds = [...ids].sort()
+  const extraKey = `collateral-${ethers.id(sortedIds.join(',')).slice(2, 18)}`
+  const logs = await getMorphoLogs(api, { eventAbi: eventAbis.supplyCollateral, topics: [supplyCollateralTopic, sortedIds], extraKey })
+  const calls = [...new Set(logs.map((log) => `${log.id.toLowerCase()}:${log.onBehalf.toLowerCase()}`))].map((key) => ({ params: key.split(':') }))
+  const positions = await api.multiCall({ target: morphoBlue, calls, abi: abi.morphoBlueFunctions.position })
+  positions.forEach((position, i) => {
+    const id = calls[i].params[0]
+    collateralById.set(id, collateralById.get(id) + BigInt(position.collateral))
+  })
+  return collateralById
+}
+
 // tvl sums the whole balance the shared morpho contract holds of each token, so dropping an excluded
 // market from the id list does nothing while a valid market uses the same token. Subtract what the
-// excluded market still physically holds: supply minus borrowed, since borrowed assets have left the
-// contract. Collateral is not attributable: morpho exposes no per-market total, only position(id, user),
-// so an excluded market's collateral stays counted when a valid market shares that token - measured at
-// ~$1k on ethereum, which is why netting the collateral logs per market is not worth the scan.
+// excluded market still physically holds: supply minus borrowed (borrowed assets have left the
+// contract), plus its collateral. Collateral is only scanned for markets whose collateral token is
+// counted, i.e. shared with a valid market - e.g. ~$64M of BGBTC in an excluded morph market.
 const subtractExcludedMarkets = async (api, excludedMarkets, morphoHeld) => {
   if (!excludedMarkets.length) return
   const { morphoBlue } = config[api.chain]
@@ -79,18 +103,33 @@ const subtractExcludedMarkets = async (api, excludedMarkets, morphoHeld) => {
     api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market }),
   ])
 
-  const idleByToken = new Map()
+  const heldByMarkets = new Map()
+  const addHeld = (token, amount) => {
+    if (amount > 0n) heldByMarkets.set(token, (heldByMarkets.get(token) ?? 0n) + amount)
+  }
+
   marketDatas.forEach((data, i) => {
-    const loanToken = marketInfos[i].loanToken.toLowerCase()
-    const idle = BigInt(data.totalSupplyAssets || 0) - BigInt(data.totalBorrowAssets || 0)
-    if (idle > 0n) idleByToken.set(loanToken, (idleByToken.get(loanToken) ?? 0n) + idle)
+    addHeld(marketInfos[i].loanToken.toLowerCase(), BigInt(data.totalSupplyAssets || 0) - BigInt(data.totalBorrowAssets || 0))
   })
 
-  idleByToken.forEach((idle, token) => {
+  const collateralTokenById = new Map(excludedMarkets.map((id, i) => [id, marketInfos[i].collateralToken.toLowerCase()]))
+  const sharedCollateralMarkets = excludedMarkets.filter((id) => morphoHeld.has(collateralTokenById.get(id)))
+  // the scan needs a full log history; if the rpc or indexer can't serve it, keep the previous behaviour
+  // (collateral stays counted) rather than fail the chain's tvl
+  let collateralById = new Map()
+  try {
+    collateralById = await getMarketsCollateral(api, sharedCollateralMarkets)
+  } catch (e) {
+    sdk.log(`morpho-blue: excluded collateral scan failed on ${api.chain}, not subtracting it`, e.message)
+  }
+  collateralById.forEach((collateral, id) => addHeld(collateralTokenById.get(id), collateral))
+
+  heldByMarkets.forEach((amount, token) => {
     const held = morphoHeld.get(token)
     if (!held) return
-    // clamp: a market's accounting supply can exceed what the contract holds when interest is phantom
-    api.add(held.token, (-(idle > held.amount ? held.amount : idle)).toString())
+    // clamp: a market's accounting can exceed what the contract holds, with phantom interest on the supply
+    // side, or collateral still booked on positions after it left the contract
+    api.add(held.token, (-(amount > held.amount ? held.amount : amount)).toString())
   })
 }
 
