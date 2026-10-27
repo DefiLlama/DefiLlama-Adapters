@@ -201,7 +201,7 @@ async function uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft, }) {
 
 /**
  * Fetch spot asset data for one group of accounts from Arcadia's API.
- * Retries network errors, 429 and 5xx up to three times, then throws so a
+ * Retries network errors, 408, 429 and 5xx up to three times, then throws so a
  * failed group is never dropped from the chain total.
  * @param {string[]} accountGroup account addresses sent in a single request
  * @param {number} chainId Arcadia chain id
@@ -216,7 +216,7 @@ async function fetchAssetData(accountGroup, chainId) {
     } catch (error) {
       lastError = error;
       const status = error.response?.status;
-      if (status && status !== 429 && status < 500) throw error;
+      if (status && status !== 408 && status !== 429 && status < 500) throw error;
       if (attempt < 2) {
         const retryAfter = error.response?.headers?.['retry-after'];
         const seconds = Number(retryAfter);
