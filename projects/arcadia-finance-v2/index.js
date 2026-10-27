@@ -199,6 +199,27 @@ async function uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft, }) {
   await unwrapSlipstreamNFT({ api, positionIds: sSlipNftIds, nftAddress: nft, });
 }
 
+async function fetchAssetData(accountGroup, chainId) {
+  const addressParams = accountGroup.map(addr => `account_addresses=${addr}`).join('&');
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await utils.fetchURL(`https://api.arcadia.finance/v1/api/accounts/spot_asset_data?${addressParams}&chain_id=${chainId}`);
+    } catch (error) {
+      lastError = error;
+      if (attempt < 2) {
+        const retryAfter = error.response?.headers?.['retry-after'];
+        const seconds = Number(retryAfter);
+        const headerDelay = Number.isFinite(seconds) ? seconds * 1000 : Date.parse(retryAfter) - Date.now();
+        // cap at 30s: a long wait should fail the chain loudly, not stall the run
+        const delay = headerDelay > 0 && headerDelay <= 30000 ? headerDelay : 1000 * 2 ** attempt;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function tvl (api) {
   const chainConfig = config[api.chain];
   const { factory, pools, uniNFT, uniV4NFT, slipNFT, slipV2NFT, slipV3NFT, wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, sSlipV3NFT, alienBaseNFT, wsSlipNFT, wsSlipV2NFT, wsSlipV3NFT, metadexCLNFT, sMetadexCLNFT, wsMetadexCLNFT, wMetadexNFT, sMetadexNFT, wMetadexSpotNFT, wsMetadexNFT, resolveSlipstreamV2, resolveSlipstreamV3, chainId } = chainConfig;
@@ -241,30 +262,24 @@ async function tvl (api) {
     }
 
     await Promise.all(requestBatches.map(async (accountGroup) => {
-      try {
-        const addressParams = accountGroup.map(addr => `account_addresses=${addr}`).join('&');
-        const assetDataCall = await utils.fetchURL(`https://api.arcadia.finance/v1/api/accounts/spot_asset_data?${addressParams}&chain_id=${chainId}`);
+      const assetDataCall = await fetchAssetData(accountGroup, chainId);
 
-        // Process each account's data from the batched response
-        assetDataCall.data.forEach((assetData, index) => {
-          const account = accountGroup[index];
-          if (!assetData || !assetData[0][0] || assetData[0][0].length < 1) return;
+      // Process each account's data from the batched response
+      assetDataCall.data.forEach((assetData, index) => {
+        const account = accountGroup[index];
+        if (!assetData || !assetData[0][0] || assetData[0][0].length < 1) return;
 
-          ownerTokens.push([assetData[0][0], account])
-          if (!assetData[0][0].length || !assetData[0][1].length || assetData[0][1] == "0") return;
-          ownerIds.push([assetData[0][0], assetData[0][1], account])
-          accs.push(account)
+        ownerTokens.push([assetData[0][0], account])
+        if (!assetData[0][0].length || !assetData[0][1].length || assetData[0][1] == "0") return;
+        ownerIds.push([assetData[0][0], assetData[0][1], account])
+        accs.push(account)
 
-          for (let i = 0; i < assetData[0][0].length; i++) {
-            if (assetData[0][0][i] === uniV4NFT) {
-              uniV4Ids.push(assetData[0][1][i]);
-            }
+        for (let i = 0; i < assetData[0][0].length; i++) {
+          if (assetData[0][0][i] === uniV4NFT) {
+            uniV4Ids.push(assetData[0][1][i]);
           }
-        });
-      } catch (error) {
-        console.log(`Failed to fetch/process data for accounts ${accountGroup.join(', ')}:`, error);
-        return;
-      }
+        }
+      });
     }));
 
     api.log(`[arcadia] Processed batch ${Math.ceil((i + accountsPerBatch) / accountsPerBatch)} of ${Math.ceil(v2Accounts.length / accountsPerBatch)} for v2 accounts.`);
