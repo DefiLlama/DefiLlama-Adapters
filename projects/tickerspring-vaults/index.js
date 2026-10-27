@@ -43,6 +43,9 @@ const abi = {
   positions: 'function positions(uint256) view returns (uint96 nonce, address operator, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256, uint256, uint128, uint128)',
   getSlot0: 'function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)',
   getPositionInfo: 'function getPositionInfo(bytes32 poolId, address owner, int24 tickLower, int24 tickUpper, bytes32 salt) view returns (uint128 liquidity, uint256, uint256)',
+  // Vaults: a full signature, not the 'address:' shorthand, which the SDK caches per contract across blocks (a vault
+  // has no venue before its deployment)
+  venue: 'function venue() view returns (address)',
   // Vaults: per-token protocol and buyback fee reserves, which are not depositors' assets
   protocolFees: 'function protocolFees(address token) view returns (uint256)',
   buybackFees: 'function buybackFees(address token) view returns (uint256)',
@@ -104,7 +107,7 @@ async function addV7Vaults(api) {
 async function addVaults(api) {
   const listed = (await getConfig('tickerspring-vaults', VAULTS_API)).data.vaults.map(v => v.vault)
   // A vault deployed after the queried block has no code yet
-  const venues = await api.multiCall({ abi: 'address:venue', calls: listed, permitFailure: true })
+  const venues = await api.multiCall({ abi: abi.venue, calls: listed, permitFailure: true })
   const vaults = listed.filter((_, i) => venues[i])
   const live = venues.filter(Boolean)
   const [usdgs, tokens, rewardTokens, token0s, token1s, positions, spots] = await Promise.all([
