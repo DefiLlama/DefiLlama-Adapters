@@ -593,11 +593,12 @@ function cexExports(config) {
         }
         const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
         if (chain === 'solana') runtimeOptions.solOwners = owners
-        await sumTokensExport(runtimeOptions)(api)
         // hyperliquid owners hold funds both on HyperEVM (summed above) and on HyperCore
         // (spot + perp margin), which no on-chain lookup sees
-        if (chain === 'hyperliquid') await addHypercoreBalances({ api, owners, blacklistedTokens: options.blacklistedTokens })
-        return api.getBalances()
+        if (chain === 'hyperliquid')
+          await addHypercoreBalances({ api, owners, blacklistedTokens: options.blacklistedTokens })
+
+        return sumTokensExport(runtimeOptions)(api)
       }
     }
   })
