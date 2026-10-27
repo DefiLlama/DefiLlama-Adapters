@@ -19,4 +19,7 @@ module.exports = {
   methodology: 'TVL is total vault shares converted to underlying via convertToAssets.',
   monad: { tvl },
   ethereum: { tvl },
+  base: { tvl },
+  polygon: { tvl },
+  avax: { tvl },
 }
