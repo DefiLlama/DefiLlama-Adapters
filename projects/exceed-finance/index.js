@@ -67,7 +67,5 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
-  doublecounted: true,
-  methodology: 'TVL is the value of all outstanding exUSDC, exSOL and exBTC, read from chain: the supply of each receipt token multiplied by its on-chain exchange rate, expressed in the base token (USDC, SOL, cbBTC). The deposits are deployed into lending markets such as Kamino and Jupiter Lend, so the TVL is marked as double counted.',
   solana: { tvl },
 }
