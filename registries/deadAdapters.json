@@ -4765,6 +4765,15 @@
       "borrowed": "_f"
     }
   },
+  "parasset": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts liquidty on the Insurance",
+    "ethereum": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2023-08-30"
+  },
   "partialfinance": {
     "deadFrom": "2024-04-01",
     "methodology": "Pool2 deposits consist of PARTIAL/FTM and PSHARE/FTM LP tokens deposits while the staking TVL consists of the PSHARES tokens locked within the Boardroom contract(0x5FcE757a1aa5C489B008a4Df6CA2ef9088B5bCA4).",
