@@ -13893,7 +13893,7 @@ const configs = {
     },
   },
   "egas-swap": {
-    "methodology": "TVL is calculated as the total on-chain assets held by the EGAS Swap proxy contract. It includes balances of all supported ERC20 swap assets held by the proxy and the chain's native gas token (EGAS) held by the proxy (tracked via nullAddress). ",
+    "methodology": "TVL is calculated as the balances of all supported ERC20 swap assets held by the EGAS Swap proxy contract. The chain's native gas token (EGAS) held by the proxy is excluded. ",
     "eni": {
       "owners": [
         "0x37CCd90ed5FA96207B41C4fBCB90b883e30e63DC"
@@ -13901,8 +13901,8 @@ const configs = {
       "tokens": [
         ADDRESSES.eni.USDT_1,
         ADDRESSES.eni.USDT_2,
-        ADDRESSES.eni.USDT,
-        ADDRESSES.null
+        ADDRESSES.eni.USDT
+        // native EGAS excluded: proxy holds 84.8M, 44x the wrapped supply and 74x all ENI chain TVL, marked off one $54k/day pool
       ]
     },
   },
