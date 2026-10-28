@@ -1,13 +1,15 @@
 // Hamstr (https://www.hamstr.online) – principal stays in USDC/ETH, only the yield is swapped into cbBTC.
 // Source and contracts: https://github.com/gabbergandalfderreiche/hamstr
 
+const { sumTokens2 } = require('../helper/unwrapLPs')
+
 // BtcYieldVaults: principal lent on Aave V3 via a strategy; totalAssets() = principal in the vault's asset.
 const VAULTS = [
   '0x3647c58c7eF2f4E871Cb3390E21ddD211242aADA', // Dollar Hamster (USDC)
   '0xBF5Cd7EB5D3fC9625A1cf96C29802811f9335f2a', // ETH Hamster (WETH)
 ]
 
-// TurboVault: Uniswap V3 WETH/cbBTC position; totalAssets() = depositors' share valued in WETH (Chainlink price).
+// TurboVault: holds a Uniswap V3 WETH/cbBTC position NFT plus idle WETH/cbBTC.
 const TURBO_VAULT = '0xd303E417Afd36f82A06f37736FBF8Db71fd952e6'
 
 async function tvl(api) {
@@ -20,13 +22,12 @@ async function tvl(api) {
   await api.sumTokens({ owners: VAULTS, tokens: [cbbtc] })
 
   const weth = await api.call({ abi: 'address:weth', target: TURBO_VAULT })
-  const turbo = await api.call({ abi: 'uint256:totalAssets', target: TURBO_VAULT })
-  api.add(weth, turbo)
+  return sumTokens2({ api, owner: TURBO_VAULT, tokens: [weth, cbbtc], resolveUniV3: true })
 }
 
 module.exports = {
   methodology:
-    'Assets deposited in the Hamstr vaults on Base: USDC and ETH principal (lent on Aave V3), unclaimed cbBTC rewards held by the vaults, and the Turbo vault\'s Uniswap V3 WETH/cbBTC position valued via its totalAssets().',
+    'Assets deposited in the Hamstr vaults on Base: USDC and ETH principal (lent on Aave V3), unclaimed cbBTC rewards held by the vaults, and the WETH and cbBTC in the Turbo vault\'s Uniswap V3 position plus its idle balance.',
   doublecounted: true, // principal is also counted in Aave V3 and Uniswap V3
   start: '2026-10-26',
   base: { tvl },
