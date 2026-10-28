@@ -160,9 +160,11 @@ const configs = {
   },
   'tickerspring-baskets': {
     _options: { helperType: 'v3' },
-    methodology: 'TVL is the tokens held by the TickerSpring Balancer V3 vault on Robinhood Chain for its baskets: weighted pools of Stock Tokens, crypto tokens and USDG or WETH.',
+    methodology: 'TVL is the tokens held by the TickerSpring Balancer V3 vault on Robinhood Chain for its baskets: weighted pools of Stock Tokens, crypto tokens and USDG or WETH. SPRING, the TickerSpring token, is excluded.',
     start: '2026-10-08', // vault deployed 2026-10-08 20:09 UTC
-    robinhood: { vault: '0xb01B26D72EB3a5d7846C36fc21e4e3B96994DaF2', fromBlock: 83584185 },
+    robinhood: { vault: '0xb01B26D72EB3a5d7846C36fc21e4e3B96994DaF2', fromBlock: 83584185, blacklistedTokens: [
+      '0x440e339a46eaa3bE8d723c2cBED2A30af74536D5', // SPRING, the parent protocol's token
+    ] },
   },
 
   // ===== Balancer V1 (v1Tvl) =====

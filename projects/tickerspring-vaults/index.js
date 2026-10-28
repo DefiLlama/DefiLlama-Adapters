@@ -30,6 +30,7 @@ const v7Vaults = [
 const ADDRESSES = require('../helper/coreAssets.json')
 const { ethers } = require('ethers')
 const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
 
 const V3_NPM = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3'
@@ -105,7 +106,13 @@ async function addV7Vaults(api) {
 }
 
 async function addVaults(api) {
-  const listed = (await getConfig('tickerspring-vaults', VAULTS_API)).data.vaults.map(v => v.vault)
+  const listed = await getConfig('tickerspring/vaults', undefined, {
+    fetcher: async () => {
+      const vaults = (await get(VAULTS_API)).data.vaults.map(v => v.vault)
+      if (!vaults.length) throw new Error('tickerspring: empty vault list') // keeps the last good cache
+      return vaults
+    },
+  })
   // A vault deployed after the queried block has no code yet
   const venues = await api.multiCall({ abi: abi.venue, calls: listed, permitFailure: true })
   const vaults = listed.filter((_, i) => venues[i])
