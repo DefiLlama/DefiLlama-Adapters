@@ -23,6 +23,7 @@ async function tvl(api) {
     for (const side of [pool.baseReserve, pool.quoteReserve]) {
       const symbol = side.symbol ?? side.id
       if (symbol === 'FRXUSD.B') continue // bridged variant, 1:1 with Frax USD not verified
+      if (symbol === 'EDELx') continue // Canton-native token distinct from EDEL (docs.edel.finance/token/overview), CCTools maps it to EDEL's CoinGecko id
       const id = side.coingeckoId || fallbackIds[symbol]
       if (!id) continue // token without a CoinGecko listing is excluded
       const amount = Number(side.amount)
@@ -36,6 +37,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'Tradecraft is a liquidity layer and AMM on the Canton Network. TVL is the sum of the raw token reserves across its live pools, read from the CCTools API, an independent Canton DeFi aggregator that exposes per-pool reserves with canonical token IDs and CoinGecko slugs. Where CCTools has no CoinGecko slug for a Canton token, the slug is matched by hand to the token issuer via CoinGecko. Tokens without a CoinGecko listing, and bridged variants whose 1:1 backing could not be verified (FRXUSD.B), are excluded.',
+    'Tradecraft is a liquidity layer and AMM on the Canton Network. TVL is the sum of the raw token reserves across its live pools, read from the CCTools API, an independent Canton DeFi aggregator that exposes per-pool reserves with canonical token IDs and CoinGecko slugs. Where CCTools has no CoinGecko slug for a Canton token, the slug is matched by hand to the token issuer via CoinGecko. Tokens without a CoinGecko listing, bridged variants whose 1:1 backing could not be verified (FRXUSD.B), and EDELx, which is a Canton-native token distinct from EDEL, are excluded.',
   canton: { tvl },
 }
