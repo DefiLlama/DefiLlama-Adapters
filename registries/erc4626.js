@@ -544,6 +544,12 @@ const configs = {
     methodology: 'Counts DIEM in the wstDIEM vault via totalAssets(): idle DIEM plus DIEM the vault has staked on Venice or is unstaking, minus DIEM owed to queued redemptions.',
     base: ['0xe49FA849cB37b0e7A42B2335e333fb99474167ba'],
   },
+  'nexus-mutual-rwi-vault': {
+    start: '2026-03-16',
+    doublecounted: true,
+    methodology: 'Counts the USDC value of RWI Vault shares via totalAssets(), which accrues at the on-chain fixed yield rate. Deposits are deployed by the Vault Operator into tokenised onchain and offchain insurance opportunities. Assets are held as Pendle PT-reUSDe, so the same capital is also counted in Re and Pendle TVL.',
+    ethereum: ['0xcAFeAA466736ac01e0AC9Ca72644beF348694731'],
+    },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
