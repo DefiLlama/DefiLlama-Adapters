@@ -4699,6 +4699,13 @@ const configs = {
       owners: ['0xf32e759d5f1c63ed62042497d3a50f044ee0982b'],
     },
   },
+  'treasury/quotum': {
+    robinhood: {
+      owners: ['0x42AbC7b64eD47dB6899b4F01Aa6c765c600a53a2'], // TaxSink
+      tokens: [ADDRESSES.robinhood.NVDA],
+      fetchCoValentTokens: false,
+    },
+  },
   'treasury/raac': {
     ethereum: {
       tokens: [
