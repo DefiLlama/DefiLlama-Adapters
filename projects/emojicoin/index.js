@@ -22,7 +22,9 @@ const DEPLOYED_AT_DATE = '2024-11-20';
 const DEPLOYED_AT_BLOCK = 254000000;
 
 async function tvl(api) {
-  const version = await timestampToVersion(new Date(api.timestamp * 1000), DEPLOYED_AT_BLOCK);
+  // the timestamp -> ledger version search costs ~80 node calls; a current run can read the latest state directly
+  const isCurrent = !api.timestamp || api.timestamp > Date.now() / 1e3 - 600
+  const version = isCurrent ? undefined : await timestampToVersion(new Date(api.timestamp * 1000), DEPLOYED_AT_BLOCK);
   const tvl_amount = await getAllMarkets(version);
   api.add(ADDRESSES.aptos.APT, tvl_amount);
 }

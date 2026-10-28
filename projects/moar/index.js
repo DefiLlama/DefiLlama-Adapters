@@ -1,5 +1,4 @@
 const { aQuery, function_view } = require('../helper/chain/aptos')
-const sdk = require('@defillama/sdk');
 
 const addresses = {
     'aptos': {
@@ -9,20 +8,35 @@ const addresses = {
     },
 }
 
+// tvl and borrowed read the same pool set, so fetch it once per chain and share it
+// between the two exports of the same run
+const POOLS_TTL_MS = 5 * 60 * 1000
+const poolsCache = {}
+
+function getPools(chain) {
+    const cached = poolsCache[chain]
+    if (cached && Date.now() - cached.at < POOLS_TTL_MS) return cached.promise
+    const promise = _getPools(chain).catch(e => { delete poolsCache[chain]; throw e })
+    poolsCache[chain] = { at: Date.now(), promise }
+    return promise
+}
+
+async function _getPools(chain) {
+    const poolsConfig = await aQuery(`/v1/accounts/${addresses[chain]['moar_package_owner']}/resource/${addresses[chain]['moar']}::pool::PoolConfigs`, chain)
+    const poolAddresses = poolsConfig['data']['all_pools']['inline_vec'].map(x => x['inner'])
+    const pools = []
+    for (const poolAddress of poolAddresses) {
+        const { data } = await aQuery(`/v1/accounts/${poolAddress}/resource/${addresses[chain]['moar']}::pool::Pool`, chain)
+        if (data['is_paused']) continue
+        pools.push({ asset: data['underlying_asset']['inner'], deposited: +data['total_deposited'], borrows: +data['total_borrows'] })
+    }
+    return pools
+}
+
 async function tvl(api, chain) {
     // TVL for moar means the unborrowed assets in the pools + all combined assets in the credit accounts
-    const poolAddresses = await getPoolAddresses(chain)
-
-    const balances = {};
-    for (const poolAddress of poolAddresses) {
-        const poolData = await aQuery(`/v1/accounts/${poolAddress}/resource/${addresses[chain]['moar']}::pool::Pool`, chain)
-
-        if (!poolData['data']['is_paused']) {
-            const idleAssetAmount = poolData['data']['total_deposited'] - poolData['data']['total_borrows']
-            const assetMetadata = poolData['data']['underlying_asset']['inner']
-            sdk.util.sumSingleBalance(balances, assetMetadata, idleAssetAmount, chain);
-        }
-    }
+    for (const { asset, deposited, borrows } of await getPools(chain))
+        api.add(asset, deposited - borrows)
 
     const creditAccounts = await function_view({
         functionStr: `${addresses[chain]['moar']}::credit_manager::get_all_credit_accounts`,
@@ -35,34 +49,14 @@ async function tvl(api, chain) {
             args: [creditAccount],
             chain: chain
         })
-        for (const asset of assetData) {
-            sdk.util.sumSingleBalance(balances, asset['asset']['inner'], asset['amount'], chain);
-        }
+        for (const asset of assetData)
+            api.add(asset['asset']['inner'], asset['amount'])
     }
-
-    return balances;
 }
 
 async function borrowed(api, chain) {
-    const balances = {};
-
-    const poolAddresses = await getPoolAddresses(chain)
-
-    for (const poolAddress of poolAddresses) {
-        const poolData = await aQuery(`/v1/accounts/${poolAddress}/resource/${addresses[chain]['moar']}::pool::Pool`, chain)
-
-        if (!poolData['data']['is_paused']) {
-            const borrowedAmount = poolData['data']['total_borrows']
-            const assetMetadata = poolData['data']['underlying_asset']['inner']
-            sdk.util.sumSingleBalance(balances, assetMetadata, borrowedAmount, chain);
-        }
-    }
-    return balances;
-}
-
-async function getPoolAddresses(chain) {
-    const poolsConfig = await aQuery(`/v1/accounts/${addresses[chain]['moar_package_owner']}/resource/${addresses[chain]['moar']}::pool::PoolConfigs`, chain)
-    return poolsConfig['data']['all_pools']['inline_vec'].map(x => x['inner'])
+    for (const { asset, borrows } of await getPools(chain))
+        api.add(asset, borrows)
 }
 
 module.exports = {

@@ -7,7 +7,6 @@ const abi = {
 const { fetchURL } = require('../helper/utils')
 
 
-const BigNumber = require("bignumber.js")
 const { nullAddress } = require("../helper/tokenMapping");
 const { getConfig } = require("../helper/cache");
 
@@ -47,22 +46,16 @@ const getMinersList = async () => {
 module.exports = {
   timetravel: false,
   heco: {
-    tvl: async () => {
-        const tvlData = await fetchURL(filetAPI)
-        return {
-          ["filecoin"]: new BigNumber(tvlData.data.data.hecoTvl),
-        }
-      }
+    tvl: async (api) => {
+      const tvlData = await fetchURL(filetAPI)
+      api.addCGToken('filecoin', +tvlData.data.data.hecoTvl)
+    }
   },
   bsc: {
-    tvl: async () => {
-
-        const tvlData = await fetchURL(filetAPI)
-        return {
-          ["filecoin"]: new BigNumber(tvlData.data.data.bscTvl),
-        }
-      
-      }
+    tvl: async (api) => {
+      const tvlData = await fetchURL(filetAPI)
+      api.addCGToken('filecoin', +tvlData.data.data.bscTvl)
+    }
   },
   filecoin: {
     tvl: async (api) => {
@@ -84,9 +77,7 @@ module.exports = {
   mixin: {
     tvl: async (api) => {
       const tvlData = await fetchURL(filetAPI)
-      return {
-        ["filecoin"]: new BigNumber(tvlData.data.data.mixinTvl),
-      }
+      api.addCGToken('filecoin', +tvlData.data.data.mixinTvl)
     }
   }
 }

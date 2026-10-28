@@ -35,9 +35,7 @@ const altLockBond = async (api) => {
   ];
   let poolResources = [];
 
-  (await Promise.all(pools.map(async (i) => await getResources(i)))).forEach(
-    (e) => poolResources.push(...e)
-  );
+  for (const pool of pools) poolResources.push(...await getResources(pool))
 
   poolResources
     .filter((i) => i.type.includes("PoolInfo"))
@@ -111,7 +109,8 @@ const moveIbo = async (api, tvlType) => {
       break;
   }
 
-  let bals = await Promise.all(acceptCoinArr.map(getCoinInfo));
+  const bals = []
+  for (const coin of acceptCoinArr) bals.push(await getCoinInfo(coin))
   if (tvlType === 'staking' && iboInfo)
     api.add(MOVE, iboInfo.data.coin.value)
   api.addTokens(acceptCoinArr, bals)
