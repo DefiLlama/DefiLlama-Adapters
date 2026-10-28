@@ -4,7 +4,7 @@ const { getProgramMappingValue } = require('../helper/chain/aleo')
 
 // JUSD allocates deposited USDC across yield strategies, principally delta-neutral
 // funding trades plus lending. It is issued through two vaults, Accountable on Ethereum and
-// Venzo on Arbitrum, and through jusd_vault_production.aleo on Aleo, which takes USDCx deposits
+// Venzo on Arbitrum, and through jusd_vault_arc_production.aleo on Aleo, which takes USDCx deposits
 // on Aleo, bridges them to Ethereum (Circle xReserve) and holds Ethereum JUSD through its adapter.
 // Each deposit is credited to the chain it was made on, as Makina credits a machine's spoke
 // capital to its hub chain and nets nested machine shares out of the machine they were bought in.
@@ -16,9 +16,9 @@ const USDC = {
   ethereum: ADDRESSES.ethereum.USDC,
   arbitrum: ADDRESSES.arbitrum.USDC_CIRCLE, // native USDC, not USDC.e
 }
-const ALEO_ADAPTER = '0x65DD658a02FaAdD866423cc08Dde9c89fFE345aA' // Ethereum side of jusd_vault_production.aleo
+const ALEO_ADAPTER = '0x65DD658a02FaAdD866423cc08Dde9c89fFE345aA' // Ethereum side of the Aleo vault
 const ALEO_ADAPTER_BLOCK = 26096619 // adapter deployment (1 Oct 2026)
-const ALEO_VAULT = 'aleo19vl8qekcpgngdfhchgcfajdme45capkjw0uzvsjs6aqj7dm50u8qyt2dhh' // jusd_vault_production.aleo
+const ALEO_VAULT = 'aleo1dkf9r56swfvdd62n0wjx083jqqjkk0yrrh304gwv8ntft7lpdggqplajaa' // jusd_vault_arc_production.aleo, live since 22 Oct 2026
 const adapterStateAbi = 'function state() view returns (uint256 usdcBal, uint256 jusdBal, uint256 pending, uint256 claimable)'
 const convertToAssetsAbi = 'function convertToAssets(uint256) view returns (uint256)'
 
@@ -59,7 +59,7 @@ async function aleoUsdcx() {
 }
 
 module.exports = {
-  methodology: 'TVL is the USDC value of JUSD on each chain it is issued on: the Accountable vault on Ethereum and the Venzo vault on Arbitrum (share supply valued with convertToAssets(), covering idle USDC and capital allocated to strategies, principally delta-neutral funding trades plus lending), and jusd_vault_production.aleo on Aleo. Aleo deposits are bridged to Ethereum and held as Ethereum JUSD by the vault\'s adapter; that position is counted on Aleo, where the deposits were made, and subtracted from Ethereum, so nothing is counted twice. The Ethereum vault is also part of Accountable, so this listing is marked as double counted.',
+  methodology: 'TVL is the USDC value of JUSD on each chain it is issued on: the Accountable vault on Ethereum and the Venzo vault on Arbitrum (share supply valued with convertToAssets(), covering idle USDC and capital allocated to strategies, principally delta-neutral funding trades plus lending), and jusd_vault_arc_production.aleo on Aleo. Aleo deposits are bridged to Ethereum and held as Ethereum JUSD by the vault\'s adapter; that position is counted on Aleo, where the deposits were made, and subtracted from Ethereum, so nothing is counted twice. The Ethereum vault is also part of Accountable, so this listing is marked as double counted.',
   doublecounted: true,
   ethereum: { tvl },
   arbitrum: { tvl },
