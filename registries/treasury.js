@@ -29,6 +29,49 @@ const gmxOwners = [
       ]
 
 const configs = {
+  // ----- plain treasuryExports adapters living under projects/<name>/ (migrated 2026-10-22) -----
+  'anvil': {
+    ethereum: { owners: ['0x5d2725fdE4d7Aa3388DA4519ac0449Cc031d675f'] },
+  },
+  'aof-stake-mining': {
+    metis: { owners: ['0x946D86422775E7B32F3F8f0580504EADccF9b800'], tokens: [nullAddress] },
+  },
+  'astaria-v2': {
+    base: { owners: ['0x0000000000A6F0986c92cf1EC4d2e77aFBE1466D'] },
+    ethereum: { owners: ['0x0000000000A6F0986c92cf1EC4d2e77aFBE1466D'] },
+  },
+  'plasma-saving-vaults': {
+    plasma: {
+      tokens: [ADDRESSES.plasma.USDT0, '0x5D72a9d9A9510Cd8cBdBA12aC62593A58930a948'],
+      owners: ['0xd1074E0AE85610dDBA0147e29eBe0D8E5873a000'], // LendingVault
+    },
+  },
+  'tokeniza': {
+    moonbeam: {
+      tokens: [nullAddress, ADDRESSES.moonbeam.USDT, ADDRESSES.moonbeam.USDC, ADDRESSES.moonbeam.WGLMR],
+      owners: ['0xbaECbdde43C6c6a167c37d5b789023592B27fF93'],
+    },
+    ethereum: {
+      tokens: [nullAddress, ADDRESSES.ethereum.USDT],
+      owners: ['0xbaECbdde43C6c6a167c37d5b789023592B27fF93'],
+    },
+    polygon: {
+      tokens: [nullAddress, ADDRESSES.polygon.USDT],
+      owners: ['0xbaECbdde43C6c6a167c37d5b789023592B27fF93'],
+    },
+  },
+  'trader-joe-stek': {
+    avax: {
+      tokens: [
+        nullAddress,
+        '0xEbB5d4959B2FbA6318FbDa7d03cd44aE771fc999', // kong
+        '0x5ac04b69bde6f67c0bd5d6ba6fd5d816548b066a', // tech
+        '0x8ad25b0083c9879942a64f00f20a70d3278f6187', // meow
+      ],
+      owners: ['0xb22c6d1c2897b950fc1040913c0d84d788f24df2'], // staking contract
+      ownTokens: [],
+    },
+  },
   // ----- from batch00.js -----
   'treasury/nexus-mutual': {
     ethereum: {

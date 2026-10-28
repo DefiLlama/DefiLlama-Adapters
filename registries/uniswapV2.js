@@ -10,7 +10,9 @@ function uniV2ExportFn(chainConfigs, options = {}) {
     methodology: 'Value of the tokens locked in the liquidity pools.',
   }
   Object.entries(chainConfigs).forEach(([chain, config]) => {
-    if (typeof config === 'string') {
+    if (config === null) {
+      result[chain] = { tvl: () => ({}) } // chain kept for history, no factory to read
+    } else if (typeof config === 'string') {
       result[chain] = { tvl: getUniTVL({ factory: config, useDefaultCoreAssets: true, ...options }) }
     } else {
       const chainOpts = {}
@@ -3278,6 +3280,234 @@ const uniV2Configs = {
     base: '0x1E3aC31cF96b20619c913384C9bf6010A824fB95',
     ethereum: '0x1E3aC31cF96b20619c913384C9bf6010A824fB95',
     arc: '0x1E3aC31cF96b20619c913384C9bf6010A824fB95',
+  },
+  // --- migrated 2026-10-22 ---
+  'ABCDEFX': {
+    misrepresentedTokens: true,
+    methodology: "Using DefiLlama's SDK for making on-chain calls to ABcDeFX Factory Contract to iterate over Liquidity Pools & count token balances therein.",
+    _options: { hasStablePools: true, stablePoolSymbol: 'ABcDeFx.LP' },
+    fantom: '0x01F43D2A7F4554468f77e06757e707150e39130c',
+    kcc: '0x01F43D2A7F4554468f77e06757e707150e39130c',
+    echelon: '0x01F43D2A7F4554468f77e06757e707150e39130c',
+    multivac: '0x01F43D2A7F4554468f77e06757e707150e39130c',
+    kava: '0x01F43D2A7F4554468f77e06757e707150e39130c',
+  },
+  'DegenDex': {
+    misrepresentedTokens: true,
+    bsc: '0x858FdBfD94C298D511F5Fb839d1f59eb1d8840D2',
+    dogechain: '0xfc5F561aa36D4f85BfA9A89Dbf058932223d43dB',
+  },
+  'GateSwap': {
+    misrepresentedTokens: true,
+    gatelayer: '0xaD8d59f3e026c02Aed0DAdFB46Ceca127030DFa2',
+  },
+  'PyreSwap': {
+    misrepresentedTokens: true,
+    fantom: '0x045d720873f0260e23da812501a7c5930e510aa4',
+    bsc: '0x045d720873f0260e23da812501a7c5930e510aa4',
+    avax: '0x045d720873f0260e23da812501a7c5930e510aa4',
+  },
+  'aborean-CL': {
+    // original passed no useDefaultCoreAssets, so keep the core-asset set empty
+    abstract: {
+      factory: '0x8cfE21F272FdFDdf42851f6282c0f998756eEf27', blacklistedTokens: [], fetchBalances: true, useDefaultCoreAssets: false,
+      abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
+    },
+  },
+  'abstraDex': {
+    misrepresentedTokens: true,
+    xlayer: '0xa7afb6163c331ddb0845843889d6f9544328846f',
+    zkfair: '0x174c4C03DfeA09682728A5959A253bf1F7C7766F',
+    zeta: '0x174c4C03DfeA09682728A5959A253bf1F7C7766F',
+    blast: '0xA7afB6163c331DDb0845843889D6f9544328846F',
+    cyeth: '0x174c4c03dfea09682728a5959a253bf1f7c7766f',
+    cronos_zkevm: '0x76D1fC018676f8A973474C24F40A2e14e401b770',
+    morph: '0x174c4C03DfeA09682728A5959A253bf1F7C7766F',
+  },
+  'aerodrome-ignition': {
+    base: {
+      factory: '0xade65c38cd4849adba595a4323a8c7ddfe89716a', blacklistedTokens: [], fetchBalances: true, useDefaultCoreAssets: false,
+      abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
+    },
+  },
+  'bamboodefi': {
+    misrepresentedTokens: true,
+    methodology: 'TVL is calculated from the Bamboo DeFi factory smart contracts on each chain.',
+    ethereum: '0x3823Ac41b77e51bf0E6536CE465479cBdedcaEa9',
+    bsc: '0xFC2604a3BCB3BA6016003806A288E7aBF75c8Aa3',
+    polygon: '0x25cc30af6b2957b0ed7ceca026fc204fdbe04e59',
+    velas: '0xFC2604a3BCB3BA6016003806A288E7aBF75c8Aa3',
+  },
+  'coffeefi': {
+    misrepresentedTokens: true,
+    _options: { hasStablePools: true },
+    scroll: '0x23537BCe0533e53609A49dffdd400e54A825cb81',
+    arbitrum: '0xdAF8b79B3C46db8bE754Fc5E98b620ee243eb279',
+  },
+  'dyorswap': {
+    misrepresentedTokens: true,
+    mode: '0xE470699f6D0384E3eA68F1144E41d22C6c8fdEEf',
+    blast: '0xA1da7a7eB5A858da410dE8FBC5092c2079B58413',
+    merlin: '0xA1da7a7eB5A858da410dE8FBC5092c2079B58413',
+    zeta: '0xA1da7a7eB5A858da410dE8FBC5092c2079B58413',
+    degen: '0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09',
+    xlayer: '0x2ccadb1e437aa9cdc741574bda154686b1f04c09',
+    bob: '0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09',
+    ink: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
+    sonic: '0xd8863d794520285185197F97215c8B8AD04E8815',
+    soneium: '0x4f0c1b4c6FdF983f2d385Cf24DcbC8c68f345E40',
+    unichain: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
+    plasma: '0xA9F2c3E18E22F19E6c2ceF49A88c79bcE5b482Ac',
+    stable: { factory: '0x61a425ab7e1f6b3fa1eb6af6162cf471fa0e7c62', coreAssets: [...Object.values(ADDRESSES.stable), '0x817997Ca8394E26CCE3dE3A076a4889b27DbF9dE'] },
+    arc: '0x942Bd5BFdc5317C5507e326f8EB4BB6058AB5C10',
+  },
+  'dyson': {
+    misrepresentedTokens: true,
+    _options: { fetchBalances: true }, // get reserves call fails
+    linea: '0xecD30C099c222AbffDaf3E2A3d2455FC8e8c739E',
+    polygon_zkevm: '0x51a0d4b81400581d8722627dafcd0c1ff9357d1d',
+    blast: '0x51a0d4b81400581d8722627dafcd0c1ff9357d1d',
+  },
+  'elkfinance': {
+    misrepresentedTokens: true,
+    timetravel: true,
+    _options: { blacklistedTokens: ['0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978'] },
+    xdai: '0xCB018587dA9590A18f49fFE2b85314c33aF3Ad3B',
+    polygon: '0xE3BD06c7ac7E1CeB17BdD2E5BA83E40D1515AF2a',
+    fantom: '0x7Ba73c99e6f01a37f3e33854c8F544BbbadD3420',
+    bsc: '0x31aFfd875e9f68cd6Cd12Cee8943566c9A4bBA13',
+    heco: '0x997fCE9164D630CC58eE366d4D275B9D773d54A4',
+    avax: '0x091d35d7F63487909C863001ddCA481c6De47091',
+    kcc: '0x1f9aa39001ed0630dA6854859D7B3eD255648599',
+    harmony: '0xCdde1AbfF5Ae3Cbfbdb55c1e866Ac56380e18720',
+    okexchain: '0x1116f8B82028324f2065078b4ff6b47F1Cc22B97',
+    moonriver: '0xd45145f10fD4071dfC9fC3b1aefCd9c83A685e77',
+    cronos: '0xEEa0e2830D09D8786Cb9F484cA20898b61819ef1',
+    telos: '0x47c3163e691966f8c1b93B308A236DDB3C1C592d',
+    hoo: '0x9c03E724455306491BfD2CE0805fb872727313eA',
+    elastos: '0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e',
+    fuse: '0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2',
+    iotex: '0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42',
+    ethereum: '0x6511eBA915fC1b94b2364289CCa2b27AE5898d80',
+    optimism: '0xedfad3a0F42A8920B011bb0332aDe632e552d846',
+    arbitrum: '0xA59B2044EAFD15ee4deF138D410d764c9023E1F0',
+    kava: '0xC012C4b3d253A8F22d5e4ADA67ea2236FF9778fc',
+    bittorrent: '0xc06348AEE3f3E92eE452816E0D3F25C919F6fB04',
+    bitgert: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    metis: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    wan: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    neon_evm: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    astar: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    base: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    linea: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    velas: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    q: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
+    rsk: '0x69D10bc18cd588a4B70F836A471D4e9c2Fd86092',
+  },
+  'hybra-v4': {
+    hyperliquid: {
+      factory: '0x32b9dA73215255d50D84FeB51540B75acC1324c2', fetchBalances: true, permitFailure: true, useDefaultCoreAssets: false,
+      abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
+    },
+  },
+  'icecreamswap': {
+    shimmer_evm: '0x24cb308a4e2F3a4352F513681Bd0c31a0bd3BA31',
+    bob: '0x7b2a5C88AB9367147F6ac384F857CbaDF5aA70a7',
+    lightlink_phoenix: '0xC87De04e2EC1F4282dFF2933A2D58199f688fC3d',
+    taiko: '0xC87De04e2EC1F4282dFF2933A2D58199f688fC3d',
+    base: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    telos: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    core: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    dogechain: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    fuse: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    xdc: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    bitgert: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    scroll: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    neon_evm: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+    blast: '0x9E6d21E759A7A288b80eef94E4737D313D31c13f',
+  },
+  'izumi-iziswap-v2': {
+    _options: {
+      useDefaultCoreAssets: false,
+      blacklistedTokens: [
+        ADDRESSES.bsc.iUSD,
+        '0x1382628e018010035999A1FF330447a0751aa84f',
+        '0x078f712f038A95BeEA94F036cADB49188a90604b', // manta iUSD
+      ],
+    },
+    plume_mainnet: '0x88867BF3bB3321d8c7Da71a8eAb70680037068E4',
+  },
+  'megaswap': {
+    misrepresentedTokens: true,
+    megaeth: '0x72B94fA9F854Da1bCCD03F3bAB54cF60C32193F3',
+  },
+  'passdex': {
+    misrepresentedTokens: true,
+    soneium: '0x48E07EE0E8450811AD472fFf10aB68B895EA747A',
+    unichain: '0x242c913Ff5FE010430A709baab977e88435b7EBF',
+    hemi: '0x242c913Ff5FE010430A709baab977e88435b7EBF',
+  },
+  'plaxswap': {
+    methodology: 'Counts liquidity across all PlaxSwap LPs',
+    polygon: { factory: '0x709e3C6b22993189327a8CFebD572b6cc459fe40', useDefaultCoreAssets: false },
+  },
+  'satoriSwap': {
+    misrepresentedTokens: true,
+    base: '0x4858C605862A91A34d83C19a9704f837f64fa405',
+    linea: '0xfF5859B60BCb3F153431cA216B1b269EB66A2020',
+    xlayer: '0xd967A2A9B873ccD5a5Ede00869e353949F24c3dc',
+  },
+  'solidex-finance-v3': {
+    cronos: {
+      factory: '0x3AAAB2384e40C2F405EF87Ea7B893B406C32E59C', fetchBalances: true,
+      abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
+    },
+  },
+  'sphynx': {
+    misrepresentedTokens: true,
+    bsc: '0x8BA1a4C24DE655136DEd68410e222cCA80d43444',
+    cronos: '0x5019EF5dd93A7528103BB759Bb2F784D065b826a',
+    bitgert: '0xd4688F52e9944A30A7eaD808E9A86F95a0661DF8',
+    loop: '0xc0246b4f24475a11ee4383d29575394dc237fc36',
+  },
+  'stationdex-v2': {
+    misrepresentedTokens: true,
+    xlayer: '0xF7c16c5C5AF8838A884cF409543fdBE4Abd3D81d',
+  },
+  'swapr': {
+    misrepresentedTokens: true,
+    ethereum: '0xd34971BaB6E5E356fd250715F5dE0492BB070452',
+    xdai: '0x5d48c95adffd4b40c1aaadc4e08fc44117e02179',
+    arbitrum: '0x359f20ad0f42d75a5077e65f30274cabe6f4f01a',
+  },
+  'snowswap-xyz': {
+    misrepresentedTokens: true,
+    crab: null, // factory 0x36ABF1A7851fBF9ae9D79dc3E39C1227068158B3, no longer read
+    darwinia: '0x5669a449D892f03B4c541A321926f18e272c64A2',
+  },
+  'emberswap': {
+    misrepresentedTokens: true,
+    methodology: 'Factory address (0xE62983a68679834eD884B9673Fb6aF13db740fF0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM. Ember tokens sent to vault are counted towards staking.',
+    smartbch: {
+      factory: '0xE62983a68679834eD884B9673Fb6aF13db740fF0',
+      staking: ['0xFFbE92fDA81f853bcf00d3c7686d5DAd5A6600bB', '0x6BAbf5277849265b6738e75AEC43AEfdde0Ce88D'], // vault, EMBER
+    },
+  },
+  'velodrome-CL': {
+    _options: {
+      fetchBalances: true, useDefaultCoreAssets: false,
+      abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
+    },
+    optimism: '0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F',
+    lisk: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    fraxtal: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    mode: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    ink: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    soneium: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    unichain: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    swellchain: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    celo: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    sseed: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
   },
 }
 

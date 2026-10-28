@@ -654,7 +654,19 @@ const configs = {
     methodology: 'TVL counts the underlying tokens (KKUB and USDT) held as cash by every market listed by the KINETIXDAO Comptroller on KUB Chain, i.e. supplied minus borrowed. Native KUB is wrapped to KKUB by the gateway before it is supplied, so it is counted as KKUB. Borrowed counts the totalBorrows of each market and is not included in TVL.',
     start: '2026-10-08',
     bitkub: [{comptroller: '0xc5DD9f1cE32f19C0a76a924F681914A8D10E8008'},]
-  }
+  },
+  'mimas-finance': {
+    // borrowed zeroed out (isInsolvent empties the borrowed bucket)
+    cronos: {
+      comptroller: '0xdD8c94211dD19155EFFbd57EAb6D4e0DE31A3b9E', cether: '0xff024211741059a2540b01f5Be2e75fC0c1b3d82', isInsolvent: true,
+      staking: ['0x268E2E1e5a465034Ee5742DA578feb41B228ad7B', '0x10C9284E6094b71D3CE4E38B8bFfc668199da677'],
+    },
+  },
+  'kilolend': {
+    methodology: 'This gets the total value locked in KiloLend',
+    bitkub: { comptroller: '0x42f098E6aE5e81f357D3fD6e104BAA77A195133A', cether: '0x0cA8DaD1e517a9BB760Ba0C27051C4C3A036eA75' },
+    klaytn: { comptroller: '0x2591d179a0B1dB1c804210E111035a3a13c95a48', cether: '0x2029f3E3C667EBd68b1D29dbd61dc383BdbB56e5' },
+  },
 }
 
 module.exports = buildProtocolExports(configs, compoundExportFn)

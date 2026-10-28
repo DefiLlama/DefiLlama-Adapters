@@ -120,6 +120,10 @@ const configs = {
       staking: ['0xBB4738D05AD1b3Da57a4881baE62Ce9bb1eEeD6C', '0xAD96C3dffCD6374294e2573A7fBBA96097CC8d7c'], // dustLock, DUST
     },
   },
+  'openfi': {
+    pharos: { poolDatas: ['0x3EF4724f0f2fabfA0ba96AfC711D64e6BE3367Fb'] },
+    bsc: { poolDatas: ['0xeFD74781D9C468FFE6a4d8CA7720E8EF0223744E'] },
+  },
 }
 
 module.exports = buildProtocolExports(configs, aaveV3ExportFn)
