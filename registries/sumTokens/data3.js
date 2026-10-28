@@ -1254,4 +1254,10 @@ module.exports = {
       "blacklistedTokens": ["HgTGdc29D5bDMrDvsCLnorxz899VyDj7ZN7FPa6vpump"], // $VEIL
     },
   },
+  "megawatt-markets": {
+    "methodology": "USDC trader collateral deposited in the Megawatt Markets CollateralVault on Arbitrum.",
+    "arbitrum": {
+      "tvl": { "owner": "0xAfE63c71bA1D70992C9d7B01c0F1eD5c51941a8f", "tokens": [ADDRESSES.arbitrum.USDC_CIRCLE] },
+    }
+  },
 }
