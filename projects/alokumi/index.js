@@ -1,6 +1,8 @@
+const sdk = require('@defillama/sdk')
 const { PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
-const { getConnection, getMultipleAccounts, decodeAccount, sumTokens2 } = require('../helper/solana')
+const { getConnection, getMultipleAccounts, decodeAccount } = require('../helper/solana')
+const { sleep } = require('../helper/utils')
 const { POSITION_V2_DISCRIMINATOR } = require('../helper/utils/solana/layouts/meteora-dlmm-layout')
 
 // Alokumi Vault: one non-custodial vault PDA per Agent; it holds the idle tokens and owns the agent's Meteora DLMM positions
@@ -13,6 +15,7 @@ const VAULT_POSITION_DISCRIMINATOR = bs58.encode(Buffer.from('7a6dc13f45945aed',
 const VAULT_POSITION_VAULT_OFFSET = 10 // discriminator 8 + version 1 + bump 1
 const DLMM_POSITION_OWNER_OFFSET = 40 // discriminator 8 + lb_pair 32
 const BINS_PER_ARRAY = 70
+const TOKEN_PROGRAMS = ['TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'].map(i => new PublicKey(i))
 
 async function getVaults(connection) {
   const accounts = await connection.getProgramAccounts(VAULT_PROGRAM, {
@@ -89,12 +92,40 @@ async function addDlmmPositions(api, vaultPositions) {
   }
 }
 
+// public RPCs rate-limit getTokenAccountsByOwner per method (a JSON-RPC batch of them gets a 429, so does a burst of
+// ~10 calls): wait out the window instead of failing the run
+async function withRateLimitRetry(fn, attempts = 6) {
+  for (let i = 1; ; i++) {
+    try {
+      return await fn()
+    } catch (e) {
+      if (i >= attempts || !String(e?.message).includes('429')) throw e
+      await sleep(5000 * i)
+    }
+  }
+}
+
+// idle tokens waiting in the vaults (deposits not yet deployed, withdrawn liquidity, claimed fees), Token and Token-2022
+async function addVaultBalances(api, connection, vaults) {
+  const queries = vaults.flatMap(vault => TOKEN_PROGRAMS.map(programId => ({ owner: new PublicKey(vault), programId })))
+  await sdk.util.runInPromisePool({
+    concurrency: 3,
+    items: queries,
+    processor: async ({ owner, programId }) => {
+      const { value } = await withRateLimitRetry(() => connection.getParsedTokenAccountsByOwner(owner, { programId }))
+      value.forEach(({ account }) => {
+        const { mint, tokenAmount } = account.data.parsed.info
+        if (tokenAmount.amount !== '0') api.add(mint, tokenAmount.amount)
+      })
+    },
+  })
+}
+
 async function tvl(api) {
   const connection = getConnection(api.chain)
   const [vaults, vaultPositions] = await Promise.all([getVaults(connection), getVaultPositions(connection)])
   await addDlmmPositions(api, vaultPositions)
-  // idle tokens waiting in the vaults (deposits not yet deployed, withdrawn liquidity, claimed fees)
-  if (vaults.length) await sumTokens2({ api, owners: vaults })
+  await addVaultBalances(api, connection, vaults)
 }
 
 module.exports = {
