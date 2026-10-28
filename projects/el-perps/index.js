@@ -3,7 +3,8 @@
 // CREATE2. A book holds, in its margin token: each market's LP vault (the traders' counterparty), the traders' margin,
 // and fee shares accrued for the platform / market creators but not claimed yet (owedTotal — not user money).
 // ElcasMarketsHub v1, then the V2 hubs: the launchpad's (books its game reserve opens for launched tokens) and the public one
-const HUBS = ['0xBd65EE837e57D5060013cbE8bAc8a6d0F8037f45', '0x9DB90Cf484614C3424a49B0cB0b6E5cA7b6a850F', '0xB7eF17054fb9541dd9Bc58E932Af116d11f2fD3f']
+// + the V3 hub (2026-10-28): the launchpad V3 tokens' books, opened by its game reserve
+const HUBS = ['0xBd65EE837e57D5060013cbE8bAc8a6d0F8037f45', '0x9DB90Cf484614C3424a49B0cB0b6E5cA7b6a850F', '0xB7eF17054fb9541dd9Bc58E932Af116d11f2fD3f', '0xf31da25f3F4E2f041c63Aa0751ceB69f50fdFd5c']
 const ELCAS = '0xE73f12D9d81ff6b11c1d0261F440c2EA4C400E18' // the protocol's own token: excluded
 
 async function tvl(api) {
@@ -21,7 +22,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Lists every perps book from the ElcasMarketsHub v1 and V2 hubs (one per hub and margin token) and counts each book\'s balance of its margin token — LP vaults and traders\' margin — minus the fee shares accrued for the platform and market creators but not yet claimed. Books margined in $ELCAS, the protocol\'s own token, are excluded.',
+  methodology: 'Lists every perps book from the ElcasMarketsHub v1, V2 and V3 hubs (one per hub and margin token) and counts each book\'s balance of its margin token — LP vaults and traders\' margin — minus the fee shares accrued for the platform and market creators but not yet claimed. Books margined in $ELCAS, the protocol\'s own token, are excluded.',
   start: '2026-10-06',
   robinhood: { tvl },
 }
