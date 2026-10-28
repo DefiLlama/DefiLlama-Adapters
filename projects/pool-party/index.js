@@ -10,6 +10,7 @@ async function tvl(api) {
   for (const pool of pools) {
     if (pool.status !== 'live') continue
     for (const side of [pool.baseReserve, pool.quoteReserve]) {
+      if (side.symbol === 'EDELx') continue // Canton-native token distinct from EDEL (docs.edel.finance/token/overview), CCTools maps it to EDEL's CoinGecko id
       if (side.coingeckoId) {
         api.addCGToken(side.coingeckoId, Number(side.amount))
       }
@@ -26,5 +27,6 @@ module.exports = {
     "per-pool reserves with canonical token IDs and CoinGecko slugs. The " +
     "CoinGecko slug per token comes from the API response " +
     "(reserve.coingeckoId), so new pools and tokens are picked up " +
-    "automatically without adapter changes.",
+    "automatically without adapter changes. EDELx is excluded: it is a " +
+    "Canton-native token distinct from EDEL, which its CoinGecko slug refers to.",
 }
