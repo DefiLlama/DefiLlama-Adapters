@@ -1,5 +1,6 @@
 module.exports = {
   ethereum: {
+    ownTokens: ['0x64d0f55Cd8C7133a9D7102b13987235F486F2224'], // BORG
     owners: [
       '0x5770815B0c2a09A43C9E5AEcb7e2f3886075B605',
       '0x94596096320A6B4EaB43556AD1Ed8c4c3d51C9aA',
@@ -53,6 +54,7 @@ module.exports = {
     ],
   },
   solana: {
+    ownTokens: ['3dQTr7ror2QPKQ3GbBCokJUmjErGg8kTJzdnYjNfvi3Z'], // BORG
     owners: [
       '2E1UKoiiZPwsp4vn6tUh5k61kG2UqYpT7oBrFaJUJXXd',
       '2XxP4kS2vfkiMvpLpGNxry3fPUYimsuAmSbqL1KnuwZ8',

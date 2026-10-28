@@ -1,6 +1,7 @@
 module.exports = {
   bitcoin: 'mexcCex',
   ethereum: {
+    ownTokens: ['0x11eef04c884e24d9b7b4760e7476d06ddf797f36'], // MX
     owners: [
       "0x3cc936b795a188f0e246cbb2d74c5bd190aecf18",
       "0x0162cd2ba40e23378bf0fd41f919e1be075f025f",

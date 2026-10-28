@@ -10,6 +10,7 @@ const { addThetaBalances } = require("../helper/chain/theta.js");
 
 const config = {
   "ethereum": {
+    ownTokens: ['0xE66747a101bFF2dBA3697199DCcE5b743b454759'], // GT
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
@@ -1070,6 +1071,7 @@ const config = {
     ]
   },
   "gatelayer": {
+    ownTokens: [ADDRESSES.null], // GT (native)
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
