@@ -29,7 +29,6 @@ const MARKETS = [
 // veFABLES is a plain ERC721 with no owner enumeration and a locks() shape of
 // its own, so its escrow is walked from Deposited events and each token is
 // kept only while the escrow still holds it.
-const FABLES = '0xb63d07CEf74bE747231d601bb2FAa6B252c68106'
 const VE_FABLES = '0xc1d5aDc963a57d24ADaf63aaE1bFbeCaB95f6EDD'
 const FABLES_MARKET = {
   vault: '0x459d111C968d64d5cD7A948ea2D8F1857E0B8DE0',
@@ -62,7 +61,8 @@ async function addFablesCollateral(api) {
   const holders = await api.multiCall({ target: VE_FABLES, abi: 'function ownerOf(uint256) view returns (address)', calls: tokenIds, permitFailure: true })
   const held = tokenIds.filter((_, i) => holders[i] && holders[i].toLowerCase() === FABLES_MARKET.escrow.toLowerCase())
   const locks = await api.multiCall({ target: VE_FABLES, abi: 'function locks(uint256) view returns (uint128 amount, uint64 unlock)', calls: held })
-  locks.forEach(({ amount }) => api.add(FABLES, amount))
+  // FABLES is priced on DefiLlama by its CoinGecko id, not its Robinhood address.
+  locks.forEach(({ amount }) => api.addCGToken('fables', Number(amount) / 1e18))
 }
 
 async function addCollateral(api) {
