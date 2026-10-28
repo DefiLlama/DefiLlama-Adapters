@@ -15,6 +15,11 @@ const DEPLOYMENTS = {
   restaking: 47206861,
 }
 
+/**
+ * Compute user claims and backing in raw stHYPE shares (24 decimals).
+ * Accounting previews elapsed rewards and recognized surplus; exclude the
+ * permanent seed's active entitlement and unreleased rewards from user claims.
+ */
 function restakingShares(accounting, seedUnits) {
   const [active, units, requested, rewards] = Array.from(accounting, BigInt)
   seedUnits = BigInt(seedUnits)
@@ -23,6 +28,7 @@ function restakingShares(accounting, seedUnits) {
   return { active: active - seed, pending: requested, userClaims: active - seed + requested, custody: active + requested + rewards }
 }
 
+/** Compute HYPE-wei LP NAV and nonnegative live-stHYPE/native components. */
 function stexNav({ reserve0, reserve1, lending, converted0, pending, nativeBalance, claimable, pendingBefore }) {
   const excess = nativeBalance > claimable ? nativeBalance - claimable : 0n
   const surplus = excess > pendingBefore ? excess - pendingBefore : 0n
@@ -34,6 +40,7 @@ function stexNav({ reserve0, reserve1, lending, converted0, pending, nativeBalan
   return { nav, liveStHype, native: nav - liveStHype }
 }
 
+/** Read block-pinned STEX reserves and withdrawal accounting, including legacy modules. */
 async function readStex(api, stex, deploymentBlock) {
   if (await api.getBlock() < deploymentBlock) return { nav: 0n, liveStHype: 0n, native: 0n }
   const [pool, module] = await api.batchCall([
@@ -68,6 +75,7 @@ async function readStex(api, stex, deploymentBlock) {
     pending: BigInt(pending1), nativeBalance, claimable: BigInt(claimable), pendingBefore })
 }
 
+/** Read active-user plus pending-withdrawal claims, returned as nominal stHYPE wei. */
 async function readRestaking(api) {
   if (await api.getBlock() < DEPLOYMENTS.restaking) return 0n
   const [accounting, account, custody] = await api.batchCall([
@@ -76,7 +84,9 @@ async function readRestaking(api) {
     { target: STHYPE, abi: 'function sharesOf(address) view returns (uint256)', params: [ESCROW] },
   ])
   const shares = restakingShares(accounting, account[0])
-  if (shares.custody !== BigInt(custody)) throw new Error('Valantis escrow custody does not reconcile')
+  // totalAccounting() determines how recognized surplus is allocated. Do not
+  // add extra custody to user claims here; only insufficient backing is invalid.
+  if (BigInt(custody) < shares.custody) throw new Error('Valantis escrow custody does not reconcile')
   return BigInt(await api.call({ target: STHYPE, abi: 'function sharesToBalance(uint256) view returns (uint256)', params: [shares.userClaims.toString()] }))
 }
 
