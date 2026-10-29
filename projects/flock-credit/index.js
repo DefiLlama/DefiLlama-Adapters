@@ -26,43 +26,51 @@ const MARKETS = [
   },
 ]
 
-// veFABLES is a plain ERC721 with no owner enumeration and a locks() shape of
-// its own, so its escrow is walked from Deposited events and each token is
-// kept only while the escrow still holds it.
+const FABLES = '0xb63d07CEf74bE747231d601bb2FAa6B252c68106'
+// veFABLES has no owner enumeration, so escrowed token ids come from the escrow's Deposited logs
 const VE_FABLES = '0xc1d5aDc963a57d24ADaf63aaE1bFbeCaB95f6EDD'
 const FABLES_MARKET = {
   vault: '0x459d111C968d64d5cD7A948ea2D8F1857E0B8DE0',
   escrow: '0x9E634A624F689Be41e3036F0B066B11326Ffc703',
-  fromBlock: 94500000,
+  fromBlock: 94551020, // escrow deploy; the vault is 52 blocks older
 }
 
-const VAULTS = [...MARKETS, FABLES_MARKET].map(({ vault }) => vault)
+async function getVaults(api) {
+  const vaults = MARKETS.map(({ vault }) => vault)
+  if (await api.getBlock() >= FABLES_MARKET.fromBlock) vaults.push(FABLES_MARKET.vault)
+  return vaults
+}
 
 async function addVaultCash(api) {
+  const vaults = await getVaults(api)
   const balances = await api.multiCall({
     abi: 'erc20:balanceOf',
-    calls: VAULTS.map(vault => ({ target: USDG, params: vault })),
+    calls: vaults.map(vault => ({ target: USDG, params: vault })),
   })
   balances.forEach(balance => api.add(USDG, balance))
 }
 
+// cache only the deposited token ids, not every raw log
+function cacheTokenIds({ cache, logs }) {
+  cache.logs = [...new Set([...cache.logs, ...logs.map(({ tokenId }) => tokenId.toString())])]
+}
+
 async function addFablesCollateral(api) {
-  const block = await api.getBlock()
-  if (block && block < FABLES_MARKET.fromBlock) return
-  const deposits = await getLogs({
+  if (await api.getBlock() < FABLES_MARKET.fromBlock) return
+  const tokenIds = await getLogs({
     api,
     target: FABLES_MARKET.escrow,
     eventAbi: 'event Deposited(address indexed owner, uint256 indexed tokenId, uint256 votingPower)',
     fromBlock: FABLES_MARKET.fromBlock,
     onlyArgs: true,
+    extraKey: 'tokenIds',
+    customCacheFunction: cacheTokenIds,
   })
-  const tokenIds = [...new Set(deposits.map(({ tokenId }) => tokenId.toString()))]
-  if (!tokenIds.length) return
+  // ownerOf reverts once a lock is withdrawn or merged away
   const holders = await api.multiCall({ target: VE_FABLES, abi: 'function ownerOf(uint256) view returns (address)', calls: tokenIds, permitFailure: true })
-  const held = tokenIds.filter((_, i) => holders[i] && holders[i].toLowerCase() === FABLES_MARKET.escrow.toLowerCase())
+  const held = tokenIds.filter((_, i) => holders[i]?.toLowerCase() === FABLES_MARKET.escrow.toLowerCase())
   const locks = await api.multiCall({ target: VE_FABLES, abi: 'function locks(uint256) view returns (uint128 amount, uint64 unlock)', calls: held })
-  // FABLES is priced on DefiLlama by its CoinGecko id, not its Robinhood address.
-  locks.forEach(({ amount }) => api.addCGToken('fables', Number(amount) / 1e18))
+  locks.forEach(({ amount }) => api.add(FABLES, amount))
 }
 
 async function addCollateral(api) {
@@ -85,14 +93,12 @@ async function tvl(api) {
 async function borrowed(api) {
   const debts = await api.multiCall({
     abi: 'uint256:totalManagedDebt',
-    calls: VAULTS,
-    permitFailure: true,
+    calls: await getVaults(api),
   })
-  debts.forEach(debt => { if (debt) api.add(USDG, debt) })
+  debts.forEach(debt => api.add(USDG, debt))
 }
 
 module.exports = {
-  timetravel: true,
   start: '2026-09-02',
   methodology: 'TVL is comprised of USDG deposited to the lending vaults and UP/LUTE/FABLES locked in veNFT collateral escrows. Borrowed USDG is reported separately and not counted towards TVL.',
   robinhood: { tvl, borrowed },
