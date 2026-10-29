@@ -1,11 +1,7 @@
 module.exports = {
   '0g': {
     owners: [
-      "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
-    ]
-  },
-  abstract: {
-    owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -39,11 +35,6 @@ module.exports = {
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
-  arbitrum_nova: {
-    owners: [
-      "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
-    ]
-  },
   arweave: {
     owners: [
       "CdBGzHvdY6nVNTjJ-_nR7vBu3d3On8bzK_s7kfG2rc8",
@@ -66,11 +57,6 @@ module.exports = {
       "bbn1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn5m77mfs"
     ]
   },
-  band: {
-    owners: [
-      "band1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn5400gwp"
-    ]
-  },
   base: {
     owners: [
       "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
@@ -79,6 +65,7 @@ module.exports = {
   },
   berachain: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -98,11 +85,6 @@ module.exports = {
     owners: [
       "5GTWpTDFyagYTKYj6nkcJmbGNEkezLUxK8vAweQAyfhrVZSQ",
       "5EQXksnm8MggjH2XsVzeXQPzMTXaASTpzGnN4RFNpQ6EMjbd"
-    ]
-  },
-  blast: {
-    owners: [
-      "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
   bsc: {
@@ -136,12 +118,8 @@ module.exports = {
   },
   chz: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
-    ]
-  },
-  conflux: {
-    owners: [
-      "cfx:aat5nm5cx2y491j64kue9rywrygsmak9jesgxk5w7x"
     ]
   },
   core: {
@@ -168,11 +146,6 @@ module.exports = {
       "DK7M1ThinVmj5quH5xGzwLTd8uGXXsZc8a"
     ]
   },
-  elrond: {
-    owners: [
-      "erd1cftxhy0qt84e0c4v4ftlu9j8mdjewrly8ag2wfjys0t3wumlydyqnxpf84"
-    ]
-  },
   era: {
     owners: [
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41",
@@ -193,11 +166,13 @@ module.exports = {
   },
   etlk: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
   etn: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -209,6 +184,7 @@ module.exports = {
   },
   flare: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -238,6 +214,7 @@ module.exports = {
   },
   iotex: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -267,6 +244,7 @@ module.exports = {
   },
   m: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -306,21 +284,6 @@ module.exports = {
       "c2566b91e059eb97e2acaa57fe1647db65970fe43f50a7264483d717737f2348"
     ]
   },
-  neo3: {
-    owners: [
-      "NfDwfCV9fNn5s3XqBQJtTuH8gmvxZvTT9p"
-    ]
-  },
-  nervos: {
-    owners: [
-      "ckb1qyqxsp572x863pa8qujza2r3p8z25m5njzus0pjnyt"
-    ]
-  },
-  oasis: {
-    owners: [
-      "oasis1qr58cw7k256d0z0s9l92gtjtcrtqn535kymdgx72"
-    ]
-  },
   optimism: {
     owners: [
       "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
@@ -346,11 +309,13 @@ module.exports = {
   },
   plume_mainnet: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
   polygon: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -374,6 +339,7 @@ module.exports = {
   },
   ronin: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -395,11 +361,13 @@ module.exports = {
   },
   somnia: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
   sonic: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -429,6 +397,7 @@ module.exports = {
   },
   stratis: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
@@ -462,17 +431,14 @@ module.exports = {
   },
   vana: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
     ]
   },
   vechain: {
     owners: [
+      "0xfc89c020774524c9d03bd5de48fec149b10bdec3",
       "0xdfb5ab629e29afdd1cd2604fb6926d0ce5013f41"
-    ]
-  },
-  xion: {
-    owners: [
-      "xion1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn5wf4gqz"
     ]
   },
   zeta: {
