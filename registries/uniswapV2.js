@@ -3498,7 +3498,12 @@ const uniV2Configs = {
       fetchBalances: true, useDefaultCoreAssets: false,
       abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
     },
-    optimism: '0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F',
+    optimism: {
+      factory: [
+        '0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F',
+        '0xe13Dd1fbA721Aa81a1826D9523AC9BC7d260c879', // Gauges V2 CL factory
+      ]
+    },
     lisk: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
     fraxtal: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
     mode: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
@@ -3508,6 +3513,31 @@ const uniV2Configs = {
     swellchain: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
     celo: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
     sseed: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+  },
+  'skydrome': {
+    misrepresentedTokens: true,
+    _options: { hasStablePools: true },
+    scroll: { factory: ['0x2516212168034b18a0155FfbE59f2f0063fFfBD9', '0x74B8738862E4814C6E6D6e0202F8386685ca7B9D'] }, // v1, v2
+  },
+  'nomiswap': {
+    bsc: {
+      factory: ['0xd6715A8be3944ec72738F0BFDC739d48C3c29349', '0xC6B7ee49D386bAe4FD501F2d2f8d18828F1f6285'], // constant product, stable swap
+      staking: [['0xdbf1b10fe3e05397cd454163f6f1ed0c1181c3b3'], ADDRESSES.bsc.NMX],
+    },
+  },
+  'udonswap': {
+    misrepresentedTokens: false,
+    methodology: 'TVL is calculated by summing the reserves of all DEX pairs on KUB.',
+    _options: { fetchBalances: true, permitFailure: true },
+    bitkub: { factory: ['0xe8150dCfe6De2c7EFc2e9f96C09d6b83106Af1dE', '0x18c7a4CA020A0c648976208dF2e3AE1BAA32e8d1'] },
+  },
+  'spiritswap': {
+    // no core assets: every pool token is priced directly. the blacklisted token only ever appears in pools of the second factory
+    _options: { useDefaultCoreAssets: false, blacklistedTokens: ['0x5b2af7fd27e2ea14945c82dd254c79d3ed34685e'] },
+    fantom: {
+      factory: ['0xEF45d134b73241eDa7703fa787148D9C9F4950b0', '0x9d3591719038752db0c8bEEe2040FfcC3B2c6B9c'],
+      staking: ['0x2fbff41a9efaeae77538bd63f1ea489494acdc08', '0x5cc61a78f164885776aa610fb0fe1257df78e59b'],
+    },
   },
 }
 
