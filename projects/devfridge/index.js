@@ -1,4 +1,4 @@
-const { getConnection } = require("../helper/solana");
+const { getConnection, decodeAccount } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 
 const PROGRAM_ID = new PublicKey(
@@ -7,6 +7,13 @@ const PROGRAM_ID = new PublicKey(
 
 const PASTA_MINT =
   "39kMeX4HVRW9qbbiHSPbRQ9xeXUF18GrNP6gL61Ppump";
+
+const TOKEN_2022_PROGRAM_ID = new PublicKey(
+  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+);
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+);
 
 const LOCK_DATA_SIZE = 105;
 
@@ -24,51 +31,64 @@ function decodeLock(data) {
   };
 }
 
-let _locks;
-async function getActiveLocks() {
-  if (!_locks) _locks = _getActiveLocks();
-  return _locks;
+// Vault = Token-2022 ATA owned by the lock PDA (see CreateLock in the program).
+function vaultAddress(lockPubkey, mint) {
+  return PublicKey.findProgramAddressSync(
+    [lockPubkey.toBuffer(), TOKEN_2022_PROGRAM_ID.toBuffer(), new PublicKey(mint).toBuffer()],
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  )[0];
 }
 
-async function _getActiveLocks() {
-  const connection = getConnection();
+// Returns { [mint]: bigint } using real vault balances of active locks.
+let cache;
+async function getVaultBalances() {
+  if (cache) return cache;
+  cache = (async () => {
+    const connection = getConnection();
+    const accounts = await connection.getProgramAccounts(PROGRAM_ID, {
+      filters: [{ dataSize: LOCK_DATA_SIZE }],
+    });
 
-  const accounts = await connection.getProgramAccounts(PROGRAM_ID, {
-    // discriminator is checked in decodeLock — the base64 memcmp filter is
-    // silently ignored/mismatched by some RPCs and returns zero accounts
-    filters: [{ dataSize: LOCK_DATA_SIZE }],
-  });
+    const now = Math.floor(Date.now() / 1000);
+    const locks = accounts
+      .map(({ pubkey, account }) => ({ pubkey, lock: decodeLock(account.data) }))
+      .filter(({ lock }) => lock && lock.unlockAt > now);
 
-  const now = Math.floor(Date.now() / 1000);
-
-  return accounts
-    .map(({ account }) => decodeLock(account.data))
-    .filter(Boolean)
-    .filter((lock) => lock.unlockAt > now);
+    const vaults = locks.map(({ pubkey, lock }) => vaultAddress(pubkey, lock.mint));
+    const balances = {};
+    for (let i = 0; i < vaults.length; i += 99) {
+      const infos = await connection.getMultipleAccountsInfo(vaults.slice(i, i + 99));
+      infos.forEach((info, k) => {
+        if (!info) return; // vault closed/missing: nothing to count
+        const decoded = decodeAccount("tokenAccount", info);
+        const mint = decoded.mint.toString();
+        // the lock's mint must match the vault mint, each vault is unique per lock
+        if (mint !== locks[i + k].lock.mint) return;
+        balances[mint] = (balances[mint] || 0n) + BigInt(decoded.amount.toString());
+      });
+    }
+    return balances;
+  })();
+  return cache;
 }
 
 async function vesting(api) {
-  const locks = await getActiveLocks();
-
-  for (const lock of locks) {
-    if (lock.mint === PASTA_MINT) continue;
-    api.add(lock.mint, lock.amount.toString());
+  const balances = await getVaultBalances();
+  for (const [mint, amount] of Object.entries(balances)) {
+    if (mint === PASTA_MINT) continue;
+    api.add(mint, amount.toString());
   }
 }
 
 async function staking(api) {
-  const locks = await getActiveLocks();
-
-  for (const lock of locks) {
-    if (lock.mint !== PASTA_MINT) continue;
-    api.add(lock.mint, lock.amount.toString());
-  }
+  const balances = await getVaultBalances();
+  if (balances[PASTA_MINT]) api.add(PASTA_MINT, balances[PASTA_MINT].toString());
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    "DevFridge is a token locker: user-locked Token-2022 assets in active program-controlled timelock vaults on Solana are counted as vesting. DevFridge's own PASTA token is reported separately under staking. TVL is zero by design.",
+    "DevFridge is a token locker: user-locked Token-2022 assets in active program-controlled timelock vaults on Solana are counted as vesting, using real vault balances. Only locks whose unlock_at timestamp is still in the future are counted. DevFridge's own PASTA token is reported separately under staking. TVL is zero by design.",
   solana: {
     tvl: () => ({}),
     vesting,
