@@ -41,7 +41,8 @@ const morphoAbi = {
   position: 'function position(bytes32, address) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)',
 }
 
-// collateral the treasury has posted, less what it owes; wBANK collateral is BANK, so it goes to ownTokens
+// collateral the treasury has posted, less what it owes; wBANK collateral is BANK, so it goes to ownTokens,
+// while every market's debt comes off tvl
 async function morphoPositions(api, isOwnTokens) {
   const [params, markets, positions] = await Promise.all([
     api.multiCall({ target: MORPHO, abi: morphoAbi.idToMarketParams, calls: MORPHO_MARKETS }),
@@ -50,8 +51,8 @@ async function morphoPositions(api, isOwnTokens) {
   ])
   positions.forEach((position, i) => {
     const isBank = params[i].collateralToken.toLowerCase() === WBANK
-    if (isOwnTokens !== isBank) return
-    api.add(isBank ? bank : params[i].collateralToken, position.collateral)
+    if (isOwnTokens === isBank) api.add(isBank ? bank : params[i].collateralToken, position.collateral)
+    if (isOwnTokens) return
     const debt = toAssetsUp(position.borrowShares, markets[i].totalBorrowAssets, markets[i].totalBorrowShares)
     api.add(params[i].loanToken, -debt)
   })
@@ -66,6 +67,8 @@ async function pChainStake(api) {
 }
 
 module.exports = {
+  // the P-chain stake is only readable at the current state, so historical runs would misstate it
+  timetravel: false,
   flare: {
     tvl: async (api) => {
       await sumTokens2({
