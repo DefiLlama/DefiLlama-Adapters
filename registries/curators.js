@@ -6,7 +6,7 @@ const { getCuratorExport } = require('../projects/helper/curators')
 const configs = {
   "kamui": {
     config: {
-      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced and Boosted vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. Also counted under Lagoon.',
+      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced, Boosted and kGear vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. kGear is counted net of its Gearbox debt. Also counted under Lagoon.',
       start: '2026-08-27', // vaults redeployed through the Lagoon OptinProxyFactory
       blockchains: {
         ethereum: {
@@ -14,6 +14,7 @@ const configs = {
             '0xcDA323c2DF692d989B24BA51D0aCCa924cf9a344', // Lagoon: Kamui Stable Vault (USDst)
             '0xA5AE405242f42C47996a0C6857ff10a77F9bdeE6', // Lagoon: Kamui Balanced Vault (USDbl)
             '0x9E0DB8F43bb91e2148B0Db920E21370525CF3Aab', // Lagoon: Kamui Boosted Vault (USDbt)
+            '0xe9Fc51dF9168361c9cF00383C644Ae9dcF2aD6b0', // Lagoon: Kamui kGear (leveraged, Gearbox)
           ],
         },
       }
