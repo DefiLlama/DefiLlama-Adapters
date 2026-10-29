@@ -1,4 +1,5 @@
 const { addUniV3LikePosition } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const REGISTRY = '0x159a113e012593d9b3cc63ad45e30f0467e13ef3' // FablesPoolRegistry
 const STATE_VIEW = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b' // Uniswap v4 StateView on Robinhood Chain
@@ -60,18 +61,12 @@ async function tvl(api) {
   }
 }
 
-async function staking(api) {
-  const locked = await api.call({ target: FABLES, abi: 'erc20:balanceOf', params: VE_FABLES })
-  // FABLES is priced on DefiLlama by its CoinGecko id, not by its Robinhood address.
-  api.addCGToken('fables', locked / 1e18)
-}
-
 module.exports = {
   methodology:
-    'TVL enumerates every Fables pool from the on-chain FablesPoolRegistry (activePools) and sums each v4 pool\'s token reserves, reconstructed from its tick liquidity via Uniswap v4 StateView. Staking counts the FABLES locked in the VotingEscrowFF contract as veFABLES, priced with FABLES\' CoinGecko id.',
+    'TVL enumerates every Fables pool from the on-chain FablesPoolRegistry (activePools) and sums each v4 pool\'s token reserves, reconstructed from its tick liquidity via Uniswap v4 StateView. Staking counts the FABLES locked in the VotingEscrowFF contract as veFABLES.',
   doublecounted: true,
   robinhood: {
     tvl,
-    staking,
+    staking: staking(VE_FABLES, FABLES),
   },
 }
