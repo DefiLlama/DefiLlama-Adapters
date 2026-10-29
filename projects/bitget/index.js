@@ -357,6 +357,10 @@ const withdrawalAddresses = [
   '0x1d5ba5414f2983212e03bf7725add9eb4cdb00dc',
 ]
 
+module.exports.hallmarks = [
+  [1790208000, "Bitget hot/warm wallet hack - $387.5M stolen via forged withdrawal commands (third-party security product compromise)"]
+];
+
 module.exports = mergeExports([
   cexExports(config),
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },

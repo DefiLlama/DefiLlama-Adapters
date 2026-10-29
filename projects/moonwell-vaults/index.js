@@ -10,6 +10,9 @@ const optimismConfig = {
 
 module.exports = {
   doublecounted: true,
+  hallmarks: [
+    [1787788800, "Moonwell Lending hack - $8.7M stolen via spot price manipulation (oracle manipulation)"]
+  ],
   base: { tvl: getMorphoVaultTvl(baseConfig.governor) },
   optimism: { tvl: getMorphoVaultTvl(optimismConfig.governor) },
 }

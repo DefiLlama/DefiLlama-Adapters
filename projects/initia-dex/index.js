@@ -15,6 +15,9 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
+  hallmarks: [
+    [1792713600, "Initia DEX hack - $2.6M stolen via infinite mint exploit (token & share accounting flaw)"]
+  ],
   methodology: 'TVL is calculated as the sum of all pool liquidity',
   initia: {
     tvl

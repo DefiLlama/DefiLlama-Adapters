@@ -32,6 +32,10 @@ async function tvl(api) {
   return sumTokens2({ tokens, owner: contract, api })
 }
 
+module.exports.hallmarks = [
+  [1788480000, "Notional V2 hack - $1.7M stolen via arithmetic error (token & share accounting flaw)"]
+];
+
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }
 })

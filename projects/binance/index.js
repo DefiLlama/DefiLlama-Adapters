@@ -225,6 +225,10 @@ chains.forEach((chain) => {
 
 const ethStakedExport = { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } }
 
+module.exports.hallmarks = [
+  [1793232000, "Binance hot wallet hack - $3.3B+ stolen via EIP-7702 delegate contract exploit on Binance 14 hot wallet (tx 0xad99264d5532ae0dd04b2004eebda05f25657e70dacb764f7ac8d4ccd051298b), attacker 0x7C8601d4645b93cea45F71e118A729332e6B5CA0 funded via Tornado Cash, ~$2.36B frozen by Tether and Circle"]
+];
+
 module.exports = mergeExports([chainExports, ethStakedExport])
 module.exports.methodology = 'All assets in wallets mentioned in Binance PoR api & wallets holding backing of binance pegged tokens are included in the tvl. We are not counting the Binance Recovery Fund wallet. On Ethereum, we also include staked ETH tracked via known withdrawal addresses.'
 

@@ -6,6 +6,9 @@ const EXCHANGE = '0x6cd5661646289fb6e65ea5c032310fded797d0a2'
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    [1791590400, "Papertrade hack - $1.28M stolen via spot price manipulation (oracle manipulation)"]
+  ],
   methodology: 'USDC held in the Papertrade Exchange contract\'s HyperCore spot account: trader trading balances plus the protocol-owned LP that takes the other side of every position.',
   hyperliquid: {
     tvl: (api) => addHypercoreSpotBalances({ api, owners: [EXCHANGE] }),
