@@ -12,9 +12,11 @@ const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
 const FRXUSD = '0xcacd6fd266af91b8aed52accc382b4e165586e29'
 const MGLOBAL = '0x7433806912eae67919e66aea853d46fa0aef98a8'
 const MGLOBAL_NAV = '0x66aa9fcd63df74e1f67a9452e6e59fbc67f75e38'
+const MFONE = '0x238a700ed6165261cf8b2e544ba797bc11e466ba'
+const MFONE_NAV = '0x8d51dbc85ceef637c97d02bdaabb5e274850e68c'
 const PHANTOM = '0x5d1c51ae5219deddefad70821d006fb40a4457f5'
 
-function fixture({ block = 26297593, zero = false, fail = null, nested = false } = {}) {
+function fixture({ block = 26297593, zero = false, fail = null, nested = false, mFone = false } = {}) {
   let pinned = false
   let usd = 0
   const balances = {}
@@ -50,13 +52,15 @@ function fixture({ block = 26297593, zero = false, fail = null, nested = false }
       if (target === USDC) return String((owner === SAFE ? 10 : 3) * 1e6)
       if (target === FRXUSD) return String(BigInt(owner === SAFE ? 20 : 5) * 10n ** 18n)
       if (target === MGLOBAL) return String(BigInt(owner === SAFE ? 10 : 100) * 10n ** 18n)
+      if (target === MFONE) return mFone ? String(BigInt(owner === SAFE ? 125 : 250) * 10n ** 16n) : '0'
       if (target === PHANTOM) return owner === ACCOUNT ? String(7n * 10n ** 18n) : '0'
       return '0'
     }
     assert.ok(!abi.includes('mTokenDataFeed') && !abi.includes('getDataInBase18'), 'mint-price feeds must not value collateral')
     if (abi.includes('latestRoundData')) {
-      assert.equal(target, MGLOBAL_NAV)
-      return { answer: fail === 'price' ? '0' : '120000000', updatedAt: fail === 'timestamp' ? '0' : '1792755659' }
+      assert.ok([MGLOBAL_NAV, MFONE_NAV].includes(target))
+      const answer = target === MFONE_NAV ? '125000000' : '120000000'
+      return { answer: fail === 'price' ? '0' : answer, updatedAt: fail === 'timestamp' ? '0' : '1792755659' }
     }
     if (abi.includes('convertToAssets')) return '7000000'
     if (permitFailure) return null
@@ -86,6 +90,15 @@ test('adds gross Safe and owned account assets once, before debt, at one block',
 
 test('subtracts kGear shares already included in a public vault NAV', async () => {
   assert.equal((await tvl(fixture({ nested: true })))[USDC], 606000000n)
+})
+
+test('values nonzero legacy mF-ONE holdings with its own eight-decimal NAV', async () => {
+  const api = fixture({ mFone: true })
+  const balances = await tvl(api)
+  // 1.25 Safe tokens + 2.5 account tokens at $1.25 add $4.6875 to mGLOBAL's $132.
+  assert.equal(balances.usd, 136.6875)
+  assert.equal(Number(balances[USDC]) / 1e6 + Number(balances[FRXUSD]) / 1e18 + balances.usd, 781.6875)
+  assert.equal(api.reads.filter(r => r.target === MFONE_NAV && r.abi.includes('latestRoundData')).length, 1)
 })
 
 test('a verified empty leveraged vault contributes zero', async () => {
