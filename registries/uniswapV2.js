@@ -1,6 +1,7 @@
 const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { getUniTVL } = require('../projects/helper/unknownTokens')
 const { buildProtocolExports } = require('./utils')
+const sdk = require('@defillama/sdk')
 
 const _chainExtraKeys = new Set(['factory', 'tvl', 'staking', 'pool2', 'borrowed', 'vesting', 'hallmarks'])
 
@@ -14,6 +15,14 @@ function uniV2ExportFn(chainConfigs, options = {}) {
       result[chain] = { tvl: () => ({}) } // chain kept for history, no factory to read
     } else if (typeof config === 'string') {
       result[chain] = { tvl: getUniTVL({ factory: config, useDefaultCoreAssets: true, ...options }) }
+    } else if (Array.isArray(config)) {
+      // multiple factories on the same chain: [{ factory, fromBlock }], a factory is skipped before its deployment block
+      result[chain] = {
+        tvl: sdk.util.sumChainTvls(config.map(({ factory, fromBlock = 0 }) => {
+          const tvl = getUniTVL({ factory, useDefaultCoreAssets: true, ...options })
+          return async (api) => (await api.getBlock() < fromBlock) ? {} : tvl(api)
+        }))
+      }
     } else {
       const chainOpts = {}
       for (const [k, v] of Object.entries(config)) {
@@ -3494,11 +3503,15 @@ const uniV2Configs = {
     },
   },
   'velodrome-CL': {
+    methodology: 'Value of the tokens held by the Slipstream (CL) pools, listed from each chain\'s CL pool factory. On Optimism both the original CL factory and the Gauges V2 CL factory are read.',
     _options: {
       fetchBalances: true, useDefaultCoreAssets: false,
       abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
     },
-    optimism: '0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F',
+    optimism: [
+      { factory: '0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F' },
+      { factory: '0xe13Dd1fbA721Aa81a1826D9523AC9BC7d260c879', fromBlock: 150584109 }, // Gauges V2 CL factory
+    ],
     lisk: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
     fraxtal: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
     mode: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
