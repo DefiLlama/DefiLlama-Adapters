@@ -1,7 +1,7 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const { ethereum: { tvl } } = require('../projects/kamui')
-const { getCuratorTvl } = require('../projects/helper/curators')
+const { getCuratorTvl, getCuratorTvlWithRequiredErc4626 } = require('../projects/helper/curators')
 
 const PUBLIC = ['0xcda323c2df692d989b24ba51d0acca924cf9a344', '0xa5ae405242f42c47996a0c6857ff10a77f9bdee6', '0x9e0db8f43bb91e2148b0db920e21370525cf3aab']
 const KGEAR = '0xe9fc51df9168361c9cf00383c644ae9dcf2ad6b0'
@@ -120,4 +120,18 @@ for (const fail of ['public-assets', 'public-total']) {
     const balances = await getCuratorTvl(api, { erc4626: PUBLIC })
     assert.equal(balances[USDC], 500000000n)
   })
+
+  for (const category of ['euler', 'silo']) {
+    test(`required ${category} reads reject a ${fail} failure`, async () => {
+      const api = fixture({ fail })
+      await api.getBlock()
+      await assert.rejects(getCuratorTvlWithRequiredErc4626(api, { [category]: PUBLIC }), /public vault read failed/)
+    })
+
+    test(`the existing ${category} path still permits a ${fail} failure`, async () => {
+      const api = fixture({ fail })
+      await api.getBlock()
+      assert.equal((await getCuratorTvl(api, { [category]: PUBLIC }))[USDC], 500000000n)
+    })
+  }
 }

@@ -685,8 +685,8 @@ async function getCuratorTvlInternal(api, vaults, requiredErc4626) {
   }
 
   // Process other vault types separately
-  await getCuratorTvlErc4626(api, allVaults.euler, { euler: true, booked, required: false })
-  await getCuratorTvlErc4626(api, allVaults.silo, { euler: false, booked, required: false })
+  await getCuratorTvlErc4626(api, allVaults.euler, { euler: true, booked, required: requiredErc4626 })
+  await getCuratorTvlErc4626(api, allVaults.silo, { euler: false, booked, required: requiredErc4626 })
 
   // aera.finance vaults
   if (vaults.aera) {
