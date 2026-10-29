@@ -64,18 +64,16 @@ function tvlFor(entries) {
       const vaults = await vaultsOf(api, factory)
       if (!vaults.length) continue
 
-      const [token0s, token1s, pools, nfpms, hooks, idsList] = await Promise.all([
-        api.multiCall({ abi: 'address:token0', calls: vaults }),
-        api.multiCall({ abi: 'address:token1', calls: vaults }),
-        api.multiCall({ abi: 'address:pool', calls: vaults }),        // Fables: the pool's FablesPoolView
-        api.multiCall({ abi: 'address:nfpm', calls: vaults }),
-        api.multiCall({ abi: 'address:gauge', calls: vaults }),       // Fables: the pool's hook
-        api.multiCall({ abi: abi.positionIds, calls: vaults }),
-      ])
+      const token0s = await api.multiCall({ abi: 'address:token0', calls: vaults })
+      const token1s = await api.multiCall({ abi: 'address:token1', calls: vaults })
+      const pools = await api.multiCall({ abi: 'address:pool', calls: vaults })     // Fables: the pool's FablesPoolView
+      const nfpms = await api.multiCall({ abi: 'address:nfpm', calls: vaults })
+      const hooks = await api.multiCall({ abi: 'address:gauge', calls: vaults })    // Fables: the pool's hook
+      const idsList = await api.multiCall({ abi: abi.positionIds, calls: vaults })
 
       // reward tokens a vault may keep for its customer (claimed, not yet sold)
       const atomic = await api.call({ target: factory, abi: abi.lp })
-      const rewards = (await api.call({ target: atomic, abi: abi.rewardTokens, permitFailure: true })) || []
+      const rewards = await api.call({ target: atomic, abi: abi.rewardTokens })
 
       // 1) idle balances held by each vault
       const tokensAndOwners = []
@@ -90,7 +88,7 @@ function tvlFor(entries) {
       vaults.forEach((v, i) => (idsList[i] || []).forEach(id => calls.push({ i, id })))
       if (!calls.length) continue
 
-      const ticks = await api.multiCall({ abi: abi.slot0, calls: pools, permitFailure: true })
+      const ticks = await api.multiCall({ abi: abi.slot0, calls: pools })
       const positions = await readPositions(api, layout, calls, { vaults, hooks, nfpms })
       positions.forEach((p, k) => {
         if (!p) return
@@ -108,22 +106,18 @@ function tvlFor(entries) {
 
 async function readPositions(api, layout, calls, { vaults, hooks, nfpms }) {
   if (layout === 'fables') {
-    const rids = await api.multiCall({ abi: FABLES.rangeOf, calls: calls.map(({ i, id }) => ({ target: vaults[i], params: [id] })), permitFailure: true })
-    const open = calls.map((c, k) => ({ ...c, rid: rids[k] })).filter(c => c.rid && String(c.rid) !== '0')
-    const [ranges, bals] = await Promise.all([
-      api.multiCall({ abi: FABLES.rangeKey, calls: open.map(({ i, rid }) => ({ target: hooks[i], params: [rid] })), permitFailure: true }),
-      api.multiCall({ abi: FABLES.balanceOf, calls: open.map(({ i, rid }) => ({ target: hooks[i], params: [vaults[i], rid] })), permitFailure: true }),
-    ])
-    const byCall = new Map(open.map((c, k) => [c, k]))
-    return calls.map((c, k) => {
-      const o = open.find(x => x.i === c.i && x.id === c.id)
-      if (!o) return null
-      const j = byCall.get(o)
+    const rids = await api.multiCall({ abi: FABLES.rangeOf, calls: calls.map(({ i, id }) => ({ target: vaults[i], params: [id] })) })
+    const open = calls.map((c, k) => ({ ...c, k, rid: rids[k] })).filter(c => String(c.rid) !== '0')
+    const ranges = await api.multiCall({ abi: FABLES.rangeKey, calls: open.map(({ i, rid }) => ({ target: hooks[i], params: [rid] })) })
+    const bals = await api.multiCall({ abi: FABLES.balanceOf, calls: open.map(({ i, rid }) => ({ target: hooks[i], params: [vaults[i], rid] })) })
+    const positions = calls.map(() => null)
+    open.forEach(({ k }, j) => {
       const r = ranges[j]
-      return (r && r.set) ? { tickLower: r.tickLower, tickUpper: r.tickUpper, liquidity: bals[j] } : null
+      if (r.set) positions[k] = { tickLower: r.tickLower, tickUpper: r.tickUpper, liquidity: bals[j] }
     })
+    return positions
   }
-  return api.multiCall({ abi: POS[layout], calls: calls.map(({ i, id }) => ({ target: nfpms[i], params: [id] })), permitFailure: true })
+  return api.multiCall({ abi: POS[layout], calls: calls.map(({ i, id }) => ({ target: nfpms[i], params: [id] })) })
 }
 
 module.exports = {
