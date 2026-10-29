@@ -1,6 +1,7 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const { ethereum: { tvl } } = require('../projects/kamui')
+const { getCuratorTvl } = require('../projects/helper/curators')
 
 const PUBLIC = ['0xcda323c2df692d989b24ba51d0acca924cf9a344', '0xa5ae405242f42c47996a0c6857ff10a77f9bdee6', '0x9e0db8f43bb91e2148b0db920e21370525cf3aab']
 const KGEAR = '0xe9fc51df9168361c9cf00383c644ae9dcf2ad6b0'
@@ -23,6 +24,10 @@ function fixture({ block = 26297593, zero = false, fail = null, nested = false }
     target = target.toLowerCase()
     reads.push({ target, abi, params })
     const publicIndex = PUBLIC.indexOf(target)
+    if (publicIndex === 0 && ((fail === 'public-assets' && abi === 'address:asset') || (fail === 'public-total' && abi.includes('totalAssets')))) {
+      if (permitFailure) return null
+      throw new Error('public vault read failed')
+    }
     if (abi.includes('totalAssets')) {
       assert.notEqual(target, KGEAR, 'kGear net assets must not be booked')
       assert.ok(publicIndex >= 0)
@@ -99,5 +104,20 @@ test('historical reads before kGear deployment keep the three-vault total', asyn
 for (const fail of ['borrower', 'balance', 'price', 'timestamp']) {
   test(`fails the aggregate instead of substituting zero after a ${fail} failure`, async () => {
     await assert.rejects(tvl(fixture({ fail })))
+  })
+}
+
+for (const fail of ['public-assets', 'public-total']) {
+  test(`fails before nested-share deductions after a ${fail} failure`, async () => {
+    const api = fixture({ fail, nested: true })
+    await assert.rejects(tvl(api), /public vault read failed/)
+    assert.ok(!api.reads.some(r => r.target === KGEAR), 'no leveraged accounting follows an incomplete public NAV')
+  })
+
+  test(`the existing curator entry point still permits a ${fail} failure`, async () => {
+    const api = fixture({ fail, nested: true })
+    await api.getBlock()
+    const balances = await getCuratorTvl(api, { erc4626: PUBLIC })
+    assert.equal(balances[USDC], 500000000n)
   })
 }

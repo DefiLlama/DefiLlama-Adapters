@@ -1,4 +1,4 @@
-const { getCuratorTvl } = require('../helper/curators')
+const { getCuratorTvlWithRequiredErc4626 } = require('../helper/curators')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const PUBLIC_VAULTS = [
@@ -83,7 +83,7 @@ async function removeNestedKgear(api) {
 async function tvl(api) {
   // Pin all reads, including the curator helper, to the same block.
   const block = await api.getBlock()
-  await getCuratorTvl(api, { erc4626: PUBLIC_VAULTS })
+  await getCuratorTvlWithRequiredErc4626(api, { erc4626: PUBLIC_VAULTS })
   if (block >= KGEAR_START_BLOCK) {
     await addLeveragedAssets(api)
     await removeNestedKgear(api)

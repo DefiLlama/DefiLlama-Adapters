@@ -215,14 +215,14 @@ async function countFrozenEulerVaultsAtCash(api, vaults, totalAssets) {
 
 // euler: run the frozen-Euler check (Euler vault lists only). booked: collects the vaults whose
 // asset() and totalAssets() reads succeeded, for the cross-holding netting.
-async function getCuratorTvlErc4626(api, vaults, { euler = false, booked = new Set() } = {}) {
+async function getCuratorTvlErc4626(api, vaults, { euler, booked, required }) {
   if (!vaults || vaults.length === 0) return;
   vaults = vaults.map(v => v.toLowerCase())
   vaults = [...new Set(vaults)] // de-dup vault addresses
 
   // Get assets and totalAssets for all vaults
-  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: !required })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: !required })
   vaults.forEach((vault, i) => { if (assets[i] && totalAssets[i]) booked.add(vault) })
   if (euler) await countFrozenEulerVaultsAtCash(api, vaults, totalAssets)
 
@@ -619,7 +619,7 @@ async function netCrossHoldings(api, issuers, holders) {
   })
 }
 
-async function getCuratorTvl(api, vaults) {
+async function getCuratorTvlInternal(api, vaults, requiredErc4626) {
 
   if (api.chain === 'solana') {
     const adminAddress = vaults.kaminoLendVaultAdmins ?? []
@@ -681,12 +681,12 @@ async function getCuratorTvl(api, vaults) {
   // Process all ERC-4626 vaults together for proper de-duplication
   const booked = new Set()
   if (allErc4626Vaults.length > 0) {
-    await getCuratorTvlErc4626(api, allErc4626Vaults, { booked })
+    await getCuratorTvlErc4626(api, allErc4626Vaults, { euler: false, booked, required: requiredErc4626 })
   }
 
   // Process other vault types separately
-  await getCuratorTvlErc4626(api, allVaults.euler, { euler: true, booked })
-  await getCuratorTvlErc4626(api, allVaults.silo, { booked })
+  await getCuratorTvlErc4626(api, allVaults.euler, { euler: true, booked, required: false })
+  await getCuratorTvlErc4626(api, allVaults.silo, { euler: false, booked, required: false })
 
   // aera.finance vaults
   if (vaults.aera) {
@@ -751,6 +751,15 @@ async function getCuratorTvl(api, vaults) {
   return api.getBalances()
 }
 
+function getCuratorTvl(api, vaults) {
+  return getCuratorTvlInternal(api, vaults, false)
+}
+
+// For adapters whose extra accounting requires every configured ERC-4626 vault to be booked.
+function getCuratorTvlWithRequiredErc4626(api, vaults) {
+  return getCuratorTvlInternal(api, vaults, true)
+}
+
 function getCuratorExport(configs) {
   const startTs = configs.start
     ? (typeof configs.start === 'number' ? configs.start : Math.floor(new Date(configs.start).getTime() / 1000))
@@ -781,6 +790,7 @@ function getCuratorExport(configs) {
 
 module.exports = {
   getCuratorTvl,
+  getCuratorTvlWithRequiredErc4626,
   getCuratorExport,
   kaminoLendVaultTvl,
   getMorphoVaults,
