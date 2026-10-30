@@ -411,7 +411,8 @@ module.exports = {
   },
   tezos: {
     owners: [
-      "tz1extHNrsHrAgV54HnTdEuE1hQjWc4yZSSu"
+      "tz1extHNrsHrAgV54HnTdEuE1hQjWc4yZSSu",
+      "tz1cMdWDPgGWBb2xa23dY1XUYwN41EEtncTT"
     ]
   },
   thorchain: {
