@@ -1398,7 +1398,8 @@ const configs = {
       owners: [
         "TDZu7rwKeMrcXQRfmzA2fQUb1bCYUoJfPw",
         "TDVBTADNXp7PuLLXdHyLn1v96Q2Kx1GKYE",
-        "TXNUMHHvazAEPyjECzAqVrnCwJV559ijYv"
+        "TXNUMHHvazAEPyjECzAqVrnCwJV559ijYv",
+        "TQ462aQGdVTQ4YYME9AK9QD4osYsnrSX53",
       ]
     },
     bitcoin: "hotcoin",
@@ -1430,6 +1431,16 @@ const configs = {
     polygon: {
       owners: [
         "0x72a73dC55a7038cb4707F2a23aC2AE705A8Fa888"
+      ]
+    },
+    aptos: {
+      owners: [
+        "0xf88e0088e6d25533b81e792fe35ddfab29b6b8d736e06f4f839963fbaab13d9b"
+      ]
+    },
+    sui: {
+      owners: [
+        "0x4e6b8fc3f0f9729488cc2ded8ab2783402d90ca3820f951ab612a5ec3d568025"
       ]
     },
     bsc: {
