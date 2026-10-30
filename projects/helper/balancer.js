@@ -99,7 +99,7 @@ function v3Tvl(
     const pools = logs.map((i) => i.pool);
 
     const getPoolTokenInfoAbi =
-      "function getPoolTokenInfo(address pool) view returns (address[] tokens, (address token, uint8 tokenType, address rateProvider, bool paysYieldFees)[] tokenInfo, uint256[] balancesRaw, uint256[] lastLiveBalances)";
+      "function getPoolTokenInfo(address pool) view returns (address[] tokens, (uint8 tokenType, address rateProvider, bool paysYieldFees)[] tokenInfo, uint256[] balancesRaw, uint256[] lastLiveBalances)";
 
     try {
       const res = await api.multiCall({
@@ -110,20 +110,23 @@ function v3Tvl(
       });
 
       const tokenBalances = [];
+      if (res.length !== pools.length) throw new Error("Incomplete pool token information");
       for (const r of res) {
-        if (!r || !Array.isArray(r.tokens)) continue;
+        if (!r || !Array.isArray(r.tokens) || !r.tokens.length || !Array.isArray(r.balancesRaw) || r.tokens.length !== r.balancesRaw.length)
+          throw new Error("Incomplete pool token information");
         r.tokens.forEach((t, i) => {
-          const bal = r.balancesRaw?.[i];
-          if (bal != null) tokenBalances.push([t, bal]);
+          const bal = r.balancesRaw[i];
+          if (bal == null) throw new Error("Incomplete pool token information");
+          tokenBalances.push([t, bal]);
         });
       }
 
       if (!tokenBalances.length) throw new Error("null value of tokens");
 
       const blSet = new Set([...blacklistedTokens, ...pools].map((s) => s.toLowerCase()));
-      tokenBalances = tokenBalances.filter(([t]) => !blSet.has(String(t).toLowerCase()));
+      const filteredTokenBalances = tokenBalances.filter(([t]) => !blSet.has(String(t).toLowerCase()));
 
-      await api.addTokens(tokenBalances);
+      for (const [token, balance] of filteredTokenBalances) api.add(token, balance);
 
       return api.getBalances();
     } catch {
