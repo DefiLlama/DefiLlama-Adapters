@@ -9,6 +9,7 @@ const kvaultIdl = require('../../gauntlet/kvault-idl.json')
 const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
 const { callSoroban } = require('../chain/stellar')
+const sui = require('../chain/sui')
 
 
 async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults = [] }) {
@@ -641,6 +642,17 @@ async function getCuratorTvl(api, vaults) {
       const asset = await callSoroban(vault, 'query_asset')
       const totalAssets = await callSoroban(vault, 'total_assets')
       api.add(asset, totalAssets.toString())
+    }
+
+    return api.getBalances()
+  }
+
+  if (api.chain === 'sui') {
+    // NAVI vaults (navi_vault::Vault<CoinType>), every vault of each package found on-chain by type.
+    // total_assets is the idle balance plus what the vault supplied to NAVI lending markets.
+    for (const pkg of vaults.naviVaultPackages ?? []) {
+      const naviVaults = await sui.getObjectsByType(`${pkg}::navi_vault::Vault`)
+      naviVaults.forEach(vault => api.add(vault.type.split('<')[1].slice(0, -1), vault.fields.total_assets))
     }
 
     return api.getBalances()
