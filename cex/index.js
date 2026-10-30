@@ -1691,6 +1691,7 @@ const configs = {
       ]
     },
     polygon: {
+      ownTokens: ['0x41b3966b4ff7b427969ddf5da3627d6aeae9a48e'],
       owners: [
         "0xb60c61dbb7456f024f9338c739b02be68e3f545c",
         "0x9bdb521a97e95177bf252c253e256a60c3e14447",
