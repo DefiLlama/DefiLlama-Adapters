@@ -627,7 +627,6 @@ const configs = {
       { comptroller: '0xB08A309eFBFFa41f36A06b2D0C9a4629749b17a2' },
       { comptroller: '0xBd82D36B9CDfB9747aA12025CeCE3782EDe767FE' },
       { comptroller: '0xF1ABd146B4620D2AE67F34EA39532367F73bbbd2' },
-      { comptroller: '0xBd82D36B9CDfB9747aA12025CeCE3782EDe767FE' },
       { comptroller: '0x59013D8a77D656777329D74ea1C88DA796005F1B' },
     ],
     arbitrum: [
