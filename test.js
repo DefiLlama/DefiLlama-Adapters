@@ -165,7 +165,10 @@ function validateHallmarks(hallmark) {
     module.hallmarks.forEach(validateHallmarks)
   }
   // await initCache()
-  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
+  const chains = Object.keys(module).filter(item =>
+    typeof module[item] === 'object' && !Array.isArray(module[item]) &&
+    !(item === 'meta' && typeof module[item].moduleFilePath === 'string' &&
+      !Object.values(module[item]).some(value => typeof value === 'function')));
   checkExportKeys(module, passedFile, chains)
 
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
