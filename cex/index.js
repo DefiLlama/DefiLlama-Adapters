@@ -1390,6 +1390,7 @@ const configs = {
       owners: [
         "0x10b620f9720C0c6460484A81C59a6297Fa48F817",
         "0xbB916e1E722f69d9fdFE6805f3dEDD51353f8E55",
+        "0xce648A7c1Dd3DaBC9CD2f87C93986A98608F1eEF",
         "0x5B5627C9686c5744534C8aa7d9C312DA88794b8E"
       ]
     },
@@ -1397,7 +1398,8 @@ const configs = {
       owners: [
         "TDZu7rwKeMrcXQRfmzA2fQUb1bCYUoJfPw",
         "TDVBTADNXp7PuLLXdHyLn1v96Q2Kx1GKYE",
-        "TXNUMHHvazAEPyjECzAqVrnCwJV559ijYv"
+        "TXNUMHHvazAEPyjECzAqVrnCwJV559ijYv",
+        "TQ462aQGdVTQ4YYME9AK9QD4osYsnrSX53",
       ]
     },
     bitcoin: "hotcoin",
@@ -1431,10 +1433,21 @@ const configs = {
         "0x72a73dC55a7038cb4707F2a23aC2AE705A8Fa888"
       ]
     },
+    aptos: {
+      owners: [
+        "0xf88e0088e6d25533b81e792fe35ddfab29b6b8d736e06f4f839963fbaab13d9b"
+      ]
+    },
+    sui: {
+      owners: [
+        "0x4e6b8fc3f0f9729488cc2ded8ab2783402d90ca3820f951ab612a5ec3d568025"
+      ]
+    },
     bsc: {
       owners: [
         "0xa1ab382330d6b7a99ee3441e6594e49790294e4e",
         "0xDCd7eFd91A6afD14168352023fCC8939601ea0bc",
+        "0xce648A7c1Dd3DaBC9CD2f87C93986A98608F1eEF",
         "0x6EDA9105761B840F9D24d34Ab1dC28629EcC35fd"
       ]
     }
