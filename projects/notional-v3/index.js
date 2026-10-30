@@ -32,10 +32,6 @@ async function tvl(api) {
   return sumTokens2({ tokens, owner: contract, api })
 }
 
-module.exports.hallmarks = [
-  ['2026-09-03', "Notional legacy escrow exploit - ~$1.7M stolen via integer overflow"]
-];
-
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }
 })

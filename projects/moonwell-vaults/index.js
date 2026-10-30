@@ -10,9 +10,6 @@ const optimismConfig = {
 
 module.exports = {
   doublecounted: true,
-  hallmarks: [
-    ['2026-08-27', "Moonwell MAMO market exploit - ~$8.7M stolen via manipulated MAMO oracle price on Base"]
-  ],
   base: { tvl: getMorphoVaultTvl(baseConfig.governor) },
   optimism: { tvl: getMorphoVaultTvl(optimismConfig.governor) },
 }
