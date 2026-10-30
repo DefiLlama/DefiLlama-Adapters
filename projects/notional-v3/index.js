@@ -33,7 +33,7 @@ async function tvl(api) {
 }
 
 module.exports.hallmarks = [
-  [1788480000, "Notional V2 hack - $1.7M stolen via arithmetic error (token & share accounting flaw)"]
+  ['2026-09-03', "Notional legacy escrow exploit - ~$1.7M stolen via integer overflow"]
 ];
 
 Object.keys(CONFIG).forEach((chain) => {

@@ -16,7 +16,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   hallmarks: [
-    [1792713600, "Initia DEX hack - $2.6M stolen via infinite mint exploit (token & share accounting flaw)"]
+    ['2026-10-23', "Initia infinite mint exploit - ~$2.6M stolen via unbacked token mint bridged out; L1 and rollups halted"]
   ],
   methodology: 'TVL is calculated as the sum of all pool liquidity',
   initia: {
