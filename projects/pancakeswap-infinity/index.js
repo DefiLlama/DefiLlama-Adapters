@@ -6,6 +6,7 @@ const { sliceIntoChunks } = require('../helper/utils');
 const config = {
   bsc: { vault: '0x238a358808379702088667322f80ac48bad5e6c4', clPoolManager: '0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b', fromBlock: 47214308 },
   base: { vault: '0x238a358808379702088667322f80ac48bad5e6c4', clPoolManager: '0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b', fromBlock: 30544106 },
+  robinhood: { vault: '0x4f922d5b15e6691e0469663e4f5c4177f23c5faf', clPoolManager: '0xee04c68742e6bf434be8039580d2e89bbe55bc6f', fromBlock: 56743018 },
 }
 
 const blacklistTokens = [
