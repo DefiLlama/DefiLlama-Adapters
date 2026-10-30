@@ -10,8 +10,8 @@ const MAINNET = {
 };
 
 const MINTING_HUBS = [
-  '0x8B3c41c649B9c7085C171CbB82337889b3604618',
-  '0x66AcC54a0C64255137b8993CB4972B0901684f7B',
+  ['0x8B3c41c649B9c7085C171CbB82337889b3604618', 22088283],
+  ['0x66AcC54a0C64255137b8993CB4972B0901684f7B', 24721297],
 ];
 
 const BRIDGES = [
@@ -28,15 +28,18 @@ const BRIDGES = [
 
 async function tvl(api) {
   const block = await api.getBlock();
-  const logs = await Promise.all(MINTING_HUBS.map(target => getLogs2({
-    api,
-    target,
-    fromBlock: 22088283,
-    eventAbi: 'event PositionOpened (address indexed owner, address indexed position, address original, address collateral)',
-    onlyArgs: true,
-  })));
-
-  const tokensAndOwners = logs.flat().map(log => [log.collateral.toLowerCase(), log.position]);
+  const tokensAndOwners = [];
+  for (const [target, fromBlock] of MINTING_HUBS) {
+    if (block < fromBlock) continue;
+    const logs = await getLogs2({
+      api,
+      target,
+      fromBlock,
+      eventAbi: 'event PositionOpened (address indexed owner, address indexed position, address original, address collateral)',
+      onlyArgs: true,
+    });
+    tokensAndOwners.push(...logs.map(log => [log.collateral.toLowerCase(), log.position]));
+  }
   tokensAndOwners.push(...BRIDGES.filter(([, , fromBlock]) => block >= fromBlock).map(([token, owner]) => [token, owner]));
 
   await sumTokens2({ api, tokensAndOwners });
