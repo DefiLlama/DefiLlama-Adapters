@@ -596,7 +596,7 @@ module.exports = {
   },
   "datamine": {
     "methodology": "Pool2 counts all the permanent liquidity in LOCK/WETH Uniswap v2 pool. Staking counts all the tokens locked-in to mint FLUX/ArbiFLUX/LOCK",
-    "hallmarks": [[1727644318, "Lockquidity Launch"]],
+    "hallmarks": [["2024-09-29", "Lockquidity Launch"]],
     "ethereum": {
       "tvl": { "__empty": true },
       "staking": {
