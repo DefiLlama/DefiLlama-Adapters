@@ -1,4 +1,7 @@
-const { STHYPE, WHYPE } = require('../helper/valantis')
+const ADDRESSES = require('../helper/coreAssets.json')
+
+const STHYPE = '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1'
+const WHYPE = ADDRESSES.hyperliquid.WHYPE
 
 const STEX_STHYPE = '0x39694eFF3b02248929120c73F90347013Aec834d'
 const STEX_KHYPE = '0xbf747D2959F03332dbd25249dB6f00F62c6Cb526'
