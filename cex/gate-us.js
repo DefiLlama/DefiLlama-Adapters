@@ -54,7 +54,8 @@ module.exports = {
   },
   babylon: {
     owners: [
-      "bbn1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn5m77mfs"
+      "bbn1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn5m77mfs",
+      "bbn1xm7q4xv75udvq6y62jmhhjwjchnsrjad8k2ln0"
     ]
   },
   base: {
@@ -292,7 +293,8 @@ module.exports = {
   },
   osmosis: {
     owners: [
-      "osmo1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn5ymu6qm"
+      "osmo1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn5ymu6qm",
+      "osmo1xm7q4xv75udvq6y62jmhhjwjchnsrjadcng76y"
     ]
   },
   peaq: {
@@ -414,7 +416,8 @@ module.exports = {
   },
   thorchain: {
     owners: [
-      "thor1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn528k3rk"
+      "thor1ny7sr4sehuhu3uyv53ln5qh4s6wd7dn528k3rk",
+      "thor1xm7q4xv75udvq6y62jmhhjwjchnsrjadk0z4ef"
     ]
   },
   ton: {
