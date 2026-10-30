@@ -257,6 +257,14 @@
     },
     "deadFrom": "2025-06-09"
   },
+  "LiquidOps": {
+    "deadFrom": "2026-10-07",
+    "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
+    "ao": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    }
+  },
   "LuckyFuture": {
     "methodology": "Calculate sum of spot positions in vaults with unrealized profit and loss",
     "doublecounted": true,
@@ -368,6 +376,13 @@
       "tvl": "_f"
     }
   },
+  "accumulator": {
+    "misrepresentedTokens": true,
+    "shimmer_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
   "acumen": {
     "timetravel": false,
     "solana": {
@@ -432,6 +447,14 @@
       "tvl": "_f"
     },
     "deadFrom": "2026-01-25"
+  },
+  "akiba": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f",
+      "staking": "_f",
+      "pool2": "_f"
+    }
   },
   "allbridge-core": {
     "methodology": "All tokens locked in Allbridge Core pool contracts.",
@@ -980,6 +1003,14 @@
     "misrepresentedTokens": true,
     "vite": {
       "tvl": "_f"
+    }
+  },
+  "beekava": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f",
+      "pool2": "_f",
+      "staking": "_f"
     }
   },
   "beluga-protocol": {
@@ -1583,6 +1614,14 @@
     ],
     "deadFrom": "2022-09-11"
   },
+  "cotiTreasury": {
+    "deadFrom": "2026-10-11",
+    "timetravel": false,
+    "coti": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
   "credbull": {
     "methodology": "TVL consist of the sum of every deposit of all vaults for a given asset.",
     "hallmarks": [
@@ -1655,6 +1694,13 @@
     ],
     "deadFrom": "2022-06-18",
     "cronos": {
+      "tvl": "_f"
+    }
+  },
+  "crunchynetwork-wtz": {
+    "deadFrom": "2026-01-01",
+    "timetravel": false,
+    "tezos": {
       "tvl": "_f"
     }
   },
@@ -2248,6 +2294,13 @@
     },
     "deadFrom": "2026-09-15"
   },
+  "embr-bridge": {
+    "timetravel": false,
+    "embr": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
   "emeraldswap": {
     "deadFrom": "2022-03-31",
     "methodology": "TVL includes all farms in MasterChef contract",
@@ -2608,6 +2661,14 @@
     },
     "deadFrom": "2023-09-30"
   },
+  "funbear": {
+    "deadFrom": "2026-09-30",
+    "methodology": "TVL counts staked FUNB coins on the platform itself.",
+    "kava": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
   "fundex": {
     "hallmarks": [
       [
@@ -2678,6 +2739,12 @@
     },
     "deadFrom": "2022-01-11",
     "methodology": "Counts tokens on the treasury for tvl and staked GG for staking"
+  },
+  "gamutexchange": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f"
+    }
   },
   "geist": {
     "deadFrom": "2023-10-18",
@@ -2984,6 +3051,14 @@
       "tvl": "_f"
     }
   },
+  "ifpool": {
+    "methodology": "Counts staked CET tokens.",
+    "timetravel": false,
+    "csc": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
   "ignite-finance": {
     "misrepresentedTokens": true,
     "klaytn": {
@@ -3143,6 +3218,12 @@
     },
     "deadFrom": "2025-02-05"
   },
+  "iotabee": {
+    "shimmer_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
   "ironclad": {
     "mode": {
       "tvl": "_f",
@@ -3222,6 +3303,13 @@
     },
     "deadFrom": "2026-07-17"
   },
+  "kaDefi": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
   "kaddex": {
     "timetravel": false,
     "misrepresentedTokens": true,
@@ -3293,6 +3381,13 @@
       "tvl": "_f"
     }
   },
+  "kavastarter": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
   "kdlaunch": {
     "misrepresentedTokens": true,
     "timetravel": false,
@@ -3351,6 +3446,13 @@
     },
     "methodology": "Counts as TVL all the Assets deposited on EVMOS through different Pool Contracts",
     "deadFrom": "2026-06-10"
+  },
+  "kinetix": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
   },
   "kinto": {
     "ethereum": {
@@ -3413,6 +3515,13 @@
       "tvl": "_f"
     },
     "doublecounted": true
+  },
+  "kmex-io": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "staking": "_f",
+      "tvl": "_f"
+    }
   },
   "knitfinance": {
     "timetravel": false,
@@ -3807,6 +3916,18 @@
     },
     "deadFrom": "2022-10-19"
   },
+  "mangrove": {
+    "misrepresentedTokens": false,
+    "methodology": "TVL is calculated by getting the total promised liquidity on the orderbook on a specific block.",
+    "start": "2024-02-27",
+    "deadFrom": "2025-02-27",
+    "blast": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    }
+  },
   "manifesto": {
     "hallmarks": [
       [
@@ -3986,6 +4107,40 @@
       "tvl": "_f"
     },
     "deadFrom": "2026-01-25"
+  },
+  "metric": {
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "base": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "avax": {
+      "tvl": "_f"
+    },
+    "polygon": {
+      "tvl": "_f"
+    },
+    "megaeth": {
+      "tvl": "_f"
+    },
+    "hyperliquid": {
+      "tvl": "_f"
+    },
+    "monad": {
+      "tvl": "_f"
+    },
+    "robinhood": {
+      "tvl": "_f"
+    },
+    "methodology": "TVL is the sum of token0 and token1 balances held by every pool created by the Metric pool factory. Pools are discovered on-chain from the factory PoolCreated events.",
+    "deadFrom": "2026-10-08"
   },
   "metropolis": {
     "hallmarks": [
@@ -5282,6 +5437,12 @@
       "pool2": "_f"
     }
   },
+  "pxswap": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f"
+    }
+  },
   "pylon": {
     "timetravel": false,
     "methodology": "TVL counts the UST that has been deposted to the Protocol. Data is pulled from the Pylon API:\"https://api.pylon.money/api/launchpad/v1/projects/mine\".",
@@ -5316,6 +5477,14 @@
       "tvl": "_f",
       "staking": "_f"
     }
+  },
+  "quicksilver": {
+    "timetravel": false,
+    "methodology": "Sum of all the tokens that are liquid staked on Quicksilver",
+    "quicksilver": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
   },
   "quickswap-lending": {
     "methodology": "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
@@ -5552,6 +5721,21 @@
       "tvl": "_f"
     }
   },
+  "rubyfinance": {
+    "deadFrom": "2026-09-30",
+    "hallmarks": [
+      [
+        "2022-08-15",
+        "incentives not given"
+      ]
+    ],
+    "methodology": "Pool2 deposits consist of RUBY/USDC, RUBY/KAVA, RSHARE/KAVA and RUBY/RSHARE LP deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
+    "kava": {
+      "tvl": "_f",
+      "pool2": "_f",
+      "staking": "_f"
+    }
+  },
   "ruler": {
     "deadFrom": "2022-03-31",
     "ethereum": {
@@ -5577,6 +5761,13 @@
       "staking": "_f"
     },
     "deadFrom": "2022-06-01"
+  },
+  "sailing-portfolios": {
+    "deadFrom": "2026-09-30",
+    "kava": {
+      "tvl": "_f"
+    },
+    "methodology": "The assets in the balancer are detected and counted."
   },
   "sailingprotocol": {
     "methodology": "The total supply of their circulating stocks is extracted from their stock token contracts.",
@@ -5623,12 +5814,26 @@
     },
     "deadFrom": "2022-05-15"
   },
+  "scrt": {
+    "misrepresentedTokens": true,
+    "secret": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
   "sdex": {
     "deadFrom": "2025-08-01",
     "misrepresentedTokens": true,
     "ethf": {
       "tvl": "_f"
     }
+  },
+  "secretswap": {
+    "misrepresentedTokens": true,
+    "secret": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
   },
   "securedao": {
     "misrepresentedTokens": true,
@@ -5637,6 +5842,13 @@
       "staking": "_f"
     },
     "deadFrom": "2022-02-01"
+  },
+  "selfex": {
+    "deadFrom": "2026-09-30",
+    "misrepresentedTokens": true,
+    "kava": {
+      "tvl": "_f"
+    }
   },
   "senpai": {
     "boba": {
@@ -5653,6 +5865,14 @@
       "tvl": "_f"
     },
     "deadFrom": "2025-11-22"
+  },
+  "shadeprotocol-derivatives": {
+    "timetravel": false,
+    "methodology": "TVL counts SCRT backing stkd-SCRT using the staking contract accounting plus active unbonding SCRT.",
+    "secret": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
   },
   "shadeprotocol-lend": {
     "deadFrom": "2026-08-08",
@@ -5729,6 +5949,21 @@
       "tvl": "_f",
       "borrowed": "_f"
     }
+  },
+  "sienna": {
+    "timetravel": false,
+    "secret": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
+  "sienna-lend": {
+    "secret": {
+      "tvl": "_f",
+      "borrowed": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-10-18"
   },
   "sierra": {
     "hallmarks": [
@@ -6001,6 +6236,14 @@
       "tvl": "_f"
     },
     "deadFrom": "2026-01-25"
+  },
+  "stakedicp": {
+    "deadFrom": "2026-10-07",
+    "timetravel": false,
+    "methodology": "TVL counts ICP deposited as collateral to mint stICP",
+    "icp": {
+      "tvl": "_f"
+    }
   },
   "stakedotlink-index": {
     "ethereum": {
@@ -6449,6 +6692,17 @@
       "tvl": "_f"
     }
   },
+  "tangleswap": {
+    "shimmer_evm": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "milkomeda": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
   "tapp-exchange": {
     "methodology": "Measures the total liquidity across all pools on TAPP Exchange.",
     "deadFrom": "2026-05-31",
@@ -6546,6 +6800,13 @@
       "tvl": "_f",
       "staking": "_f"
     }
+  },
+  "tonswap": {
+    "misrepresentedTokens": true,
+    "everscale": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
   },
   "toreus": {
     "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
@@ -6888,6 +7149,12 @@
     },
     "deadFrom": "2026-09-15"
   },
+  "vibrswap": {
+    "neon_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-18"
+  },
   "vikings": {
     "avax": {
       "tvl": "_f",
@@ -6962,6 +7229,13 @@
       "tvl": "_f"
     },
     "deadFrom": "2022-08-19"
+  },
+  "weave": {
+    "deadFrom": "2026-09-30",
+    "methodology": "gets the balance of the strategy contract",
+    "kava": {
+      "tvl": "_f"
+    }
   },
   "weldfinance": {
     "misrepresentedTokens": true,
@@ -7355,278 +7629,96 @@
       "tvl": "_f"
     }
   },
-  "LiquidOps": {
-    "deadFrom": "2026-10-07",
-    "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
-    "ao": {
+  "cometa": {
+    "deadFrom": "2026-10-01",
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "algorand": {
+      "tvl": "_f"
+    }
+  },
+  "compx": {
+    "deadFrom": "2025-01-01",
+    "misrepresentedTokens": true,
+    "algorand": {
+      "tvl": "_f"
+    }
+  },
+  "demex": {
+    "timetravel": false,
+    "carbon": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-10-30"
+  },
+  "floe-labs": {
+    "methodology": "TVL is calculated as the total collateral locked in active loans. Borrowed represents the total outstanding loan principal.",
+    "base": {
       "tvl": "_f",
       "borrowed": "_f"
-    }
+    },
+    "deadFrom": "2026-10-11"
   },
-  "accumulator": {
+  "izumi": {
+    "deadFrom": "2026-09-30",
+    "timetravel": false,
     "misrepresentedTokens": true,
-    "shimmer_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "akiba": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "tvl": "_f",
-      "staking": "_f",
-      "pool2": "_f"
-    }
-  },
-  "beekava": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "tvl": "_f",
+    "ethereum": {
       "pool2": "_f",
-      "staking": "_f"
-    }
-  },
-  "cotiTreasury": {
-    "deadFrom": "2026-10-11",
-    "timetravel": false,
-    "coti": {
       "tvl": "_f",
       "staking": "_f"
-    }
-  },
-  "crunchynetwork-wtz": {
-    "deadFrom": "2026-01-01",
-    "timetravel": false,
-    "tezos": {
-      "tvl": "_f"
-    }
-  },
-  "embr-bridge": {
-    "timetravel": false,
-    "embr": {
+    },
+    "bsc": {
+      "pool2": "_f",
       "tvl": "_f"
     },
-    "deadFrom": "2026-10-18"
-  },
-  "funbear": {
-    "deadFrom": "2026-09-30",
-    "methodology": "TVL counts staked FUNB coins on the platform itself.",
-    "kava": {
-      "tvl": "_f",
-      "staking": "_f"
-    }
-  },
-  "gamutexchange": {
-    "deadFrom": "2026-09-30",
-    "kava": {
+    "polygon": {
+      "pool2": "_f",
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "pool2": "_f",
+      "tvl": "_f"
+    },
+    "aurora": {
+      "pool2": "_f",
+      "tvl": "_f"
+    },
+    "cronos": {
+      "pool2": "_f",
       "tvl": "_f"
     }
   },
-  "ifpool": {
-    "methodology": "Counts staked CET tokens.",
+  "nitron": {
     "timetravel": false,
-    "csc": {
+    "carbon": {
       "tvl": "_f"
     },
-    "deadFrom": "2026-10-18"
+    "deadFrom": "2026-10-30"
   },
-  "iotabee": {
-    "shimmer_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "kaDefi": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "tvl": "_f",
-      "staking": "_f"
-    }
-  },
-  "kavastarter": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "tvl": "_f",
-      "staking": "_f"
-    }
-  },
-  "kinetix": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "tvl": "_f",
-      "staking": "_f"
-    }
-  },
-  "kmex-io": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "staking": "_f",
-      "tvl": "_f"
-    }
-  },
-  "mangrove": {
+  "rocket-vault": {
+    "timetravel": false,
     "misrepresentedTokens": false,
-    "methodology": "TVL is calculated by getting the total promised liquidity on the orderbook on a specific block.",
-    "start": "2024-02-27",
-    "deadFrom": "2025-02-27",
-    "blast": {
-      "tvl": "_f"
-    },
+    "doublecounted": true,
+    "deadFrom": "2026-09-05",
+    "methodology": "TVL is calculated by summing all USDC collateral deposited in Rocket Liquidity Provider vaults",
     "arbitrum": {
       "tvl": "_f"
     }
   },
-  "metric": {
-    "ethereum": {
+  "stability": {
+    "polygon": {
       "tvl": "_f"
     },
     "base": {
       "tvl": "_f"
     },
-    "arbitrum": {
+    "real": {
       "tvl": "_f"
     },
-    "bsc": {
+    "sonic": {
       "tvl": "_f"
     },
-    "avax": {
-      "tvl": "_f"
-    },
-    "polygon": {
-      "tvl": "_f"
-    },
-    "megaeth": {
-      "tvl": "_f"
-    },
-    "hyperliquid": {
-      "tvl": "_f"
-    },
-    "monad": {
-      "tvl": "_f"
-    },
-    "robinhood": {
-      "tvl": "_f"
-    },
-    "methodology": "TVL is the sum of token0 and token1 balances held by every pool created by the Metric pool factory. Pools are discovered on-chain from the factory PoolCreated events.",
-    "deadFrom": "2026-10-08"
-  },
-  "pxswap": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "tvl": "_f"
-    }
-  },
-  "quicksilver": {
-    "timetravel": false,
-    "methodology": "Sum of all the tokens that are liquid staked on Quicksilver",
-    "quicksilver": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "rubyfinance": {
-    "deadFrom": "2026-09-30",
-    "hallmarks": [
-      [
-        "2022-08-15",
-        "incentives not given"
-      ]
-    ],
-    "methodology": "Pool2 deposits consist of RUBY/USDC, RUBY/KAVA, RSHARE/KAVA and RUBY/RSHARE LP deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
-    "kava": {
-      "tvl": "_f",
-      "pool2": "_f",
-      "staking": "_f"
-    }
-  },
-  "sailing-portfolios": {
-    "deadFrom": "2026-09-30",
-    "kava": {
-      "tvl": "_f"
-    },
-    "methodology": "The assets in the balancer are detected and counted."
-  },
-  "scrt": {
-    "misrepresentedTokens": true,
-    "secret": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "secretswap": {
-    "misrepresentedTokens": true,
-    "secret": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "selfex": {
-    "deadFrom": "2026-09-30",
-    "misrepresentedTokens": true,
-    "kava": {
-      "tvl": "_f"
-    }
-  },
-  "shadeprotocol-derivatives": {
-    "timetravel": false,
-    "methodology": "TVL counts SCRT backing stkd-SCRT using the staking contract accounting plus active unbonding SCRT.",
-    "secret": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "sienna": {
-    "timetravel": false,
-    "secret": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "sienna-lend": {
-    "secret": {
-      "tvl": "_f",
-      "borrowed": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "stakedicp": {
-    "deadFrom": "2026-10-07",
-    "timetravel": false,
-    "methodology": "TVL counts ICP deposited as collateral to mint stICP",
-    "icp": {
-      "tvl": "_f"
-    }
-  },
-  "tangleswap": {
-    "shimmer_evm": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "milkomeda": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "tonswap": {
-    "misrepresentedTokens": true,
-    "everscale": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "vibrswap": {
-    "neon_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-10-18"
-  },
-  "weave": {
-    "deadFrom": "2026-09-30",
-    "methodology": "gets the balance of the strategy contract",
-    "kava": {
-      "tvl": "_f"
-    }
+    "deadFrom": "2026-04-01"
   }
 }
