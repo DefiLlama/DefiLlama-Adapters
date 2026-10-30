@@ -42,6 +42,7 @@ async function tvl(api) {
     fromBlock: 112324705,
     eventAbi: 'event PositionCreated(uint256 indexed id, address indexed vault)',
     onlyArgs: true,
+    onlyUseExistingCache: true,
   })))).flat()
   const positions = logs.map(log => log.vault)
 
@@ -51,10 +52,11 @@ async function tvl(api) {
     api.multiCall({ abi: 'address:asset', calls: positions }),
     api.multiCall({ abi: 'uint256:assetBalance', calls: positions }),
     api.multiCall({ abi: 'address:debtToken', calls: positions }),
-    api.multiCall({ abi: 'uint256:debtBalance', calls: positions }),
+    api.multiCall({ abi: 'uint256:debtBalance', calls: positions, permitFailure: true }),
   ])
 
   positions.forEach((_, index) => {
+    if (debtBalances[index] === undefined) return;
     api.add(assetTokens[index], assetBalances[index])
     api.add(debtTokens[index], negate(debtBalances[index]))
   })

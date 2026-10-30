@@ -88,6 +88,7 @@ const DEFAULTS = {
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
   // p2p/everstake neon proxies are gone (dns), thirdweb refuses the chain; blockscout's eth-rpc proxy still serves it
   NEON_EVM_RPC: 'https://neon.blockscout.com/api/eth-rpc',
+  ETN_RPC: 'https://blockexplorer.electroneum.com/api/eth-rpc',
   THORCHAIN_LCD: 'https://gateway.liquify.com/chain/thorchain_api',
   INITIA_LCD: 'https://rest.initia.xyz',
   // mainnet.telos.net/evm now serves a 404 or an HTML page with HTTP 200, which the sdk treats as a successful call with a null result; rpc1.eu.telos.net hangs

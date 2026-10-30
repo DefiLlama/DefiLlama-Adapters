@@ -20,6 +20,7 @@ const DENOM_TO_COINGECKO = {
   'avax-avax': 'avalanche-2',
   'bsc-bnb': 'binancecoin',
   'tron-trx': 'tron',
+  'zec-zec': 'zcash',
 }
 
 function parseDecimal(value) {
