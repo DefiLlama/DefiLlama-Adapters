@@ -4,8 +4,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const STHYPE_TOKEN = '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1'
 const WHYPE = ADDRESSES.hyperliquid.WHYPE
 
+/** Report circulating stHYPE supply in redeemable HYPE units. */
 async function tvl(api) {
-  // Get total staked HYPE using totalAssets() method
   const totalStakedHYPE = await api.call({
     target: STHYPE_TOKEN,
     abi: 'uint256:totalSupply'
