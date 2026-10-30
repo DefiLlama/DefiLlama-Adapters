@@ -13,7 +13,7 @@ const markets = [
   { resourceAccount: "0xbb3c1b88599c563062e2b08fe3a92ab048d700f9aa44617c680d59a4aa69b23f", metadata: ADDRESSES.aptos.USDt, vault: `${AGDEX}::token_map::USDT`, token: ADDRESSES.aptos.USDT_2 },
   { resourceAccount: "0x38bca0c288df1e13d9a30d33c4ce8ee778333c52bd4e730b49c6c9379be39b10", metadata: "0xae02f68520afd221a5cd6fda6f5500afedab8d0a2e19a916d6d8bc2b36e758db", vault: `${LZ_ASSETS}::WETH`, token: ADDRESSES.aptos.zWETH },
   { resourceAccount: "0x70d303ed5dbfbae1f5ac76d50d5073f69a7115dfdfa737e82bb7c3c9364b3d17", metadata: "0xa64d2d6f5e26daf6a3552f51d4110343b1a8c8046d0a9e72fa4086a337f3236c", vault: `${LZ_ASSETS}::WBTC`, token: ADDRESSES.aptos.zWBTC },
-  { resourceAccount: "0x8afc7aaa4616c0defbe655f3928a72ff849ef9a6889178f1c18c7c3ad006ebf7", metadata: "0xa", vault: "0x1::aptos_coin::AptosCoin", token: ADDRESSES.aptos.APT },
+  { resourceAccount: "0x8afc7aaa4616c0defbe655f3928a72ff849ef9a6889178f1c18c7c3ad006ebf7", metadata: "0xa", vault: ADDRESSES.aptos.APT, token: ADDRESSES.aptos.APT },
 ]
 
 async function tvl(api) {

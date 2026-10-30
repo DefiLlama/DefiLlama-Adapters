@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 const { mergeExports, getStakedEthTVL } = require("../helper/utils");
@@ -133,7 +134,7 @@ const config = {
     ],
   },
   kcc: {
-    ownTokens: ['0x0000000000000000000000000000000000000000'], // KCS (native)
+    ownTokens: [ADDRESSES.null], // KCS (native)
     owners: [
       "0x14ea40648fc8c1781d19363f5b9cc9a877ac2469",
       "0x2a8c8b09bd77c13980495a959b26c1305166a57f",

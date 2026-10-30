@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // Seeryx TVL adapter for DefiLlama (projects/seeryx/index.js).
 //
 // Seeryx is a prediction market on Solana: Up/Down crypto rounds and event markets resolved by UMA. Users' USDC
@@ -9,7 +10,7 @@ const { PublicKey } = require("@solana/web3.js");
 const { getConnection, sumTokens2, getAssociatedTokenAddress } = require("../helper/solana");
 
 const PROGRAM_ID = "2uUbvYHqBH1HDVzABGPcqrjHodoBVcNkq6Nrv6MABaiv";
-const USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const USDC = ADDRESSES.solana.USDC;
 
 // Anchor account discriminators, sha256("account:<Name>")[0..8]
 const DISCRIMINATORS = [

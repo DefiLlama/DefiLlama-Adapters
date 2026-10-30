@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const axios = require('axios')
 const sdk = require('@defillama/sdk')
 const { getConfig } = require('../projects/helper/cache')
@@ -103,13 +104,13 @@ function mergeOwners(slug, ...lists) {
 
 // Chains whose PoR balance sits in a token that has no default list in helper/cex.js
 const EXTRA_TOKENS = {
-  berachain: ['0x0000000000000000000000000000000000000000', '0x779Ded0c9e1022225f8E0630b35a9b54bE713736'], // BERA, USDT0
+  berachain: [ADDRESSES.null, ADDRESSES.xlayer.USDT0], // BERA, USDT0
 }
 
 // MNT, reported under ownTokens instead of tvl
 const OWN_TOKENS = {
   ethereum: ['0x3c3a81e81dc49A522A592e7622A7E711c06bf354'],
-  mantle: ['0x0000000000000000000000000000000000000000'],
+  mantle: [ADDRESSES.null],
 }
 
 module.exports = { bitcoin: 'bybit' }

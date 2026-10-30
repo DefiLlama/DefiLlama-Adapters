@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const STHYPE = '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1'
 const ESCROW = '0x0447d0339c82a8EFe01994b7D1981bf5c517da0e'
-const SEED_OWNER = '0x0000000000000000000000000000000000000001'
+const SEED_OWNER = ADDRESSES.linea.WETH_1
 const ESCROW_DEPLOY_BLOCK = 47206861
 
 async function tvl(api) {
