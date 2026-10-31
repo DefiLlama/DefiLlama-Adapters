@@ -14639,7 +14639,7 @@ const configs = {
   "finnexus": {
     "hallmarks": [
       [
-        "2021-5-17",
+        "2021-05-17",
         "FinNexus erc20 contract is hacked"
       ]
     ],
