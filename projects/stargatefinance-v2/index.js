@@ -10,6 +10,9 @@ const CONFIG = {
       '0xcDafB1b2dB43f366E48e6F614b8DCCBFeeFEEcD3',
       '0x268Ca24DAefF1FaC2ed883c598200CcbB79E931D',
     ],
+    laterPools: {
+      '0x783129E4d7bA0Af0C896c239E57C06DF379aAE8c': 23229076, // eurc pool
+    },
   },
   bsc: {
     pools: [
@@ -144,18 +147,30 @@ const CONFIG = {
       '0x0829f361a05d993d5ceb035ca6df3446b060970b' // weth pool
     ],
   },
+  doma: {
+    pools: [],
+    laterPools: {
+      '0x5d46805BBFAcA875a96Ebbd22Aaa3DE4A81180f5': 2156514, // eth pool
+    },
+  },
 }
 
-const createTvlFunction = (pools) => {
+// laterPools: pools deployed after the chain was added, keyed by deployment block, so older dates skip them
+const createTvlFunction = (pools, laterPools = {}) => {
   return async (api) => {
-    const tokens = await api.multiCall({ abi: 'address:token', calls: pools, })
-    return sumTokens2({ api, tokensAndOwners2: [tokens, pools] })
+    let owners = pools
+    if (Object.keys(laterPools).length) {
+      const block = await api.getBlock()
+      owners = pools.concat(Object.keys(laterPools).filter((pool) => block >= laterPools[pool]))
+    }
+    const tokens = await api.multiCall({ abi: 'address:token', calls: owners, })
+    return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
   };
 };
 
 Object.keys(CONFIG).forEach((chain) => {
-  const { pools } = CONFIG[chain];
+  const { pools, laterPools } = CONFIG[chain];
   module.exports[chain] = {
-    tvl: createTvlFunction(pools),
+    tvl: createTvlFunction(pools, laterPools),
   };
 });
