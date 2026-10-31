@@ -39,15 +39,22 @@ async function getTokens() {
     // the list is appended to over time, so a full page followed by an empty one
     // can be a skipped page rather than the end; retry only in that case
     if (!data.length) {
-      if (previousPageFull && ++emptyRetries < 3) {
+      if (previousPageFull && ++emptyRetries <= 3) {
         await new Promise(resolve => setTimeout(resolve, 3000))
         pageNo-- // retry the same page
         continue
       }
-      break // short page (or retries exhausted) => no more pools
+      break // empty page (or retries exhausted) => no more pools
     }
-    emptyRetries = 0
-    previousPageFull = data.length === PAGE_SIZE
+    // short page (< PAGE_SIZE) is the natural end of the list; stop here
+    if (data.length < PAGE_SIZE) {
+      emptyRetries = 0
+      previousPageFull = false
+      // process this final page below, then break
+    } else {
+      emptyRetries = 0
+      previousPageFull = true
+    }
     if (pageNo > MAX_PAGES) throw new Error(`sunswap-v4: pool list has more than ${MAX_PAGES} pages`)
     let newPools = 0
     for (const pool of data) {
@@ -59,6 +66,8 @@ async function getTokens() {
       tokens.add(pool.token1Address)
     }
     if (!newPools) throw new Error(`sunswap-v4: pool list page ${pageNo} repeats earlier pools`) // the API ignored pageNo: fail instead of reporting a partial TVL
+    // short page means we've reached the end; don't request another page
+    if (data.length < PAGE_SIZE) break
   }
   if (!tokens.size) throw new Error('sunswap-v4: pool list is empty')
   return [...tokens].map(t => (t === TRX_PLACEHOLDER ? nullAddress : t))
