@@ -6,15 +6,11 @@ module.exports = {
   misrepresentedTokens: true,
 };
 
-(['fantom', 'bsc', 'avax', 'polygon', 'arbitrum', 'optimism', 'era', 'base', 'mantle']).forEach(chain => {
+(['bsc', 'avax', 'polygon', 'arbitrum', 'optimism', 'base']).forEach(chain => {
 	module.exports[chain] = {
 		tvl: async () => {
-      let network = chain
-      if (chain == 'era') {
-        network = 'zksync'
-      }
-      let data = await get('https://fi-api.woo.org/yield?network=' + network)
-      const tvl = data.data.total_deposit / 1e18
+      let data = await get('https://fi-api.woo.org/yield?network=' + chain)
+      const tvl = Number(data.data.total_deposit) / 1e18
       return toUSDTBalances(tvl)
     }
 	}
