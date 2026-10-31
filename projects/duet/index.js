@@ -28,6 +28,7 @@ async function getEBCakeTvl(api) {
 
 const bscTvl = async (api) => {
   const ret = await getConfig("duet-fi", TOKEN_LIST_URL);
+  if (!Array.isArray(ret)) throw new Error('Invalid Duet vault configuration: expected an array');
   const vaultList = [];
   for (const token of ret) {
     if (!token.vaults || token.vaults.length < 1) continue;
