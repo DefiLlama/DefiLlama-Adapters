@@ -387,7 +387,7 @@ async function productsTvl(chain) {
     return await mergePromises([
       tvlHub(chain, state),
       tvlAmpGovernance(chain, state),
-      tvlArbVault(chain).catch((a) => ({})),
+      tvlArbVault(chain),
       ...(chainConfig.tassets ?? []).map((tasset) => tasset2Tvl(chain, tasset)),
       ...(chainConfig.daos ?? []).map((dao) => dao2Tvl(chain, dao)),
       ...(chainConfig.farms ?? []).map((farm) => farm2Tvl(chain, farm)),
