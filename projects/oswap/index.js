@@ -20,7 +20,8 @@ async function tvl(api) {
     const usdValue = await Promise.all([
         fetchBaseAABalances(timestamp, "GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA"), // Oswap v1
         fetchBaseAABalances(timestamp, "2JYYNOSRFGLI3TBI4FVSE6GFBUAZTTI3"), // Oswap v2
-        fetchBaseAABalances(timestamp, "DYZOJKX4MJOQRAUPX7K6WCEV5STMKOHI")  // Oswap v2.1
+        fetchBaseAABalances(timestamp, "DYZOJKX4MJOQRAUPX7K6WCEV5STMKOHI"),  // Oswap v2.1
+        fetchBaseAABalances(timestamp, "MJUMBS56GS7J57O6RGYM6HH7XALHU3DC")
     ]).then(baseAABalances => {
         return baseAABalances.reduce(summingBaseAABalancesToTvl(assetMetadata, exchangeRates), 0)
     })
