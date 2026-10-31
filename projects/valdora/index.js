@@ -46,7 +46,7 @@ async function tvl(api) {
   const payload = await getConfig('valdora/vaults', VAULTS_API);
   const vaults = Array.isArray(payload) && payload.length ? payload : FALLBACK_VAULTS.map(address => ({ address }));
   const results = await Promise.all(
-    vaults.map(v => fetchVaultBalance(v.address).catch(() => null))
+    vaults.map(v => fetchVaultBalance(v.address))
   );
   for (const r of results) {
     if (!r || !r.aum || !r.assetDenom) continue;
