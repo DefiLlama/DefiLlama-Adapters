@@ -33,8 +33,8 @@ async function tvl(api) {
   const pools = await getPoolsFromFactory(FACTORY)
 
   const balances = await Promise.all(pools.flatMap(p => [
-    callSoroban(p.token0, 'balance', [p.pool_address]).catch(() => 0n),
-    callSoroban(p.token1, 'balance', [p.pool_address]).catch(() => 0n),
+    callSoroban(p.token0, 'balance', [p.pool_address]),
+    callSoroban(p.token1, 'balance', [p.pool_address]),
   ]))
 
   pools.forEach((p, i) => {
