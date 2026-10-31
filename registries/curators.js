@@ -1791,14 +1791,22 @@ const configs = {
   },
   "navi-curator": {
     config: {
-      methodology: "Counts totalAssets() of the Lagoon vaults curated by NAVI Protocol. Deposits are bridged to Sui and supplied to NAVI lending markets through NAVI vaults, so they are also counted under NAVI Lending and Lagoon.",
+      methodology: "Counts total_assets of the NAVI vaults on Sui (USDC and SUI, Prime and High Yield), found on-chain by their navi_vault::Vault type, and totalAssets() of the Lagoon vaults curated by NAVI Protocol on Ethereum. The NAVI vaults supply into NAVI lending markets, and Lagoon deposits are bridged to Sui and supplied through NAVI vaults, so they are also counted under NAVI Lending and Lagoon.",
       blockchains: {
         ethereum: {
           erc4626: [
             '0x47491305479635357df29fe0cb6f1af10e51d4da', // Lagoon: USDC High Yield (nUSDC)
           ],
         },
+        sui: {
+          naviVaultPackages: [
+            '0x51cecaacaed0bd436f04ebbd8ba0ca1627c9c4d0e54ad28eff095ca78591518c', // navi_vault original package
+          ],
+        },
       },
+    },
+    _meta: {
+      timetravel: false, // sui vaults are read at their latest state
     },
   },
 }
