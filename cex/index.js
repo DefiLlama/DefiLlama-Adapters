@@ -1657,7 +1657,8 @@ const configs = {
       owners: [
         "0x29af949c3D218C1133bD16257ed029E92deFb168",
         "0x8Cad96fB23924Ebc37b8CdAFa8400AD856fE4a2C",
-        "0xAeB81c391Ac427B6443310fF1cB73a21E071e5ad"
+        "0xAeB81c391Ac427B6443310fF1cB73a21E071e5ad",
+        "0x052Ed0aD68Ffc470386FDAb82F7046E0b55FD663"
       ]
     },
     cardano: {
