@@ -32,9 +32,11 @@ function getOrderBookTvl(typeStr) {
 
         if (denom === 'inj') {
           api.addCGToken('injective-protocol', Number(amount) / 1e18);
-        } else if (denom.startsWith('erc20:0x') || denom.startsWith('peggy0x')) {
-          const ethAddress = denom.replace('erc20:', '').replace('peggy', '');
-          api.add(ethAddress, amount);
+        } else if (denom.startsWith('peggy0x')) {
+          const ethAddress = denom.replace('peggy', '').toLowerCase();
+          api.add(`ethereum:${ethAddress}`, amount, { skipChain: true });
+        } else if (denom.startsWith('erc20:0x')) {
+          api.add(denom.replace('erc20:', ''), amount);
         } else {
           api.add(denom, amount);
         }
