@@ -11,7 +11,7 @@ const CONFIG = {
       '0x268Ca24DAefF1FaC2ed883c598200CcbB79E931D',
     ],
     laterPools: {
-      '0x783129E4d7bA0Af0C896c239E57C06DF379aAE8c': 23229076, // eurc pool
+      '0x783129E4d7bA0Af0C896c239E57C06DF379aAE8c': 1756256951, // eurc pool, block 23229076
     },
   },
   bsc: {
@@ -150,19 +150,16 @@ const CONFIG = {
   doma: {
     pools: [],
     laterPools: {
-      '0x5d46805BBFAcA875a96Ebbd22Aaa3DE4A81180f5': 2156514, // eth pool
+      '0x5d46805BBFAcA875a96Ebbd22Aaa3DE4A81180f5': 1762281779, // eth pool, block 2156514
     },
   },
 }
 
-// laterPools: pools deployed after the chain was added, keyed by deployment block, so older dates skip them
+// laterPools: pools deployed after the chain was added, keyed by deployment timestamp, so older dates skip them
 const createTvlFunction = (pools, laterPools = {}) => {
   return async (api) => {
-    let owners = pools
-    if (Object.keys(laterPools).length) {
-      const block = await api.getBlock()
-      owners = pools.concat(Object.keys(laterPools).filter((pool) => block >= laterPools[pool]))
-    }
+    const owners = pools.concat(Object.keys(laterPools).filter((pool) => !api.timestamp || api.timestamp >= laterPools[pool]))
+    if (!owners.length) return api.getBalances() // nothing deployed yet, skip the block lookup
     const tokens = await api.multiCall({ abi: 'address:token', calls: owners, })
     return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
   };
