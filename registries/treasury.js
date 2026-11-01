@@ -4142,6 +4142,20 @@ const configs = {
       resolveLP: true,
     },
   },
+  'treasury/bond-ceo': {
+    robinhood: {
+      owners: [
+        '0xa91e7bc98ddc6cfed37e9bf47e627b33adef5b1b', // Treasury
+      ],
+      tokens: [
+        ADDRESSES.robinhood.USDG,
+        '0xbe5296539b19da2ce4771f9725e9de1073281015', // BOND/USDG POL
+        '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG (ERC-4626)
+      ],
+      ownTokens: ['0xeb288e3ca1607e7b921bcb47d5831e88331d65ef'], // BOND
+      resolveLP: true,
+    },
+  },
   'treasury/nukes-fun': {
     robinhood: {
       owners: [
