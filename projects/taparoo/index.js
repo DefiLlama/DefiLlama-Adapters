@@ -1,4 +1,4 @@
-const { get } = require('../helper/http')
+const { queryCanister, decodeCandid } = require('../helper/chain/icp')
 
 module.exports = {
   misrepresentedTokens: true,
@@ -6,7 +6,10 @@ module.exports = {
 }
 
 async function tvl(api) {
-  let response = await get('https://ic0.app/api/v2/canister/5ez4n-ayaaa-aaaah-qdqua-cai/query/getTvl')
+  const [response] = decodeCandid(await queryCanister({
+    canisterId: '5ez4n-ayaaa-aaaah-qdqua-cai',
+    methodName: 'getTvl',
+  }))
   const satoshiAmount = parseInt(response.replace(/"/g, ''))
   const btcAmount = satoshiAmount / 100000000
   api.add('bitcoin', btcAmount)
