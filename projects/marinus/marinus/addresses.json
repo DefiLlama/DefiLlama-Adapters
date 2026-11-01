@@ -1,0 +1,52 @@
+{
+  "_comment": "Sync with src/config/harmonyLendingMarkets.ts before DefiLlama submission. Add legacy pools only after a migration when users remain on retired contracts.",
+  "chain": "harmony",
+  "chainId": 1666600000,
+  "burnAddress": "0x000000000000000000000000000000000000dEaD",
+  "wone": "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
+  "nativePriceKey": "coingecko:harmony",
+  "tokens": {
+    "wone": {
+      "address": "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
+      "decimals": 18
+    },
+    "usdc": {
+      "address": "0xBC594CABd205bD993e7FfA6F3e9ceA75c1110da5",
+      "decimals": 6
+    },
+    "usdt": {
+      "address": "0xF2732e8048f1a411C63e2df51d08f4f52E598005",
+      "decimals": 6
+    }
+  },
+  "mPools": [
+    {
+      "symbol": "mWONE",
+      "pool": "0x1B880e387Ef12fc9540Be4a0c6AA7eAA356e1a9D",
+      "underlying": "wone",
+      "strategy": "0xab97C48Bf5409477a54803Ca30CaCAbF28A77750"
+    },
+    {
+      "symbol": "mUSDC",
+      "pool": "0xCB6a04a828E54d73eA20bBe061Eb8F72aEd9b0AE",
+      "underlying": "usdc",
+      "strategy": "0x812FA5a1Cf38aDc3C112Be58866E965E7D4a3F50"
+    },
+    {
+      "symbol": "mUSDT",
+      "pool": "0x461cD43DA018A68dcc0b242448018ef9c9f3e890",
+      "underlying": "usdt",
+      "strategy": "0x9657c3f94cFDC28A293eae468F286E1fb37af997"
+    }
+  ],
+  "stakingPools": [
+    {
+      "symbol": "smONE",
+      "pool": "0x24770D9780043b5C4fc54F22F72400542c201dCB"
+    },
+    {
+      "symbol": "srONE",
+      "pool": "0x2BaE69378cE5a5e94F1AB4BF45AB4c55C847765F"
+    }
+  ]
+}
