@@ -1,39 +1,53 @@
-const { injective: { getMarkets, getOrders } } = require('../helper/chain/rpcProxy')
+const { get } = require('../helper/http');
+
+const EXCHANGE_MODULE_ADDRESS = 'inj14vnmw2wee3xtrsqfvpcqg35jg9v7j2vdpzx0kk';
+const LCD_ENDPOINT = 'https://sentry.lcd.injective.network';
 
 const TYPES = {
   BANK: 'BANK',
   SPOT: 'SPOT',
   DERIVATIVES: 'DERIVATIVES',
-}
+};
 
 function getOrderBookTvl(typeStr) {
   return async (api) => {
-    const markets = await getMarkets({ type: typeStr })
-    const orders = await getOrders({ type: typeStr, marketIds: markets.map(i => i.marketId) })
-    const marketObj = {}
-    for (const market of markets)
-      marketObj[market.marketId] = market
+    // Injective's x/exchange module holds a unified balance pool for both spot and derivatives.
+    // To prevent double-counting, report the full module TVL under the main adapter and return empty for the legacy spot split.
+    if (typeStr === TYPES.SPOT) {
+      return api.getBalances();
+    }
 
-    for (const order of orders) marketObj[order.marketId].orderbook = order.orderbook
-    for (const { quoteDenom, baseDenom, orderbook: { buys, sells, } } of markets) {
-      for (const { price, quantity } of buys)
-        api.add(quoteDenom, Math.floor(quantity * price))
+    let nextKey = '';
 
-      for (const { quantity } of sells) {
+    do {
+      const url = `${LCD_ENDPOINT}/cosmos/bank/v1beta1/balances/${EXCHANGE_MODULE_ADDRESS}?pagination.limit=200${
+        nextKey ? `&pagination.key=${encodeURIComponent(nextKey)}` : ''
+      }`;
 
-        if (typeStr === TYPES.SPOT) {
-          api.add(baseDenom, Math.floor(quantity))
-        } else if (typeStr === TYPES.DERIVATIVES) {
-          const price = buys.length ? buys[0].price : 0
-          api.add(quoteDenom, Math.floor(quantity * price))
+      const res = await get(url);
+      const balances = res?.balances || [];
+
+      for (const { denom, amount } of balances) {
+        if (!amount || amount === '0') continue;
+
+        if (denom === 'inj') {
+          api.addCGToken('injective-protocol', Number(amount) / 1e18);
+        } else if (denom.startsWith('erc20:0x') || denom.startsWith('peggy0x')) {
+          const ethAddress = denom.replace('erc20:', '').replace('peggy', '');
+          api.add(ethAddress, amount);
+        } else {
+          api.add(denom, amount);
         }
       }
-    }
-    return api.getBalances()
-  }
+
+      nextKey = res?.pagination?.next_key;
+    } while (nextKey);
+
+    return api.getBalances();
+  };
 }
 
 module.exports = {
   TYPES,
-  getOrderBookTvl
-}
+  getOrderBookTvl,
+};
