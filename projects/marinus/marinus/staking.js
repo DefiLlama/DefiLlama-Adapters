@@ -51,13 +51,13 @@ async function addNativeOneTvl(api, amount) {
  * @param {object[]} pools — stakingPools entries from addresses.json
  */
 function wrappedNativeToken(config) {
-  return config.wone ?? config.wsei;
+  return config.wone ?? config.wsei ?? config.wbnb;
 }
 
 async function addStakingPoolTvl(api, config, pools) {
   const wrapped = wrappedNativeToken(config);
   if (!wrapped) {
-    throw new Error('addresses config missing wone or wsei for staking TVL');
+    throw new Error('addresses config missing wone, wsei, or wbnb for staking TVL');
   }
 
   for (const entry of pools) {

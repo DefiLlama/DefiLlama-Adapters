@@ -9,10 +9,12 @@
  * - Lending: mPool total supplied (active mToken supply × exchange rate, minus burn address)
  * - Staking: ValidatorStakingPool + StablecoinRewardStakingPool (delegated + wrapped native + native gas token)
  * - Sei: `addresses-sei.json` + `module.exports.sei` (mSEI/mUSDC/mUSDT0 + smSEI/srSEI)
+ * - BNB Finance: `addresses-bnb.json` + `module.exports.bsc` (empty until BSC MPools deploy)
  */
 
 const harmonyConfig = require('./marinus/addresses.json');
 const seiConfig = require('./marinus/addresses-sei.json');
+const bnbConfig = require('./marinus/addresses-bnb.json');
 const { addMpoolSupplyTvl, addMpoolBorrowedTvl, allMPools } = require('./marinus/mpool');
 const { addStakingPoolTvl, allStakingPools } = require('./marinus/staking');
 
@@ -24,6 +26,7 @@ const METHODOLOGY = [
   'totalDelegated plus liquid WONE and native ONE.',
   'Sei: same MPool supply methodology for mSEI, mUSDC, and mUSDT0; staking adds SEI-equivalent backing in smSEI VSP and srSEI SRP',
   '(totalDelegated plus liquid WSEI and native SEI).',
+  'BNB Chain (bsc): same methodology when BNB Finance MPools are listed in addresses-bnb.json; until then exports report zero TVL.',
   'Only current canonical pool addresses are included.',
   'Borrowed amounts are reported separately via the borrowed export, not in headline TVL.',
 ].join(' ');
@@ -46,6 +49,17 @@ async function borrowedSei(api) {
   await addMpoolBorrowedTvl(api, seiConfig, allMPools(seiConfig));
 }
 
+async function tvlBsc(api) {
+  if (bnbConfig.live === false) return;
+  await addMpoolSupplyTvl(api, bnbConfig, allMPools(bnbConfig));
+  await addStakingPoolTvl(api, bnbConfig, allStakingPools(bnbConfig));
+}
+
+async function borrowedBsc(api) {
+  if (bnbConfig.live === false) return;
+  await addMpoolBorrowedTvl(api, bnbConfig, allMPools(bnbConfig));
+}
+
 module.exports = {
   methodology: METHODOLOGY,
   harmony: {
@@ -55,5 +69,9 @@ module.exports = {
   sei: {
     tvl: tvlSei,
     borrowed: borrowedSei,
+  },
+  bsc: {
+    tvl: tvlBsc,
+    borrowed: borrowedBsc,
   },
 };
