@@ -1,6 +1,6 @@
 const { queryContract } = require('../helper/chain/cosmos.js');
 
-// node test.js projects/figure-markets-democratized-prime/index.js
+// node test.js projects/figure-markets-prime/index.js
 
 const demoPrimeContracts = [
     "pb1gqw3m5ftuu0hdcj646ppgmrp7ual3kkjj2wq6usqsfe0ntfmsc7s8fh70c", // AUTO
