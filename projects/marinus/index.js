@@ -1,64 +1,34 @@
-/**
- * Marinus Protocol — DefiLlama TVL adapter.
- *
- * - Sei (primary): `addresses-sei.json` (mSEI/mUSDC/mUSDT0 MPools + smSEI/srSEI staking)
- * - BNB Finance (bsc): `addresses-bnb.json` (reports zero until BSC MPools deploy)
- * - Harmony (historic): markets retired 2026-10-20 when Marinus moved to Sei.
- *   Export returns empty so past Harmony TVL stays in history without new datapoints.
- */
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const seiConfig = require('./marinus/addresses-sei.json');
-const bnbConfig = require('./marinus/addresses-bnb.json');
-const { addMpoolSupplyTvl, addMpoolBorrowedTvl, allMPools } = require('./marinus/mpool');
-const { addStakingPoolTvl, allStakingPools } = require('./marinus/staking');
+const WSEI = ADDRESSES.sei.WSEI
 
-const METHODOLOGY = [
-  'Sei: TVL counts total assets supplied to Marinus MPools (mSEI, mUSDC, mUSDT0),',
-  'using active mToken supply times a supply-only exchange rate (non-borrow backing plus liquidation surplus to suppliers),',
-  'excluding mTokens sent to the burn address; empty pools use totalLiquidity().',
-  'Staking TVL adds SEI-equivalent backing in the smSEI ValidatorStakingPool and srSEI StablecoinRewardStakingPool',
-  '(totalDelegated plus liquid WSEI and native SEI).',
-  'BNB Chain (bsc): same methodology once BNB Finance MPools are listed in addresses-bnb.json; until then it reports zero.',
-  'Harmony: historic only. Marinus Harmony markets were retired on 2026-10-20 and no longer report TVL.',
-  'Only current canonical pool addresses are included.',
-  'Borrowed amounts are reported separately via the borrowed export, not in headline TVL.',
-].join(' ');
-
-async function tvlSei(api) {
-  await addMpoolSupplyTvl(api, seiConfig, allMPools(seiConfig));
-  await addStakingPoolTvl(api, seiConfig, allStakingPools(seiConfig));
+// MPool -> underlying
+const mPools = {
+  '0xC9B14f5164E6fE89D71E21D0B7c40Ee7db8367d4': WSEI, // mSEI
+  '0x9a50eDE5c7db417ebe65107d68Bda6c36c807859': ADDRESSES.sei.USDC_Circle, // mUSDC
+  '0x14914cA91A6C1d82F03c3fE51B4AAf7d031a37bF': ADDRESSES.sei.USDT0, // mUSDT0
 }
 
-async function borrowedSei(api) {
-  await addMpoolBorrowedTvl(api, seiConfig, allMPools(seiConfig));
+const stakingPools = [
+  '0xcfE179E0A6ca284Ec02E0c8656992c870371Ba03', // smSEI
+  '0xAa1331C59B8FA07bf17DA828328f11Ae43061513', // srSEI
+]
+
+async function tvl(api) {
+  await api.sumTokens({ tokensAndOwners: Object.entries(mPools).map(([pool, token]) => [token, pool]) })
+  await api.sumTokens({ owners: stakingPools, tokens: [WSEI, ADDRESSES.null] })
+  api.addGasToken(await api.multiCall({ abi: 'uint256:totalDelegated', calls: stakingPools }))
 }
 
-async function tvlBsc(api) {
-  if (bnbConfig.live === false) return;
-  await addMpoolSupplyTvl(api, bnbConfig, allMPools(bnbConfig));
-  await addStakingPoolTvl(api, bnbConfig, allStakingPools(bnbConfig));
-}
-
-async function borrowedBsc(api) {
-  if (bnbConfig.live === false) return;
-  await addMpoolBorrowedTvl(api, bnbConfig, allMPools(bnbConfig));
+async function borrowed(api) {
+  api.add(Object.values(mPools), await api.multiCall({ abi: 'uint256:totalBorrows', calls: Object.keys(mPools) }))
 }
 
 module.exports = {
-  methodology: METHODOLOGY,
+  methodology: 'TVL counts the underlying tokens held by the Marinus MPools and the SEI in the smSEI and srSEI staking pools (delegated plus liquid). Borrowed is the MPools totalBorrows.',
   hallmarks: [
     ['2026-10-20', 'Marinus moves to Sei; Harmony markets retired'],
   ],
-  sei: {
-    tvl: tvlSei,
-    borrowed: borrowedSei,
-  },
-  bsc: {
-    tvl: tvlBsc,
-    borrowed: borrowedBsc,
-  },
-  harmony: {
-    tvl: () => ({}),
-    borrowed: () => ({}),
-  },
-};
+  harmony: { tvl: () => ({}), borrowed: () => ({}) },
+  sei: { tvl, borrowed },
+}
