@@ -164,6 +164,7 @@ module.exports = {
   // poolMeta.poolCollaterals is not block scoped - the API returns the current collateral for any
   // block, so backfilling would rewrite history with today's holdings
   timetravel: false,
+  doublecounted: true, // we are counting collateral on other chains like bitcoin, these are not smart contracts, so should not be treated as defi tvl.
   methodology: 'TVL is pool cash and cash deployed in DeFi strategies on Ethereum, plus the loan collateral reported by the Maple API, each collateral asset counted on the chain it is custodied on. Borrowed is the principal outstanding on active loans, staking is the assets held in the stSYRUP vault.',
   ethereum: {
     tvl: ethereumTvl,
