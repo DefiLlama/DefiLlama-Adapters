@@ -11,16 +11,15 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       const { pools } = await getConfig('kumbaya/'+chain+'/paginated', undefined, {
         fetcher: async () => {
-          const pools = []
-          for (let offset = 0; offset <= 100000;) {
-            const page = await get(`${poolsEndpoint}&offset=${offset}`)
-            if (!Array.isArray(page.pools) || typeof page.hasMore !== 'boolean' || (page.hasMore && !page.pools.length))
-              throw new Error('Invalid Kumbaya pool page')
-            pools.push(...page.pools)
-            if (!page.hasMore) return { pools }
+          // pages are sorted by tvl, so a pool can shift across pages between requests: dedup by address
+          const pools = {}
+          let offset = 0, page
+          do {
+            page = await get(`${poolsEndpoint}&offset=${offset}`)
+            page.pools.forEach(pool => pools[pool.address.toLowerCase()] = pool)
             offset += page.pools.length
-          }
-          throw new Error('Kumbaya pool pagination exceeded the supported offset')
+          } while (page.hasMore && page.pools.length)
+          return { pools: Object.values(pools) }
         }
       })
       return api.sumTokens({ 
