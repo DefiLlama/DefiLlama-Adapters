@@ -63,7 +63,9 @@ async function grvtVaultTvl(api) {
 // idle funds in a compartment with no venues are counted too.
 const GRVT_COMPARTMENT_REGISTRY = '0x55e271ae274BE015Fc46cdf43a2C7C96eF1dFB89'
 const GRVT_COMPARTMENT_READER = '0x9D673635b63ca5A550eBb1cA3e0F7765CB434162'
+const GRVT_COMPARTMENT_REGISTRY_BLOCK = 26306312 // registry deployment; the first compartment came later
 async function grvtCompartmentTvl(api) {
+  if (await api.getBlock() < GRVT_COMPARTMENT_REGISTRY_BLOCK) return
   const count = await api.call({ abi: 'uint256:compartmentCount', target: GRVT_COMPARTMENT_REGISTRY })
   const infos = await api.multiCall({
     abi: 'function compartmentAt(uint256) view returns (address compartment, uint8 entityType, uint256 entityId)',
