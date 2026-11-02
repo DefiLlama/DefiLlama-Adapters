@@ -3999,14 +3999,6 @@
     },
     "deadFrom": "2026-07-17"
   },
-  "marinus": {
-    "methodology": "TVL is tracked as the underlying liquidity supplied to Marinus mToken markets (mWONE/mUSDC/mUSDT) on Harmony — pool cash plus each pool's lend strategy — and ONE in the Validator and Stablecoin-Reward pools (delegated + WONE + native ONE). Borrowed (totalBorrows) is reported separately.",
-    "harmony": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "deadFrom": "2026-09-15"
-  },
   "market.xyz": {
     "deadFrom": "2023-10-22",
     "misrepresentedTokens": true,
