@@ -1,44 +1,28 @@
 /**
- * Marinus Protocol — Harmony Finance TVL adapter for DefiLlama-Adapters.
+ * Marinus Protocol — DefiLlama TVL adapter.
  *
- * NOT connected to DeFiLlama from this repo. Copy this folder into
- * https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/projects/marinus
- * and open a PR when ready to list. Rename *.cjs → *.js in that repo (CJS).
- *
- * TVL methodology matches the Marinus frontend:
- * - Lending: mPool total supplied (active mToken supply × exchange rate, minus burn address)
- * - Staking: ValidatorStakingPool + StablecoinRewardStakingPool (delegated + wrapped native + native gas token)
- * - Sei: `addresses-sei.json` + `module.exports.sei` (mSEI/mUSDC/mUSDT0 + smSEI/srSEI)
- * - BNB Finance: `addresses-bnb.json` + `module.exports.bsc` (empty until BSC MPools deploy)
+ * - Sei (primary): `addresses-sei.json` (mSEI/mUSDC/mUSDT0 MPools + smSEI/srSEI staking)
+ * - BNB Finance (bsc): `addresses-bnb.json` (reports zero until BSC MPools deploy)
+ * - Harmony (historic): markets retired 2026-10-20 when Marinus moved to Sei.
+ *   Export returns empty so past Harmony TVL stays in history without new datapoints.
  */
 
-const harmonyConfig = require('./marinus/addresses.json');
 const seiConfig = require('./marinus/addresses-sei.json');
 const bnbConfig = require('./marinus/addresses-bnb.json');
 const { addMpoolSupplyTvl, addMpoolBorrowedTvl, allMPools } = require('./marinus/mpool');
 const { addStakingPoolTvl, allStakingPools } = require('./marinus/staking');
 
 const METHODOLOGY = [
-  'Harmony: TVL counts total assets supplied to Marinus MPools (mWONE, mUSDC, mUSDT),',
+  'Sei: TVL counts total assets supplied to Marinus MPools (mSEI, mUSDC, mUSDT0),',
   'using active mToken supply times a supply-only exchange rate (non-borrow backing plus liquidation surplus to suppliers),',
   'excluding mTokens sent to the burn address; empty pools use totalLiquidity().',
-  'Staking TVL adds ONE-equivalent backing in ValidatorStakingPool (smONE) and StablecoinRewardStakingPool (srONE):',
-  'totalDelegated plus liquid WONE and native ONE.',
-  'Sei: same MPool supply methodology for mSEI, mUSDC, and mUSDT0; staking adds SEI-equivalent backing in smSEI VSP and srSEI SRP',
+  'Staking TVL adds SEI-equivalent backing in the smSEI ValidatorStakingPool and srSEI StablecoinRewardStakingPool',
   '(totalDelegated plus liquid WSEI and native SEI).',
-  'BNB Chain (bsc): same methodology when BNB Finance MPools are listed in addresses-bnb.json; until then exports report zero TVL.',
+  'BNB Chain (bsc): same methodology once BNB Finance MPools are listed in addresses-bnb.json; until then it reports zero.',
+  'Harmony: historic only. Marinus Harmony markets were retired on 2026-10-20 and no longer report TVL.',
   'Only current canonical pool addresses are included.',
   'Borrowed amounts are reported separately via the borrowed export, not in headline TVL.',
 ].join(' ');
-
-async function tvlHarmony(api) {
-  await addMpoolSupplyTvl(api, harmonyConfig, allMPools(harmonyConfig));
-  await addStakingPoolTvl(api, harmonyConfig, allStakingPools(harmonyConfig));
-}
-
-async function borrowedHarmony(api) {
-  await addMpoolBorrowedTvl(api, harmonyConfig, allMPools(harmonyConfig));
-}
 
 async function tvlSei(api) {
   await addMpoolSupplyTvl(api, seiConfig, allMPools(seiConfig));
@@ -62,10 +46,9 @@ async function borrowedBsc(api) {
 
 module.exports = {
   methodology: METHODOLOGY,
-  harmony: {
-    tvl: tvlHarmony,
-    borrowed: borrowedHarmony,
-  },
+  hallmarks: [
+    ['2026-10-20', 'Marinus moves to Sei; Harmony markets retired'],
+  ],
   sei: {
     tvl: tvlSei,
     borrowed: borrowedSei,
@@ -73,5 +56,9 @@ module.exports = {
   bsc: {
     tvl: tvlBsc,
     borrowed: borrowedBsc,
+  },
+  harmony: {
+    tvl: () => ({}),
+    borrowed: () => ({}),
   },
 };
