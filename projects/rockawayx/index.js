@@ -155,11 +155,9 @@ async function accountableTvl(api, entries) {
 
   // NAV = assets deployed by the strategy + idle assets held by its vault, which matches the vault share price.
   // lastTotalAssets is not the NAV: it lags and reads 0 on some strategies.
-  const [assets, vaults, deployed] = await Promise.all([
-    api.multiCall({ abi: 'address:asset', calls: strategies }),
-    api.multiCall({ abi: 'address:vault', calls: strategies }),
-    api.multiCall({ abi: 'uint256:deployedAssets', calls: strategies }),
-  ]);
+  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies });
+  const vaults = await api.multiCall({ abi: 'address:vault', calls: strategies });
+  const deployed = await api.multiCall({ abi: 'uint256:deployedAssets', calls: strategies });
   api.add(assets, deployed);
   await api.sumTokens({ tokensAndOwners: assets.map((asset, i) => [asset, vaults[i]]) });
 }
