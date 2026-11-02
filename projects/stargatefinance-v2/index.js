@@ -9,10 +9,8 @@ const CONFIG = {
       '0x933597a323Eb81cAe705C5bC29985172fd5A3973',
       '0xcDafB1b2dB43f366E48e6F614b8DCCBFeeFEEcD3',
       '0x268Ca24DAefF1FaC2ed883c598200CcbB79E931D',
+      '0x783129E4d7bA0Af0C896c239E57C06DF379aAE8c', // eurc pool
     ],
-    laterPools: {
-      '0x783129E4d7bA0Af0C896c239E57C06DF379aAE8c': 1756256951, // eurc pool, block 23229076
-    },
   },
   bsc: {
     pools: [
@@ -148,26 +146,22 @@ const CONFIG = {
     ],
   },
   doma: {
-    pools: [],
-    laterPools: {
-      '0x5d46805BBFAcA875a96Ebbd22Aaa3DE4A81180f5': 1762281779, // eth pool, block 2156514
-    },
+    pools: [
+      '0x5d46805BBFAcA875a96Ebbd22Aaa3DE4A81180f5', // eth pool
+    ],
   },
 }
 
-// laterPools: pools deployed after the chain was added, keyed by deployment timestamp, so older dates skip them
-const createTvlFunction = (pools, laterPools = {}) => {
+const createTvlFunction = (pools) => {
   return async (api) => {
-    const owners = pools.concat(Object.keys(laterPools).filter((pool) => !api.timestamp || api.timestamp >= laterPools[pool]))
-    if (!owners.length) return api.getBalances() // nothing deployed yet, skip the block lookup
-    const tokens = await api.multiCall({ abi: 'address:token', calls: owners, })
-    return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
+    const tokens = await api.multiCall({ abi: 'address:token', calls: pools, })
+    return sumTokens2({ api, tokensAndOwners2: [tokens, pools] })
   };
 };
 
 Object.keys(CONFIG).forEach((chain) => {
-  const { pools, laterPools } = CONFIG[chain];
+  const { pools } = CONFIG[chain];
   module.exports[chain] = {
-    tvl: createTvlFunction(pools, laterPools),
+    tvl: createTvlFunction(pools),
   };
 });
