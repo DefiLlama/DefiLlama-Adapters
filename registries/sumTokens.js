@@ -26966,7 +26966,9 @@ const configs = {
           "0xbF4cFccd11257e568A936a7867D138f54A43cffa"
         ],
         "tokens": [
-          ADDRESSES.ethereum.USDC 
+          ADDRESSES.ethereum.USDC,
+          "0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a", // enzoBTC
+          "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c" // aEthUSDC
         ]
       }
     }
