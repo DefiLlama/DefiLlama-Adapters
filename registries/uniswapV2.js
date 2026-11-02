@@ -3404,12 +3404,6 @@ const uniV2Configs = {
     q: '0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4',
     rsk: '0x69D10bc18cd588a4B70F836A471D4e9c2Fd86092',
   },
-  'hybra-v4': {
-    hyperliquid: {
-      factory: '0x32b9dA73215255d50D84FeB51540B75acC1324c2', fetchBalances: true, permitFailure: true, useDefaultCoreAssets: false,
-      abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
-    },
-  },
   'icecreamswap': {
     shimmer_evm: '0x24cb308a4e2F3a4352F513681Bd0c31a0bd3BA31',
     bob: '0x7b2a5C88AB9367147F6ac384F857CbaDF5aA70a7',

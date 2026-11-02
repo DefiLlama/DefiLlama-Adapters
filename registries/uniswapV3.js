@@ -703,17 +703,6 @@ const uniV3Configs = {
       isAlgebra: true,
     },
   },
-  'hybra-v3': {
-    hyperliquid: {
-      factory: '0x2dC0Ec0F0db8bAF250eCccF268D7dFbF59346E5E',
-      fromBlock: 6523521,
-      permitFailure: true,
-    },
-    robinhood: {
-      factory: '0xCeFc5Da47d766Fb6b48Da92D75d66b3264593d0f', 
-      fromBlock: 58245132
-    },
-  },
   'hydrex': {
     base: {
       factory: '0x36077D39cdC65E1e3FB65810430E5b2c4D5fA29E',
