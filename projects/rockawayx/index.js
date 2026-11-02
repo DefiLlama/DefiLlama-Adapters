@@ -40,9 +40,13 @@ const LISTA_VAULTS = {
   ],
 };
 
+// fromBlock: strategy deployment block
 const ACCOUNTABLE_VAULTS = {
   ethereum: [
-    '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', // Accountable USDC yield strategy
+    { strategy: '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', fromBlock: 25143624 }, // Accountable USDC yield strategy
+  ],
+  monad: [
+    { strategy: '0x945dc31B38C811A0188b5b30cF1EA7721666cF7c', fromBlock: 89634915 }, // Tori Ecosystem Monad (metrUSD)
   ],
 };
 
@@ -144,14 +148,18 @@ for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
   };
 }
 
-async function accountableTvl(api, strategies) {
-  // Accountable yield strategies report their NAV (deployed + idle assets) via lastTotalAssets
-  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies, permitFailure: true });
-  const totalAssets = await api.multiCall({ abi: 'uint256:lastTotalAssets', calls: strategies, permitFailure: true });
-  for (let i = 0; i < strategies.length; i++) {
-    if (!assets[i] || totalAssets[i] === null || totalAssets[i] === undefined) continue;
-    api.add(assets[i], totalAssets[i]);
-  }
+async function accountableTvl(api, entries) {
+  // the calls below revert before deployment, which would fail the chain's other TVL sources on historical runs
+  const strategies = entries.filter(({ fromBlock }) => !api.block || api.block >= fromBlock).map(({ strategy }) => strategy);
+  if (!strategies.length) return;
+
+  // NAV = assets deployed by the strategy + idle assets held by its vault, which matches the vault share price.
+  // lastTotalAssets is not the NAV: it lags and reads 0 on some strategies.
+  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies });
+  const vaults = await api.multiCall({ abi: 'address:vault', calls: strategies });
+  const deployed = await api.multiCall({ abi: 'uint256:deployedAssets', calls: strategies });
+  api.add(assets, deployed);
+  await api.sumTokens({ tokensAndOwners: assets.map((asset, i) => [asset, vaults[i]]) });
 }
 
 for (const [chain, vaults] of Object.entries(ACCOUNTABLE_VAULTS)) {
