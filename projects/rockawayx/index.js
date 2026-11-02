@@ -44,6 +44,9 @@ const ACCOUNTABLE_VAULTS = {
   ethereum: [
     '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', // Accountable USDC yield strategy
   ],
+  monad: [
+    '0x945dc31B38C811A0188b5b30cF1EA7721666cF7c', // Tori Ecosystem Monad (metrUSD)
+  ],
 };
 
 const configs = {
@@ -145,13 +148,15 @@ for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
 }
 
 async function accountableTvl(api, strategies) {
-  // Accountable yield strategies report their NAV (deployed + idle assets) via lastTotalAssets
-  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies, permitFailure: true });
-  const totalAssets = await api.multiCall({ abi: 'uint256:lastTotalAssets', calls: strategies, permitFailure: true });
-  for (let i = 0; i < strategies.length; i++) {
-    if (!assets[i] || totalAssets[i] === null || totalAssets[i] === undefined) continue;
-    api.add(assets[i], totalAssets[i]);
-  }
+  // NAV = assets deployed by the strategy + idle assets held by its vault, which matches the vault share price.
+  // lastTotalAssets is not the NAV: it lags and reads 0 on some strategies.
+  const [assets, vaults, deployed] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: strategies }),
+    api.multiCall({ abi: 'address:vault', calls: strategies }),
+    api.multiCall({ abi: 'uint256:deployedAssets', calls: strategies }),
+  ]);
+  api.add(assets, deployed);
+  await api.sumTokens({ tokensAndOwners: assets.map((asset, i) => [asset, vaults[i]]) });
 }
 
 for (const [chain, vaults] of Object.entries(ACCOUNTABLE_VAULTS)) {
