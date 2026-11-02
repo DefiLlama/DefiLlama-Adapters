@@ -1942,6 +1942,11 @@ const uniV3Configs = {
     start: '2026-10-11',
     vechain: { factory: '0xc2faf0f48fb7763b28e6f7e415c50b360cc1a096', fromBlock: 26117867 },
   },
+  'camelot-v4': {
+    start: '2025-10-21', // factory deployed at block 391829824 (2025-10-21 10:16 UTC)
+    methodology: 'Value of the tokens held in the Camelot V4 (Algebra Integral) pools on Arbitrum, discovered from the factory Pool events.',
+    arbitrum: { factory: '0xBefC4b405041c5833f53412fF997ed2f697a2f37', fromBlock: 391829824, isAlgebra: true },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
