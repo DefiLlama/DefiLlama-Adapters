@@ -9,6 +9,7 @@ const CONFIG = {
       '0x933597a323Eb81cAe705C5bC29985172fd5A3973',
       '0xcDafB1b2dB43f366E48e6F614b8DCCBFeeFEEcD3',
       '0x268Ca24DAefF1FaC2ed883c598200CcbB79E931D',
+      '0x783129E4d7bA0Af0C896c239E57C06DF379aAE8c', // eurc pool
     ],
   },
   bsc: {
@@ -142,6 +143,11 @@ const CONFIG = {
     pools: [
       ADDRESSES.doma.USDC_e, // usdc pool
       '0x0829f361a05d993d5ceb035ca6df3446b060970b' // weth pool
+    ],
+  },
+  doma: {
+    pools: [
+      '0x5d46805BBFAcA875a96Ebbd22Aaa3DE4A81180f5', // eth pool
     ],
   },
 }
