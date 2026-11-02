@@ -40,12 +40,13 @@ const LISTA_VAULTS = {
   ],
 };
 
+// fromBlock: strategy deployment block
 const ACCOUNTABLE_VAULTS = {
   ethereum: [
-    '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', // Accountable USDC yield strategy
+    { strategy: '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', fromBlock: 25143624 }, // Accountable USDC yield strategy
   ],
   monad: [
-    '0x945dc31B38C811A0188b5b30cF1EA7721666cF7c', // Tori Ecosystem Monad (metrUSD)
+    { strategy: '0x945dc31B38C811A0188b5b30cF1EA7721666cF7c', fromBlock: 89634915 }, // Tori Ecosystem Monad (metrUSD)
   ],
 };
 
@@ -147,7 +148,11 @@ for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
   };
 }
 
-async function accountableTvl(api, strategies) {
+async function accountableTvl(api, entries) {
+  // the calls below revert before deployment, which would fail the chain's other TVL sources on historical runs
+  const strategies = entries.filter(({ fromBlock }) => !api.block || api.block >= fromBlock).map(({ strategy }) => strategy);
+  if (!strategies.length) return;
+
   // NAV = assets deployed by the strategy + idle assets held by its vault, which matches the vault share price.
   // lastTotalAssets is not the NAV: it lags and reads 0 on some strategies.
   const [assets, vaults, deployed] = await Promise.all([
