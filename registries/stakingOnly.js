@@ -1411,6 +1411,14 @@ const configs = {
       staking: ['0xB078cc304A0B264C5F3680DC0488954ACcd02E87', '0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'],
     },
   },
+  "bond-ceo": {
+    "methodology": "BOND staked in the BOND staking contract. Pool2 is BOND/USDG liquidity staked in LP staking.",
+    "start": "2026-10-07",
+    "robinhood": {
+      staking: ['0x8b22e1e453ccc7fbb109d3509c48ba81965d838b', '0xeb288e3ca1607e7b921bcb47d5831e88331d65ef'],
+      pool2: ['0x68349d68660134ec1b2bcaab68423a5792cfd2a7', '0xbe5296539b19da2ce4771f9725e9de1073281015'],
+    },
+  },
   "nukes-fun": {
     "methodology": "NUKE staked in the NUKES.FUN staking contract",
     "robinhood": {
