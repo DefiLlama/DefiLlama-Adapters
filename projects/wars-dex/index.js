@@ -7,10 +7,9 @@ const { transformBalances } = require('../helper/portedTokens')
 const WARS_DEX = '0xe30a26a598182ea2e7d8b984d261ecca63c595e1c0c8a9b5f8b51b7387ed4c48'
 const SUPRA_FA = '0xa' // the SUPRA coin's paired fungible asset, what the pools hold
 const PAGE = 100 // pool_list returns at most 100 pools a call
-// fungible assets that are the paired FA of a coin DefiLlama prices by its coin type (same mapping as projects/atmos-dex)
+// the dexUSDC fungible asset is the paired FA of the dexUSDC coin, which DefiLlama prices by its coin type
 const FA_TO_COIN = {
   '0xbb3c1ca1ef67b1a994f2463978695c7bf890710182f75edef05ad08490be3658': ADDRESSES.supra.dexUSDC,
-  '0x4b28b64c9fa2e5a10f8fb57f1df741f40f58d1eafcfb6ae7c6cfbc68c83d32f7': '0x9176f70f125199a3e3d5549ce795a8e906eed75901d535ded623802f15ae3637::cdp_multi::CASH',
 }
 
 async function getPools() {
