@@ -4182,6 +4182,10 @@ const configs = {
       owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
       tokens: [nullAddress],
     },
+    avax: {
+      owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
+      tokens: [nullAddress, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt],
+    },
     solana: {
       owners: [
         'GRbpmTbmDeGn8BXHXb1jfEeUT6sGAt7Da44YpWxCS8nr', // ops wallet
