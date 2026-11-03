@@ -6,7 +6,7 @@ const { POSITION_V2_DISCRIMINATOR } = require('../helper/utils/solana/layouts/me
 
 // Milk Money runs concentrated-liquidity positions on Meteora DLMM from a set of protocol-owned wallets:
 // guard vaults (program-guarded PDAs whose operator can only move funds into positions or to a pinned treasury),
-// the agent wallets that trade new pairs, and the launch / sniper fleet. Treasury pools turn their fees into $MM
+// the agent wallets that trade new pairs. Treasury pools turn their fees into $MM
 // buybacks; reward pools pay their fees to $MM stakers.
 const OWNERS = [
   // guard vaults
@@ -19,35 +19,6 @@ const OWNERS = [
   '8tdfeokyWnNo7DqVp6DxYEXb4DX5Yy8jFE4zVA4PgLCj', '5DXzW87LWFScko1TeVrD1BKyoUUNYgoQC56JeBU3nBQV',
   'GqAWG8Md3KiRy6cUNhU9YYuE2hZvXo7NZDpbGxcBWkJn', 'dDQJgFpoFeUBrx9Nd6dojFDCQ8md47TCqJWTRzmrfmL',
   'BEdFPovfLGQkCCVrEys5V28YH8QfDXnKpAXJvwpEBqU7', 'F3o6pmCYgYFYs2u6AMvpL7PScUYKaiiUjtvrUejVHc1w',
-  // sniper fleet
-  '88nkMXa9SVNXUTt3ZxFTaZJeXpjQ5P7YdTFViXYFESKw', 'AVAKhEMvKMBxv3QMuexacsrQyTGq6pM37tWAPrvqQee7',
-  'E9xshAhJRkxffUQ3Xkz1eDHeAGswg6EaELqcFkNToLY', '6HbWQ8ffnCFEWzm1U7JLNfeRtjpa1Y8CEbX4BWJSeBmX',
-  'FxKMjRxphRpBTGzD23qsLqMC75v5gqF9CCp4V4zMKW8U', '5kVThhbgky3v8u1zfmKBKs7wu3x3MtLiJzNFko9gB3F8',
-  '2j4B69YJZv1kBgRXe9Jv1Y7xZj9CdZPgo3FfSzt2buz3', '6gGBtEGmZAjMy2tMNe3ySq33D82198TWvGNH37T7BhJc',
-  'EkLeZ1mTdDG2tTSykg8AmQTFCugdmsgiqM1y731Y2B7W', 'B3dsYyimn9hk3a2efAnQTaA47x6F1p9nnLi8PbiPysPM',
-  '5sak5ey9nu8Vv9LLiTTxxbQnFkAxcdzFZU5qgqenHGkr', 'FqBzGnvpwYAv3HRzqzCchEx3xwLuQAphWHA2Eo4FW39m',
-  'FCCgJZwCBikC2ixzkkZ8h5PjCVPJVZqgFmJZ7RkPQA1s', 'G1bG8EM8GNyaPoHNbppdXaBQw9aYw8wQy4RQVSbnB35K',
-  'MqqpUuFad5DXbeX3Md4yquHch2EZPwTURf8hvYxGm1i', 'DFmpa1LZywquvXaFPToJmu7TkpNpa7fqKr8LwhYLLPuL',
-  // launch wallets
-  '98rstbGaABBMGyXsLHGsuRRA266oV4d8ggD2tcHGWY35', '6ZNQhTTfiDvNFxQcFVJM33kn6d9Sq1YKf4KCdsB7Ps9B',
-  'BpZsGMnSwvDTXmiijSyXdgEXmJMH1YTb2JTQxMvW5Dcf', 'AmmfnooFhPR2wkhq1anDZEddM9eN3is6cVe5CZRvKTPk',
-  '3NDk6yAZTAib6QsKAE6kgF7rMea9i7PcHGm5C9qnkkMX', 'Azo6F9Mg5icJ7ogk1pWeDKjbZtbzwQUWbgkTzWoRFrBr',
-  'AJMbGoAocEjuxFEXATvXxrAh1VzPzdXHtkmnYuxfZYry', 'GiAZGJEQf8n1TGTcPxRyF6BLGnh4RXTHXCjBckk925my',
-  'F1pWuTFiKQ433qhLkvmeLQxdS5WqDFNkQ2kXPLJWzNB4', 'HGfby1w9doLGoU9d5xvFt8pFgMbjsErRcoddMEUehD24',
-  '8bgGtqQLpkguaJk16QsNqb82Xi3jcNpnBFVfSQkPrNQ7', '5egFdzypuDkaGePZj7huLX53nKCE31ef7z4WjnhLnspT',
-  'BSrSgpsQ4PTP9cXtapXU4tsMEDAipVzgszNFRu5NtqT1', '9Rm21xnXtMPqU3nq92q7KvcfGmZhcSC68JQV435bngfM',
-  'DeRsvWskcKSYZr358h1ZLA2uzjGVNCDskGsBwgTq89FD', 'FBL2cqbXWCV2N8ytFRrcnoEpBaADySB71EwhZQTjfTQF',
-  '5WmnXH5vACAs869PrSyiBnkUJXbTxY8sudJvuJGjrSBo', '7rZY4QPnXZbF3FUWDVrMs7mFbAp9zCgRqjfi7Kep8qPB',
-  'FBTsQBNa11ywQ8XqKWctTRvXa7PJ4XokbBtigAcSkTzY', 'BoD4rkawpL9ZYeFYeYc4Rx7FzuNSXe7ZfwAgUKHsgz1Y',
-  'jhU3n8oM4auHPpgJfWxiL87wwLuY6P8og7ZkQjho6qn', '5vJYB44boFABmRScVtccoPF3sGG3bprD1PkdzsdRX2A6',
-  'GxH8x4BopU8V3koBGYKa4JmXT4rZms88i4uXa3Bevjbb', 'ARG52vV9iw7cGmRWLv7zJyRpseuyHNFQfUC9m4wWkzsJ',
-  'rQwBoHyctjdSLoowg7UoWcnkV2MCgobRd7r9mySgRmU', 'Ab71UihnR8hGMKd3SwSq4bKv9GL4gmBAsjL5BnsHC3E9',
-  'H86vYp5r7bL2TAGYnmvZ8noYX1yR9QK6UUVfAeArtfjf',
-  // MMRUSH legs
-  'FwBzxq1Ea8tRvikWVzp5tMUuL5iKKeAABmCqSbjxG47j', '9796JDcgeshKHZabQCe3H7wMkmPxZpBZXq5xNh6jnZYN',
-  'DV2XWWjwawFAqTNFqXT8UmuxzQiAqbFKCZ6XBa83nFju', 'BWAL3C6gwnTQFhrbtFDx2V9goWpSeXRDpB5JZni7eSB7',
-  'B7QEKYHDHqeRwb6GpGPMRpX56gria9sDVpkAaYyM81Fw', 'Gp5q7LKzp9Ayx6f6tMQusG3Kpv91Do7o6gmZP3MsGdKK',
-  'Bj3ccDzAazGxgAdkSrG8MYbW9mWL7oTqJ9U2Dtiud1cT',
 ]
 
 // the $MM staking pool's stake vault (token account): staked $MM, reported separately from TVL
@@ -64,10 +35,12 @@ async function tvl(api) {
   // every DLMM PositionV2 owned by one of the protocol wallets (owner sits at offset 40, after the lbPair);
   // no dataSize filter because resized positions are larger than the base account
   const positionKeys = []
+  // one owner-filtered scan per wallet, one at a time three seconds apart: the public RPC caps getProgramAccounts hard
   await sdk.util.runInPromisePool({
-    concurrency: 2,
+    concurrency: 1,
     items: OWNERS,
     processor: async (owner) => {
+      await new Promise(resolve => setTimeout(resolve, 3000))
       const rows = await connection.getProgramAccounts(DLMM_PROGRAM, {
         filters: [
           { memcmp: { offset: 0, bytes: bs58.encode(POSITION_V2_DISCRIMINATOR) } },
@@ -131,7 +104,7 @@ module.exports = {
   timetravel: false,
   doublecounted: true, // the liquidity sits in Meteora DLMM pools, which DefiLlama already counts
   isHeavyProtocol: true, // one owner-filtered position scan per protocol wallet
-  methodology: 'TVL is the principal of the Meteora DLMM positions owned by Milk Money\'s protocol wallets (guard vaults, agent wallets and the launch and sniper fleet), valued from the pools\' on-chain bin state; unclaimed fees are excluded. Staking is the $MM held in the staking pool\'s stake vault.',
+  methodology: 'TVL is the principal of the Meteora DLMM positions owned by Milk Money\'s protocol wallets (guard vaults and agent wallets), valued from the pools\' on-chain bin state; unclaimed fees are excluded. Staking is the $MM held in the staking pool\'s stake vault.',
   solana: {
     tvl,
     staking: () => sumTokens2({ tokenAccounts: [MM_STAKE_VAULT] }),
