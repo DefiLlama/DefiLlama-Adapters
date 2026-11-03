@@ -26,6 +26,15 @@ const CWK_WSHIDO_POOL = "0x617495ea61B79032437774a7a0C58795C74aEEe3";
 const CHINA_WSHIDO_POOL = "0xF5C547C7821eE9B836E2A5a6d08cE74B15F94D47";
 const Q192 = 2n ** 192n;
 
+/**
+ * Calculates the Total Value Locked (TVL) for AetherZone on Shido Network.
+ * Discovers staking pools dynamically from V6 and V7 factories, sums locked tokens
+ * across pools and escrow contracts, and converts unlisted ecosystem tokens (CWK, CHINA)
+ * to WSHIDO equivalents using Uniswap V3 on-chain pool prices.
+ *
+ * @param {object} api - The DeFiLlama SDK chain API object for querying on-chain data.
+ * @returns {Promise<object>} The aggregated balances object containing token amounts.
+ */
 async function tvl(api) {
   // 1. Dynamically discover all staking pools from V6 and V7 factories
   const dynamicPools = (
