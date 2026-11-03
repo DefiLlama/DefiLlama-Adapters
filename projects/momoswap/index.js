@@ -136,6 +136,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Counts the COOK held in the payment vault of every MomoSwap bonding-curve launch: launches still raising on the curve, expired launches whose raised COOK stays in the vault until participants claim it, and the unvested creator allocation that graduation withholds from the AMM migration and releases to the creator over time. Also counts the COOK in the payment vault of every MomoSwap NFT drop: the live raise, the permanent floor reserve locked at graduation (redeemable only by burning an item), escrow for pending post-graduation mints, and the raise of ended drops awaiting wind-down redemption. Accrued trade fees in the creator and platform vaults are not counted.',
+  methodology: 'Counts the COOK held in the payment vault of every MomoSwap bonding-curve launch: launches still raising on the curve, expired launches whose raised COOK stays in the vault until participants claim it, and the unvested creator allocation that graduation withholds from the AMM migration and releases to the creator over time. Also counts the COOK in the payment vault of every MomoSwap NFT drop: the live raise, the permanent floor reserve locked at graduation, escrow for pending post-graduation mints, and the raise of ended drops awaiting wind-down redemption.',
   cookiechain: { tvl },
 }
