@@ -31,9 +31,9 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
     }
   }
   if (forceCacheUse) throw new Error('timestamp is too old, cant pull with forceCacheUse flag set')
+  if (!owners.length) return balances
 
-  const isRefill = timestamp % 86400 === 0 && utcDate(timestamp) < utcDate(now) // day-start run for a past day
-  if (owners.length && isRefill && getEnv('ALLIUM_API_KEY')) {
+  if (getEnv('ALLIUM_API_KEY')) {
     try {
       sdk.util.sumSingleBalance(balances, 'bitcoin', await getAlliumBalance(owners, timestamp))
       return balances
@@ -47,12 +47,10 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
   return balances
 }
 
-const utcDate = (ts) => new Date(ts * 1e3).toISOString().slice(0, 10)
-
 // refills: one Allium end-of-day snapshot query instead of an archive walk per address
 async function getAlliumBalance(owners, timestamp) {
   const { queryAllium } = require('../allium')
-  const date = utcDate(timestamp - 86400)
+  const date = new Date((timestamp - 86400) * 1e3).toISOString().slice(0, 10)
   const [{ sats }] = await queryAllium(`
     SELECT SUM(raw_balance) AS sats FROM (
       SELECT raw_balance FROM bitcoin.assets.balances_daily
