@@ -35,6 +35,11 @@ node test.js projects/pangolin/index.js
 node test.js projects/aave/v3.js 1729080692
 # or using YYYY-MM-DD
 node test.js projects/aave/v3.js 2024-10-16
+# The projects/ prefix is optional
+node test.js pangolin
+# Add a chain name to only run that chain, it can be combined with a timestamp
+node test.js uniswap base
+node test.js uniswap base 2024-10-16
 ```
 
 ## Changing RPC providers

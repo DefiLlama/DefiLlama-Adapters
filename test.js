@@ -9,6 +9,7 @@ process.on('unhandledRejection', handleError)
 process.on('uncaughtException', handleError)
 
 const path = require("path");
+const fs = require("fs");
 const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
   blocks: { getBlocks },
@@ -90,10 +91,14 @@ function mergeBalances(key, storedKeys, balancesObject) {
 
 if (process.argv.length < 3) {
   console.error(`Missing argument, you need to provide the filename of the adapter to test.
-    Eg: node test.js projects/myadapter.js`);
+    Eg: node test.js projects/myadapter.js [chain] [timestamp]`);
   process.exit(1);
 }
 let passedFile = path.resolve(process.cwd(), process.argv[2]);
+// allow `npm test uniswap-v4` as shorthand for `npm test projects/uniswap-v4`
+const projectsFile = path.resolve(__dirname, 'projects', process.argv[2]);
+if (!fs.existsSync(passedFile) && (fs.existsSync(projectsFile) || fs.existsSync(projectsFile + '.js')))
+  passedFile = projectsFile;
 
 const originalCall = sdk.api.abi.call
 sdk.api.abi.call = async (...args) => {
@@ -165,8 +170,21 @@ function validateHallmarks(hallmark) {
     module.hallmarks.forEach(validateHallmarks)
   }
   // await initCache()
-  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
+  let chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
+
+  // optional chain filter, in either position: `npm test uniswap-v4 base [timestamp]`
+  const extraArgs = process.argv.slice(3)
+  const chainArg = extraArgs.find(arg => chainList.includes(arg))
+  const timestampArg = extraArgs.find(arg => arg !== chainArg)
+  if (chainArg) {
+    // registry modules also carry a `meta` object, only drop keys exporting tvl functions
+    const exportedChains = chains.filter(chain => Object.values(module[chain]).some(v => typeof v === 'function'))
+    if (!exportedChains.includes(chainArg))
+      throw new Error(`Chain ${chainArg} is not exported by this adapter, available chains: ${exportedChains.join(', ')}`)
+    exportedChains.filter(chain => chain !== chainArg).forEach(chain => delete module[chain])
+    chains = chains.filter(chain => !exportedChains.includes(chain) || chain === chainArg)
+  }
 
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
@@ -187,7 +205,7 @@ function validateHallmarks(hallmark) {
     return Math.floor(ms / 1000);
   }
 
-  const passedTimestamp = parseTimestampArg(process.argv[3]);
+  const passedTimestamp = parseTimestampArg(timestampArg);
   if (passedTimestamp !== undefined) {
     unixTimestamp = passedTimestamp
 
