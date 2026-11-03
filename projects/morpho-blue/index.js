@@ -80,8 +80,11 @@ const getMarketsCollateral = async (api, ids) => {
   const { morphoBlue } = config[api.chain]
   const collateralById = new Map(ids.map((id) => [id, 0n]))
   if (!ids.length) return collateralById
-  const logsByMarket = await Promise.all(ids.map((id) => getMorphoLogs(api,
-    { eventAbi: eventAbis.supplyCollateral, topics: [supplyCollateralTopic, id], extraKey: `collateral-${id}` })))
+  // full-history scans: the indexer serves them in seconds (rpc fallback on chains it lacks)
+  const logsByMarket = []
+  for (const id of ids)
+    logsByMarket.push(await getMorphoLogs(api,
+      { eventAbi: eventAbis.supplyCollateral, topics: [supplyCollateralTopic, id], extraKey: `collateral-${id}`, useIndexer: true }))
   const calls = []
   logsByMarket.forEach((logs, i) => {
     // id comes from the market we queried for, not the log: a provider that widens the topic filter then
