@@ -1,6 +1,7 @@
 const { PublicKey } = require('@solana/web3.js')
 const bs58 = require('bs58').default || require('bs58')
-const { getConnection, sumTokens2, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } = require('../helper/solana')
+const { svm, rpc } = require('@defillama/sdk').chains
+const { sumTokens2, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } = require('../helper/solana')
 
 // Akashi vaults: Senior/Junior USDC vaults whose deposits the vault program allocates to
 // lending and credit protocols through adapter programs. Each vault keeps its cash in
@@ -48,25 +49,29 @@ const legAuthority = (vault, index) =>
   PublicKey.findProgramAddressSync([Buffer.from('leg_auth'), vault.toBuffer(), Buffer.from([index])], PROGRAM_ID)[0].toBase58()
 
 async function tvl(api) {
-  const connection = getConnection()
-  const vaults = await connection.getProgramAccounts(PROGRAM_ID, {
+  // DefiLlama's Solana endpoints, rotated with retries on a failed or rate-limited call
+  const endpoints = svm.getEndpoints({ chain: 'solana' })
+  const vaults = await rpc.jsonRpc('getProgramAccounts', [PROGRAM_ID.toBase58(), {
+    encoding: 'base64',
     filters: [{ memcmp: { offset: 0, bytes: bs58.encode(VAULT_DISCRIMINATOR) } }],
-  })
+  }], { chain: 'solana', endpoints })
   const tokenAccounts = []
   const legAuthorities = []
   for (const { pubkey, account } of vaults) {
-    const { idleAccount, payoutAccount, accountsInitialized, legCount } = decodeVault(pubkey.toBase58(), account.data)
+    const { idleAccount, payoutAccount, accountsInitialized, legCount } = decodeVault(pubkey, Buffer.from(account.data[0], 'base64'))
     if (!accountsInitialized) continue
     tokenAccounts.push(idleAccount, payoutAccount)
-    for (let i = 0; i < legCount; i++) legAuthorities.push(legAuthority(pubkey, i))
+    for (let i = 0; i < legCount; i++) legAuthorities.push(legAuthority(new PublicKey(pubkey), i))
   }
-  // list each leg authority's token accounts ourselves so an RPC failure fails the run
-  // instead of silently dropping a leg
-  for (const owner of legAuthorities)
-    for (const programId of [TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID]) {
-      const { value } = await connection.getTokenAccountsByOwner(new PublicKey(owner), { programId })
-      tokenAccounts.push(...value.map(({ pubkey }) => pubkey.toBase58()))
-    }
+  // every leg authority's token accounts, under both token programs, in one batched request;
+  // a failed entry throws (no permitFailure), so an RPC failure fails the run instead of
+  // silently dropping a leg
+  const calls = legAuthorities.flatMap((owner) => [TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID].map((programId) => ({
+    method: 'getTokenAccountsByOwner',
+    params: [owner, { programId: programId.toString() }, { encoding: 'base64', dataSlice: { offset: 0, length: 0 } }],
+  })))
+  const results = await rpc.jsonRpcBatch(calls, { chain: 'solana', endpoints })
+  for (const { value } of results) tokenAccounts.push(...value.map(({ pubkey }) => pubkey))
   return sumTokens2({ api, tokenAccounts })
 }
 
