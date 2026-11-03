@@ -53,6 +53,7 @@ const helpers = {
   "stellar": require("./chain/stellar"),
   "aleo": require("./chain/aleo"),
   "qubic": require("./chain/qubic"),
+  "saseul": require("./chain/saseul"),
   "constellation": require("./chain/constellation"),
   "supra": require("./chain/supra"),
   "icp": require("./chain/icp"),
