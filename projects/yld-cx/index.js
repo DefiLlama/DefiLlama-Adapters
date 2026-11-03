@@ -1,3 +1,5 @@
+const { getLogs2 } = require('../helper/cache/getLogs')
+
 const YLD = '0x0000014563b23d9ac3ac11fe68d63cdfc19a43db'
 const pairCreated = 'event PairCreated(uint256 indexed pairId, address indexed token0, address indexed token1)'
 
@@ -8,13 +10,12 @@ async function tvl(api) {
   const fromBlock = startBlocks[api.chain]
   if (block < fromBlock) return
 
-  const pairs = await api.getLogs({
+  const pairs = await getLogs2({
+    api,
     target: YLD,
     eventAbi: pairCreated,
     fromBlock,
     toBlock: block,
-    onlyArgs: true,
-    cacheInCloud: true,
   })
   const tokens = [...new Set(pairs.flatMap(({ token0, token1 }) => [token0.toLowerCase(), token1.toLowerCase()]))]
   if (!tokens.length) return
