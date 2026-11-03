@@ -32,9 +32,14 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
   }
   if (forceCacheUse) throw new Error('timestamp is too old, cant pull with forceCacheUse flag set')
 
-  if (getEnv('ALLIUM_API_KEY')) {
-    sdk.util.sumSingleBalance(balances, 'bitcoin', await getAlliumBalance(owners, timestamp))
-    return balances
+  const isRefill = timestamp % 86400 === 0 && utcDate(timestamp) < utcDate(now) // day-start run for a past day
+  if (owners.length && isRefill && getEnv('ALLIUM_API_KEY')) {
+    try {
+      sdk.util.sumSingleBalance(balances, 'bitcoin', await getAlliumBalance(owners, timestamp))
+      return balances
+    } catch (e) {
+      sdk.log('bitcoin allium error', e.toString())
+    }
   }
 
   for (const addr of owners)
@@ -42,12 +47,12 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
   return balances
 }
 
-// Refills: one Allium end-of-day snapshot query for all owners instead of an explorer archive walk per
-// address. Uses the last completed UTC day before `timestamp`, picking each address's latest row on or
-// before it so it holds whether Allium writes a row every day or only on days a balance changes.
+const utcDate = (ts) => new Date(ts * 1e3).toISOString().slice(0, 10)
+
+// refills: one Allium end-of-day snapshot query instead of an archive walk per address
 async function getAlliumBalance(owners, timestamp) {
   const { queryAllium } = require('../allium')
-  const date = new Date((timestamp - 86400) * 1e3).toISOString().slice(0, 10)
+  const date = utcDate(timestamp - 86400)
   const [{ sats }] = await queryAllium(`
     SELECT SUM(raw_balance) AS sats FROM (
       SELECT raw_balance FROM bitcoin.assets.balances_daily
