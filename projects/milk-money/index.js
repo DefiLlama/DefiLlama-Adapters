@@ -30,6 +30,13 @@ const DLMM_POSITION_BASE_SIZE = 8120 // resized positions append 112 bytes per e
 const DLMM_EXTRA_BIN_SIZE = 112
 const readU128 = (data, offset) => data.readBigUInt64LE(offset) + (data.readBigUInt64LE(offset + 8) << 64n)
 
+/**
+ * Sums the principal of every Meteora DLMM position owned by one of the protocol wallets.
+ * Positions are found with one owner-filtered PositionV2 scan per wallet (serialized, three seconds apart, because
+ * the public RPC caps getProgramAccounts); each position's share of its bins' reserves is then added per token mint.
+ * Unclaimed fees are left out. Returns nothing when no wallet holds a position.
+ * @param {object} api DefiLlama balances API for the chain being computed
+ */
 async function tvl(api) {
   const connection = getConnection(api.chain)
   // every DLMM PositionV2 owned by one of the protocol wallets (owner sits at offset 40, after the lbPair);
