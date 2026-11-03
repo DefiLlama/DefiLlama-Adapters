@@ -96,7 +96,7 @@ const tvl = async (api) => {
 
 module.exports = {
   doublecounted: true, // tokens are stored in UNI-V3 pools,
-  methodology: 'Value of Stryke liquidity positions across supported chains. Current Robinhood and Arbitrum markets measure actual handler-owned AMM positions, including reserved liquidity and recorded fees owed, plus assets held by registered option markets. The underlying LP assets overlap with their AMM listings.'
+  methodology: 'Value of Stryke liquidity positions across supported chains. Current Robinhood and Arbitrum markets measure actual handler-owned AMM positions, including reserved liquidity and recorded and accrued fees owed, plus assets held by registered option markets. The underlying LP assets overlap with their AMM listings.'
 }
 
 Object.keys(CONFIG).forEach((chain) => {
