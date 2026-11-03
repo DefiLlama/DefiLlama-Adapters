@@ -36,8 +36,7 @@ function isUnsupportedQuery(err) {
     errMsg.includes('unknown variant') ||
     errMsg.includes('error parsing into type') ||
     errMsg.includes('cannot deserialize') ||
-    errMsg.includes('unsupported query') ||
-    (errMsg.includes('codespace wasm') && errMsg.includes('query wasm contract failed'))
+    errMsg.includes('unsupported query')
   );
 }
 
