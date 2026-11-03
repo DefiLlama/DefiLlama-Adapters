@@ -177,6 +177,9 @@ function validateHallmarks(hallmark) {
   const extraArgs = process.argv.slice(3)
   const chainArg = extraArgs.find(arg => chainList.includes(arg))
   const timestampArg = extraArgs.find(arg => arg !== chainArg)
+  const invalidArgs = extraArgs.filter(arg => arg !== chainArg && parseTimestampArg(arg) === undefined)
+  if (invalidArgs.length)
+    throw new Error(`Unrecognized argument: ${invalidArgs.join(', ')}, expected a chain name or a timestamp (unix or YYYY-MM-DD)`)
   if (chainArg) {
     // registry modules also carry a `meta` object, only drop keys exporting tvl functions
     const exportedChains = chains.filter(chain => Object.values(module[chain]).some(v => typeof v === 'function'))
