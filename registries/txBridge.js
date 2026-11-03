@@ -34,14 +34,19 @@ async function txBridgeTvlV2(api, { chainId, target = _targetV2, additionalBridg
   const tokensWithIds = tokens.filter((_token, i) => assetIds[i])
   const assetIdsLegit = assetIds.filter((id) => id)
 
-  const balances = (await api.multiCall({
-    target,
-    calls: assetIdsLegit.map(token => ({ params: [chainId, token] })),
-    abi: 'function chainBalance(uint256 chainId, bytes32 assetId) view returns (uint256 balance)',
-    permitFailure: true,
-  })).map(i => i ?? 0)
+  const chainBalanceAbi = 'function chainBalance(uint256 chainId, bytes32 assetId) view returns (uint256 balance)'
+  const calls = assetIdsLegit.map(token => ({ params: [chainId, token] }))
+  const balances = (await api.multiCall({ target, calls, abi: chainBalanceAbi, permitFailure: true })).map(i => i ?? 0)
   tokensWithIds[0] = gasAddress
   api.add(tokensWithIds, balances)
+
+  // since the Nov 2026 vault upgrade, per-chain balances migrate from the vault to the L1AssetTracker; the migration
+  // moves the balance, so summing both covers chains before, during and after it
+  const assetTracker = await api.call({ abi: 'address:l1AssetTracker', target, permitFailure: true })
+  if (assetTracker && assetTracker !== gasAddress) {
+    const trackerBalances = (await api.multiCall({ target: assetTracker, calls, abi: chainBalanceAbi, permitFailure: true })).map(i => i ?? 0)
+    api.add(tokensWithIds, trackerBalances)
+  }
 
   for (const bridge of additionalBridges)
     await txBridgeTvl(api, { chainId, target: bridge })
