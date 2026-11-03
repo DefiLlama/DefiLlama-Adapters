@@ -17628,6 +17628,15 @@ const configs = {
       }
     }
   },
+  "lubics": {
+    "timetravel": false,
+    "methodology": "TVL is the native SL balance held in the Lubics bridge custody address on the SASEUL main chain, read directly from SASEUL public nodes.",
+    "saseul": {
+      "owners": [
+        "06e880ad8d3a9a062a9b31e39fd691bbe8cbd92a2b74"
+      ]
+    },
+  },
   "lucky38": {
     "methodology": "TVL equals the USDC balance held in SharedTreasury — the single liquidity pool backing all six Lucky38 games.",
     "base": {
