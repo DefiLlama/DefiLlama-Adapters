@@ -1,7 +1,6 @@
 
 const { getCache, setCache, } = require('../cache');
 const sdk = require('@defillama/sdk');
-const { get } = require('../http');
 const ethers = require("ethers")
 
 const cacheFolder = 'logs'
@@ -97,7 +96,6 @@ async function getLogs({ target,
 
     }
 
-    // let logs = await getLogsFromEtherscanAPI({ address: target, fromBlock, toBlock, api, topic0: topic })
 
     if (!customCacheFunction)
       cache.logs = cache.logs.concat(logs)
@@ -216,26 +214,4 @@ module.exports = {
   getLogs,
   getLogs2,
   getAddress: s => "0x" + s.slice(26, 66),
-}
-
-async function getLogsFromEtherscanAPI({ address, fromBlock, toBlock, api, topic0 }) {
-  if (!topic0.startsWith('0x')) topic0 = ethers.id(topic0)
-  const apiKey = process.env.SDK_ETHERSCAN_API_KEY
-
-  const data = await get('https://api.etherscan.io/v2/api', {
-    params: {
-      address,
-      fromBlock,
-      toBlock,
-      topic0,
-      chainid: api.chainId,
-      module: 'logs',
-      action: 'getLogs',
-      page: 1,
-      offset: 0,
-      apikey: apiKey,
-    }
-  })
-  console.log('Etherscan API response:', data.result.length, 'logs fetched')
-  return data.result
 }
