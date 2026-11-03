@@ -25,7 +25,7 @@ async function tvl(api) {
     api.multiCall({ target: YLD, abi: 'function accruedProtocolFees(address) view returns (uint256)', calls: tokens }),
   ])
 
-  const active = tokens.flatMap((token, i) => {
+  tokens.forEach((token, i) => {
     const liability = BigInt(liabilities[i])
     const protocolFees = BigInt(fees[i])
 
@@ -33,24 +33,9 @@ async function tvl(api) {
       throw new Error(`yld.cx ${api.chain}: fees exceed liability for ${token}`)
     }
 
-    return liability > 0n ? [{ token, liability, protocolFees }] : []
-  })
-
-  if (!active.length) return
-
-  const custody = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: active.map(({ token }) => ({ target: token, params: [YLD] })),
-    permitFailure: true,
-  })
-
-  active.forEach(({ token, liability, protocolFees }, i) => {
-    if (custody[i] == null || liability > BigInt(custody[i])) {
-      console.warn(`yld.cx ${api.chain}: skipping ${token} due to invalid custody`)
-      return
+    if (liability > 0n) {
+      api.add(token, (liability - protocolFees).toString())
     }
-
-    api.add(token, (liability - protocolFees).toString())
   })
 }
 
