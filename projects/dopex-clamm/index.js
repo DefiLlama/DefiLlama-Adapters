@@ -15,7 +15,7 @@ const query = gql`
     strikes(
       first: $limit
       skip: $skip
-      where: { totalLiquidity_gt: "100" }
+      where: { totalLiquidity_gt: "100", handler_not_in: ["0x6f73afb6598d7a3881577f884f2e01574aefc373"] }
       orderBy: totalLiquidity
       orderDirection: desc
     ) {
@@ -91,13 +91,16 @@ const tvl = async (api) => {
       api.add(token0, amount0);
       api.add(token1, amount1);
     });
+  if (chain === 'arbitrum') await require('./current').arbitrum.tvl(api)
   };
 
 module.exports = {
   doublecounted: true, // tokens are stored in UNI-V3 pools,
-  methodology: 'TVL is calculated by summing the value of all tokens in Stryke liquidity positions across supported chains'
+  methodology: 'Value of Stryke liquidity positions across supported chains. Current Robinhood and Arbitrum markets measure actual handler-owned AMM positions, including reserved liquidity and recorded fees owed, plus assets held by registered option markets. The underlying LP assets overlap with their AMM listings.'
 }
 
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }
 })
+
+module.exports.robinhood = require('./current').robinhood
