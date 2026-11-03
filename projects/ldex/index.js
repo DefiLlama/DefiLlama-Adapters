@@ -20,17 +20,21 @@ const PAIR_CODE_IDS = [1, 4];
 const DEFAULT_TIMEOUT = 15000;
 
 /**
+ * Return the first non-empty string among the given values, or ''.
+ * Ignores objects/arrays/other shapes so they can never reach string methods.
+ */
+function firstString(...values) {
+  return values.find((v) => typeof v === 'string' && v.length > 0) || '';
+}
+
+/**
  * Identify if an error is a CosmWasm contract error indicating that
  * the contract does not implement / support the requested query variant.
+ * Non-string error details are treated as unclassified (retryable).
  */
 function isUnsupportedQuery(err) {
-  const errMsg = (
-    err?.response?.data?.message ||
-    err?.response?.data?.error ||
-    (typeof err?.response?.data === 'string' ? err?.response?.data : '') ||
-    err?.message ||
-    ''
-  ).toLowerCase();
+  const data = err?.response?.data;
+  const errMsg = firstString(data?.message, data?.error, data, err?.message).toLowerCase();
 
   return (
     errMsg.includes('unknown variant') ||
@@ -46,23 +50,21 @@ function isUnsupportedQuery(err) {
  */
 async function queryRest(path) {
   let lastError = null;
+
   for (const base of REST_ENDPOINTS) {
     try {
-      const url = `${base}${path}`;
-      const res = await axios.get(url, { timeout: DEFAULT_TIMEOUT });
+      const res = await axios.get(`${base}${path}`, { timeout: DEFAULT_TIMEOUT });
       if (res && res.data) return res.data;
     } catch (err) {
       lastError = err;
-      // If the node responded with an unsupported CosmWasm query error,
-      // the node is healthy and the contract itself rejected the query message.
-      if (isUnsupportedQuery(err)) {
-        throw err;
-      }
+      // The node answered and the contract itself rejected the query message:
+      // the node is healthy, so do not retry on another endpoint.
+      if (isUnsupportedQuery(err)) throw err;
     }
   }
 
   const status = lastError?.response?.status;
-  const msg = lastError?.response?.data?.message || lastError?.message || 'Unknown error';
+  const msg = firstString(lastError?.response?.data?.message, lastError?.message) || 'Unknown error';
   const err = new Error(`All REST endpoints failed for ${path} (status ${status}): ${msg}`);
   err.response = lastError?.response;
   err.status = status;
@@ -71,27 +73,47 @@ async function queryRest(path) {
 }
 
 /**
- * Fetch all contracts deployed under a code ID, following pagination until exhausted.
+ * Fetch every page of a paginated Cosmos REST list endpoint.
+ * `field` is the array property holding the items (e.g. 'contracts', 'balances').
+ * Stops if the node repeats a pagination key, to avoid infinite loops.
  */
-async function getContractsByCodeId(codeId) {
-  const contracts = [];
+async function fetchAllPages(basePath, field) {
+  const items = [];
+  const seenKeys = new Set();
   let nextKey = null;
 
   do {
-    const basePath = `/cosmwasm/wasm/v1/code/${codeId}/contracts`;
-    const queryPath = nextKey ? `${basePath}?pagination.key=${encodeURIComponent(nextKey)}` : basePath;
-    const res = await queryRest(queryPath);
-    if (res && Array.isArray(res.contracts)) {
-      contracts.push(...res.contracts);
-    }
+    const path = nextKey ? `${basePath}?pagination.key=${encodeURIComponent(nextKey)}` : basePath;
+    const res = await queryRest(path);
+
+    if (Array.isArray(res?.[field])) items.push(...res[field]);
+
     nextKey = res?.pagination?.next_key || null;
+    if (nextKey) {
+      if (seenKeys.has(nextKey)) break;
+      seenKeys.add(nextKey);
+    }
   } while (nextKey);
 
-  return contracts;
+  return items;
 }
 
 /**
- * Fetch all deployed pool contract addresses on luxa-1
+ * Fetch all contracts deployed under a code ID.
+ */
+function getContractsByCodeId(codeId) {
+  return fetchAllPages(`/cosmwasm/wasm/v1/code/${codeId}/contracts`, 'contracts');
+}
+
+/**
+ * Fetch all bank balances for an address.
+ */
+function getBankBalances(address) {
+  return fetchAllPages(`/cosmos/bank/v1beta1/balances/${address}`, 'balances');
+}
+
+/**
+ * Fetch all deployed pool contract addresses on luxa-1.
  */
 async function getPoolAddresses() {
   const pools = new Set([GENESIS_POOL]);
@@ -99,7 +121,7 @@ async function getPoolAddresses() {
   for (const codeId of PAIR_CODE_IDS) {
     const contracts = await getContractsByCodeId(codeId);
     for (const addr of contracts) {
-      if (addr && addr.startsWith('luxa1')) {
+      if (typeof addr === 'string' && addr.startsWith('luxa1')) {
         pools.add(addr);
       }
     }
@@ -109,33 +131,40 @@ async function getPoolAddresses() {
 }
 
 /**
- * Fetch all bank balances for an address, following pagination until exhausted.
+ * Add CW20 reserves from the pool's pair_info query.
+ * Contracts that do not implement pair_info are skipped; any other failure
+ * is rethrown so TVL is never silently under-reported.
  */
-async function getBankBalances(address) {
-  const balances = [];
-  let nextKey = null;
+async function addCw20Reserves(api, pool) {
+  try {
+    const query = Buffer.from(JSON.stringify({ pair_info: {} })).toString('base64');
+    const res = await queryRest(`/cosmwasm/wasm/v1/contract/${pool}/smart/${query}`);
+    const info = res?.data;
+    if (!info) return;
 
-  do {
-    const basePath = `/cosmos/bank/v1beta1/balances/${address}`;
-    const queryPath = nextKey ? `${basePath}?pagination.key=${encodeURIComponent(nextKey)}` : basePath;
-    const res = await queryRest(queryPath);
-    if (res && Array.isArray(res.balances)) {
-      balances.push(...res.balances);
+    const sides = [
+      [info.token_a, info.reserve_a],
+      [info.token_b, info.reserve_b],
+    ];
+    for (const [token, reserve] of sides) {
+      if (typeof token === 'string' && token.startsWith('luxa1') && reserve && reserve !== '0') {
+        api.add(token, reserve);
+      }
     }
-    nextKey = res?.pagination?.next_key || null;
-  } while (nextKey);
-
-  return balances;
+  } catch (err) {
+    // Contract does not support pair_info (e.g. Genesis Code 1 pool): skip safely.
+    if (!isUnsupportedQuery(err)) throw err;
+  }
 }
 
 /**
- * Main TVL calculation function for DefiLlama SDK v2
+ * Main TVL calculation function for DefiLlama SDK v2.
  */
 async function tvl(api) {
   const pools = await getPoolAddresses();
 
   for (const pool of pools) {
-    // 1. Cosmos SDK Bank reserves (required; exhausted retries throw to prevent partial/zero TVL)
+    // 1. Cosmos SDK bank reserves (exhausted retries throw to prevent partial/zero TVL)
     const balances = await getBankBalances(pool);
     for (const coin of balances) {
       if (coin.denom && coin.amount && coin.amount !== '0') {
@@ -143,30 +172,8 @@ async function tvl(api) {
       }
     }
 
-    // 2. CW20 Pair Info query
-    // If the contract does not implement pair_info, safely ignore.
-    // If transient failures occur on all endpoints (timeouts/server errors), rethrow to prevent underreporting TVL.
-    try {
-      const queryBase64 = Buffer.from(JSON.stringify({ pair_info: {} })).toString('base64');
-      const pairRes = await queryRest(`/cosmwasm/wasm/v1/contract/${pool}/smart/${queryBase64}`);
-      const pData = pairRes?.data;
-
-      if (pData) {
-        if (pData.token_b && pData.token_b.startsWith('luxa1') && pData.reserve_b && pData.reserve_b !== '0') {
-          api.add(pData.token_b, pData.reserve_b);
-        }
-        if (pData.token_a && pData.token_a.startsWith('luxa1') && pData.reserve_a && pData.reserve_a !== '0') {
-          api.add(pData.token_a, pData.reserve_a);
-        }
-      }
-    } catch (err) {
-      if (isUnsupportedQuery(err)) {
-        // Contract does not support pair_info (e.g. Genesis Code 1 pool); skip safely
-      } else {
-        // Transient network or server failure: propagate to fail TVL run rather than omitting reserves
-        throw err;
-      }
-    }
+    // 2. CW20 reserves
+    await addCw20Reserves(api, pool);
   }
 
   return api.getBalances();
