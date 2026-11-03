@@ -1,13 +1,14 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const { get } = require('../helper/http');
 const { getUniTVL } = require('../helper/unknownTokens');
 
-const v2graph = getChainTvl({ ethereum: 'A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum' })
+const v2graph = getChainTvl({
+  ethereum: 'GmSczqdCDZ3hJeYY9JphwsADn5rePUzUKm8EZcVuhRAm',
+  base: 'DbcUmZwXBYbNZvLuDEvcmFa4uAWwwjrdX8dVFg1AUVKa',
+})
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
-  ethereum: { tvl: v2graph('ethereum') },
+  methodology: `Counts the tokens locked on AMM pools. Ethereum and Base use the Uniswap V2 subgraphs, other chains read pool reserves on-chain`,
 }
 
 const config = {
@@ -39,24 +40,8 @@ Object.keys(config).forEach(chain => {
 
 module.exports.isHeavyProtocol = true
 
-// const graphChains = ['unichain', 'ethereum', 'base']
 const graphChains = ['ethereum', 'base']
 
 graphChains.forEach(chain => {
-  module.exports[chain] = { tvl: tvlViaGraph }
+  module.exports[chain] = { tvl: v2graph(chain) }
 })
-
-async function tvlViaGraph(api) {
-  const endpoint = `https://interface.gateway.uniswap.org/v2/uniswap.explore.v1.ExploreStatsService/ProtocolStats?connect=v1&encoding=json&message=%7B%22chainId%22%3A%22${api.chainId}%22%7D`
-  const res = await get(endpoint, { headers: { 'origin': 'https://app.uniswap.org' }, timeout: 30000 })
-  const v2 = res.dailyProtocolTvl.v2
-  const oneDayBefore = api.timestamp - 86400 * 5
-  const oneDayAfter = api.timestamp + 86400 / 3
-  const dayData = v2.find(d => d.timestamp >= oneDayBefore && d.timestamp <= oneDayAfter)
-
-  if (!dayData) {
-    throw new Error(`No TVL data found for ${api.chain} at timestamp ${api.timestamp}`)
-  }
-  const tvl = dayData.value
-  api.addUSDValue(tvl)
-}
