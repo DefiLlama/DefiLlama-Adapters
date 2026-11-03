@@ -1,5 +1,5 @@
 const { PublicKey } = require('@solana/web3.js')
-const { getConnection, getTokenAccountBalances } = require('../helper/solana')
+const { getConnection, getTokenAccountBalances, getMultipleAccounts } = require('../helper/solana')
 
 // MomoSwap launchpad on Cookie Chain. Tokens launch on a bonding curve;
 // the COOK raised from buyers is held in each pool's `payment_vault`
@@ -13,6 +13,22 @@ const { getConnection, getTokenAccountBalances } = require('../helper/solana')
 //    remainder never reaches the AMM, so counting it cannot double-count the
 //    cookieswap adapter's liquidity.
 const LAUNCHPAD = 'momoL7wu4TrXjnXMLCLzGsbx8Pm7XGgoYo7FVqDoqcw'
+
+// MomoSwap NFT launchpad (`momo_nft_launchpad`): fixed-supply NFT drops sold on the same
+// constant-product curve, one `Collection` account per drop. Each drop's COOK sits in a
+// `["payment_vault", collection]` PDA owned by the program:
+//  - Created/Live: the raise, which sells back to the curve walk down again.
+//  - Graduated: the permanent floor reserve (redeemable by burning an item, never withdrawn
+//    otherwise), plus escrow for pending post-graduation mint requests and the creator's held-back
+//    share, released per mint. Nothing migrates to an AMM, so none of it overlaps `cookieswap`.
+//  - Ended: the raise stays in the vault until holders redeem it through the wind-down.
+// The drop's trade fees accrue in two sibling PDAs (`creator_vault`, `platform_vault`); those are
+// revenue awaiting claim rather than value locked for users, so they are not counted.
+const NFT_LAUNCHPAD = new PublicKey('momoDc2LHwe2Eymo4gK1jg5gAJcjjLGWW1hAaSKAGHb')
+// Anchor account discriminator for `Collection` = sha256("account:Collection")[:8].
+const COLLECTION_DISCRIMINATOR_B58 = '98kxUujAHec' // hex 30a0e8cdbfcf1a8d
+const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+const SPL_TOKEN_ACCOUNT_SIZE = 165
 
 // Anchor account discriminator for `Pool` = sha256("account:Pool")[:8].
 const POOL_DISCRIMINATOR_HEX = 'f19a6d0411b16dbc'
@@ -53,8 +69,42 @@ function parsePool(data) {
   return new PublicKey(data.subarray(paymentVaultOffset, paymentVaultOffset + 32)).toBase58()
 }
 
+// Vault pubkeys are derived from the `Collection` pubkey alone (the PDA seeds), so this never
+// depends on the `Collection` byte layout and survives the kind of struct reorder that broke
+// `parsePool` above. `dataSlice` length 0: only the pubkeys are needed.
+async function nftPaymentVaults(connection) {
+  const accounts = await connection.getProgramAccounts(NFT_LAUNCHPAD, {
+    filters: [{ memcmp: { offset: 0, bytes: COLLECTION_DISCRIMINATOR_B58 } }],
+    dataSlice: { offset: 0, length: 0 },
+  })
+  return accounts.map(({ pubkey }) =>
+    PublicKey.findProgramAddressSync([Buffer.from('payment_vault'), pubkey.toBuffer()], NFT_LAUNCHPAD)[0].toBase58(),
+  )
+}
+
+async function nftTvl(api, connection) {
+  const vaults = await nftPaymentVaults(connection)
+  if (!vaults.length) return
+  // `init_vaults` is a separate, permissionless instruction from `create_collection` (the creation
+  // transaction is already at the size limit), so a `Collection` can in principle exist before its
+  // vaults do. A missing vault is therefore a legitimate empty drop, not an error, and is skipped —
+  // but a vault that exists and is not an SPL token account means layout or RPC trouble and throws,
+  // same fail-loud stance as the token side. The program never closes a vault (its only
+  // `CloseAccount` is on an ephemeral unwrap PDA), so a drained vault stays readable at 0.
+  const infos = await getMultipleAccounts(vaults, { api })
+  infos.forEach((info, i) => {
+    if (!info) return
+    const data = info.data
+    if (info.owner.toBase58() !== TOKEN_PROGRAM || data.length !== SPL_TOKEN_ACCOUNT_SIZE)
+      throw new Error(`Unrecognised MomoSwap NFT payment_vault: ${vaults[i]}`)
+    const mint = new PublicKey(data.subarray(0, 32)).toBase58()
+    api.add(mint, data.readBigUInt64LE(64).toString())
+  })
+}
+
 async function tvl(api) {
   const connection = getConnection(api.chain)
+  await nftTvl(api, connection)
   const accounts = await connection.getProgramAccounts(new PublicKey(LAUNCHPAD), {
     filters: [{ memcmp: { offset: 0, bytes: POOL_DISCRIMINATOR_B58 } }],
   })
@@ -86,6 +136,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Counts the COOK held in the payment vault of every MomoSwap bonding-curve launch: launches still raising on the curve, expired launches whose raised COOK stays in the vault until participants claim it, and the unvested creator allocation that graduation withholds from the AMM migration and releases to the creator over time.',
+  methodology: 'Counts the COOK held in the payment vault of every MomoSwap bonding-curve launch: launches still raising on the curve, expired launches whose raised COOK stays in the vault until participants claim it, and the unvested creator allocation that graduation withholds from the AMM migration and releases to the creator over time. Also counts the COOK in the payment vault of every MomoSwap NFT drop: the live raise, the permanent floor reserve locked at graduation (redeemable only by burning an item), escrow for pending post-graduation mints, and the raise of ended drops awaiting wind-down redemption. Accrued trade fees in the creator and platform vaults are not counted.',
   cookiechain: { tvl },
 }
