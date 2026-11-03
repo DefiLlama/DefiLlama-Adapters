@@ -13,9 +13,8 @@ const FACTORIES = [
   "0x59eE0da93DE70A6bE9C597089Cc01A2a2f499085", // StakePoolFactory V6
 ];
 
-// Static protocol infrastructure (Escrows, Gauges, Treasury Vaults)
-const STATIC_CONTRACTS = [
-  "0x3B3d1C18b61A40F057956f43bC501D94473fFE10", // AetherZone DAO Treasury
+// Protocol user deposit escrows, gauges, and pools
+const PROTOCOL_CONTRACTS = [
   "0xCC532A532857ad5CC0A1d6726062Acc75554344D", // RevenueDistributor V2
   "0xDc812945b24E27BA5DBe17C71329a355Cd575239", // AetherOTC Escrow
   "0xECbd5f2dfe7033f2c62E2FfB668b600d96946E20", // AetherLPGauge
@@ -28,22 +27,22 @@ const CHINA_WSHIDO_POOL = "0xF5C547C7821eE9B836E2A5a6d08cE74B15F94D47";
 const Q192 = 2n ** 192n;
 
 async function tvl(api) {
-  // 1. Dynamically discover all pools from V6 and V7 factories
-  const dynamicPools = [];
-  for (const factory of FACTORIES) {
-    try {
-      const pools = await api.fetchList({
-        lengthAbi: "uint256:poolsCount",
-        itemAbi: "function allPools(uint256) view returns (address)",
-        target: factory,
-      });
-      dynamicPools.push(...pools);
-    } catch (e) {}
-  }
+  // 1. Dynamically discover all staking pools from V6 and V7 factories
+  const dynamicPools = (
+    await Promise.all(
+      FACTORIES.map((target) =>
+        api.fetchList({
+          lengthAbi: "uint256:poolsCount",
+          itemAbi: "function allPools(uint256) view returns (address)",
+          target,
+        })
+      )
+    )
+  ).flat();
 
-  const allOwners = [...new Set([...dynamicPools, ...STATIC_CONTRACTS])];
+  const allOwners = [...new Set([...dynamicPools, ...PROTOCOL_CONTRACTS])];
 
-  // 2. Fetch raw balances across all discovered pools, treasuries, and escrows
+  // 2. Fetch raw token balances across all protocol staking pools and escrows
   await sumTokens2({
     api,
     owners: allOwners,
@@ -58,29 +57,25 @@ async function tvl(api) {
   const chinaBal = balances[chinaKey] ? BigInt(balances[chinaKey]) : 0n;
 
   if (cwkBal > 0n) {
-    try {
-      const slot0 = await api.call({
-        abi: "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)",
-        target: CWK_WSHIDO_POOL,
-      });
-      const sqrtPrice = BigInt(slot0.sqrtPriceX96);
-      const cwkInWshido = (cwkBal * Q192) / (sqrtPrice * sqrtPrice);
-      api.add(TOKENS.WSHIDO, cwkInWshido);
-      delete balances[cwkKey];
-    } catch (e) {}
+    const slot0 = await api.call({
+      abi: "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)",
+      target: CWK_WSHIDO_POOL,
+    });
+    const sqrtPrice = BigInt(slot0.sqrtPriceX96);
+    const cwkInWshido = (cwkBal * Q192) / (sqrtPrice * sqrtPrice);
+    api.add(TOKENS.WSHIDO, cwkInWshido);
+    delete balances[cwkKey];
   }
 
   if (chinaBal > 0n) {
-    try {
-      const slot0 = await api.call({
-        abi: "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)",
-        target: CHINA_WSHIDO_POOL,
-      });
-      const sqrtPrice = BigInt(slot0.sqrtPriceX96);
-      const chinaInWshido = (chinaBal * Q192) / (sqrtPrice * sqrtPrice);
-      api.add(TOKENS.WSHIDO, chinaInWshido);
-      delete balances[chinaKey];
-    } catch (e) {}
+    const slot0 = await api.call({
+      abi: "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)",
+      target: CHINA_WSHIDO_POOL,
+    });
+    const sqrtPrice = BigInt(slot0.sqrtPriceX96);
+    const chinaInWshido = (chinaBal * Q192) / (sqrtPrice * sqrtPrice);
+    api.add(TOKENS.WSHIDO, chinaInWshido);
+    delete balances[chinaKey];
   }
 
   return api.getBalances();
@@ -89,7 +84,7 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   methodology:
-    "TVL counts assets dynamically discovered across all AetherZone staking factory pools (V6 and V7), DAO treasury vaults, OTC trade escrows, and platform contracts. Unlisted token balances (CWK, CHINA) are priced via their canonical Uniswap V3 pools against WSHIDO on Shido DEX.",
+    "TVL counts assets locked across AetherZone dynamic staking factory pools (V6 and V7), AetherOTC trade escrows, LP gauge incentives, and platform contracts. Unlisted token balances (CWK, CHINA) are priced via their canonical Uniswap V3 pools against WSHIDO on Shido DEX.",
   shido: {
     tvl,
   },
