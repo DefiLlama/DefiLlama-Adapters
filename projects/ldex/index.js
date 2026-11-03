@@ -1,4 +1,4 @@
-const { get } = require('../helper/http');
+const axios = require('axios');
 
 /* ============================================================
    LDEX AMM DEX Adapter for DefiLlama
@@ -17,25 +17,58 @@ const GENESIS_POOL = 'luxa14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sm
 // CosmWasm Pair Contract Code IDs on luxa-1
 const PAIR_CODE_IDS = [1, 4];
 
+const DEFAULT_TIMEOUT = 15000;
+
+/**
+ * Identify if an error is a CosmWasm contract error indicating that
+ * the contract does not implement / support the requested query variant.
+ */
+function isUnsupportedQuery(err) {
+  const errMsg = (
+    err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    (typeof err?.response?.data === 'string' ? err?.response?.data : '') ||
+    err?.message ||
+    ''
+  ).toLowerCase();
+
+  return (
+    errMsg.includes('unknown variant') ||
+    errMsg.includes('error parsing into type') ||
+    errMsg.includes('cannot deserialize') ||
+    errMsg.includes('unsupported query') ||
+    (errMsg.includes('codespace wasm') && errMsg.includes('query wasm contract failed'))
+  );
+}
+
 /**
  * Resilient GET helper with automatic multi-endpoint fallback.
- * Throws an error when all endpoints fail unless throwOnError is false.
+ * Preserves HTTP status and response data on errors.
  */
-async function queryRest(path, { throwOnError = true } = {}) {
+async function queryRest(path) {
   let lastError = null;
   for (const base of REST_ENDPOINTS) {
     try {
       const url = `${base}${path}`;
-      const res = await get(url);
-      if (res) return res;
+      const res = await axios.get(url, { timeout: DEFAULT_TIMEOUT });
+      if (res && res.data) return res.data;
     } catch (err) {
       lastError = err;
+      // If the node responded with an unsupported CosmWasm query error,
+      // the node is healthy and the contract itself rejected the query message.
+      if (isUnsupportedQuery(err)) {
+        throw err;
+      }
     }
   }
-  if (throwOnError) {
-    throw new Error(`All REST endpoints failed for ${path}. Last error: ${lastError?.message || lastError}`);
-  }
-  return null;
+
+  const status = lastError?.response?.status;
+  const msg = lastError?.response?.data?.message || lastError?.message || 'Unknown error';
+  const err = new Error(`All REST endpoints failed for ${path} (status ${status}): ${msg}`);
+  err.response = lastError?.response;
+  err.status = status;
+  err.code = lastError?.code;
+  throw err;
 }
 
 /**
@@ -48,7 +81,7 @@ async function getContractsByCodeId(codeId) {
   do {
     const basePath = `/cosmwasm/wasm/v1/code/${codeId}/contracts`;
     const queryPath = nextKey ? `${basePath}?pagination.key=${encodeURIComponent(nextKey)}` : basePath;
-    const res = await queryRest(queryPath, { throwOnError: true });
+    const res = await queryRest(queryPath);
     if (res && Array.isArray(res.contracts)) {
       contracts.push(...res.contracts);
     }
@@ -86,7 +119,7 @@ async function getBankBalances(address) {
   do {
     const basePath = `/cosmos/bank/v1beta1/balances/${address}`;
     const queryPath = nextKey ? `${basePath}?pagination.key=${encodeURIComponent(nextKey)}` : basePath;
-    const res = await queryRest(queryPath, { throwOnError: true });
+    const res = await queryRest(queryPath);
     if (res && Array.isArray(res.balances)) {
       balances.push(...res.balances);
     }
@@ -111,12 +144,12 @@ async function tvl(api) {
       }
     }
 
-    // 2. CW20 Pair Info query (optional; pool might not support pair_info query)
+    // 2. CW20 Pair Info query
+    // If the contract does not implement pair_info, safely ignore.
+    // If transient failures occur on all endpoints (timeouts/server errors), rethrow to prevent underreporting TVL.
     try {
       const queryBase64 = Buffer.from(JSON.stringify({ pair_info: {} })).toString('base64');
-      const pairRes = await queryRest(`/cosmwasm/wasm/v1/contract/${pool}/smart/${queryBase64}`, {
-        throwOnError: false,
-      });
+      const pairRes = await queryRest(`/cosmwasm/wasm/v1/contract/${pool}/smart/${queryBase64}`);
       const pData = pairRes?.data;
 
       if (pData) {
@@ -127,8 +160,13 @@ async function tvl(api) {
           api.add(pData.token_a, pData.reserve_a);
         }
       }
-    } catch (_) {
-      // Optional smart query failed
+    } catch (err) {
+      if (isUnsupportedQuery(err)) {
+        // Contract does not support pair_info (e.g. Genesis Code 1 pool); skip safely
+      } else {
+        // Transient network or server failure: propagate to fail TVL run rather than omitting reserves
+        throw err;
+      }
     }
   }
 
