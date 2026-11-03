@@ -41,11 +41,13 @@ async function tvl(api) {
   const custody = await api.multiCall({
     abi: 'erc20:balanceOf',
     calls: active.map(({ token }) => ({ target: token, params: [YLD] })),
+    permitFailure: true,
   })
 
   active.forEach(({ token, liability, protocolFees }, i) => {
-    if (liability > BigInt(custody[i])) {
-      throw new Error(`yld.cx ${api.chain}: insufficient custody for ${token} at block ${block}`)
+    if (custody[i] == null || liability > BigInt(custody[i])) {
+      console.warn(`yld.cx ${api.chain}: skipping ${token} due to invalid custody`)
+      return
     }
 
     api.add(token, (liability - protocolFees).toString())
@@ -54,7 +56,7 @@ async function tvl(api) {
 
 module.exports = {
   start: '2026-10-11',
-  methodology: 'User-owned ERC-20 assets held by Yield Orders: on-chain tokenLiability less accruedProtocolFees at the snapshot block. Includes available supplier principal, locked renter Quote, funded supplier yield and uncollected settlement proceeds. Excludes rented Asset outside custody, protocol fees and unsolicited token donations. Tokens are discovered independently per chain through PairCreated events.',
+  methodology: 'User-owned ERC-20 assets held by Yield Orders: on-chain tokenLiability minus accruedProtocolFees at the snapshot block.',
   ethereum: { tvl },
   base: { tvl },
   robinhood: { tvl },
