@@ -21,14 +21,17 @@ async function getPools() {
 }
 
 let _poolAssets;
-// [{ pool, assets: [address] }] for every pool
+// [{ pool, assets: [address] }] for every pool; a failure is not kept, so the next run reads again
 async function getPoolAssets() {
   if (!_poolAssets) _poolAssets = (async () => {
     const out = [];
     for (const pool of await getPools())
       out.push({ pool, assets: await callSoroban(pool, "get_reserve_list") });
     return out;
-  })();
+  })().catch((e) => {
+    _poolAssets = undefined;
+    throw e;
+  });
   return _poolAssets;
 }
 
