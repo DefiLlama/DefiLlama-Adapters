@@ -75,7 +75,8 @@ async function queryRest(path) {
 /**
  * Fetch every page of a paginated Cosmos REST list endpoint.
  * `field` is the array property holding the items (e.g. 'contracts', 'balances').
- * Stops if the node repeats a pagination key, to avoid infinite loops.
+ * Throws if the node repeats a pagination key, to avoid infinite loops and
+ * to never return duplicated or incomplete data.
  */
 async function fetchAllPages(basePath, field) {
   const items = [];
@@ -90,7 +91,11 @@ async function fetchAllPages(basePath, field) {
 
     nextKey = res?.pagination?.next_key || null;
     if (nextKey) {
-      if (seenKeys.has(nextKey)) break;
+      if (seenKeys.has(nextKey)) {
+        // A repeated cursor means the node is misbehaving: results may be
+        // duplicated or incomplete, so fail the run instead of reporting wrong TVL.
+        throw new Error(`Repeated pagination key for ${basePath}: ${nextKey}`);
+      }
       seenKeys.add(nextKey);
     }
   } while (nextKey);
