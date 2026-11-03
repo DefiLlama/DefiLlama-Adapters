@@ -8,7 +8,7 @@ const abi = {
   vaultCount: 'uint256:vaultCount',
   allVaults: 'function allVaults(uint256) view returns (address)',
   asset: 'address:asset',
-  amountOwed: 'uint256:amountOwed',
+  borrowedAmount: 'uint256:borrowedAmount',
 }
 
 async function getVaults(api) {
@@ -26,16 +26,15 @@ async function tvl(api) {
   return api.sumTokens({ tokensAndOwners2: [assets, vaults] })
 }
 
-// amountOwed() is what the borrower owes the vault beyond the cash it holds: drawn principal plus interest and fees
-// accrued and not yet paid. Interest accrues on the whole pool, so it can be non-zero before the first draw.
+// borrowedAmount() is the principal the borrower has drawn and not yet repaid.
 async function borrowed(api) {
   const { vaults, assets } = await getVaults(api)
-  const owed = await api.multiCall({ abi: abi.amountOwed, calls: vaults })
-  api.add(assets, owed)
+  const principal = await api.multiCall({ abi: abi.borrowedAmount, calls: vaults })
+  api.add(assets, principal)
 }
 
 module.exports = {
-  methodology: 'TVL is the stablecoin balance of the Axcess lending vaults listed by the VaultFactory: lender deposits not yet drawn, repayments, and cash set aside for funded withdrawals. Borrowed is each vault\'s amountOwed(), the principal drawn by the borrower plus interest and fees accrued and not yet paid.',
+  methodology: 'TVL is the stablecoin held in Axcess lending vaults. Principal drawn by borrowers and not yet repaid is reported separately as borrowed.',
   start: '2026-10-05',
 }
 
