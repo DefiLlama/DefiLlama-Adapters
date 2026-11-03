@@ -28,6 +28,7 @@ const NFT_LAUNCHPAD = new PublicKey('momoDc2LHwe2Eymo4gK1jg5gAJcjjLGWW1hAaSKAGHb
 // Anchor account discriminator for `Collection` = sha256("account:Collection")[:8].
 const COLLECTION_DISCRIMINATOR_B58 = '98kxUujAHec' // hex 30a0e8cdbfcf1a8d
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
+const SYSTEM_PROGRAM = '11111111111111111111111111111111'
 const SPL_TOKEN_ACCOUNT_SIZE = 165
 
 // Anchor account discriminator for `Pool` = sha256("account:Pool")[:8].
@@ -95,6 +96,9 @@ async function nftTvl(api, connection) {
   infos.forEach((info, i) => {
     if (!info) return
     const data = info.data
+    // Lamports sent to the PDA before `init_vaults` make it a System-owned, zero-data account rather
+    // than a missing one; it holds no COOK, so it is empty for our purposes, not malformed.
+    if (info.owner.toBase58() === SYSTEM_PROGRAM && data.length === 0) return
     if (info.owner.toBase58() !== TOKEN_PROGRAM || data.length !== SPL_TOKEN_ACCOUNT_SIZE)
       throw new Error(`Unrecognised MomoSwap NFT payment_vault: ${vaults[i]}`)
     const mint = new PublicKey(data.subarray(0, 32)).toBase58()
