@@ -61,7 +61,6 @@ const configs = {
     hela: { graphURL: 'https://subgraph.snapresearch.xyz/subgraphs/name/cytoswap-mainnet', name: 'cytoswap-hela' },
   },
   'shido-dex-v3': {
-    misrepresentedTokens: true,
     shido: { graphURL: 'https://prod-v2-graph-node.shidoscan.com/subgraphs/name/shido/mainnet', name: 'shido-dex-v3-shido' },
   },
 }
