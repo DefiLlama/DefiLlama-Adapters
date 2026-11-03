@@ -176,6 +176,11 @@ const LotteryHubAbi = {
 const LOTTERY_HUB = '0x4958CB13Fa5881B2c67bde408708e72411Bb3bbb'
 const BATCH_SIZE = 100
 
+/**
+ * Sums the remaining prize pool (`currentPrizePool`) of every lottery registered in the LotteryHub.
+ * Lottery IDs are enumerated on-chain via `lotteryCount()` and fetched in batches of `BATCH_SIZE`.
+ * @param {import('@defillama/sdk').ChainApi} api - DefiLlama chain API for the target chain and block
+ */
 async function tvl(api) {
     const lotteryCount = Number(await api.call({ abi: 'uint256:lotteryCount', target: LOTTERY_HUB }))
     if (!lotteryCount) return
