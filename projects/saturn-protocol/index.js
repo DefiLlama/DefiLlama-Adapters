@@ -8,6 +8,20 @@ const sUSDat = '0xd166337499e176bbc38a1fbd113ab144e5bd2df7';
 const M = '0x866a2bf4e572cbcf37d5071a7a58503bfb36be1b';
 const PYUSDx = '0xebdb0942ce16386ab90718c7bd10c91cdb66b14d';
 const USDC = ADDRESSES.ethereum.USDC;
+// Saturn USDC Morpho vaults (co-curated with Hyperithm; Hyperithm agreed deposits count as Saturn's).
+const VAULTS = {
+  ethereum: ['0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240'],
+  monad: ['0x75753e494e5e374C52E1d84fc04EB14B10F2C079'],
+};
+
+async function vaultTvl(api) {
+  const vaults = VAULTS[api.chain];
+  const [assets, totals] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: vaults }),
+    api.multiCall({ abi: 'uint256:totalAssets', calls: vaults }),
+  ]);
+  api.add(assets, totals);
+}
 // sUSDat is backed by STRC (Strategy's "Stretch" preferred stock); balances are 6 decimals.
 const STRC_DECIMALS = 6;
 // sUSDat v2 upgrade (2026-09-30): strcBalance() was removed and STRC accounting moved to
@@ -34,12 +48,16 @@ async function tvl(api) {
   // tradfi STRC feed (coingecko:llama-stock-strc) rather than Saturn's own oracle.
   api.addCGToken('llama-stock-strc', Number(strcBalance) / 10 ** STRC_DECIMALS);
 
+  await vaultTvl(api);
   return api.getBalances();
 }
 
 module.exports = {
-  methodology: "USDat backing (the PYUSDx reserve, legacy $M, and USDC held by the USDat contract) plus the STRC digital-credit backing of sUSDat, priced via DefiLlama's tradfi STRC feed (NASDAQ: STRC).",
+  methodology: "USDat backing (the PYUSDx reserve, legacy $M, and USDC held by the USDat contract) plus the STRC digital-credit backing of sUSDat, priced via DefiLlama's tradfi STRC feed (NASDAQ: STRC), plus USDC deposits in Saturn's co-curated Morpho vaults on Ethereum and Monad.",
   ethereum: {
     tvl,
+  },
+  monad: {
+    tvl: vaultTvl,
   },
 };
