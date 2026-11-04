@@ -257,14 +257,82 @@ async function makinaSharesTvl(api, owners, pairs) {
     held.forEach(({ accountingToken }, i) => { if (amounts[i] && amounts[i] !== '0') api.add(accountingToken, amounts[i]); });
 }
 
-// Morpho Blue supply is not an ERC-20. Share to loan-asset conversion is helper/morpoho toAssetsDown,
-// the same SharesMath the other Blue adapters use. Llama prices the loan token. Market ids stay out of allPoolTokens.
+// Morpho Blue MathLib. market() is the last accrual; interest since then is not in those totals.
+const WAD = 10n ** 18n;
+const VIRTUAL_SHARES = 1000000n;
+const VIRTUAL_ASSETS = 1n;
+
+function wMulDown(x, y) {
+    return (BigInt(x) * BigInt(y)) / WAD;
+}
+
+// First three terms of e^(rate*elapsed) - 1, same truncation as MathLib.wTaylorCompounded.
+function wTaylorCompounded(rate, elapsed) {
+    const first = BigInt(rate) * BigInt(elapsed);
+    const second = (first * first) / (2n * WAD);
+    const third = (second * first) / (3n * WAD);
+    return first + second + third;
+}
+
+function toSharesDown(assets, totalAssets, totalShares) {
+    return BigInt(assets) * (BigInt(totalShares) + VIRTUAL_SHARES) / (BigInt(totalAssets) + VIRTUAL_ASSETS);
+}
+
+// Morpho._accrueInterest, as a view: add borrow interest to supply assets, then mint fee shares.
+function accrueSupply(market, borrowRate, now) {
+    let totalSupplyAssets = BigInt(market.totalSupplyAssets);
+    let totalSupplyShares = BigInt(market.totalSupplyShares);
+    const elapsed = BigInt(now) - BigInt(market.lastUpdate);
+    if (elapsed <= 0n || BigInt(market.totalBorrowAssets) === 0n || !borrowRate) {
+        return { totalSupplyAssets, totalSupplyShares };
+    }
+    const interest = wMulDown(market.totalBorrowAssets, wTaylorCompounded(borrowRate, elapsed));
+    totalSupplyAssets += interest;
+    const fee = BigInt(market.fee);
+    if (fee !== 0n && interest !== 0n) {
+        const feeAmount = wMulDown(interest, fee);
+        totalSupplyShares += toSharesDown(feeAmount, totalSupplyAssets - feeAmount, totalSupplyShares);
+    }
+    return { totalSupplyAssets, totalSupplyShares };
+}
+
+const borrowRateAbi = 'function borrowRateView((address,address,address,address,uint256),(uint128,uint128,uint128,uint128,uint128,uint128)) view returns (uint256)';
+
+// Morpho Blue supply is not an ERC-20. Shares convert with helper/morpoho toAssetsDown after the
+// market totals are accrued. Llama prices the loan token. Market ids stay out of allPoolTokens.
 async function morphoBlueSupplyTvl(api, owners, marketIds) {
     if (!owners.length || !marketIds.length) return;
     const [params, markets] = await Promise.all([
         api.multiCall({ target: MORPHO, abi: morphoAbi.idToMarketParams, calls: marketIds }),
         api.multiCall({ target: MORPHO, abi: morphoAbi.market, calls: marketIds }),
     ]);
+    const now = api.timestamp || Math.floor(Date.now() / 1000);
+    const pending = [];
+    markets.forEach((market, i) => {
+        const elapsed = BigInt(now) - BigInt(market.lastUpdate);
+        const irm = params[i].irm;
+        if (elapsed <= 0n || BigInt(market.totalBorrowAssets) === 0n) return;
+        if (!irm || irm === '0x0000000000000000000000000000000000000000') return;
+        pending.push(i);
+    });
+    const rates = pending.length
+        ? await api.multiCall({
+            abi: borrowRateAbi,
+            permitFailure: true,
+            calls: pending.map((i) => ({
+                target: params[i].irm,
+                params: [
+                    [params[i].loanToken, params[i].collateralToken, params[i].oracle, params[i].irm, params[i].lltv],
+                    [markets[i].totalSupplyAssets, markets[i].totalSupplyShares, markets[i].totalBorrowAssets, markets[i].totalBorrowShares, markets[i].lastUpdate, markets[i].fee],
+                ],
+            })),
+        })
+        : [];
+    const accrued = markets.map((market, i) => {
+        const pendingIndex = pending.indexOf(i);
+        const rate = pendingIndex === -1 ? null : rates[pendingIndex];
+        return accrueSupply(market, rate, now);
+    });
     const positions = await api.multiCall({
         target: MORPHO,
         abi: morphoAbi.position,
@@ -273,7 +341,8 @@ async function morphoBlueSupplyTvl(api, owners, marketIds) {
     positions.forEach((position, i) => {
         if (!position || BigInt(position.supplyShares) === 0n) return;
         const marketIndex = i % marketIds.length;
-        const assets = toAssetsDown(position.supplyShares, markets[marketIndex].totalSupplyAssets, markets[marketIndex].totalSupplyShares);
+        const { totalSupplyAssets, totalSupplyShares } = accrued[marketIndex];
+        const assets = toAssetsDown(position.supplyShares, totalSupplyAssets, totalSupplyShares);
         if (assets > 0n) api.add(params[marketIndex].loanToken, assets.toString());
     });
 }
