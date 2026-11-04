@@ -1947,6 +1947,10 @@ const uniV3Configs = {
     methodology: 'Value of the tokens held in the Camelot V4 (Algebra Integral) pools on Arbitrum, discovered from the factory Pool events.',
     arbitrum: { factory: '0xBefC4b405041c5833f53412fF997ed2f697a2f37', fromBlock: 391829824, isAlgebra: true },
   },
+  'vectaswap': {
+    arbitrum: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 518470299},
+    base: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 53245146}
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
