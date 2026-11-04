@@ -99,6 +99,7 @@ const configs = {
     pharos: {
       morpho: [
         '0x047cd0a91e9b92ed979189a6c8a120bf280f02e5', // RockawayX USDC (roxUSDC)
+        '0x1275671ccbff43d9a0676f70c22d99a9328a5842', // RockawayX Reservoir Ecosystem
       ],
     },
     solana: {
