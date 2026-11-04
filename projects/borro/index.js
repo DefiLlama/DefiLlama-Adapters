@@ -66,6 +66,9 @@ const navAbi = "function navPerShareInQuote(address quote) view returns (bool ok
 
 const vaults = [USDG_VAULT, ...Object.values(desks).map((d) => d[0])]
 const vaultSet = new Set(vaults.map((v) => v.toLowerCase()))
+// vaults deployed after FROM_BLOCK: a query for an earlier block leaves them out
+const vaultFrom = { [desks.AAPL[0]]: 90133902, [desks.GOOGL[0]]: 90133902, [desks.MSFT[0]]: 90133902, [desks.gAIX[0]]: 101936242 }
+const GAIX_FROM = 101044300 // the gAIX USDG market's creation; no gAIX on Borro before it
 const markets = Object.values(desks).flatMap((d) => [d[1], d[2]])
 
 const vaultAbi = {
@@ -109,9 +112,9 @@ async function marketState(api) {
 }
 
 // api.add, except gAIX goes in as the USDG it is worth at the fund's NAV (left out if the fund cannot
-// price itself, rather than guessed) and bgSHORT as the Steakhouse shares it wraps.
+// price itself, rather than guessed) and bgSHORT as the Steakhouse shares it wraps. An RPC failure fails the run.
 async function adder(api) {
-  const res = await api.call({ target: GAIX, abi: navAbi, params: [USDG], permitFailure: true })
+  const res = (await api.getBlock()) < GAIX_FROM ? null : await api.call({ target: GAIX, abi: navAbi, params: [USDG] })
   const nav = res && res.ok ? BigInt(res.nav) : null
   return (token, amount) => {
     const t = token.toLowerCase()
@@ -126,13 +129,15 @@ async function adder(api) {
 // What the vaults hold outside Borro's markets: idle asset in the vault, and anything a Morpho
 // Vault V1 adapter holds in another vault (the USDG vault's Steakhouse adapter).
 async function vaultHoldings(api, add) {
-  const assets = await api.multiCall({ abi: "address:asset", calls: vaults })
-  const idle = await api.multiCall({ abi: "erc20:balanceOf", calls: vaults.map((v, i) => ({ target: assets[i], params: v })) })
-  vaults.forEach((_, i) => add(assets[i], idle[i]))
+  const block = await api.getBlock()
+  const live = vaults.filter((v) => !(block < (vaultFrom[v] || 0)))
+  const assets = await api.multiCall({ abi: "address:asset", calls: live })
+  const idle = await api.multiCall({ abi: "erc20:balanceOf", calls: live.map((v, i) => ({ target: assets[i], params: v })) })
+  live.forEach((_, i) => add(assets[i], idle[i]))
 
-  const lengths = await api.multiCall({ abi: vaultAbi.adaptersLength, calls: vaults })
+  const lengths = await api.multiCall({ abi: vaultAbi.adaptersLength, calls: live })
   const adapterCalls = []
-  vaults.forEach((vault, i) => {
+  live.forEach((vault, i) => {
     for (let j = 0; j < Number(lengths[i]); j++) adapterCalls.push({ target: vault, params: j, asset: assets[i] })
   })
   if (!adapterCalls.length) return
