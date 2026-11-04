@@ -1789,6 +1789,18 @@ const configs = {
       }
     }
   },
+  "hedgehood-share-lending": {
+    config: {
+      methodology: 'Counts USDG deposited in the HedgeHood-curated Morpho Vault V2 (hhUSDG), including assets lent against Stock Yield fund shares. Uses the standard curator accounting and is marked doublecounted because the vault supplies Morpho Blue. Pledged fund shares and their underlying assets are excluded.',
+      start: 1793674144, // 2026-11-03 02:49:04 UTC, block 104721572: vault moved to the v2.1 market
+      blockchains: {
+        robinhood: {
+          // EOA-deployed and transferred to the HedgeHood Safe; owner discovery would miss it.
+          morpho: ['0x54Bc097643BB9fd4ab004f11859893655529E954'], // hhUSDG
+        },
+      },
+    },
+  },
   "navi-curator": {
     config: {
       methodology: "Counts total_assets of the NAVI vaults on Sui (USDC and SUI, Prime and High Yield), found on-chain by their navi_vault::Vault type, and totalAssets() of the Lagoon vaults curated by NAVI Protocol on Ethereum. The NAVI vaults supply into NAVI lending markets, and Lagoon deposits are bridged to Sui and supplied through NAVI vaults, so they are also counted under NAVI Lending and Lagoon.",
