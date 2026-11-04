@@ -94,13 +94,11 @@ const configs = {
         "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
         "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
         "0x7bfdE3A7bd346Da92521D384563F89BB45dE1f60", //Morpho v2 EURe Yield
-        "0x4F38e7a76b9C32Ab68FBf500E4d52806B15AB93b", //Morpho v2 Pods USDC Yield by KPK (allocates into USDC Yield v2, netted by the helper)
       ],
     },
     base: {
       morpho: [
         "0x392B3CCf36C8adB8094F45573346B457414cD752", //Morpho v2 USDC Yield
-        "0x7C29B2699a508831D444730cD34d99e0aD2D2624", //Morpho v2 Fluidkey USDC Yield by KPK (allocates into USDC Yield, netted by the helper)
       ],
     },
     arc: {
