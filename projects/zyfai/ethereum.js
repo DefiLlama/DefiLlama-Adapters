@@ -127,8 +127,16 @@ const COMPOUND_POOLS = {
     WETH: '0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7',
   };
   
+  // Aave V4 spokes that coins.llama.fi already prices. Counted like every other receipt token.
+  const AAVE_V4_POOLS = {
+    'Core USDC': '0x531E90a2376902DE8915789Fcc1075e3B0c153E7',
+    'Core USDT': '0x5eC44a70F309854fe04d495cFE1B5dA63DD1cc73',
+    'Core USDG': '0xAC2435E3C25e8246870D33ce0a26988A46d5DB68',
+  };
+
   const allPoolTokens = [
     ...Object.values(AAVE_POOLS),
+    ...Object.values(AAVE_V4_POOLS),
     ...Object.values(COMPOUND_POOLS),
     ...Object.values(SPARK_POOLS),
     ...Object.values(ETHEREUM_MORPHO_POOLS),
@@ -141,13 +149,10 @@ const COMPOUND_POOLS = {
     ...Object.values(SUPERFORM_POOLS),
   ];
   
-  // ERC-4626 shares Llama does not price. convertToAssets into the underlying; not added to allPoolTokens.
+  // ERC-4626 shares coins.llama.fi does not price. Same convertToAssets path as the other unpriced vaults.
   const UNPRICED_VAULTS = [
-    '0x531E90a2376902DE8915789Fcc1075e3B0c153E7', // Aave V4 Core USDC
-    '0x5eC44a70F309854fe04d495cFE1B5dA63DD1cc73', // Aave V4 Core USDT
     '0x7320CF22Ac095bA2a2e0a652F77efB836c2E751b', // Aave V4 Core WETH
     '0x6D9e2Cdd61CaF69af99b275704B6e272C41c6718', // Aave V4 Core EURC
-    '0xAC2435E3C25e8246870D33ce0a26988A46d5DB68', // Aave V4 Core USDG
     '0xf72bd5a56de97840f1fdd3641b556126c10aa1c4', // Concrete WBTC
   ];
 

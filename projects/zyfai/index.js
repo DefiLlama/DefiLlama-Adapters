@@ -228,32 +228,37 @@ async function unpricedVaultsTvl(api, owners, vaults) {
     amounts.forEach((amount, i) => { if (amount) api.add(convertAssets[i], amount); });
 }
 
-// Share balance is on the share token. The Machine quotes convertToAssets; its own balance is not TVL.
+// projects/makina-finance values a share balance with these two calls. lastTotalAum() is the whole
+// machine, so it is not used here: Zyfai only holds the share token. Llama prices the accounting token.
+const makinaAbi = {
+    accountingToken: 'address:accountingToken',
+    convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
+};
+
 async function makinaSharesTvl(api, owners, pairs) {
     if (!owners.length || !pairs.length) return;
     const accountings = await api.multiCall({
-        abi: 'address:accountingToken',
+        abi: makinaAbi.accountingToken,
         calls: pairs.map((pair) => pair.machine),
     });
     const calls = owners.flatMap((owner) => pairs.map((pair) => ({ target: pair.share, params: [owner] })));
     const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
-    const convertCalls = [];
-    const assets = [];
-    balances.forEach((balance, i) => {
-        if (!balance || balance === '0') return;
+    const held = [];
+    balances.forEach((shares, i) => {
+        if (!shares || BigInt(shares) === 0n) return;
         const pairIndex = i % pairs.length;
-        convertCalls.push({ target: pairs[pairIndex].machine, params: [balance] });
-        assets.push(accountings[pairIndex]);
+        held.push({ machine: pairs[pairIndex].machine, accountingToken: accountings[pairIndex], shares });
     });
-    if (!convertCalls.length) return;
+    if (!held.length) return;
     const amounts = await api.multiCall({
-        abi: 'function convertToAssets(uint256) view returns (uint256)',
-        calls: convertCalls,
+        abi: makinaAbi.convertToAssets,
+        calls: held.map(({ machine, shares }) => ({ target: machine, params: [shares] })),
     });
-    amounts.forEach((amount, i) => { if (amount && amount !== '0') api.add(assets[i], amount); });
+    held.forEach(({ accountingToken }, i) => { if (amounts[i] && amounts[i] !== '0') api.add(accountingToken, amounts[i]); });
 }
 
-// Supply shares are not an ERC-20. Market ids stay out of allPoolTokens.
+// Morpho Blue supply is not an ERC-20. Share to loan-asset conversion is helper/morpoho toAssetsDown,
+// the same SharesMath the other Blue adapters use. Llama prices the loan token. Market ids stay out of allPoolTokens.
 async function morphoBlueSupplyTvl(api, owners, marketIds) {
     if (!owners.length || !marketIds.length) return;
     const [params, markets] = await Promise.all([
@@ -299,7 +304,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    methodology: 'Counts the TVL of all smart wallet accounts deployed by ZyFAI protocol across multiple DeFi protocols. Priced receipt tokens are summed directly. Unpriced ERC-4626 shares (stock vaults, Aave V4 spokes, Concrete) are converted to the underlying. Makina balances are the share token, converted on the Machine. Morpho Blue supply shares are converted to the loan asset.',
+    methodology: 'Counts the TVL of all smart wallet accounts deployed by ZyFAI protocol across multiple DeFi protocols. Receipt tokens that Llama prices are summed directly, including priced Aave V4 spokes. Shares Llama does not price use the existing convertToAssets path. Makina share balances use the makina-finance valuation: convertToAssets on the Machine into the accounting token. Morpho Blue supply shares use the shared SharesMath helper and are added as the loan token.',
     sonic: { tvl },
     base: { tvl },
     arbitrum: { tvl },
