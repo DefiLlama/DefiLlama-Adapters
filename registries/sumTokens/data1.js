@@ -89,7 +89,8 @@ module.exports = {
       [ADDRESSES.ethereum.USDT, "0x6925ccD29e3993c82a574CED4372d8737C6dbba6"],
       [ADDRESSES.ethereum.WBTC, "0x2c01390E10e44C968B73A7BcFF7E4b4F50ba76Ed"],
     ] },
-    "bitcoin": { "owners": ["bc1pl7grnght2uhp75wm03djde5a56syp06ssdjf7ucm4wkq0tetpqas5e20e9"] },
+    // 2026-10-10 the bridge moved its 110 BTC from the first address to the second, via 11 x 10 BTC hops
+    "bitcoin": { "owners": ["bc1pl7grnght2uhp75wm03djde5a56syp06ssdjf7ucm4wkq0tetpqas5e20e9", "bc1pclvn3v74l2u8kmw5z9dqcr3ahq54ka74cx4tv8vv2khra7n0ta0qxkrkyv"] },
   },
   "darkness": {
     "cronos": {
