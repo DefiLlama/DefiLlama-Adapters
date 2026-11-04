@@ -42067,38 +42067,53 @@ const configs = {
     },
   },
   "zerc20": {
-    "methodology": "TVL is the underlying ETH, USDC, BNB and JPYC held by the zERC20 LiquidityManager contracts, which custody the assets users deposit when wrapping into zETH, zUSDC, zBNB and zJPYC.",
+    // v2 (October 2026) holds each asset in its zToken contract, at the same address on
+    // every chain; v1's LiquidityManagers still hold what remains of the original protocol.
+    // Source: docs.zerc20.io/developers/contracts. Token supply is deliberately not used:
+    // private transfers strand tokens in burn addresses, so supply runs 2-10x above backing.
+    "methodology": "TVL is the underlying asset held by zERC20's contracts. In v2, each zToken (zETH, zBNB and zPOL for native coins, plus zUSDC and zJPYC) holds its own backing; the v1 LiquidityManagers still hold what remains of the original protocol. Token supply is not used, because private transfers strand tokens in burn addresses and inflate it.",
     "ethereum": {
       "tokensAndOwners": [
-        [ADDRESSES.null, "0xcc10b7098fef1ab2f0ff3be91d2a7b3230b90cf0"], // zETH LM
-        [ADDRESSES.ethereum.USDC, "0x04be137df79be7b5f3314c4a84d1c5e0d99bd477"], // zUSDC LM
+        [ADDRESSES.null, "0xc544e6df95e76078ae19f11b9f7afaef8ef62d14"], // v2 zETH
+        [ADDRESSES.ethereum.USDC, "0x421976f8270dca7d3089020c76c672b063bed3b1"], // v2 zUSDC
+        [ADDRESSES.null, "0xcc10b7098fef1ab2f0ff3be91d2a7b3230b90cf0"], // v1 zETH LM
+        [ADDRESSES.ethereum.USDC, "0x04be137df79be7b5f3314c4a84d1c5e0d99bd477"], // v1 zUSDC LM
       ],
     },
     "arbitrum": {
       "tokensAndOwners": [
-        [ADDRESSES.null, "0xcc10b7098fef1ab2f0ff3be91d2a7b3230b90cf0"], // zETH LM
-        [ADDRESSES.arbitrum.USDC_CIRCLE, "0x04be137df79be7b5f3314c4a84d1c5e0d99bd477"], // zUSDC LM
+        [ADDRESSES.null, "0xc544e6df95e76078ae19f11b9f7afaef8ef62d14"], // v2 zETH
+        [ADDRESSES.arbitrum.USDC_CIRCLE, "0x421976f8270dca7d3089020c76c672b063bed3b1"], // v2 zUSDC
+        [ADDRESSES.null, "0xcc10b7098fef1ab2f0ff3be91d2a7b3230b90cf0"], // v1 zETH LM
+        [ADDRESSES.arbitrum.USDC_CIRCLE, "0x04be137df79be7b5f3314c4a84d1c5e0d99bd477"], // v1 zUSDC LM
       ],
     },
     "base": {
       "tokensAndOwners": [
-        [ADDRESSES.null, "0xcc10b7098fef1ab2f0ff3be91d2a7b3230b90cf0"], // zETH LM
-        [ADDRESSES.base.USDC, "0x04be137df79be7b5f3314c4a84d1c5e0d99bd477"], // zUSDC LM
+        [ADDRESSES.null, "0xc544e6df95e76078ae19f11b9f7afaef8ef62d14"], // v2 zETH
+        [ADDRESSES.base.USDC, "0x421976f8270dca7d3089020c76c672b063bed3b1"], // v2 zUSDC
+        [ADDRESSES.null, "0xcc10b7098fef1ab2f0ff3be91d2a7b3230b90cf0"], // v1 zETH LM
+        [ADDRESSES.base.USDC, "0x04be137df79be7b5f3314c4a84d1c5e0d99bd477"], // v1 zUSDC LM
       ],
     },
     "bsc": {
       "tokensAndOwners": [
-        [ADDRESSES.null, "0x39cc069df606c7bc8c79b0add0696bcaf548efd9"], // zBNB LM
+        [ADDRESSES.null, "0xc544e6df95e76078ae19f11b9f7afaef8ef62d14"], // v2 zBNB
+        [ADDRESSES.null, "0x39cc069df606c7bc8c79b0add0696bcaf548efd9"], // v1 zBNB LM
       ],
     },
     "polygon": {
       "tokensAndOwners": [
-        ["0xe7c3d8c9a439fede00d2600032d5db0be71c3c29", "0x12609c3a7a1a212953417c90472cdcf034965a1c"], // JPYC in zJPYC LM
+        [ADDRESSES.null, "0xc544e6df95e76078ae19f11b9f7afaef8ef62d14"], // v2 zPOL
+        [ADDRESSES.polygon.USDC_CIRCLE, "0x421976f8270dca7d3089020c76c672b063bed3b1"], // v2 zUSDC
+        ["0xe7c3d8c9a439fede00d2600032d5db0be71c3c29", "0x6c36c042e7a225898d993192f2679da3bfed1e81"], // JPYC in v2 zJPYC
+        ["0xe7c3d8c9a439fede00d2600032d5db0be71c3c29", "0x12609c3a7a1a212953417c90472cdcf034965a1c"], // JPYC in v1 zJPYC LM
       ],
     },
     "klaytn": {
+      // v1 only: Kaia is not part of v2.
       "tokensAndOwners": [
-        ["0xe7c3d8c9a439fede00d2600032d5db0be71c3c29", "0x12609c3a7a1a212953417c90472cdcf034965a1c"], // JPYC in zJPYC LM (Kaia)
+        ["0xe7c3d8c9a439fede00d2600032d5db0be71c3c29", "0x12609c3a7a1a212953417c90472cdcf034965a1c"], // JPYC in v1 zJPYC LM (Kaia)
       ],
     },
   },
