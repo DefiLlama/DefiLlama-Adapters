@@ -35,7 +35,8 @@ async function tvl(api) {
       tokensAndOwners.push([s.paymentToken, s.bribe], [s.paymentToken, s.bribeRouter])
     })
   })
-  await api.sumTokens({ tokensAndOwners })
+  // Creators choose fund assets freely, so one token that cannot report a balance must not stop TVL for every fund
+  await api.sumTokens({ tokensAndOwners, permitFailure: true })
 
   // Mine: unclaimed payouts owed to outgoing miners and creators; the protocol's own unclaimed fee is not user TVL
   const mines = launches.map(l => l.mine)
