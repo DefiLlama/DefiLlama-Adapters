@@ -12,9 +12,7 @@ const { nullAddress } = require("../helper/tokenMapping")
 //
 // The gAIX desk (Goldstein Group's gAIX fund token) has the same two markets and its own vault (bgAIX),
 // with two differences: its USDG market takes gAIX itself as collateral, and its gAIX-loan market takes
-// bgSHORT, which wraps Steakhouse USDG vault shares one for one. gAIX has no market price, so it is
-// added as the USDG its shares are worth at the fund's own on-chain NAV; bgSHORT is added as the
-// Steakhouse shares it wraps.
+// bgSHORT, which wraps Steakhouse USDG vault shares.
 //
 // The deployment is shared with other curators (Longbow and others), so the singleton's token
 // balances cannot be attributed by a token union; the markets are enumerated instead and each is
@@ -56,13 +54,6 @@ const desks = {
   // added 2026-11-04 (bgAIX deploy block 101936242)
   gAIX: ["0x0bd00e6cB94F9C06d7926A62B7EF7d816D2ea7A3", "0x198c6ba22d7a2feb3e8deb9e6372e00aae3d6ed9310dae514649acc2f67c2789", "0x761fbcc92be3ab5d682adc222817a4267c2f444cffab892456c5e3e4761af061"],
 }
-
-const GAIX = "0x0a4Be7073bc336e451082502D768E8D644CA780c"
-const USDG = "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"
-const BGSHORT = "0x8aB46443832E8354BE2c35c7AFcBf26Fa3847ef4"
-const STEAKHOUSE_USDG = "0xBeEff033F34C046626B8D0A041844C5d1A5409dd" // what bgSHORT wraps, one for one
-// (ok, nav): nav is USDG per gAIX share with $1 = 1e12, so usdg (6 dec) = gaix (12 dec) * nav / 1e18
-const navAbi = "function navPerShareInQuote(address quote) view returns (bool ok, uint256 nav)"
 
 const vaults = [USDG_VAULT, ...Object.values(desks).map((d) => d[0])]
 const vaultSet = new Set(vaults.map((v) => v.toLowerCase()))
@@ -108,27 +99,12 @@ async function marketState(api) {
   return { params, data }
 }
 
-// api.add, except gAIX goes in as the USDG it is worth at the fund's NAV (left out if the fund cannot
-// price itself, rather than guessed) and bgSHORT as the Steakhouse shares it wraps.
-async function adder(api) {
-  const res = await api.call({ target: GAIX, abi: navAbi, params: [USDG], permitFailure: true })
-  const nav = res && res.ok ? BigInt(res.nav) : null
-  return (token, amount) => {
-    const t = token.toLowerCase()
-    if (t === GAIX.toLowerCase()) {
-      if (nav !== null) api.add(USDG, (BigInt(amount) * nav) / 10n ** 18n)
-      return
-    }
-    api.add(t === BGSHORT.toLowerCase() ? STEAKHOUSE_USDG : token, amount)
-  }
-}
-
 // What the vaults hold outside Borro's markets: idle asset in the vault, and anything a Morpho
 // Vault V1 adapter holds in another vault (the USDG vault's Steakhouse adapter).
-async function vaultHoldings(api, add) {
+async function vaultHoldings(api) {
   const assets = await api.multiCall({ abi: "address:asset", calls: vaults })
   const idle = await api.multiCall({ abi: "erc20:balanceOf", calls: vaults.map((v, i) => ({ target: assets[i], params: v })) })
-  vaults.forEach((_, i) => add(assets[i], idle[i]))
+  vaults.forEach((_, i) => api.add(assets[i], idle[i]))
 
   const lengths = await api.multiCall({ abi: vaultAbi.adaptersLength, calls: vaults })
   const adapterCalls = []
@@ -142,34 +118,35 @@ async function vaultHoldings(api, add) {
   const vaultV1Adapters = adapters.filter((_, i) => parents[i])
   if (!vaultV1Adapters.length) return
   const held = await api.multiCall({ abi: vaultAbi.realAssets, calls: vaultV1Adapters })
-  vaultV1Adapters.forEach((adapter, i) => add(adapterCalls[adapters.indexOf(adapter)].asset, held[i]))
+  vaultV1Adapters.forEach((adapter, i) => api.add(adapterCalls[adapters.indexOf(adapter)].asset, held[i]))
 }
 
 async function tvl(api) {
-  const [{ params, data }, collateral, add] = await Promise.all([marketState(api), collateralByMarket(api), adder(api)])
+  const { params, data } = await marketState(api)
+  const collateral = await collateralByMarket(api)
 
   markets.forEach((id, i) => {
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
     const borrowedAssets = BigInt(data[i].totalBorrowAssets || 0)
     // Morpho enforces totalBorrowAssets <= totalSupplyAssets; defensive floor only.
-    if (supplied > borrowedAssets) add(params[i].loanToken, supplied - borrowedAssets)
+    if (supplied > borrowedAssets) api.add(params[i].loanToken, supplied - borrowedAssets)
 
     const collateralToken = params[i].collateralToken
     if (collateralToken === nullAddress || vaultSet.has(collateralToken.toLowerCase())) return // a Borro vault share: its stock is already counted
     const held = collateral[id.toLowerCase()] || 0n
-    if (held > 0n) add(collateralToken, held)
+    if (held > 0n) api.add(collateralToken, held)
   })
 
-  await vaultHoldings(api, add)
+  await vaultHoldings(api)
 }
 
 async function borrowed(api) {
-  const [{ params, data }, add] = await Promise.all([marketState(api), adder(api)])
+  const { params, data } = await marketState(api)
   markets.forEach((_, i) => {
     let amount = BigInt(data[i].totalBorrowAssets || 0)
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
     if (amount > supplied) amount = supplied
-    if (amount > 0n) add(params[i].loanToken, amount)
+    if (amount > 0n) api.add(params[i].loanToken, amount)
   })
 }
 
@@ -177,6 +154,6 @@ module.exports = {
   doublecounted: true,
   start: "2026-10-05",
   methodology:
-    "Counts the isolated Morpho Blue markets Borro creates and curates on Robinhood Chain: a stock-loan market and a USDG market per stock, plus the same pair for Goldstein Group's gAIX fund token. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Collateral that is itself a Borro vault share (bNVDA and the rest, posted on the USDG markets) is not added, because the stock behind it is already counted in the stock-loan market. What Borro's Morpho Vault V2s hold outside these markets (idle, or parked in another Morpho vault through an adapter) is added as the vault's asset; what they supply into the markets is counted once, in the markets. gAIX has no market price, so it is valued in USDG at the fund's on-chain NAV (navPerShareInQuote); bgSHORT, the gAIX short market's collateral, wraps Steakhouse USDG vault shares one for one and is counted as those shares. Marked double counted because Morpho Blue reports the same markets.",
+    "Counts the isolated Morpho Blue markets Borro creates and curates on Robinhood Chain: a stock-loan market and a USDG market per stock, plus the same pair for Goldstein Group's gAIX fund token. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Collateral that is itself a Borro vault share (bNVDA and the rest, posted on the USDG markets) is not added, because the stock behind it is already counted in the stock-loan market. What Borro's Morpho Vault V2s hold outside these markets (idle, or parked in another Morpho vault through an adapter) is added as the vault's asset; what they supply into the markets is counted once, in the markets. Marked double counted because Morpho Blue reports the same markets.",
   robinhood: { tvl, borrowed },
 }
