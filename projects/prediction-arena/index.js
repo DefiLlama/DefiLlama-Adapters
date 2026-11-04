@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 // One immutable arena contract on Base. Every market is a poolId inside it
 // (createPool / bet / settle), so there is no factory and nothing to enumerate.
+// Live since 2026-11-04: first deposit of 1.00 USDC, so the export is non-zero.
 const ARENA = '0x961872d75ea6E7A2859B9b04C6C7B1C73CF510b5'
 
 module.exports = {
