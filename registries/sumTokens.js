@@ -18311,6 +18311,14 @@ const configs = {
       ]
     },
   },
+  "milk-money": {
+    "timetravel": false,
+    "methodology": "Staking is the $MM held in the staking pool's stake vault.",
+    "solana": {
+      "tvl": { "tokenAccounts": [] },
+      "staking": { "tokenAccounts": ["CYTyr6G2FVffSXR5kArtXGaGAKQu9NTKLfXTMbiNBJ2t"] } // $MM stake vault
+    },
+  },
   "minepea": {
     "methodology": "TVL is the native ETH held by the GridMining contract (ETH deployed to active rounds plus unclaimed ETH winnings). Staking counts PEA locked in the Staking contract plus unclaimed mined PEA held by GridMining.",
     "robinhood": {

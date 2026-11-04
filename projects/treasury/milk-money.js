@@ -1,13 +1,14 @@
 const sdk = require('@defillama/sdk')
 const { PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
-const { getConnection, getMultipleAccounts, decodeAccount, sumTokens2 } = require('../helper/solana')
+const { getConnection, getMultipleAccounts, decodeAccount } = require('../helper/solana')
 const { POSITION_V2_DISCRIMINATOR } = require('../helper/utils/solana/layouts/meteora-dlmm-layout')
 
-// Milk Money runs concentrated-liquidity positions on Meteora DLMM from a set of protocol-owned wallets:
-// guard vaults (program-guarded PDAs whose operator can only move funds into positions or to a pinned treasury),
-// the agent wallets that trade new pairs. Treasury pools turn their fees into $MM
-// buybacks; reward pools pay their fees to $MM stakers.
+const MM = 'Ax8PSfCXxmxb8C8kYTzN5CPpTe6PyeZfFf8rrXNCjupx'
+
+// Milk Money trades its own capital as concentrated liquidity on Meteora DLMM, from protocol-owned wallets:
+// guard vaults (program-guarded PDAs whose operator can only move funds into positions or to a pinned treasury)
+// and the agent wallets that trade new pairs. MM is the quote side of the fleet's own pools.
 const OWNERS = [
   // guard vaults
   '2joLmenK3iX1Z2oanQLCtezwAnjhihyJN9JRDiQnJdDi', // core vault
@@ -21,28 +22,24 @@ const OWNERS = [
   'BEdFPovfLGQkCCVrEys5V28YH8QfDXnKpAXJvwpEBqU7', 'F3o6pmCYgYFYs2u6AMvpL7PScUYKaiiUjtvrUejVHc1w',
 ]
 
-// the $MM staking pool's stake vault (token account): staked $MM, reported separately from TVL
-const MM_STAKE_VAULT = 'CYTyr6G2FVffSXR5kArtXGaGAKQu9NTKLfXTMbiNBJ2t'
-
 const DLMM_PROGRAM = new PublicKey('LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo')
 const BINS_PER_ARRAY = 70
 const DLMM_POSITION_BASE_SIZE = 8120 // resized positions append 112 bytes per extra bin, liquidity share first
 const DLMM_EXTRA_BIN_SIZE = 112
 const readU128 = (data, offset) => data.readBigUInt64LE(offset) + (data.readBigUInt64LE(offset + 8) << 64n)
 
-/**
- * Sums the principal of every Meteora DLMM position owned by one of the protocol wallets.
- * Positions are found with one owner-filtered PositionV2 scan per wallet (serialized, three seconds apart, because
- * the public RPC caps getProgramAccounts); each position's share of its bins' reserves is then added per token mint.
- * Unclaimed fees are left out. Returns nothing when no wallet holds a position.
- * @param {object} api DefiLlama balances API for the chain being computed
- */
-async function tvl(api) {
-  const connection = getConnection(api.chain)
-  // every DLMM PositionV2 owned by one of the protocol wallets (owner sits at offset 40, after the lbPair);
-  // no dataSize filter because resized positions are larger than the base account
+// Principal of every Meteora DLMM position owned by the protocol wallets, unclaimed fees left out,
+// as [mint, amount] rows. tvl and ownTokens share one scan: running it per bucket doubles the
+// getProgramAccounts calls
+let positionAmounts
+const getPositionAmounts = () => positionAmounts ??= fetchPositionAmounts()
+
+async function fetchPositionAmounts() {
+  const connection = getConnection('solana')
+  // one owner-filtered PositionV2 scan per wallet, one at a time three seconds apart: the public RPC caps
+  // getProgramAccounts hard. Owner sits at offset 40, after the lbPair; no dataSize filter because resized
+  // positions are larger than the base account
   const positionKeys = []
-  // one owner-filtered scan per wallet, one at a time three seconds apart: the public RPC caps getProgramAccounts hard
   await sdk.util.runInPromisePool({
     concurrency: 1,
     items: OWNERS,
@@ -58,7 +55,7 @@ async function tvl(api) {
       rows.forEach(({ pubkey }) => positionKeys.push(pubkey))
     },
   })
-  if (!positionKeys.length) return
+  if (!positionKeys.length) return []
 
   const positions = (await getMultipleAccounts(positionKeys)).filter(Boolean).map(info => {
     const position = decodeAccount('meteoraPosition', info)
@@ -86,7 +83,7 @@ async function tvl(api) {
   const binArrays = {}
   ;(await getMultipleAccounts(binArrayList)).forEach((info, i) => { if (info) binArrays[binArrayList[i]] = decodeAccount('meteoraBinArray', info) })
 
-  // a position's share of each bin's reserves; principal only, unclaimed fees are left out
+  const amounts = []
   for (const { lbPair, lower, upper, shares } of positions) {
     const pair = pairs[lbPair.toBase58()]
     let amountX = 0n
@@ -102,18 +99,23 @@ async function tvl(api) {
       amountX += share * BigInt(bin.amountX.toString()) / supply
       amountY += share * BigInt(bin.amountY.toString()) / supply
     }
-    api.add(pair.tokenXMint.toBase58(), amountX.toString())
-    api.add(pair.tokenYMint.toBase58(), amountY.toString())
+    amounts.push([pair.tokenXMint.toBase58(), amountX.toString()], [pair.tokenYMint.toBase58(), amountY.toString()])
   }
+  return amounts
+}
+
+// MM goes to ownTokens, everything else to tvl
+const balances = (isOwnToken) => async (api) => {
+  for (const [mint, amount] of await getPositionAmounts())
+    if ((mint === MM) === isOwnToken) api.add(mint, amount)
 }
 
 module.exports = {
   timetravel: false,
-  doublecounted: true, // the liquidity sits in Meteora DLMM pools, which DefiLlama already counts
   isHeavyProtocol: true, // one owner-filtered position scan per protocol wallet
-  methodology: 'TVL is the principal of the Meteora DLMM positions owned by Milk Money\'s protocol wallets (guard vaults and agent wallets), valued from the pools\' on-chain bin state; unclaimed fees are excluded. Staking is the $MM held in the staking pool\'s stake vault.',
+  methodology: 'Counts the protocol-owned liquidity Milk Money trades: the principal of the Meteora DLMM positions owned by its guard vaults and agent wallets, valued from the pools\' on-chain bin state, with unclaimed fees excluded. MM on the protocol\'s side of the pools is reported as own tokens.',
   solana: {
-    tvl,
-    staking: () => sumTokens2({ tokenAccounts: [MM_STAKE_VAULT] }),
+    tvl: balances(false),
+    ownTokens: balances(true),
   },
 }
