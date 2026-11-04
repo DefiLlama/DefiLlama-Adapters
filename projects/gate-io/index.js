@@ -209,7 +209,7 @@ const config = {
     "owners": [
       "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w",
       "HiRpdAZifEsZGdzQ5Xo5wcnaH3D2Jj9SoNsUzcYNK78J",
-      // "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
+      "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
       // "CVMV7614DjSjY114GwHhG1HNFXofceziDpuGz7VjDD5K",
       "G9XFfWz6adb9wFDKN2v7HfmJDgAc2hirrTwBmca4w26C",
       // "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
@@ -230,7 +230,8 @@ const config = {
       "rNnWmrc1EtNRe5SEQEs9pFibcjhpvAiVKF",
       "rNu9U5sSouNoFunHp9e9trsLV6pvsSf54z",
       "rhnS6iYGnrmh8NEgEKq3sBgF4FMLD9dHGf",
-      "rHJ2fHJvW97WY5X7BTBpXKCaJut8yUPxjd"
+      "rHJ2fHJvW97WY5X7BTBpXKCaJut8yUPxjd",
+      "rUCr6r96XPLkyPGyAMSz4Ss6BBBXT3cnKe"
     ]
   },
   "starknet": {
@@ -299,9 +300,9 @@ const config = {
   },
   "polkadot": {
     "owners": [
-      // "1JVrK16XZm9vyZjHoYVPjtZ35LvTQ4oyufMoUFTFpAUhath",
-      // "16ccyj8JqnP8d2DSaifgek6kSSBAu5cGtd4mu2uXTg4H6mSU",
-      // "14ooXLY2gmiUTVym9SnKxNwEgcoikXzMEav2kiLjr7pPPHPR",
+      "1JVrK16XZm9vyZjHoYVPjtZ35LvTQ4oyufMoUFTFpAUhath",
+      "16ccyj8JqnP8d2DSaifgek6kSSBAu5cGtd4mu2uXTg4H6mSU",
+      "14ooXLY2gmiUTVym9SnKxNwEgcoikXzMEav2kiLjr7pPPHPR",
       // "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ",
       // "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
       // "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
@@ -344,7 +345,8 @@ const config = {
   },
   "0g": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "abstract": {
@@ -522,7 +524,8 @@ const config = {
   },
   "berachain": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "bifrost": {
@@ -1008,7 +1011,8 @@ const config = {
     "owners": [
       "f1d7mq36vf6osdhcd32i6k3wyb223mdjlxnafnala",
       "f1z7izlq5yv2wkrt6ks4fnzscesnd6kntt6vovqai",
-      "f1pbcpx47wwpb5za2stdz3skfcplmk6zxi7hwv3sy"
+      "f1pbcpx47wwpb5za2stdz3skfcplmk6zxi7hwv3sy",
+      "f1cmzppebswhxdvb6ki7rgi6y7xcnjahgxcuy4vua"
     ]
   },
   "findora": {
@@ -1552,7 +1556,8 @@ const config = {
   },
   "plume_mainnet": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "pokt": {
@@ -1621,7 +1626,7 @@ const config = {
   },
   "ronin": {
     "owners": [
-      // "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       // "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       // "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       // "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
@@ -1682,7 +1687,8 @@ const config = {
   },
   "sonic": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   // "songbird": {
@@ -1711,7 +1717,8 @@ const config = {
   },
   "stable": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "starcoin": {
