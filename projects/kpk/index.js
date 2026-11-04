@@ -9,6 +9,7 @@ const ETH_ALPHA_SAFE = "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b" // ETH Alpha
 const USD_ALPHA_SAFE = "0x38F6a1B46144fAEe6a6D9F79D8dE264C18e23848" // USD Alpha Fund Portfolio Safe
 const XAUT_CARRY_SAFE = "0x67269455871526A052cA89329218a41e810Ecc15" // XAUt Carry Fund Portfolio Safe
 const WBTC_CARRY_SAFE = "0x0295E5d0530C23E560CdbFc097C488a0A0D7752D" // WBTC Carry Fund Portfolio Safe
+const CBBTC_CARRY_SAFE = "0xc7B7Fe7DFfb11869023dA5C327e725B361bdFe5D" // cbBTC Carry Fund Portfolio Safe
 const RH_USD_SAFE = "0x01F18eadd996e41235A9155Ec9aF5878c6ED6294" // kpk Robinhood USD Portfolio Safe (Robinhood Chain)
 const RH_SPY_SAFE = "0xe2548934197AbE73F97326302A0900302fCb34d1" // kpk Robinhood SPY Portfolio Safe (Robinhood Chain)
 const RH_ETH_USD_SAFE = "0x2EeB414D0bc548094a574E6801f5365498D28aa4" // kpk Robinhood ETH-USD Portfolio Safe (Robinhood Chain)
@@ -56,6 +57,7 @@ const configs = {
         "0xb5ce3CA2C774b72955C25875022FdD91f7a7B938", //Morpho v2 wARS Yield
         "0x7a72bcD2c3F7F7e4D6679170a0625bAB15D7DDa1", //Morpho v2 USDC Yield RWA
         "0x355A1c6A3f1946d4DbD7cE932492925AB9F261a7", //Morpho v2 YO Ecosystem
+        "0x7873F890A3Eec30909Bdb2cF65C4FA70DB905aac", //Morpho v2 wBRL Yield
       ],
 
       // Other ERC-4626 vaults (non-Morpho)
@@ -172,7 +174,7 @@ async function getAlephVaultTvl(api, vaults) {
 }
 
 // ---- kpk Fund (OIV) TVL via DeBank ----
-const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE, XAUT_CARRY_SAFE, WBTC_CARRY_SAFE, RH_USD_SAFE, RH_SPY_SAFE, RH_ETH_USD_SAFE]
+const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE, XAUT_CARRY_SAFE, WBTC_CARRY_SAFE, CBBTC_CARRY_SAFE, RH_USD_SAFE, RH_SPY_SAFE, RH_ETH_USD_SAFE]
 const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'robinhood']
 
 // ---- Zodiac-managed Safes (Institutional vertical) TVL via DeBank ----
