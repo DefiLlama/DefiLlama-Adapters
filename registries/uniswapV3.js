@@ -979,10 +979,15 @@ const uniV3Configs = {
   },
   'morpheus': {
     start: '2026-08-13',
-    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain.',
+    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain and BSC.',
     robinhood: {
       factory: '0x10253594A832f967994b44f33411940533302ACb',
       fromBlock: 35371149,
+      isAlgebra: true,
+    },
+    bsc: {
+      factory: '0x2D071bA94C32A8a9bA594771EbF628b2b48b4389',
+      fromBlock: 131415661,
       isAlgebra: true,
     },
   },
