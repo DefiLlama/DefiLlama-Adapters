@@ -28,7 +28,10 @@ const {
 } = require('../helper/solana')
 
 const PROGRAM_ID = '3vyr9DRfMZb2KvUQdnps7YG3PY38XdguLBQaJ2DFkSxk'
-const VAULT_ACCOUNT_SIZE = 246
+// Vault accounts were reallocated from 246 to 348 bytes (Oct/Nov 2026 program upgrade);
+// the extra bytes are appended, so the mint offsets below are unchanged. Keep both sizes
+// so a vault that hasn't been migrated yet is still counted.
+const VAULT_ACCOUNT_SIZES = [246, 348]
 const PRODUCT_MINT_OFFSET = 33
 const MINT_SLOT_OFFSETS = [33, 76, 110, 144, 178, 212]
 const EMPTY_MINT = '11111111111111111111111111111111' // all-zero pubkey = unused slot
@@ -53,9 +56,9 @@ function bs58encode(bytes) {
 
 async function getVaultTokenAccounts() {
   const connection = getConnection()
-  const accounts = await connection.getProgramAccounts(new PublicKey(PROGRAM_ID), {
-    filters: [{ dataSize: VAULT_ACCOUNT_SIZE }],
-  })
+  const accounts = (await Promise.all(VAULT_ACCOUNT_SIZES.map((dataSize) =>
+    connection.getProgramAccounts(new PublicKey(PROGRAM_ID), { filters: [{ dataSize }] })
+  ))).flat()
   const tokenAccounts = new Set()
   const blacklistedTokens = new Set()
   for (const { pubkey, account } of accounts) {
