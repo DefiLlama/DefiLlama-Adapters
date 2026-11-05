@@ -75,6 +75,7 @@ const configs = {
   "gate-btc": {
     bitcoin: 'gateBtc',
     methodology: "BTC on btc chain",
+    doublecounted: true,
   },
   "hemi-btc": {
     bitcoin: 'hemiBTC',
