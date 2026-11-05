@@ -240,31 +240,22 @@ function getCollateralValuesForLoans(loans) {
   return mintBalances;
 }
 
-function getOutstandingBalanceForStrategy(strategy, currentTimestamp) {
-    // current_deployed_amount
-    // plus
-    // interest_outstanding
-    // plus
-    // interest_per_second
-    // times
-    // (current_timestamp - last_accrued_timestamp)
-    const lastAccruedTimestamp = bytesToBigIntLE(new Uint8Array(strategy.lastAccruedTimestamp[0]));
-    const interestPerSecond = bytesToBigIntLE(new Uint8Array(strategy.interestPerSecond[0])) / BigInt(1e18);
+// interest accrued since last_accrued_timestamp is not extrapolated: a corrupt interest_per_second
+// on one strategy (6tv6XYnX..., ~70M USDC/s) inflated borrowed to trillions
+function getOutstandingBalanceForStrategy(strategy) {
     const currentDeployedAmount = bytesToBigIntLE(new Uint8Array(strategy.currentDeployedAmount[0]));
     const outstandingInterestAmount = bytesToBigIntLE(new Uint8Array(strategy.outstandingInterestAmount[0]));
-    const unaccruedInterest = interestPerSecond * (BigInt(currentTimestamp) - lastAccruedTimestamp);
 
-    return currentDeployedAmount + outstandingInterestAmount + unaccruedInterest;
+    return currentDeployedAmount + outstandingInterestAmount;
 }
 
 function getOutstandingDebt(strategies) {
     const strategyBalances = {};
-    const currentTimestamp = Math.floor(Date.now() / 1000);
 
     for(let i = 0; i < strategies.length; i++) {
         const strategy = strategies[i].account;
         const mint = strategy.principalMint.toString();
-        const outstandingBalance = getOutstandingBalanceForStrategy(strategy, currentTimestamp);
+        const outstandingBalance = getOutstandingBalanceForStrategy(strategy);
         strategyBalances[mint] = strategyBalances[mint] ? strategyBalances[mint] + outstandingBalance : outstandingBalance;
     }
 
