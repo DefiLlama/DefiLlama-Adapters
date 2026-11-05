@@ -96,18 +96,8 @@ async function borrowed(api) {
 const SUI_LIQUIDITY_PACKAGE = "0x03dbce0f4cbd6325ca81414cc63a82f35e32bb941610b9120fab0997bc70daa3";
 const SUI_TOKEN_RESERVE = `${SUI_LIQUIDITY_PACKAGE}::reserve::TokenReserve`;
 const SUI_EXCHANGE_PRICES_PRECISION = 10n ** 12n;
-// hBTC, BTC secured by Hashi (1:1), not priced on coins yet
-const SUI_CG_TOKENS = {
-  "0xd30fb3f8914efdbeb7b8e85fae1d65dc584b44a1281f66737b92bb9f03a59d06::btc::BTC": { id: "bitcoin", decimals: 8 },
-};
 
 const suiAmount = (v) => BigInt(typeof v === "object" && v !== null ? (v.fields?.value ?? v.value) : v);
-
-function suiAdd(api, coinType, amount) {
-  const cg = SUI_CG_TOKENS[coinType];
-  if (cg) return api.addCGToken(cg.id, Number(amount) / 10 ** cg.decimals);
-  api.add(coinType, amount.toString());
-}
 
 async function getSuiReserves() {
   const reserves = await sui.getObjectsByType(SUI_TOKEN_RESERVE);
@@ -116,14 +106,14 @@ async function getSuiReserves() {
 
 async function suiTvl(api) {
   const reserves = await getSuiReserves();
-  reserves.forEach(({ coinType, fields }) => suiAdd(api, coinType, suiAmount(fields.vault)));
+  reserves.forEach(({ coinType, fields }) => api.add(coinType, suiAmount(fields.vault).toString()));
 }
 
 async function suiBorrowed(api) {
   const reserves = await getSuiReserves();
   reserves.forEach(({ coinType, fields }) => {
     const withInterest = (suiAmount(fields.total_borrow_with_interest) * suiAmount(fields.borrow_exchange_price)) / SUI_EXCHANGE_PRICES_PRECISION;
-    suiAdd(api, coinType, withInterest + suiAmount(fields.total_borrow_interest_free));
+    api.add(coinType, (withInterest + suiAmount(fields.total_borrow_interest_free)).toString());
   });
 }
 
