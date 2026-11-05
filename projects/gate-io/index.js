@@ -8,16 +8,9 @@ const { unwrapDolomiteDeposits } = require("../helper/unwrapLPs.js");
 const { sumTokens: cosmosSumTokens } = require("../helper/chain/cosmos.js");
 const { addThetaBalances } = require("../helper/chain/theta.js");
 
-// GTBTC is Gate's own BTC-backed token. Gate's wallets hold nearly all of it as
-// unissued inventory (99.9% of the Solana supply), and the BTC behind it is
-// already counted in Gate's bitcoin wallets, so counting it would count that BTC twice.
-const GTBTC_EVM = '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3'
-const GTBTC_SOLANA = 'gtBTCGWvSRYYoZpU9UZj6i3eUGUpgksXzzsbHk2K9So'
-
 const config = {
   "ethereum": {
     ownTokens: ['0xE66747a101bFF2dBA3697199DCcE5b743b454759'], // GT
-    blacklistedTokens: [GTBTC_EVM],
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
@@ -149,7 +142,6 @@ const config = {
     ]
   },
   "bsc": {
-    blacklistedTokens: [GTBTC_EVM],
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
@@ -214,7 +206,6 @@ const config = {
     ]
   },
   "solana": {
-    blacklistedTokens: [GTBTC_SOLANA],
     "owners": [
       "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w",
       "HiRpdAZifEsZGdzQ5Xo5wcnaH3D2Jj9SoNsUzcYNK78J",
