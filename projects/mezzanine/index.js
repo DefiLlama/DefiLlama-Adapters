@@ -69,8 +69,10 @@ async function borrowed(api) {
 
 module.exports = {
   doublecounted: true,
+  timetravel: false,
   start: '2026-10-12',
   methodology:
-    'TVL is the Hastra PRIME/AUTO collateral the Hastra Optimizer strategy holds on Morpho Blue, plus any loan assets it supplies and the balances idle in the issuance vault and executor, less its outstanding Morpho debt. The strategy loops PRIME/AUTO against borrowed stablecoins, so netting the debt leaves the vault NAV that backs the tranches. Marked doublecounted: the same collateral is counted under Morpho, and PRIME/AUTO are already tracked as Hastra RWA assets.',
+    'TVL is the Hastra PRIME/AUTO collateral the Hastra Optimizer strategy holds on Morpho Blue, plus any loan assets it supplies and the balances idle in the issuance vault and executor, less its outstanding Morpho debt. The strategy loops PRIME/AUTO against borrowed stablecoins, so netting the debt leaves the vault NAV that backs the tranches. Solana adds SPL and Token-2022 balances of the strategy wallet plus Kamino collateral redeemed at reserve exchange rates, less Kamino debt adjusted to reserve cumulative borrow rates. Native SOL reserved for gas is excluded. Marked doublecounted: the same collateral is counted under Morpho or Kamino, and PRIME/AUTO are already tracked as Hastra RWA assets.',
   ethereum: { tvl, borrowed },
+  solana: require('./solana'),
 }
