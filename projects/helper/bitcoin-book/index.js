@@ -664,10 +664,6 @@ module.exports = {
     "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh",
     "38PFUcFi7o7RVYYJjWCodU9t9yiQ9Qt8Gw", // add on 22/10/2026
     "1MEPB525tEHRFLdq6aR8d2t8jaaRQj2iWX", // add on 22/10/2026
-    "bc1pjkxsx5sr9g6y2psjv680l40kewhf8xpnal96k9cncxgst7806kzqwxq9n4",
-    "bc1puglknm7e2hk5gdnu9rjx022g7rwc7xwegwdrgwspl07q55p6a3wq4y0rsj",
-    "bc1puk7pamvpvy5g4ccw8l0dl368jf5apauu384036yud9n2waq2xqysz0g6w3",
-    "bc1pg6t68yfcum3d2pp98h3h7sypra2yml03sa00hl7eqxe9zu6z48aqmq8t0s",
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
