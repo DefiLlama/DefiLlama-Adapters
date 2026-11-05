@@ -259,6 +259,7 @@ const config = {
     ]
   },
   "base": {
+    blacklistedTokens: [GTBTC_EVM],
     "owners": [
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
