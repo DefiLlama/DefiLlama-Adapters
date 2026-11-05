@@ -1,6 +1,6 @@
 const { PublicKey } = require('@solana/web3.js')
 const { getLogs2 } = require('../helper/cache/getLogs')
-const { getConnection } = require('../helper/solana')
+const { getConnection, sumTokens2 } = require('../helper/solana')
 
 const launched = 'event Launched(address indexed market, address indexed token, address indexed creator, address quote, bool nativeAlpha)'
 
@@ -16,45 +16,29 @@ const config = {
 async function tvl(api) {
   const { factory, fromBlock } = config[api.chain]
   const logs = await getLogs2({ api, target: factory, eventAbi: launched, fromBlock })
-  // A market's quote balance also holds unsettled fees, so read the curve principal instead
-  const principals = await api.multiCall({ abi: 'uint256:principal', calls: logs.map(l => l.market) })
-  api.add(logs.map(l => l.quote), principals)
+  return api.sumTokens({ tokensAndOwners: logs.map(l => [l.quote, l.market]) })
 }
 
 // ALPHA launch program on Solana
 const SOLANA_PROGRAM = new PublicKey('r4yX8Q9Z5zSLY2fjoq1DgijfoHLru49zfikq79pa1fa')
 // Base58 of the Anchor `Market` account discriminator
 const MARKET_DISCRIMINATOR = 'dkokXHR3DTw'
-// Market account: 8 discriminator, 5 header, then ten pubkeys, of which quote_mint is the fifth
-const QUOTE_MINT_OFFSET = 141
-// name, symbol and metadata_uri follow the pubkeys. They are Borsh strings, so later fields move with their length
-const STRINGS_OFFSET = 333
-const STRING_COUNT = 3
-const PRINCIPAL_INDEX = 12 // principal is the 13th u64 after the strings
-// principal, 2 pending fees, preset, 2 fee bps, policy hash, retired config, 5 u64, then stage
-const PRINCIPAL_TO_STAGE = 8 + 16 + 1 + 4 + 32 + 32 + 40
-const STAGE_ACTIVE = 2 // Curve = 0, Ready = 1, Active = 2 (graduated)
+// Market account: 8 discriminator, 5 header, then ten pubkeys, of which the quote vault is the seventh
+const QUOTE_VAULT_OFFSET = 13 + 32 * 6
 
+// Graduation moves the vault's balance to Meteora DAMM v2, so the balance needs no stage check
 async function solanaTvl(api) {
   const markets = await getConnection().getProgramAccounts(SOLANA_PROGRAM, {
     filters: [{ memcmp: { offset: 0, bytes: MARKET_DISCRIMINATOR } }],
+    dataSlice: { offset: QUOTE_VAULT_OFFSET, length: 32 },
   })
-
-  markets.forEach(({ account: { data } }) => {
-    let offset = STRINGS_OFFSET
-    for (let i = 0; i < STRING_COUNT; i++) offset += 4 + data.readUInt32LE(offset)
-    const principalOffset = offset + PRINCIPAL_INDEX * 8
-    // Unlike the EVM markets, principal keeps its value after graduation, when the money has moved to Meteora
-    if (data[principalOffset + PRINCIPAL_TO_STAGE] === STAGE_ACTIVE) return
-    const quoteMint = new PublicKey(data.subarray(QUOTE_MINT_OFFSET, QUOTE_MINT_OFFSET + 32)).toBase58()
-    api.add(quoteMint, data.readBigUInt64LE(principalOffset).toString())
-  })
+  return sumTokens2({ api, tokenAccounts: markets.map(m => new PublicKey(m.account.data).toBase58()) })
 }
 
 module.exports = {
   // Solana is read from current account state, which has no history
   timetravel: false,
-  methodology: 'TVL is the pairing asset held as curve principal by each ALPHA bonding-curve market. EVM markets are read from the factory Launched events and Solana markets from the program Market accounts. Fees waiting to be settled are excluded. Graduated liquidity sits in Uniswap v4 or Meteora DAMM v2 and is not counted here.',
+  methodology: 'TVL is the pairing asset held by each ALPHA bonding-curve market. Markets are read from the factory Launched events on EVM chains and from the program Market accounts on Solana, and counted at the pairing asset balance they hold, which includes fees waiting to be settled. Graduated liquidity sits in Uniswap v4 or Meteora DAMM v2 and is not counted here.',
   solana: { tvl: solanaTvl },
 }
 
