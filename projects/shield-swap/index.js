@@ -9,6 +9,7 @@ const TOKENS = [
   { program: 'arc20_wbtc.aleo', coingeckoId: 'bitcoin', decimals: 8 },
   { program: 'shield_swap_arc20_wrapped_zec.aleo', coingeckoId: 'zcash', decimals: 8 },
   { program: 'shield_swap_arc20_wrapped_usdcx.aleo', coingeckoId: 'usd-coin', decimals: 6 },
+  { program: 'shield_swap_arc20_wrapped_usdg.aleo', coingeckoId: 'global-dollar', decimals: 6 },
 ]
 
 const toBigInt = (v) => (v ? BigInt(String(v).replace(/u\d+$/, '')) : 0n)
@@ -35,6 +36,6 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
-    'TVL is the aggregate balance held by shield_swap.aleo in Shield Swap\'s verified ALEO, ETH, SOL, WBTC, ZEC, and USDCx token programs, read directly from Aleo chain state. It includes pool capital, accrued fees, and funds awaiting claims.',
+    'TVL is the aggregate balance held by shield_swap.aleo in Shield Swap\'s verified ALEO, ETH, SOL, WBTC, ZEC, USDCx, and USDG token programs, read directly from Aleo chain state. It includes pool capital, accrued fees, and funds awaiting claims.',
   aleo: { tvl },
 }
