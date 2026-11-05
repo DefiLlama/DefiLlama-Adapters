@@ -91,6 +91,7 @@ const DEFAULTS = {
   ETN_RPC: 'https://blockexplorer.electroneum.com/api/eth-rpc',
   THORCHAIN_LCD: 'https://gateway.liquify.com/chain/thorchain_api',
   INITIA_LCD: 'https://rest.initia.xyz',
+  LUXA_LCD: 'https://api.luxaecosystem.xyz,https://luxaecosystem.alwaysdata.net',
   // mainnet.telos.net/evm now serves a 404 or an HTML page with HTTP 200, which the sdk treats as a successful call with a null result; rpc1.eu.telos.net hangs
   TELOS_RPC: 'https://rpc.telos.net,https://rpc1.us.telos.net/evm,https://telos.drpc.org,https://public.1rpc.io/telos/evm',
   TELOS_RPC_MULTICALL_V3: '0x4E06d6ec4a3A90790edee253C8BF098bbb4F51E5',
