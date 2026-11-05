@@ -89,6 +89,7 @@ const DEFAULTS = {
   // p2p/everstake neon proxies are gone (dns), thirdweb refuses the chain; blockscout's eth-rpc proxy still serves it
   NEON_EVM_RPC: 'https://neon.blockscout.com/api/eth-rpc',
   ETN_RPC: 'https://blockexplorer.electroneum.com/api/eth-rpc',
+  ELYSIUM_HYPEREVM_RPC: 'https://rpc-live.elysp.com,https://rpc-live.boxa.club',
   THORCHAIN_LCD: 'https://gateway.liquify.com/chain/thorchain_api',
   INITIA_LCD: 'https://rest.initia.xyz',
   LUXA_LCD: 'https://api.luxaecosystem.xyz,https://luxaecosystem.alwaysdata.net',

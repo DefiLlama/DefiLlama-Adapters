@@ -53,6 +53,11 @@ const fixBalancesTokens = {
     azig: { coingeckoId: 'zignaly', decimals: 18 },
   },
   // the coins service has no platon:<null address> entry for the gas token
+  elysium_hyperevm: {
+    [ADDRESSES.null]: { coingeckoId: 'hyperliquid', decimals: 18 },
+    '0xcad918f7b420b684f6e80b0e38ea5e1ae24f6310': { coingeckoId: 'hyperliquid', decimals: 18 }, // WHYPE (Helios v3)
+    '0xba876237b0f021a6c6d852d6c26e107997cc5e81': { coingeckoId: 'hyperliquid', decimals: 18 }, // WHYPE
+  },
   platon: {
     [ADDRESSES.null]: { coingeckoId: 'platon-network', decimals: 18 },
   },
