@@ -19,6 +19,32 @@ const PAIR_CODE_IDS = [1, 4];
 
 const DEFAULT_TIMEOUT = 15000;
 
+// IBC vouchers on luxa-1 that DefiLlama can price. Without this mapping the
+// raw `ibc/<hash>` denoms (and uluxa, which has no listed price yet) are
+// unpriced and TVL is reported as 0.
+const PRICED_IBC_DENOMS = {
+  // ATOM (Cosmos Hub)
+  'ibc/9117A26BA81E29FA4F78F57DC2BD90CD3D26848101BA880445F119B22A1E254E': { id: 'cosmos', decimals: 6 },
+  // TIA (Celestia)
+  'ibc/BF28D9C17E0306B194D50F51C3B2590BEAD15E04E03ADD34C3A26E62D85C9676': { id: 'celestia', decimals: 6 },
+  // USDC (Noble)
+  'ibc/BFF0D3805B50D93E2FA5C0B2DDF7E0B30A631076CD80BC12A48C0E95404B4A41': { id: 'usd-coin', decimals: 6 },
+};
+
+/**
+ * Add a bank balance, converting known IBC vouchers into their CoinGecko
+ * asset so they get priced. Unknown denoms (uluxa, ushard) are added raw.
+ */
+function addBankBalance(api, denom, amount) {
+  const key = denom.toLowerCase().startsWith('ibc/') ? 'ibc/' + denom.slice(4).toUpperCase() : denom;
+  const priced = PRICED_IBC_DENOMS[key];
+  if (priced) {
+    api.addCGToken(priced.id, Number(amount) / 10 ** priced.decimals);
+  } else {
+    api.add(denom, amount);
+  }
+}
+
 /**
  * Return the first non-empty string among the given values, or ''.
  * Ignores objects/arrays/other shapes so they can never reach string methods.
@@ -173,7 +199,7 @@ async function tvl(api) {
     const balances = await getBankBalances(pool);
     for (const coin of balances) {
       if (coin.denom && coin.amount && coin.amount !== '0') {
-        api.add(coin.denom, coin.amount);
+        addBankBalance(api, coin.denom, coin.amount);
       }
     }
 
