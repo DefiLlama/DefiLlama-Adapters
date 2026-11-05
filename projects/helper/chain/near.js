@@ -65,6 +65,22 @@ async function view_account(account_id) {
   return near.viewAccount({ account: account_id })
 }
 
+function isUnknownAccountError(e) {
+  const str = `${e?.cause ?? ''} ${e?.errorName ?? ''} ${e?.nodeError?.cause?.name ?? ''} ${e?.message ?? ''}`
+  return /UNKNOWN_ACCOUNT|does not exist/i.test(str)
+}
+
+// like view_account, but an account that does not exist on-chain yet (never funded) yields a zero balance instead of throwing
+async function view_account_or_empty(account_id) {
+  try {
+    return await view_account(account_id)
+  } catch (e) {
+    if (!isUnknownAccountError(e)) throw e
+    console.log(`[near] account ${account_id} not found on-chain, skipping`)
+    return { amount: '0', locked: '0' }
+  }
+}
+
 // view call, `args` are JSON serialised; the reply is JSON parsed
 async function call(contract, method, args = {}) {
   return near.call({ contract, method, args })
@@ -116,7 +132,7 @@ async function sumTokens({ balances = {}, owners = [], tokens = []}) {
   await sdk.util.runInPromisePool({
     concurrency: 3,
     items: owners,
-    processor: async i => bals.push(await view_account(i)),
+    processor: async i => bals.push(await view_account_or_empty(i)),
   })
   const nearBalance = bals.reduce((a,i) => a + (i.amount/1e24), 0)
   sdk.util.sumSingleBalance(balances,'coingecko:near',nearBalance)

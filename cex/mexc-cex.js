@@ -19,10 +19,10 @@ module.exports = {
       "0x469AfE803C54A36674C55231489Cf4b61da8c1bC",
       "0x9642b23ed1e01df1092b92641051881a322f5d4e",
       "0xb5a6fd438017dbb0a2e5fcdcca715da227582ce4",
-      "0x3cc936b795a188f0e246cbb2d74c5bd190aecf18", 
-      "0x9642b23ed1e01df1092b92641051881a322f5d4e", 
-      "0x1Ed0be7d0A9580e202F6b98c29725d5C11D10b71", 
-      "0x6e5a3b0021949452D31A43BE17D808De54752a44", 
+      "0x3cc936b795a188f0e246cbb2d74c5bd190aecf18",
+      "0x9642b23ed1e01df1092b92641051881a322f5d4e",
+      "0x1Ed0be7d0A9580e202F6b98c29725d5C11D10b71",
+      "0x6e5a3b0021949452D31A43BE17D808De54752a44",
       "0x2fF5fc5b63f2bfCE5d6BB9Ea4d170cf1aa40693c",
       "0xBCB302A64ADB7f2C8697e17C1e948f5b058F0e49",
       "0xc906895C8833481571118F0C59877bFF6bE38aC1",
@@ -72,7 +72,34 @@ module.exports = {
     owners: ["0x9dd35021d77c1de5ed50b9d788a2f68903a96b96"],
   },
   avax: {
-    owners: ["0xffb3118124cdaebd9095fa9a479895042018cac2"],
+    owners: [
+      "0xffb3118124cdaebd9095fa9a479895042018cac2",
+      "0x4e5e1abB2C69698a69A860722c29656e67cf9FE1",
+    ],
+  },
+  dash: {
+    owners: ["XhJg4ZyjP6SjrtfcfS8dKLgoAG65VAQdHg"],
+  },
+  hedera: {
+    owners: ["0.0.10942401"],
+  },
+  hyperliquid: {
+    owners: ["0xe2E2306FF98b95b3721cf4Ce2036d77fb10b8319"],
+  },
+  near: {
+    owners: ["dba256d942a6fbfef9c8d42a2960f89a1f6dcc1e8490c7531d89a470d1d00405"],
+  },
+  stellar: {
+    owners: ["GBR4ERNNZOPHC43QVPYVDXXGE2LJS47D55Y3LOMHYKXIYFCP2LLLBZNA"],
+  },
+  sui: {
+    owners: ["0x5db37be0f015d059484a8fbee13cbf88cd84dd157c9ad0aafffda88392033092"],
+  },
+  zcash: {
+    owners: ["t1RYjmG15rhqDkKMzitEcj76hpDx8rWU1jq"],
+  },
+  cardano: {
+    owners: ["addr1qysl9egfy8ma2nzvxs27cglawx4a4afp8wz8v7r9uzpw3dtyd4x8d5jhnhwccw20rny0855hpvlmder9nkx4nsugyynsynffej"],
   },
   solana: {
     owners: [
@@ -92,8 +119,9 @@ module.exports = {
   ton: {
     owners: [
       "EQDYh9Di0cT8QSbnHJcNM6sYlpQAAOrnA7sats7Mgwd3497j",
+      "UQDK_IEt42humYrvU4RNqiJUCVpg01uVWhclPfektul7WMgT",
     ],
-  }, 
+  },
   ripple: {
     owners: [
       "r3BFHL2EXZN4darZ7vH7BT7tP9tN7tyd6W",
