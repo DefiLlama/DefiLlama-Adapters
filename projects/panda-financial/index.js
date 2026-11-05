@@ -1,6 +1,7 @@
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
 
 const REGISTRY = '0x52643dCDdd95944b01f10A4949d2923a0ff69FCC'
+const REGISTRY_DEPLOY_BLOCK = 52155564
 const OLD_VAULT = '0xf5D48b04D4529D652BFAE172E8Fb47b389Db920e' // first vault, predates the registry and is not listed in it
 
 const abi = {
@@ -18,8 +19,9 @@ const abi = {
 // Each deposit is its own position NFT, staked in the pool's gauge, so the gauge lists each vault's open positions.
 // NFTs the vaults hold directly are closed positions with no liquidity.
 async function tvl(api) {
-  const registered = await api.call({ target: REGISTRY, abi: abi.vaults, permitFailure: true }) // not deployed until October 2026
-  const vaults = [OLD_VAULT, ...(registered ?? [])]
+  const block = await api.getBlock()
+  const registered = block >= REGISTRY_DEPLOY_BLOCK ? await api.call({ target: REGISTRY, abi: abi.vaults }) : []
+  const vaults = [OLD_VAULT, ...registered]
   const pools = await api.multiCall({ abi: abi.pool, calls: vaults })
   const gauges = await api.multiCall({ abi: abi.gauge, calls: vaults })
   const managers = await api.multiCall({ abi: abi.positionManager, calls: vaults })
