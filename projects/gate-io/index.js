@@ -61,6 +61,7 @@ const config = {
       "0x6667cfe4698500cec4ed2cf22a9d6dbf15aec81d",
       "0x1e2012e21086C96256CC32F5939Ad8b5e7489Afb",
       "0x6b9C05B935BdAddDDFfa6C315483e02401f31307",
+      "0x009c239edda6bda23dc4afc5cca0e6e39ad8e95a",
     ]
   },
   // USDC is arc's gas token, so the native balance already is the USDC balance
@@ -126,7 +127,8 @@ const config = {
       "0x4dc3bda32a72eadae470e580188b61fa36e9ccea",
       "0xa561cd8e2f3ae87d109ac5adde3d39f36e4b96f1",
       "0x2b0a8c481c2d125b2721b3ea0d4f2804270f0b8f",
-      "0x8f39b3617e99f7c429742830208d0ed1f2b66726"
+      "0x8f39b3617e99f7c429742830208d0ed1f2b66726",
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0",
     ]
   },
   "fantom": {
@@ -303,7 +305,7 @@ const config = {
       "1JVrK16XZm9vyZjHoYVPjtZ35LvTQ4oyufMoUFTFpAUhath",
       "16ccyj8JqnP8d2DSaifgek6kSSBAu5cGtd4mu2uXTg4H6mSU",
       "14ooXLY2gmiUTVym9SnKxNwEgcoikXzMEav2kiLjr7pPPHPR",
-      // "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ",
+      "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ", // Gate Earn, nominator (bonded DOT stays in the account)
       // "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
       // "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
       // "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2"
@@ -423,6 +425,7 @@ const config = {
   "flux": {
     "owners": [
       "t1YvimnGBmVA7xDiPnqwbKsvujmSJz4X5m2",
+      "t1NuCztsAfdTWfuowWCKneUPDys5S4puiBW",
     ]
   },
   "allora": {
@@ -565,7 +568,8 @@ const config = {
     "owners": [
       "162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw",
       "1EkkGXR7dTbZbrKFKoe6YEP4gj4GzMeKvw",
-      "1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9"
+      "1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9",
+      "1MEPB525tEHRFLdq6aR8d2t8jaaRQj2iWX",
     ]
   },
   "bitcoincash": {
@@ -792,7 +796,8 @@ const config = {
   },
   "coti": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
     ]
   },
   "cosmos": {
@@ -1028,7 +1033,8 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0",
+      "0x8ea539c58943e1ae034335dadca82014833c8282",
     ]
   },
   "fogo": {
@@ -1333,7 +1339,8 @@ const config = {
   },
   "megaeth": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
     ]
   },
   "merlin": {
@@ -1652,7 +1659,8 @@ const config = {
   },
   "saga": {
     "owners": [
-      "saga155svs6sgxe55rnvs6ghprtqu0mh69kehaqkl89"
+      "saga155svs6sgxe55rnvs6ghprtqu0mh69kehaqkl89",
+      "saga1xunyznpjmj9jv5e2zwngp2qrzmulr2ggxtcvws",
     ]
   },
   "secret": {
@@ -1748,7 +1756,8 @@ const config = {
   // story protocol, the chain behind the "IP"/DATA holdings
   "sty": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
     ]
   },
   "supra": {
@@ -1847,6 +1856,9 @@ const config = {
       "0:16ea6a34f0d704b6fac9b7592e003f6f28ae5d1a8a6ba9d1650e4dd30ab8eada",
       "EQAbhMWosoxeoXTJi9Tlw09MEjPVvdJe9j0nC6K6ro0d1oL-",
       "EQCAZ9RKpYqjaD30mg9FL0eP3TE03jmq1Mn0SlfPrkBgBPed",
+      "UQDQSAWWKRBUm0VnUrny-9Ni_deobis0aC6XpEtalxxl_eUa",
+      "UQCalNyv57ob7KK1r7nsVaY4VivZu712RTlqiEYAffoM3kJ-",
+      "EQC0lrj3O0af8GotieYsTXChA_wijIIVN7Sd_wkgYLwoH07q",
     ]
   },
   "umee": {
@@ -2013,7 +2025,8 @@ const config = {
   },
   "zigchain": {
     "owners": [
-      "zig155svs6sgxe55rnvs6ghprtqu0mh69kehze2lzt"
+      "zig155svs6sgxe55rnvs6ghprtqu0mh69kehze2lzt",
+      "zig1xunyznpjmj9jv5e2zwngp2qrzmulr2ggejyvt7",
     ]
   },
   robinhood: {
@@ -2043,7 +2056,7 @@ unsupportedChains.forEach(chain => delete config[chain]);
  */
 const earnStakers = {
   celestia: ['celestia10v2gu0vvdeuv8pexnl98lmyva4cq8jkavlk9w4'],
-  cosmos: ['cosmos10v2gu0vvdeuv8pexnl98lmyva4cq8jkaa4845c'],
+  cosmos: ['cosmos10v2gu0vvdeuv8pexnl98lmyva4cq8jkaa4845c', 'cosmos18njk2lz5q7juryvzgyly2qxetuwqadxzt9vc92'],
   injective: ['inj10v2gu0vvdeuv8pexnl98lmyva4cq8jkahus3xq', 'inj18njk2lz5q7juryvzgyly2qxetuwqadxzpvmuhj'],
   dydx: ['dydx10v2gu0vvdeuv8pexnl98lmyva4cq8jka5vf350'],
   // stake migrated on 2026-10-21, the previous stakers (0x6edd3b…, 0xf15b7d…) are empty since
@@ -2140,6 +2153,7 @@ const earnReceiptTokens = {
       '0x8cd6437feaeb1a3a0cd65a16de2ad26bff1f5e43',
       '0xC453E33Ae2d465d36fEA462BfE810cD6ab408916',
       "0xba622437b70d86EADd6F2f5fB7A5124270c35705",
+      '0x7cce98e315e406a8946acce9768093d37a90372b', // Compound V3 Institutional USDC supplier
     ],
     tokens: [
       '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aEthUSDT (Aave v3)
@@ -2150,6 +2164,7 @@ const earnReceiptTokens = {
       '0xE1753F2e00940cC31213dd92013cF019DFE4ca1d', // sGHO   (Aave savings GHO)
       '0xC02aB1A5eaA8d1B114EF786D9bde108cD4364359', // spUSDS (Spark savings USDS)
       '0xe7df13b8e3d6740fe17cbe928c7334243d86c92f', // spUSDT
+      '0x207158a267CBD2598BB3d611D8CBdEE2709F2F8C', // ciUSDCv3 (Compound V3 Institutional USDC)
     ],
   },
   arbitrum: {
