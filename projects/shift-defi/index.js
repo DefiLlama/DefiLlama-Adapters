@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const ADDRESSES = require("../helper/coreAssets.json");
 const { nullAddress } = require("../helper/tokenMapping");
 
 const NAV_DECIMALS = 18n;
@@ -14,8 +13,11 @@ const abi = {
   getPreReshufflingSnapshot: "uint256:getPreReshufflingSnapshot",
   notion: "address:notion",
   decimals: "uint8:decimals",
-  tvl: "uint256:tvl",
-  getReportedChainIds: "function getReportedChainIds() view returns (uint256[])",
+  logic: "address:logic",
+  getDefiisFor: "function getDefiisFor(address owner) view returns (address[])",
+  getOpsFor: "function getOpsFor(address owner) view returns (address[])",
+  getWhitelistedTokens: "function getWhitelistedTokens() view returns (address[])",
+  underlyingTokensBalances: "function underlyingTokensBalances(address defii) view returns (address[] tokens, uint256[] amounts)",
 };
 
 
@@ -26,10 +28,11 @@ const vaults = {
   },
 };
 
-// Chain -> MaTvlReporter holding the reported chain ids; same address on each reported chain
-// tvl() is USD scaled to 1e18, reported as USDC
-const maTvlReporters = {
-  ethereum: { address: "0x81a9459eB66018c8C0B9F0A2e3fcF9f5Cd8e6F28", startBlock: 26349845 },
+// Chain -> Institutional Private Vaults: the SelfManagedFactory and the account whose positions it tracks
+const privateVaults = {
+  ethereum: [
+    { factory: "0x3FaD5aFBA6e3169C9c688aaC3Ba77200c5168378", account: "0x8FcC3aAc6b16dC821B7E4A2841b2Db3a9c999B4C" },
+  ],
 };
 
 const chainNamesById = Object.fromEntries(
@@ -88,39 +91,43 @@ async function getVaultNav(api, vault, tvlReporter) {
   return navs.reduce((total, nav) => total + BigInt(nav), 0n);
 }
 
-async function maTvl(api) {
-  const { address: reporter, startBlock } = maTvlReporters[api.chain] ?? {};
-  if (!reporter || (await api.getBlock()) < startBlock) return;
-  const chainIds = await api.call({ target: reporter, abi: abi.getReportedChainIds });
-  const values = await Promise.all(chainIds.map((chainId) =>
-    getChainApi(api, Number(chainId)).call({ target: reporter, abi: abi.tvl })
-  ));
-  const usdValue = values.reduce((total, value) => total + BigInt(value), 0n);
-  await addNav(api, ADDRESSES[api.chain].USDC, usdValue);
+// Strategy (defii) positions as underlying tokens, plus whitelisted token balances held by the
+// account and its ops addresses
+async function privateVaultsTvl(api) {
+  for (const { factory, account } of privateVaults[api.chain] ?? []) {
+    const defiis = await api.call({ target: factory, abi: abi.getDefiisFor, params: [account] });
+    const logics = await api.multiCall({ abi: abi.logic, calls: defiis });
+    const positions = await api.multiCall({
+      abi: abi.underlyingTokensBalances,
+      calls: defiis.map((defii, i) => ({ target: logics[i], params: [defii] })),
+    });
+    positions.forEach(({ tokens, amounts }) => tokens.forEach((token, i) => api.add(token, amounts[i])));
+
+    const ops = await api.call({ target: factory, abi: abi.getOpsFor, params: [account] });
+    const tokens = await api.call({ target: factory, abi: abi.getWhitelistedTokens });
+    await api.sumTokens({ owners: [account, ...ops], tokens });
+  }
 }
 
 async function liquidVaultsTvl(api) {
-  await Promise.all(
-    Object.entries(vaults[api.chain] ?? {}).map(async ([vault, tvlReporter]) => {
-      const [nav, notion] = await Promise.all([
-        getVaultNav(api, vault, tvlReporter),
-        api.call({ target: vault, abi: abi.notion }),
-      ]);
-      await addNav(api, notion, nav);
-    })
-  );
+  for (const [vault, tvlReporter] of Object.entries(vaults[api.chain] ?? {})) {
+    const nav = await getVaultNav(api, vault, tvlReporter);
+    const notion = await api.call({ target: vault, abi: abi.notion });
+    await addNav(api, notion, nav);
+  }
 }
 
 async function tvl(api) {
-  await Promise.all([liquidVaultsTvl(api), maTvl(api)]);
+  await liquidVaultsTvl(api);
+  await privateVaultsTvl(api);
 }
 
 module.exports = {
   doublecounted: true,
   methodology:
-    "Shift DeFi's total protocol TVL is calculated as the sum of the TVLs of all Vaults within the ecosystem. Each Vault's TVL is calculated as the sum of the NAVs of all strategies that make up the Vault's portfolio, as reported on-chain by each chain's TvlReporter. Strategies deposit into Curve and Morpho, so these assets are also counted in those protocols. Institutional Private Vault is added from the MaTvlReporter on each chain listed by the Ethereum reporter, which reports the USD value of the Vault's strategy positions and whitelisted stablecoin balances, priced with Chainlink-style oracles.",
+    "Shift DeFi's total protocol TVL is calculated as the sum of the TVLs of all Vaults within the ecosystem. Each Vault's TVL is calculated as the sum of the NAVs of all strategies that make up the Vault's portfolio, as reported on-chain by each chain's TvlReporter. Strategies deposit into Curve and Morpho, so these assets are also counted in those protocols. Institutional Private Vaults are counted as tokens: the underlying token balances of each strategy (defii) the vault's account holds in the SelfManagedFactory, plus the factory's whitelisted tokens held by the account and its ops addresses.",
 };
 
-new Set([...Object.keys(vaults), ...Object.keys(maTvlReporters)]).forEach((chain) => {
+new Set([...Object.keys(vaults), ...Object.keys(privateVaults)]).forEach((chain) => {
   module.exports[chain] = { tvl };
 });
