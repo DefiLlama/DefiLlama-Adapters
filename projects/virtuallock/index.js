@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
 const TOKEN_LOCK = '0x15B9B92F59C0ecFfBE4F200E35D13cEEF1bCbaE4'
 const VESTING_VAULT = '0x6b885B0b4fc34CbD35ca55d083613087C0BC4295'
@@ -17,7 +18,7 @@ const tokenEvents = [
 async function tvl(api) {
   const tokens = new Set()
   for (const { target, eventAbi } of tokenEvents) {
-    const logs = await api.getLogs({ target, eventAbi, onlyArgs: true, fromBlock: FROM_BLOCK })
+    const logs = await getLogs2({ api, target, eventAbi, fromBlock: FROM_BLOCK })
     logs.forEach(l => tokens.add(l.token))
   }
   await api.sumTokens({
