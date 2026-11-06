@@ -1,14 +1,8 @@
-const BigNumber = require("bignumber.js");
-const ADDRESSES = require("../helper/coreAssets.json");
 const { get } = require("../helper/http");
 const { getEnv } = require("../helper/env");
 
-// Custody is measured from Aptos stores at one completed indexer checkpoint.
 // Endpoint implementation: https://github.com/aptos-labs/etna/pull/6093
 const DAILY_STATS_URL = "https://api.mainnet.aptoslabs.com/decibel/api/v1/daily_stats";
-
-// Native APT uses paired fungible-asset metadata 0xa.
-const INCLUDED_ASSETS = new Set(["0xa", ADDRESSES.aptos.USDC_3].map(address => BigInt(address).toString(16)));
 
 async function tvl(api) {
   const apiKey = getEnv("APTOS_API_KEY");
@@ -17,42 +11,27 @@ async function tvl(api) {
   const { tvl: snapshot } = await get(`${DAILY_STATS_URL}?start_timestamp=${endTimestamp - 86400}&end_timestamp=${endTimestamp}&include_tvl=true`, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
-  if (!snapshot || !Array.isArray(snapshot.protocols) || !snapshot.protocols.length
-    || typeof snapshot.ledger_version !== "string" || !/^\d+$/.test(snapshot.ledger_version)
-    || !Number.isSafeInteger(snapshot.timestamp_ms)
+  if (!Array.isArray(snapshot?.protocols) || !Number.isSafeInteger(snapshot.timestamp_ms)
     || snapshot.timestamp_ms >= endTimestamp * 1000
     || endTimestamp * 1000 - snapshot.timestamp_ms > 60000)
     throw new Error("Decibel daily_stats is missing a fresh TVL snapshot");
 
-  const perps = snapshot.protocols.filter(group => group?.protocol === "Decibel Perps DEX");
-  if (perps.length !== 1 || !Array.isArray(perps[0].tokens) || !perps[0].tokens.length)
-    throw new Error("Decibel daily_stats is missing its Perps TVL token list");
-
-  const seen = new Set();
-  for (const asset of perps[0].tokens) {
-    if (typeof asset.asset_addr !== "string" || !/^0x[0-9a-fA-F]{1,64}$/.test(asset.asset_addr))
-      throw new Error("Decibel daily_stats contains an invalid TVL asset address");
-    const address = BigInt(asset.asset_addr).toString(16);
-    if (!INCLUDED_ASSETS.has(address)) continue;
-    if (typeof asset.price_id !== "string" || !/^(aptos|coingecko):\S+$/.test(asset.price_id)
-      || !Number.isInteger(asset.decimals) || asset.decimals < 0 || asset.decimals > 255
-      || typeof asset.raw_amount !== "string" || !/^\d+$/.test(asset.raw_amount))
-      throw new Error("Decibel daily_stats contains an invalid TVL asset");
-    if (seen.has(address)) throw new Error("Decibel daily_stats contains a duplicate TVL asset");
-    seen.add(address);
-
-    // CoinGecko keys take whole-token amounts; Aptos keys take raw token units.
-    const balance = asset.price_id.startsWith("coingecko:")
-      ? new BigNumber(asset.raw_amount).shiftedBy(-asset.decimals).toNumber()
-      : asset.raw_amount;
-    api.add(asset.price_id, balance, { skipChain: true });
-  }
-  if (seen.size !== INCLUDED_ASSETS.size)
+  const data = snapshot.protocols.find(i => i?.protocol === "Decibel Perps DEX");
+  const tokens = data?.tokens?.filter(i => i.token === "APT" || i.token === "USDC");
+  if (tokens?.length !== 2 || new Set(tokens.map(i => i.token)).size !== 2)
     throw new Error("Decibel daily_stats is missing APT or native USDC TVL");
+
+  tokens.forEach(i => {
+    const value = Number(i.usdc_value);
+    if (typeof i.usdc_value !== "string" || !/^\d+(\.\d+)?$/.test(i.usdc_value) || !Number.isFinite(value))
+      throw new Error("Decibel daily_stats contains an invalid USDC valuation");
+    api.addCGToken("usd-coin", value);
+  });
 }
 
 module.exports = {
-  methodology: "TVL is native APT and native USDC collateral deposited to Decibel, measured at one completed Aptos ledger checkpoint and priced by DefiLlama.",
+  methodology: "TVL is APT collateral valued using Decibel's oracle plus native USDC collateral, reported in USDC.",
+  misrepresentedTokens: true,
   timetravel: false,
   aptos: { tvl },
 };
