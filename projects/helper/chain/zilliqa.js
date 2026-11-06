@@ -1,109 +1,36 @@
-const { post } = require('../http')
+// Zilliqa JSON-RPC transport lives in @defillama/sdk (`sdk.chains.zilliqa`, `ZILLIQA_NATIVE_RPC` overrides the endpoint);
+// this file keeps the TVL helpers (ZRC-2 token mapping, sumTokens).
+const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 
-const ZILLIQA_API = 'https://api.zilliqa.com/' // Mainnet API
+const zilliqa = sdk.chains.zilliqa
 
-async function call(query) {
-  return post(ZILLIQA_API, query)
-}
-
-function formQuery(args) {
-  if (Array.isArray(args)) return args.map(formQuery)
-
-  let {
-    id,
-    jsonrpc = '2.0',
-    method = 'GetSmartContractSubState',
-    params
-  } = args
-
-  if (!id) id = `${params[1]}-${params[0]}`
-
-  return { id, jsonrpc, method, params, }
-}
-
-async function getContractState(contract, method, args = []) {
-  if (contract.startsWith('0x')) contract = contract.slice(2)
-  return call({
-    params: [contract, method, ...args]
-  })
-}
-
-async function getBalance(token, address) {
-  if (token.startsWith('0x')) token = token.slice(2)
-  const {
-      result: {
-        balances
-      }
-  } = await call(formQuery({
-    params: [
-      token,
-      'balances',
-      [address]
-    ]
-  }))
-  return balances[address]
-}
-
-async function getZilliqaBalance(address) {
-  if (address.startsWith('0x')) address = address.slice(2)
-  const {
-      result: {
-        balance
-      }
-  } = await call(formQuery({ method: 'GetBalance', params: [address] }))
-  return BigNumber(balance).shiftedBy(-1 * 12)
-}
-
+// ZRC-2 balances of every token for every address, summed into `balances`: tokens mapped below
+// go under `coingecko:<id>` in whole units, the rest under `zilliqa:<token>` in raw units
 async function getBalances(tokens, addresses, balances = {}) {
   if (!Array.isArray(tokens)) tokens = [tokens]
   if (!Array.isArray(addresses)) addresses = [addresses]
 
-  const query = tokens
-    .map(token =>
-      addresses.map(addr => formQuery({
-        id: `${token}-${addr}`,
-        params: [
-          token.startsWith('0x') ? token.slice(2) : token,
-          'balances',
-          [addr]
-        ]
-      })
-      )).flat()
+  const res = await zilliqa.getTokenBalances({ tokens, addresses })
 
-  const data = await call(query)
-
-  data.forEach((response) => {
-    const { id, result } = response
-    if (!result) return
-    let token = id.split('-')[0]
-    const tokenRef = TOKENS[token]
-    let decimals = 0
-
-    if (tokenRef && tokenRef.decimals)
-      decimals = tokenRef.decimals
-
-    if (tokenRef && tokenRef.coingeckoId)
-      token = tokenRef.coingeckoId
+  for (const [token, holders] of Object.entries(res)) {
+    const raw = Object.values(holders).reduce((acc, i) => acc.plus(i), BigNumber(0))
+    if (raw.isZero()) continue
+    const tokenRef = TOKENS_BY_HEX[token]
+    if (tokenRef?.coingeckoId)
+      sdk.util.sumSingleBalance(balances, `coingecko:${tokenRef.coingeckoId}`, raw.shiftedBy(-(tokenRef.decimals ?? 0)).toNumber())
     else
-      token = `zilliqa:${token}`
-
-    if (!balances[token])
-      balances[token] = BigNumber(0)
-
-    const balancesSum = Object.values(result.balances)
-      .reduce((sum, i) => sum.plus(BigNumber(i).shiftedBy(decimals * -1)), BigNumber(0))
-
-    balances[token] = balances[token].plus(balancesSum)
-  })
+      sdk.util.sumSingleBalance(balances, `zilliqa:${token}`, raw.toFixed(0))
+  }
 
   return balances
 }
 
+// native ZIL of `owners`, in whole ZIL
 async function sumTokens({ owners, }) {
-  const balances = await Promise.all(owners.map(getZilliqaBalance))
+  const balances = await Promise.all(owners.map((owner) => zilliqa.getBalance({ address: owner })))
   return {
-    zilliqa: balances.reduce((a, i) => a + +i, 0),
+    zilliqa: balances.reduce((a, i) => a + zilliqa.qaToZil(i), 0),
   }
 }
 
@@ -274,13 +201,10 @@ const TOKENS = {
   },
 }
 
+// the sdk keys its results by lowercase `0x` hex
+const TOKENS_BY_HEX = Object.fromEntries(Object.entries(TOKENS).map(([k, v]) => [k.toLowerCase(), v]))
 
 module.exports = {
-  call,
-  formQuery,
-  getContractState,
-  getBalance,
-  getZilliqaBalance,
   getBalances,
   sumTokens,
 }
