@@ -1,5 +1,12 @@
 const FACTORY = '0xf8651879d15ac3c3DAe12016Fbb604971F83b266'
 
+/**
+ * Adds actual quote reserves from official pre-graduation bonding curves.
+ * Pending migrations remain included; virtual reserves, accrued fees and
+ * liquidity already migrated to Uniswap v4 are excluded to avoid double counting.
+ * @param {import('@defillama/sdk').ChainApi} api Block-scoped DefiLlama chain API.
+ * @returns {Promise<void>} Updates the API's raw token balances in place.
+ */
 async function tvl(api) {
   const count = Number(await api.call({ target: FACTORY, abi: 'uint256:launchCount' }))
   if (!Number.isSafeInteger(count) || count < 0) throw new Error('Invalid launch count')
