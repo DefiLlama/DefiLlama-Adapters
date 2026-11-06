@@ -1230,6 +1230,10 @@ const uniV3Configs = {
       fromBlock: 43939793,
     },
   },
+  'rocketswap-anubis-v3': {
+    methodology: 'TVL is the value of tokens held in RocketSwap V3 liquidity pools on Anubis.',
+    anubi: { factory: '0xbf1b0e9878e782c799010454c1A65ACd334f666F', fromBlock: 16113175 },
+  },
   'satsuma': {
     citrea: {
       factory: '0x10253594A832f967994b44f33411940533302ACb',
