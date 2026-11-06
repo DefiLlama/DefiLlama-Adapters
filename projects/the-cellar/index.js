@@ -23,6 +23,12 @@ const { pool2 } = require('../helper/pool2')
 
 const JAR = '0xF85d0daCC7e911b1a2800DCF0e6027e0f7481294'
 
+// XRP Options (since 2026-11-05): the Premium Vault (verified source, XrpCalls.sol) holds the USDT0 that backs every
+// call and put it sells: depositors' money, buyers' payments into closes not yet settled, winnings and withdrawals not
+// yet collected. All of it is counted except treasuryOwed, the fees of settled closes waiting for pushFees() (as
+// protocolFxrp above). Before the vault existed its read fails and nothing is added.
+const PREMIUM_VAULT = '0x323A173373f2653eBB23139163b8231aD2a91129'
+
 // cKOBAN (since 2026-11-01): KOBAN, the protocol's own points token, wrapped into cKOBAN (verified source, Cask.sol), and
 // a farm that stakes the SparkDEX V2 cKOBAN/FXRP LP (CaskFarm.sol). Both are the protocol's own token, so they are
 // reported apart from TVL: the KOBAN held by cKOBAN as staking, the staked cKOBAN/FXRP LP as pool2.
@@ -32,20 +38,25 @@ const CKOBAN_FARM = '0x31BF74580AD232220C09829Ec29168a00a877f42'
 const CKOBAN_FXRP_LP = '0x9396Bd1b043c1e37adF0d6c32492B44Fc5707928'
 
 async function tvl(api) {
-  const [reserve, denFxrp] = await Promise.all([
+  const [reserve, denFxrp, vaultUsdt0, vaultFees] = await Promise.all([
     api.call({ target: JAR, abi: 'uint256:reserve' }),
     api.call({ target: JAR, abi: 'uint256:denFxrp' }),
+    api.call({ target: ADDRESSES.flare.USDT0, abi: 'erc20:balanceOf', params: [PREMIUM_VAULT], permitFailure: true }),
+    api.call({ target: PREMIUM_VAULT, abi: 'uint256:treasuryOwed', permitFailure: true }),
   ])
   api.add(ADDRESSES.flare.FXRP, reserve)
   api.add(ADDRESSES.flare.FXRP, denFxrp)
+  if (vaultUsdt0 !== null && vaultFees !== null && BigInt(vaultUsdt0) > BigInt(vaultFees))
+    api.add(ADDRESSES.flare.USDT0, (BigInt(vaultUsdt0) - BigInt(vaultFees)).toString())
 }
 
 module.exports = {
   methodology:
     'TVL is the FXRP held in the Jar contract for users: the reserve that backs fcUSD and Boost plus the FXRP ' +
-    'owned by Den depositors. fcUSD, Boost, Den shares and KOBAN are claims or points on that same FXRP and are ' +
-    'not counted. Fees owed to the treasury (protocolFxrp) are excluded. Staking: the KOBAN held by cKOBAN (KOBAN ' +
-    'wrapped by its holders). Pool2: the SparkDEX V2 cKOBAN/FXRP LP staked in the cKOBAN farm.',
+    'owned by Den depositors, and the USDT0 held by the XRP Options Premium Vault, which backs the calls and puts it ' +
+    'sells. fcUSD, Boost, Den shares and KOBAN are claims or points on that same FXRP and are not counted. Fees owed ' +
+    'to the treasury (the Jar\'s protocolFxrp, the vault\'s treasuryOwed) are excluded. Staking: the KOBAN held by ' +
+    'cKOBAN (KOBAN wrapped by its holders). Pool2: the SparkDEX V2 cKOBAN/FXRP LP staked in the cKOBAN farm.',
   // Jar deploy: 2026-10-26 21:59:28 UTC, block 73048463. A timestamp, not '2026-10-26': at midnight that day the
   // Jar did not exist yet and the first backfill day would fail.
   start: 1793051968,
