@@ -26,6 +26,14 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'peddleswap-v2': {
+    start: '2026-09-12',
+    methodology: 'Value of reserves in PeddleSwap V2 pools on Robinhood Chain, Base, Arc and Anubis, discovered from each factory. Uses the standard core-asset reserve valuation.',
+    robinhood: '0x5612aEAE68a31f5dD1fb995e2d47B795fEDe8779',
+    base: '0x0fC7E9BB0b2F84b33a16F6b985F8e99c4E104cd9',
+    arc: '0x4dcBA0BD291e68D9A3A64A8900C4A67Cd1B149d3',
+    anubi: '0x3ca4C9F740003bCd7fEbF5d4C7c2956E5860D803',
+  },
   'pentaswap': { pentagonchain: '0xC75C7E9352bC1475d7c308E65C0a21969DcEdEe7' },
   'bbbfi-swap-v2': {
     methodology: 'Value of reserves in BBBFi-owned V2 AMM pools on XDC and BSC, discovered from each factory. Uses the standard core-asset reserve valuation helper. Staked LP receipts are not added again; reward budgets and bridge reserves are excluded.',
