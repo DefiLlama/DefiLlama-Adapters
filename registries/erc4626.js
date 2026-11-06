@@ -4,7 +4,25 @@ const { buildProtocolExports } = require('./utils')
 // Chain config: an array of vault addresses, or { vaults, stakingVaults?, tokenAbi?, balanceAbi?, permitFailure? }.
 // Abis default to the OG 4626 asset()/totalAssets(); set tokenAbi/balanceAbi (per chain or in _options)
 // for vaults that expose them under other names. stakingVaults are summed the same way into the staking bucket.
+// Vault entries may be a plain address or { address, fromBlock }; entries not yet deployed at the
+// queried block are skipped so history can be refilled instead of reverting on pre-deploy calls.
 const chainExtraKeys = new Set(['vaults', 'stakingVaults', 'tvl', 'staking', 'pool2', 'borrowed', 'vesting'])
+
+const isDeployed = (vault, block) => typeof vault === 'string' || (vault.fromBlock ?? 0) <= block
+const vaultAddress = (vault) => (typeof vault === 'string' ? vault : vault.address)
+
+function erc4626VaultsExport(vaults, opts) {
+  // Only entries that declare a deploy block take the filtering path; everything else is
+  // passed straight through, exactly as before (no extra getBlock() call).
+  const hasDeployBlocks = vaults.some((vault) => typeof vault !== 'string' && vault.fromBlock != null)
+  if (!hasDeployBlocks) return sumERC4626VaultsExport2({ vaults, ...opts })
+  return async (api) => {
+    const block = await api.getBlock()
+    const calls = vaults.filter((vault) => isDeployed(vault, block)).map(vaultAddress)
+    if (!calls.length) return
+    return sumERC4626VaultsExport2({ vaults: calls, ...opts })(api)
+  }
+}
 
 function erc4626ExportFn(chainConfigs, options = {}) {
   const result = {}
@@ -13,8 +31,8 @@ function erc4626ExportFn(chainConfigs, options = {}) {
     const opts = { ...options }
     if (!Array.isArray(config))
       for (const [k, v] of Object.entries(config)) if (!chainExtraKeys.has(k)) opts[k] = v
-    result[chain] = { tvl: vaults.length ? sumERC4626VaultsExport2({ vaults, ...opts }) : () => ({}) }
-    if (stakingVaults.length) result[chain].staking = sumERC4626VaultsExport2({ vaults: stakingVaults, ...opts })
+    result[chain] = { tvl: vaults.length ? erc4626VaultsExport(vaults, opts) : () => ({}) }
+    if (stakingVaults.length) result[chain].staking = erc4626VaultsExport(stakingVaults, opts)
   })
   return result
 }
