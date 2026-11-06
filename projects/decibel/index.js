@@ -1,55 +1,46 @@
-/**
- * Decibel TVL adapter for DefiLlama.
- * Decibel is a perpetual futures DEX on Aptos.
- * TVL is computed from the protocol's on-chain USDC collateral stores.
- * @module decibel
- */
+const BigNumber = require("bignumber.js");
+const { get } = require("../helper/http");
+const { getEnv } = require("../helper/env");
 
-const ADDRESSES = require("../helper/coreAssets.json");
-const { function_view } = require("../helper/chain/aptos");
+// Custody is measured from Aptos stores at one completed indexer checkpoint.
+// Endpoint implementation: https://github.com/aptos-labs/etna/pull/6093
+const DAILY_STATS_URL = "https://api.mainnet.aptoslabs.com/decibel/api/v1/daily_stats";
 
-/** @constant {string} DECIBEL_PERP - Decibel perp engine package address on Aptos */
-const DECIBEL_PERP = "0x50ead22afd6ffd9769e3b3d6e0e64a2a350d68e8b102c4e72e33d0b8cfdfdb06";
-
-/** @constant {string} DECIBEL_PREDEPOSIT - Decibel predeposit package address on Aptos */
-const DECIBEL_PREDEPOSIT = "0xc5939ec6e7e656cb6fed9afa155e390eb2aa63ba74e73157161829b2f80e1538";
-
-/** @constant {string} USDC - Native USDC fungible asset address on Aptos */
-const USDC = ADDRESSES.aptos.USDC_3;
-
-/**
- * Calculates TVL for Decibel on Aptos.
- * Sums USDC collateral in the perp engine and predeposit vault.
- * @param {object} api - DefiLlama ChainApi instance
- */
 async function tvl(api) {
-  // Perp engine collateral
-  const perpBalance = await function_view({
-    functionStr: `${DECIBEL_PERP}::perp_engine::get_global_primary_store_balance`,
+  const apiKey = getEnv("APTOS_API_KEY");
+  if (!apiKey) throw new Error("Decibel TVL requires APTOS_API_KEY");
+  const endTimestamp = Math.floor(Date.now() / 1000);
+  const { tvl: snapshot } = await get(`${DAILY_STATS_URL}?start_timestamp=${endTimestamp - 86400}&end_timestamp=${endTimestamp}&include_tvl=true`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
   });
-  api.add(USDC, perpBalance);
+  if (!snapshot || !Array.isArray(snapshot.assets) || !snapshot.assets.length
+    || typeof snapshot.ledger_version !== "string" || !/^\d+$/.test(snapshot.ledger_version)
+    || !Number.isSafeInteger(snapshot.timestamp_ms)
+    || snapshot.timestamp_ms >= endTimestamp * 1000
+    || endTimestamp * 1000 - snapshot.timestamp_ms > 60000)
+    throw new Error("Decibel daily_stats is missing a fresh TVL snapshot");
 
-  // Predeposit vault (ua deposits + DLP contributions)
-  const stateAddr = await function_view({
-    functionStr: `${DECIBEL_PREDEPOSIT}::predeposit::predeposit_address`,
-    args: [DECIBEL_PREDEPOSIT],
-  });
-  const uaTotal = await function_view({
-    functionStr: `${DECIBEL_PREDEPOSIT}::predeposit::ua_total`,
-    args: [stateAddr],
-  });
-  api.add(USDC, uaTotal);
+  const seen = new Set();
+  for (const asset of snapshot.assets) {
+    if (typeof asset.asset_addr !== "string" || !/^0x[0-9a-fA-F]{1,64}$/.test(asset.asset_addr)
+      || typeof asset.price_id !== "string" || !/^(aptos|coingecko):\S+$/.test(asset.price_id)
+      || !Number.isInteger(asset.decimals) || asset.decimals < 0 || asset.decimals > 255
+      || typeof asset.total_balance !== "string" || !/^\d+$/.test(asset.total_balance))
+      throw new Error("Decibel daily_stats contains an invalid TVL asset");
+    const address = BigInt(asset.asset_addr).toString(16);
+    if (seen.has(address)) throw new Error("Decibel daily_stats contains a duplicate TVL asset");
+    seen.add(address);
 
-  const dlpTotal = await function_view({
-    functionStr: `${DECIBEL_PREDEPOSIT}::predeposit::dlp_total`,
-    args: [stateAddr],
-  });
-  api.add(USDC, dlpTotal);
+    // CoinGecko keys take whole-token amounts; Aptos keys take raw token units.
+    const balance = asset.price_id.startsWith("coingecko:")
+      ? new BigNumber(asset.total_balance).shiftedBy(-asset.decimals).toNumber()
+      : asset.total_balance;
+    api.add(asset.price_id, balance, { skipChain: true });
+  }
 }
 
-/** @type {object} DefiLlama adapter export */
 module.exports = {
-  methodology: "TVL is the total USDC collateral in the Decibel perp engine plus USDC in the predeposit vault.",
+  methodology: "TVL includes assets in Decibel's perp collateral store, UA/DLP predeposits, subaccount primary stores, and spot-order escrow at one completed Aptos ledger checkpoint. Raw token balances and address-specific pricing identifiers come from Decibel's indexer; DefiLlama applies token prices.",
   timetravel: false,
   aptos: { tvl },
 };
