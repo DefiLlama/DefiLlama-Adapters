@@ -53,8 +53,8 @@ async function tvl(api) {
 
 // $SELECT is the second pairing asset: every launch seeds a launched-token/$SELECT pool next to its
 // WETH pool, and $SELECT's own WETH pools sit in the same vault. Its side of those positions is
-// $SELECT liquidity, so it is reported as pool2. The address is read from the factory, not hardcoded.
-async function pool2(api) {
+// the protocol's own token, so it is reported as staking. The address is read from the factory, not hardcoded.
+async function staking(api) {
   const select = await api.call({ abi: 'address:selectToken', target: FACTORY })
   if (!select || select === ADDRESSES.null) return {}
   return vaultSide(api, select)
@@ -63,6 +63,6 @@ async function pool2(api) {
 module.exports = {
   doublecounted: true, // the same liquidity is already counted as Uniswap V3 TVL
   methodology:
-    'TVL is the WETH side of the Uniswap V3 positions held by token.select lpVaults. Launched tokens are enumerated from the factory\'s NewTokenSelectToken events and each token\'s lpVault is read on-chain, so vaults added later are included automatically. Only the WETH side is counted in TVL; the launched-token side is excluded. Pool2 is the $SELECT side of the same vault positions: every launch is also paired against $SELECT (address read from the factory\'s selectToken()), and $SELECT\'s own WETH pools are held there too.',
-  robinhood: { tvl, pool2 },
+    'TVL is the WETH side of the Uniswap V3 positions held by token.select lpVaults. Launched tokens are enumerated from the factory\'s NewTokenSelectToken events and each token\'s lpVault is read on-chain, so vaults added later are included automatically. Only the WETH side is counted in TVL; the launched-token side is excluded. Staking is the $SELECT side of the same vault positions: every launch is also paired against $SELECT (address read from the factory\'s selectToken()), and $SELECT\'s own WETH pools are held there too.',
+  robinhood: { tvl, staking },
 }
