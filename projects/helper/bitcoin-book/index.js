@@ -664,6 +664,7 @@ module.exports = {
     "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh",
     "38PFUcFi7o7RVYYJjWCodU9t9yiQ9Qt8Gw", // add on 22/10/2026
     "1MEPB525tEHRFLdq6aR8d2t8jaaRQj2iWX", // add on 22/10/2026
+    "bc1phqnz3j2a6dh2srwmfv9mnznvv68fxvhu0u683nmhe6v52fagtcsqlmrtge", // Gate Babylon staking, add on 06/11/2026
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
