@@ -124,6 +124,9 @@ const configs = {
     pharos: { poolDatas: ['0x3EF4724f0f2fabfA0ba96AfC711D64e6BE3367Fb'] },
     bsc: { poolDatas: ['0xeFD74781D9C468FFE6a4d8CA7720E8EF0223744E'] },
   },
+  'bnq': {
+    hemi: '0xB3D711832d1cf0F03D34D74d8a560071d52319a3', // PoolDataProvider (PoolAddressesProvider 0x381D905bA4bc8378E09A910b4EDbC763A0F2dc92)
+  },
 }
 
 module.exports = buildProtocolExports(configs, aaveV3ExportFn)
