@@ -17,30 +17,34 @@ async function tvl(api) {
   const { tvl: snapshot } = await get(`${DAILY_STATS_URL}?start_timestamp=${endTimestamp - 86400}&end_timestamp=${endTimestamp}&include_tvl=true`, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
-  if (!snapshot || !Array.isArray(snapshot.assets) || !snapshot.assets.length
+  if (!snapshot || !Array.isArray(snapshot.protocols) || !snapshot.protocols.length
     || typeof snapshot.ledger_version !== "string" || !/^\d+$/.test(snapshot.ledger_version)
     || !Number.isSafeInteger(snapshot.timestamp_ms)
     || snapshot.timestamp_ms >= endTimestamp * 1000
     || endTimestamp * 1000 - snapshot.timestamp_ms > 60000)
     throw new Error("Decibel daily_stats is missing a fresh TVL snapshot");
 
+  const perps = snapshot.protocols.filter(group => group?.protocol === "Decibel Perps DEX");
+  if (perps.length !== 1 || !Array.isArray(perps[0].tokens) || !perps[0].tokens.length)
+    throw new Error("Decibel daily_stats is missing its Perps TVL token list");
+
   const seen = new Set();
-  for (const asset of snapshot.assets) {
+  for (const asset of perps[0].tokens) {
     if (typeof asset.asset_addr !== "string" || !/^0x[0-9a-fA-F]{1,64}$/.test(asset.asset_addr))
       throw new Error("Decibel daily_stats contains an invalid TVL asset address");
     const address = BigInt(asset.asset_addr).toString(16);
     if (!INCLUDED_ASSETS.has(address)) continue;
     if (typeof asset.price_id !== "string" || !/^(aptos|coingecko):\S+$/.test(asset.price_id)
       || !Number.isInteger(asset.decimals) || asset.decimals < 0 || asset.decimals > 255
-      || typeof asset.total_balance !== "string" || !/^\d+$/.test(asset.total_balance))
+      || typeof asset.raw_amount !== "string" || !/^\d+$/.test(asset.raw_amount))
       throw new Error("Decibel daily_stats contains an invalid TVL asset");
     if (seen.has(address)) throw new Error("Decibel daily_stats contains a duplicate TVL asset");
     seen.add(address);
 
     // CoinGecko keys take whole-token amounts; Aptos keys take raw token units.
     const balance = asset.price_id.startsWith("coingecko:")
-      ? new BigNumber(asset.total_balance).shiftedBy(-asset.decimals).toNumber()
-      : asset.total_balance;
+      ? new BigNumber(asset.raw_amount).shiftedBy(-asset.decimals).toNumber()
+      : asset.raw_amount;
     api.add(asset.price_id, balance, { skipChain: true });
   }
   if (seen.size !== INCLUDED_ASSETS.size)
