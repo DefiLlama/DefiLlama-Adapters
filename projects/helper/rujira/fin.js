@@ -18,9 +18,11 @@ async function getFinConfig(address, height) {
   const stored = await queryRawContractState(address, 'config', height)
   if (!stored) throw new Error(`Missing FIN config state for ${address} at ${height}`)
   const config = JSON.parse(stored.toString())
-  const marketMakers = Array.isArray(config.market_makers)
+  const makers = Array.isArray(config.market_makers)
     ? config.market_makers
     : config.market_makers?.contracts || []
+  // FIN 2.2.2 can store contracts as an address-keyed map of maker settings.
+  const marketMakers = Array.isArray(makers) ? makers : Object.keys(makers)
   return { ...config, market_makers: marketMakers }
 }
 
