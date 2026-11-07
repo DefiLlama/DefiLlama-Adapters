@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { abi } = require("../dexfinance-vault/abi");
-const { sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../helper/unwrapLPs');
+const { sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT, addUniV3LikePosition } = require('../helper/unwrapLPs');
 
 const CONFIG = {
   sonic: {
@@ -40,6 +40,13 @@ const CONFIG = {
 const GDEX_TOKEN = "0x53Cb59D32a8d08fC6D3f81454f150946A028A44d";
 const STAKING_CONTRACT = "0xd7D11E2d4E8E7b65E905aa9d16E488C37195Ca62";
 const POOL_ADDRESS = "0x65B6ee9CaC744D4eed9886406EAD6bc4E5681068";
+
+const algebraIntegralAbi = {
+  positions: 'function positions(uint256) view returns (uint88 nonce, address operator, address token0, address token1, address deployer, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
+  poolByPair: 'function poolByPair(address, address) view returns (address)',
+  customPoolByPair: 'function customPoolByPair(address, address, address) view returns (address)',
+  globalState: 'function globalState() view returns (uint160 price, int24 tick, uint16 lastFee, uint8 pluginConfig, uint16 communityFee, bool unlocked)',
+};
 
 const getVaults = async (api, factory) => {
   const vaults = await api.fetchList({ lengthAbi: abi.factory.vaultsLength, itemAbi: abi.factory.vaults, target: factory, permitFailure: true });
@@ -89,6 +96,22 @@ const getChainFarms = async (api) => {
   return { nftFarms, tokenFarms };
 };
 
+const unwrapAlgebraIntegralNFT = async (api, nftAddress, factory, positionIds) => {
+  const positions = await api.multiCall({ abi: algebraIntegralAbi.positions, target: nftAddress, calls: positionIds });
+  const [defaultPools, customPools] = await Promise.all([
+    api.multiCall({ abi: algebraIntegralAbi.poolByPair, target: factory, calls: positions.map(p => ({ params: [p.token0, p.token1] })) }),
+    api.multiCall({ abi: algebraIntegralAbi.customPoolByPair, target: factory, calls: positions.map(p => ({ params: [p.deployer, p.token0, p.token1] })) }),
+  ]);
+  const pools = positions.map((p, i) => (p.deployer === ADDRESSES.null ? defaultPools[i] : customPools[i]).toLowerCase());
+  pools.forEach((pool, i) => { if (pool === ADDRESSES.null) throw new Error(`No Algebra pool for ${nftAddress} position ${positionIds[i]}`) });
+  const uniquePools = [...new Set(pools)];
+  const states = await api.multiCall({ abi: algebraIntegralAbi.globalState, calls: uniquePools });
+  const ticks = Object.fromEntries(uniquePools.map((pool, i) => [pool, states[i].tick]));
+  positions.forEach(({ token0, token1, liquidity, tickLower, tickUpper }, i) => {
+    addUniV3LikePosition({ api, token0, token1, liquidity: +liquidity, tickLower: +tickLower, tickUpper: +tickUpper, tick: +ticks[pools[i]] });
+  });
+};
+
 const tvl = async (api) => {
   if (api.timestamp && api.timestamp < CONFIG[api.chain].start) return {};
 
@@ -118,14 +141,18 @@ const tvl = async (api) => {
 
   // detect Slipstream and Algebra from factory
   const factoriesWithIndex = factoryResults.map((f, i) => f ? { target: f, idx: i } : null).filter(Boolean);
-  const [poolImplResults, poolByPairResults] = factoriesWithIndex.length ? await Promise.all([
+  const [poolImplResults, poolByPairResults, customPoolByPairResults] = factoriesWithIndex.length ? await Promise.all([
     api.multiCall({ calls: factoriesWithIndex.map(f => f.target), abi: 'address:poolImplementation', permitFailure: true }),
-    api.multiCall({ calls: factoriesWithIndex.map(f => ({ target: f.target, params: [ADDRESSES.null, ADDRESSES.null] })), abi: 'function poolByPair(address, address) view returns (address)', permitFailure: true }),
-  ]) : [[], []];
+    api.multiCall({ calls: factoriesWithIndex.map(f => ({ target: f.target, params: [ADDRESSES.null, ADDRESSES.null] })), abi: algebraIntegralAbi.poolByPair, permitFailure: true }),
+    api.multiCall({ calls: factoriesWithIndex.map(f => ({ target: f.target, params: [ADDRESSES.null, ADDRESSES.null, ADDRESSES.null] })), abi: algebraIntegralAbi.customPoolByPair, permitFailure: true }),
+  ]) : [[], [], []];
   const slipstreamSet = new Set();
+  const algebraIntegralSet = new Set();
   const algebraSet = new Set();
   factoriesWithIndex.forEach((f, j) => {
     if (poolImplResults[j]) slipstreamSet.add(f.idx);
+    // Algebra Integral >= 1.2: positions() carries a deployer field
+    else if (customPoolByPairResults[j] !== null && customPoolByPairResults[j] !== undefined) algebraIntegralSet.add(f.idx);
     else if (poolByPairResults[j] !== null && poolByPairResults[j] !== undefined) algebraSet.add(f.idx);
   });
 
@@ -135,6 +162,8 @@ const tvl = async (api) => {
       await unwrapSlipstreamNFT({ api, nftAddress: nftAddresses[i], positionIds, isShadow: true });
     } else if (slipstreamSet.has(i)) {
       await unwrapSlipstreamNFT({ api, nftAddress: nftAddresses[i], positionIds });
+    } else if (algebraIntegralSet.has(i)) {
+      await unwrapAlgebraIntegralNFT(api, nftAddresses[i], factoryResults[i], positionIds);
     } else if (algebraSet.has(i)) {
       await unwrapUniswapV3NFT({ api, nftAddress: nftAddresses[i], uniV3ExtraConfig: { positionIds }, isAlgebra: true });
     } else if (poolManagerResults[i]) {
