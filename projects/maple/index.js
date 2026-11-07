@@ -79,7 +79,9 @@ async function addStrategyCash(api, pools) {
   const calls = pools.flatMap((p, i) => Array.from({ length: Number(lengths[i] ?? 0) }, (_, j) => ({ target: p.poolManager.id, params: [j], asset: p.asset.id })))
   const strategies = await api.multiCall({ abi: 'function strategyList(uint256) view returns (address)', calls: calls.map(({ target, params }) => ({ target, params })) })
   const factories = await api.multiCall({ abi: 'address:factory', calls: strategies })
-  const cashStrategies = strategies.map((target, i) => ({ target, asset: calls[i].asset })).filter((_, i) => !LOAN_MANAGER_FACTORIES.includes(factories[i].toLowerCase()))
+  // a strategy holds idle cash unless it is a listed loan manager or comes from a loan manager factory
+  const loanManagers = new Set(pools.flatMap(p => [p.loanManager?.id, p.openTermLoanManager?.id]).filter(Boolean).map(a => a.toLowerCase()))
+  const cashStrategies = strategies.map((target, i) => ({ target, asset: calls[i].asset })).filter((s, i) => !loanManagers.has(s.target.toLowerCase()) && !LOAN_MANAGER_FACTORIES.includes(factories[i].toLowerCase()))
   const aum = await api.multiCall({ abi: 'uint256:assetsUnderManagement', calls: cashStrategies.map(s => s.target) })
   api.addTokens(cashStrategies.map(s => s.asset), aum)
 }
