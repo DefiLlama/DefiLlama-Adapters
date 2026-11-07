@@ -21030,7 +21030,7 @@ const configs = {
     },
   },
   "omnibazaar": {
-    "methodology": "TVL: reserves held in the protocol XOM/USDC and BridgedXOM/WAVAX AMM pools on each chain. Pool2: XOM/USDC LP tokens staked in the LiquidityOverflowPool, counted separately as double-counted own-token LP. Amounts are read on chain; XOM has no market price in the price database today, so the XOM side is dropped from the dollar total until one exists.",
+    "methodology": "TVL: reserves held in the protocol own XOM/USDC AMM pools on Ethereum, Arbitrum, Base, Polygon and OmniCoin L1 (all deployed from OmniBazaar factories). The BridgedXOM/WAVAX pair on Avalanche C-Chain is a Trader Joe V1 pool already counted by the LFJ adapter, so it is not repeated here. Pool2: XOM/USDC LP tokens staked in the LiquidityOverflowPool, counted separately as double-counted own-token LP. Amounts are read on chain; XOM has no market price in the price database today, so the XOM side is dropped from the dollar total until one exists.",
     "ethereum": {
       "tvl": {
         "tokensAndOwners": [
@@ -21085,14 +21085,6 @@ const configs = {
           ["0x8Bf4142F6C1B3F9938390658E1a73CC49139e336", "0xdB993473060739a523c5c3fdDCf8705BaF84a1DF"]
         ],
         "resolveLP": true
-      }
-    },
-    "avax": {
-      "tvl": {
-        "tokensAndOwners": [
-          ["0xaf72f6caf76775daeabaf5c82ce05d97359c8fa1", "0x4c41EE1327b5c3A00e313eBAa1DC22fC045F96DE"],
-          ["0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", "0x4c41EE1327b5c3A00e313eBAa1DC22fC045F96DE"]
-        ]
       }
     },
     "xom": {
