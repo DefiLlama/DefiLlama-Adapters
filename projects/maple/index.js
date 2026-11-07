@@ -1,179 +1,123 @@
-/**
- * Maple Finance TVL & Borrowed Amounts Adapter
- * 
- * This adapter fetches data from Maple Finance's GraphQL API to calculate:
- * - Total Value Locked (TVL): Pool cash and cash in DeFi strategies on Ethereum, plus loan
- *   collateral booked on the chain it is actually custodied on (BTC on bitcoin, XRP on ripple, ...)
- * - Total Borrowed: Sum of all principal out (active loans)
- * - Total Staking: Sum of all staked assets in stSYRUP ERC-4626 vault
- * 
- * 
- * References:
- * - Maple Finance API Docs: https://studio.apollographql.com/public/maple-api/variant/mainnet/home
- * 
- */
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getConfig } = require('../helper/cache')
+const { post } = require('../helper/http')
+const { sumTokens } = require('../helper/sumTokens')
 
-const ADDRESSES = require('../helper/coreAssets.json');
-const sdk = require('@defillama/sdk');
-const axios = require('axios');
+const stSYRUP = '0xc7E8b36E0766D9B04c93De68A9D47dD11f260B45'
+const PYUSD = '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8'
+// fixed-term and open-term loan manager factories, every other pool strategy deploys idle cash
+const LOAN_MANAGER_FACTORIES = ['0x1551717AE4FdCB65ed028F7fB7abA39908f6A7A6', '0x90b14505221a24039A2D11Ad5862339db97Cc160'].map(a => a.toLowerCase())
 
-const stSYRUP = "0xc7E8b36E0766D9B04c93De68A9D47dD11f260B45";
+const POOLS_QUERY = `{
+  poolV2S(first: 1000) {
+    id
+    name
+    collateralValue
+    asset { id }
+    poolManager { id }
+    loanManager { id }
+    openTermLoanManager { id }
+    poolMeta { poolCollaterals { addresses asset blockchain assetAmount } }
+  }
+}`
 
-const POOL_V2_START_BLOCK = 16186377;
-const STAKING_START_BLOCK = 20735662;
-
-// Loans are issued from Ethereum pools but the collateral is custodied natively, so each
-// collateral asset is credited to its own chain instead of the pool's chain
+// keyed by poolCollaterals `blockchain:asset`, tokens are only needed on EVM chains
 const COLLATERALS = {
-  BTC: { chain: 'bitcoin', cgId: 'bitcoin' },
-  XRP: { chain: 'ripple', token: ADDRESSES.ripple.XRP },
-  HYPE: { chain: 'hyperliquid', cgId: 'hyperliquid' },
-  SOL: { chain: 'solana', token: ADDRESSES.solana.SOL },
-  jitoSOL: { chain: 'solana', token: ADDRESSES.solana.JitoSOL },
-  ETH: { chain: 'ethereum', token: ADDRESSES.null },
-  WBTC: { chain: 'ethereum', token: ADDRESSES.ethereum.WBTC },
-  LBTC: { chain: 'ethereum', token: ADDRESSES.ethereum.LBTC },
-  cbBTC: { chain: 'ethereum', token: ADDRESSES.ethereum.cbBTC },
-  sUSDS: { chain: 'ethereum', token: ADDRESSES.ethereum.sUSDS },
-  USDG: { chain: 'ethereum', token: ADDRESSES.ethereum.USDG },
-  USDC: { chain: 'ethereum', token: ADDRESSES.ethereum.USDC },
-  USDT: { chain: 'ethereum', token: ADDRESSES.ethereum.USDT },
-  USTB: { chain: 'ethereum', token: '0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e' },
-  USDtb: { chain: 'ethereum', token: '0xC139190F447e929f090Edeb554D95AbB8b18aC1C' },
-  weETH: { chain: 'ethereum', token: ADDRESSES.ethereum.WEETH },
-  tETH: { chain: 'ethereum', token: '0xD11c452fc99cF405034ee446803b6F6c1F6d5ED8' },
-  USR: { chain: 'ethereum', token: '0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110' },
-  ATH: { chain: 'ethereum', token: '0xbe0Ed4138121EcFC5c0E56B40517da27E6c5226B' },
-};
+  'Bitcoin:BTC': { chain: 'bitcoin' },
+  'XRP:XRP': { chain: 'ripple' },
+  // ETH collateral is also held as wstETH at the custody addresses
+  'Ethereum:ETH': { chain: 'ethereum', tokens: [ADDRESSES.null, ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.WSTETH] },
+  // USDC collateral is also held as PYUSD at the custody addresses
+  'Ethereum:USDC': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.USDC, PYUSD] },
+  'Ethereum:WBTC': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.WBTC] },
+  'Ethereum:cbBTC': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.cbBTC] },
+  'Ethereum:LBTC': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.LBTC] },
+  'Ethereum:USDT': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.USDT] },
+  'Ethereum:USDG': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.USDG] },
+  'Ethereum:sUSDS': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.sUSDS] },
+  'Ethereum:USTB': { chain: 'ethereum', tokens: ['0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e'] },
+  'Ethereum:USDtb': { chain: 'ethereum', tokens: ['0xC139190F447e929f090Edeb554D95AbB8b18aC1C'] },
+  'Ethereum:weETH': { chain: 'ethereum', tokens: [ADDRESSES.ethereum.WEETH] },
+  'Ethereum:tETH': { chain: 'ethereum', tokens: ['0xD11c452fc99cF405034ee446803b6F6c1F6d5ED8'] },
+  'Ethereum:USR': { chain: 'ethereum', tokens: ['0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110'] },
+  'Ethereum:ATH': { chain: 'ethereum', tokens: ['0xbe0Ed4138121EcFC5c0E56B40517da27E6c5226B'] },
+}
 
-const ENDPOINT = "https://api.maple.finance/v2/graphql";
-const POOLS_QUERY = `
-  query example($block: Block_height) {
-    poolV2S(block: $block) {
-      name
-      collateralValue
-      principalOut
-      strategiesDeployed
-      assets
-      asset {
-        symbol
-      }
-      poolMeta {
-        poolCollaterals {
-          assetSymbol
-          assetDecimals
-          assetAmount
-        }
-      }
+async function getPools() {
+  const { poolV2S: pools } = await getConfig('maple/pools-v2', undefined, {
+    fetcher: async () => {
+      const { data, errors } = await post('https://api.maple.finance/v2/graphql', { query: POOLS_QUERY })
+      if (errors?.length || !data?.poolV2S?.length) throw new Error('Maple: invalid poolV2S response')
+      return data
+    },
+  })
+  if (!pools?.length) throw new Error('Maple: no pools')
+  return pools
+}
+
+// custody addresses of the collateral currently backing loans, grouped by chain
+async function getCollateralOwners() {
+  const pools = await getPools()
+  const owners = {}
+  for (const { name, collateralValue, poolMeta } of pools) {
+    const lines = (poolMeta?.poolCollaterals ?? []).filter(c => Number(c.assetAmount) > 0)
+    if (!lines.length && Number(collateralValue) > 0) throw new Error(`Maple: pool ${name} reports collateral but lists none`)
+    for (const { blockchain, asset, addresses } of lines) {
+      const collateral = COLLATERALS[`${blockchain}:${asset}`]
+      if (!collateral) throw new Error(`Maple: unmapped collateral ${asset} on ${blockchain}`)
+      if (!addresses?.length) throw new Error(`Maple: ${asset} collateral on ${blockchain} has no custody address`)
+      owners[collateral.chain] ??= []
+      for (const owner of addresses) for (const token of collateral.tokens ?? [null]) owners[collateral.chain].push([token, owner])
     }
   }
-`;
+  return owners
+}
 
-// every chain's tvl needs the same snapshot, keyed by run timestamp so only one request is made
-const poolCache = {};
+async function addStrategyCash(api, pools) {
+  // pool managers that predate strategies have no strategy list
+  const lengths = await api.multiCall({ abi: 'uint256:strategyListLength', calls: pools.map(p => p.poolManager.id), permitFailure: true })
+  const calls = pools.flatMap((p, i) => Array.from({ length: Number(lengths[i] ?? 0) }, (_, j) => ({ target: p.poolManager.id, params: [j], asset: p.asset.id })))
+  const strategies = await api.multiCall({ abi: 'function strategyList(uint256) view returns (address)', calls: calls.map(({ target, params }) => ({ target, params })) })
+  const factories = await api.multiCall({ abi: 'address:factory', calls: strategies })
+  const cashStrategies = strategies.map((target, i) => ({ target, asset: calls[i].asset })).filter((_, i) => !LOAN_MANAGER_FACTORIES.includes(factories[i].toLowerCase()))
+  const aum = await api.multiCall({ abi: 'uint256:assetsUnderManagement', calls: cashStrategies.map(s => s.target) })
+  api.addTokens(cashStrategies.map(s => s.asset), aum)
+}
 
-/**
- * Fetches pool data from Maple Finance's GraphQL API, at the Ethereum block of the current run
- * @param {Object} api DefiLlama SDK api object
- * @returns {Promise<Array<{name: string, collateralValue: string, principalOut: string, strategiesDeployed: string, assets: string, asset: {symbol: string}, poolMeta: {poolCollaterals: Array<{assetSymbol: string, assetDecimals: number, assetAmount: string}>}}>>} Array of pool objects
- */
-const getPools = async (api) => {
-  const key = api.timestamp ?? 'latest';
-  if (!poolCache[key]) poolCache[key] = fetchPools(api);
-  return poolCache[key];
-};
+async function ethereumTvl(api) {
+  const pools = await getPools()
+  const { ethereum = [] } = await getCollateralOwners()
+  await addStrategyCash(api, pools)
+  return api.sumTokens({ tokensAndOwners: [...pools.map(p => [p.asset.id, p.id]), ...ethereum] })
+}
 
-const fetchPools = async (api) => {
-  const ethApi = api.chain === 'ethereum' ? api : new sdk.ChainApi({ chain: 'ethereum', timestamp: api.timestamp });
-  const block = await ethApi.getBlock();
+const collateralTvl = (chain) => async (api) => {
+  const owners = (await getCollateralOwners())[chain] ?? []
+  return sumTokens({ api, owners: owners.map(([, owner]) => owner), timestamp: api.timestamp })
+}
 
-  if (block < POOL_V2_START_BLOCK) {
-    sdk.log('Maple: impossible to backfill - the queried block is earlier than the deployment block of poolsV2');
-    return [];
-  }
+async function borrowed(api) {
+  const loanManagers = {}
+  for (const p of await getPools())
+    for (const lm of [p.loanManager, p.openTermLoanManager]) if (lm) loanManagers[lm.id.toLowerCase()] = p.asset.id
+  const principal = await api.multiCall({ abi: 'uint256:principalOut', calls: Object.keys(loanManagers) })
+  api.addTokens(Object.values(loanManagers), principal)
+}
 
-  const payload = { query: POOLS_QUERY, variables: { block: { number: block - 10 } } };
-  const { data } = await axios.post(ENDPOINT, payload);
-  return data.data.poolV2S;
-};
-
-/**
- * Adds the loan collateral that is custodied on the given chain
- * @param {Object} api DefiLlama SDK api object
- * @param {Array} pools Pools returned by getPools
- */
-const addCollateral = (api, pools) => {
-  pools.forEach(({ name, collateralValue, poolMeta }) => {
-    const collaterals = (poolMeta?.poolCollaterals ?? []).filter(({ assetAmount }) => Number(assetAmount) > 0);
-    // a pool that reports collateral but lists none would silently drop out of tvl
-    if (!collaterals.length && Number(collateralValue) > 0) throw new Error(`Maple: pool ${name} reports collateral but lists no collateral assets`);
-    collaterals.forEach(({ assetSymbol, assetDecimals, assetAmount }) => {
-      const collateral = COLLATERALS[assetSymbol];
-      if (!collateral) throw new Error(`Maple: unmapped collateral asset ${assetSymbol} in pool ${name}`);
-      if (collateral.chain !== api.chain) return;
-      if (collateral.cgId) api.addCGToken(collateral.cgId, Number(assetAmount) / 10 ** assetDecimals);
-      else api.add(collateral.token, assetAmount); // Maple reports the amount in the token's own decimals
-    });
-  });
-};
-
-/**
- * Pool cash plus cash deployed in DeFi strategies, both denominated in the pool asset
- * @param {Object} api DefiLlama SDK api object
- */
-const addPoolCash = (api, pools) => {
-  pools.forEach(({ asset: { symbol }, assets, strategiesDeployed }) => {
-    const token = ADDRESSES.ethereum[symbol] ?? null;
-    if (!token) return;
-    api.add(token, Number(assets) + Number(strategiesDeployed));
-  });
-};
-
-const ethereumTvl = async (api) => {
-  const pools = await getPools(api);
-  addPoolCash(api, pools);
-  addCollateral(api, pools);
-};
-
-const collateralTvl = async (api) => {
-  addCollateral(api, await getPools(api));
-};
-
-const borrowed = async (api) => {
-  const pools = await getPools(api);
-  pools.forEach(({ asset: { symbol }, principalOut }) => {
-    const token = ADDRESSES.ethereum[symbol] ?? null;
-    if (!token) return;
-    api.add(token, Number(principalOut));
-  });
-};
-
-/**
- * Calculates total staked value in Maple's stSYRUP ERC-4626 vault
- * @param {Object} api DefiLlama SDK api object
- * @returns {Promise<Object>} Total staked value in USD
- */
-const staking = async (api) => {
-  const block = await api.getBlock()
-  if (block < STAKING_START_BLOCK) return;
+async function staking(api) {
   return api.erc4626Sum({ calls: [stSYRUP], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
 }
 
 module.exports = {
-  hallmarks: [['2022-12-14', 'V2 Deployment']],
-  // poolMeta.poolCollaterals is not block scoped - the API returns the current collateral for any
-  // block, so backfilling would rewrite history with today's holdings
+  methodology: 'TVL is the cash held by Maple pools on Ethereum, including cash deployed to yield strategies, plus borrower collateral: the balances of the collateral tokens at the custody addresses Maple publishes for each pool, read on the chain where they are held (BTC on Bitcoin, XRP on the XRP Ledger, ETH, wstETH, PYUSD and other tokens on Ethereum). Collateral Maple reports that is not held at those addresses is not counted. Borrowed is the principal outstanding in the pools\' loan managers. Staking is SYRUP deposited in stSYRUP.',
+  // custody addresses are only published for current loans
   timetravel: false,
   doublecounted: true, // we are counting collateral on other chains like bitcoin, these are not smart contracts, so should not be treated as defi tvl.
-  methodology: 'TVL is pool cash and cash deployed in DeFi strategies on Ethereum, plus the loan collateral reported by the Maple API, each collateral asset counted on the chain it is custodied on. Borrowed is the principal outstanding on active loans, staking is the assets held in the stSYRUP vault.',
-  ethereum: {
-    tvl: ethereumTvl,
-    borrowed,
-    staking
-  },
-};
+  hallmarks: [['2022-12-14', 'V2 Deployment']],
+  ethereum: { tvl: ethereumTvl, borrowed, staking },
+  hyperliquid: { tvl: () => ({}) },
+  solana: { tvl: () => ({}) },
+}
 
-// derived from COLLATERALS so a newly mapped chain cannot be silently dropped for want of an export
-Object.values(COLLATERALS).forEach(({ chain }) => {
-  if (chain !== 'ethereum' && !module.exports[chain]) module.exports[chain] = { tvl: collateralTvl };
-});
+// every non-EVM collateral chain gets an export, so a newly mapped chain cannot be dropped silently
+for (const { chain, tokens } of Object.values(COLLATERALS)) if (!tokens) module.exports[chain] = { tvl: collateralTvl(chain) }
