@@ -8,11 +8,21 @@ const GET_BOUNTY_COUNT_ABI = 'uint256:getBountyCount'
 const GET_BOUNTIES_ABI =
   'function getBounties(uint256 offset, uint256 limit) view returns ((bytes32 bountyId, address maintainer, address solver, address settlementToken, uint256 amount, uint256 createdAt, uint256 deadline, uint256 submittedAt, uint256 reviewPeriod, uint8 status, string issueUrl, string prUrl, bytes32 solutionCommitment)[] items, uint256 total)'
 
+/**
+ * Computes Total Value Locked (TVL) in the BotBountyEscrow smart contract on BOT Chain Mainnet.
+ * Resolves the historical block before reading native $BOT balance (mapped 1:1 to WBOT)
+ * and sums all active ERC-20 settlement token balances held in escrow.
+ *
+ * @param {import('@defillama/sdk').ChainApi} api - DeFiLlama ChainApi instance for BOT Chain (`bot`)
+ * @returns {Promise<object>} Token balances locked in `BotBountyEscrow`
+ */
 async function tvl(api) {
+  const block = await api.getBlock()
+
   // Price native $BOT 1:1 via WBOT (bot:0x000...000 is not yet indexed in coins.llama.fi)
   const nativeBalance = await sdk.api.eth.getBalance({
     target: BOTBOUNTY_ESCROW,
-    block: api.block,
+    block,
     chain: api.chain,
   })
   api.add(ADDRESSES.bot.WBOT, nativeBalance.output)
