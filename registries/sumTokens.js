@@ -21030,10 +21030,13 @@ const configs = {
     },
   },
   "omnibazaar": {
-    "methodology": "Pool2: XOM/USDC AMM LP tokens staked in the LiquidityOverflowPool contract on each chain, resolved to underlying XOM + USDC reserves.",
+    "methodology": "TVL: reserves held in the protocol XOM/USDC and BridgedXOM/WAVAX AMM pools on each chain. Pool2: XOM/USDC LP tokens staked in the LiquidityOverflowPool, counted separately as double-counted own-token LP. Amounts are read on chain; XOM has no market price in the price database today, so the XOM side is dropped from the dollar total until one exists.",
     "ethereum": {
       "tvl": {
-        "__empty": true
+        "tokensAndOwners": [
+          ["0x2e37f5a6d09d575e287a742062dafeeb1a0721a2", "0x425DF6b845F24f96CBAf308B167A1a458102F648"],
+          ["0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x425DF6b845F24f96CBAf308B167A1a458102F648"]
+        ]
       },
       "pool2": {
         "tokensAndOwners": [
@@ -21042,20 +21045,12 @@ const configs = {
         "resolveLP": true
       }
     },
-    "base": {
-      "tvl": {
-        "__empty": true
-      },
-      "pool2": {
-        "tokensAndOwners": [
-          ["0x8Bf4142F6C1B3F9938390658E1a73CC49139e336", "0xdB993473060739a523c5c3fdDCf8705BaF84a1DF"]
-        ],
-        "resolveLP": true
-      }
-    },
     "arbitrum": {
       "tvl": {
-        "__empty": true
+        "tokensAndOwners": [
+          ["0x79b7480feeb8fd4509993c78ef8dde9786fc9ded", "0xb9b602d51e411cf9D65bD2CFF0528Fe8B8f484b2"],
+          ["0xaf88d065e77c8cc2239327c5edb3a432268e5831", "0xb9b602d51e411cf9D65bD2CFF0528Fe8B8f484b2"]
+        ]
       },
       "pool2": {
         "tokensAndOwners": [
@@ -21064,9 +21059,12 @@ const configs = {
         "resolveLP": true
       }
     },
-    "polygon": {
+    "base": {
       "tvl": {
-        "__empty": true
+        "tokensAndOwners": [
+          ["0x79b7480feeb8fd4509993c78ef8dde9786fc9ded", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"],
+          ["0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"]
+        ]
       },
       "pool2": {
         "tokensAndOwners": [
@@ -21075,6 +21073,42 @@ const configs = {
         "resolveLP": true
       }
     },
+    "polygon": {
+      "tvl": {
+        "tokensAndOwners": [
+          ["0x4aa156f02bd5edd0c1ed2719e525998b4ba8fa17", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"],
+          ["0x3c499c542cef5e3811e1192ce70d8cc03d5c3359", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          ["0x8Bf4142F6C1B3F9938390658E1a73CC49139e336", "0xdB993473060739a523c5c3fdDCf8705BaF84a1DF"]
+        ],
+        "resolveLP": true
+      }
+    },
+    "avax": {
+      "tvl": {
+        "tokensAndOwners": [
+          ["0xaf72f6caf76775daeabaf5c82ce05d97359c8fa1", "0x4c41EE1327b5c3A00e313eBAa1DC22fC045F96DE"],
+          ["0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", "0x4c41EE1327b5c3A00e313eBAa1DC22fC045F96DE"]
+        ]
+      }
+    },
+    "xom": {
+      "tvl": {
+        "tokensAndOwners": [
+          ["0x1eE61487F08F715055358A1F020A86c9E571ED78", "0xc2aab143574099d7420A7a4cE4dc6c91a2a0fDf5"],
+          ["0x81f4072fCca24d373FFCB34c248995DFC6c1219C", "0xc2aab143574099d7420A7a4cE4dc6c91a2a0fDf5"]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          ["0xc2aab143574099d7420A7a4cE4dc6c91a2a0fDf5", "0x3e3FB3416236fCab0dB9A45171c5532Aff665EC8"]
+        ],
+        "resolveLP": true
+      }
+    }
   },
   "onc": {
     "methodology": "Gets TVL inside the ONC Treasury.",
