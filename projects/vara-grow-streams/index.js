@@ -2,26 +2,27 @@ const blake = require('blakejs')
 const { post } = require('../helper/http')
 
 const VARA_RPC = 'https://rpc.vara.network'
-const GAS_LIMIT = 750000000000
-const ZERO_ACCOUNT = '0x' + '0'.repeat(64)
 const VARA_DECIMALS = 1e12
 
-const TOKEN_VAULT = '0x20099b7637ae936670f54464c4109d1f028fbb63230e151ea4ef29c4a94cbcef'
-const WVARA = '0xf5e9cb1d1e46b0cda6578dd1684b30f281a45dfaa390e4945b7bfc8ab3e27f3d'
-const GVARA = '0x04314af41b7dbac322e3e66920211d2f799719e1cdc3122a99752f72b6ae84ee'
+// GrowStreams V2 + V3 Sails smart contracts on Vara Mainnet
+const PROTOCOL_CONTRACTS = [
+  '0x20099b7637ae936670f54464c4109d1f028fbb63230e151ea4ef29c4a94cbcef', // TokenVault V2
+  '0x657cf9c4f929aeac97092037826c1117f9e6cd0e3c4edc44e49decc17b840aa9', // TokenVault V3 (Native + VFT Escrow)
+  '0xf5e9cb1d1e46b0cda6578dd1684b30f281a45dfaa390e4945b7bfc8ab3e27f3d', // wVARA Wrapper
+  '0x04314af41b7dbac322e3e66920211d2f799719e1cdc3122a99752f72b6ae84ee', // gVARA SuperToken V3 (Buffered Flow)
+  '0x71de1ef1f4dec1a4fe862aa6c92747c8499bbf1af128625749027392709f4a72', // gVARA SuperToken V2
+  '0x8298c2eea5c6bbe55a9cfe72283b5399098fd6a54d9a2a14c2bedba8eea50659', // StreamCore V3
+  '0x68b9fd8f53f6557db2c26b5b9a7c63061bb7f36d379dc843b8a53e78f5692f45', // SplitsRouter (60/15/15/10 Agent Society Splits)
+  '0x7697bb2e8655e6cd7294389a0289355f48fd5459914d2a735c9966dad548bd4f', // BountyAdapter (AI-Verified Streaming Bounties)
+  '0x52f4299e964dab5e97c91cdd10e2d6e635b19696ab8389889aabceba3de9e581', // PermissionManager (Autonomous Agent Delegations)
+  '0x7aaa5fa39237ad7f63a78d5acd8a0ff080bd034b8e78de5d4756d6fe4fb25b70', // DistributionPool
+  '0x411c62d126b3131ace5e94b618b8cbbdbffb5b9cfdd656f2f6da0786f60cb2c3', // LiquidationManager
+  '0x4a9718de4055470963104a4c08e5154ad0c2c48a699996b59e861de9393bf347', // gGROW SuperToken
+  '0x728d04df91561c66938053a4f5178f749da004ebd219ca05f7c090609a6f7163', // GROW Token
+]
 
 // twox128("System") ++ twox128("Account")
 const SYSTEM_ACCOUNT_PREFIX = '26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9'
-
-function scaleString(value) {
-  const bytes = Buffer.from(value, 'utf8')
-  if (bytes.length >= 64) throw new Error('vara-grow-streams: route segment is too long')
-  return Buffer.concat([Buffer.from([bytes.length << 2]), bytes])
-}
-
-function route(service, method) {
-  return Buffer.concat([scaleString(service), scaleString(method)])
-}
 
 function u128LE(bytes, offset = 0) {
   let value = 0n
@@ -66,13 +67,14 @@ async function getSpendableNative(addresses, at) {
 
 async function tvl(api) {
   const at = await rpc('chain_getFinalizedHead', [])
-  const [vaultNative, wvaraNative, gvaraNative] = await getSpendableNative([TOKEN_VAULT, WVARA, GVARA], at)
-  const total = vaultNative + wvaraNative + gvaraNative
+  const balances = await getSpendableNative(PROTOCOL_CONTRACTS, at)
+  const total = balances.reduce((acc, b) => acc + b, 0n)
 
   api.addCGToken('vara-network', Number(total) / VARA_DECIMALS)
 }
 
 module.exports = {
-  methodology: 'GrowStreams deploys and owns the token vault and its wVARA and gVARA wrapper programs. TVL is the combined spendable native VARA held by all three: the vault balance plus the native VARA backing wVARA and gVARA tokens.',
+  methodology:
+    'GrowStreams deploys and owns the V2/V3 TokenVaults, wVARA and gVARA wrapper programs, StreamCore, SplitsRouter, BountyAdapter, PermissionManager, DistributionPool, and LiquidationManager on Vara Network. TVL is the combined spendable native VARA held across these protocol contracts backing active streams, bounties, agent splits, and wrapped tokens.',
   vara: { tvl },
 }
