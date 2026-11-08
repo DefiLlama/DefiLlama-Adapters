@@ -21030,13 +21030,10 @@ const configs = {
     },
   },
   "omnibazaar": {
-    "methodology": "TVL: reserves held in the protocol own XOM/USDC AMM pools on Ethereum, Arbitrum, Base, Polygon and OmniCoin L1 (all deployed from OmniBazaar factories). The BridgedXOM/WAVAX pair on Avalanche C-Chain is a Trader Joe V1 pool already counted by the LFJ adapter, so it is not repeated here. Pool2: XOM/USDC LP tokens staked in the LiquidityOverflowPool, counted separately as double-counted own-token LP. Amounts are read on chain; XOM has no market price in the price database today, so the XOM side is dropped from the dollar total until one exists.",
+    "methodology": "Pool2: XOM/USDC AMM LP tokens staked in the LiquidityOverflowPool contract on Ethereum, Arbitrum, Base, Polygon and OmniCoin L1, resolved to underlying XOM + USDC reserves. XOM has no market price yet, so only the USDC side is valued.",
     "ethereum": {
       "tvl": {
-        "tokensAndOwners": [
-          ["0x2e37f5a6d09d575e287a742062dafeeb1a0721a2", "0x425DF6b845F24f96CBAf308B167A1a458102F648"],
-          ["0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0x425DF6b845F24f96CBAf308B167A1a458102F648"]
-        ]
+        "__empty": true
       },
       "pool2": {
         "tokensAndOwners": [
@@ -21047,10 +21044,7 @@ const configs = {
     },
     "arbitrum": {
       "tvl": {
-        "tokensAndOwners": [
-          ["0x79b7480feeb8fd4509993c78ef8dde9786fc9ded", "0xb9b602d51e411cf9D65bD2CFF0528Fe8B8f484b2"],
-          ["0xaf88d065e77c8cc2239327c5edb3a432268e5831", "0xb9b602d51e411cf9D65bD2CFF0528Fe8B8f484b2"]
-        ]
+        "__empty": true
       },
       "pool2": {
         "tokensAndOwners": [
@@ -21061,10 +21055,7 @@ const configs = {
     },
     "base": {
       "tvl": {
-        "tokensAndOwners": [
-          ["0x79b7480feeb8fd4509993c78ef8dde9786fc9ded", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"],
-          ["0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"]
-        ]
+        "__empty": true
       },
       "pool2": {
         "tokensAndOwners": [
@@ -21075,10 +21066,7 @@ const configs = {
     },
     "polygon": {
       "tvl": {
-        "tokensAndOwners": [
-          ["0x4aa156f02bd5edd0c1ed2719e525998b4ba8fa17", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"],
-          ["0x3c499c542cef5e3811e1192ce70d8cc03d5c3359", "0x8Bf4142F6C1B3F9938390658E1a73CC49139e336"]
-        ]
+        "__empty": true
       },
       "pool2": {
         "tokensAndOwners": [
@@ -21089,10 +21077,7 @@ const configs = {
     },
     "xom": {
       "tvl": {
-        "tokensAndOwners": [
-          ["0x1eE61487F08F715055358A1F020A86c9E571ED78", "0xc2aab143574099d7420A7a4cE4dc6c91a2a0fDf5"],
-          ["0x81f4072fCca24d373FFCB34c248995DFC6c1219C", "0xc2aab143574099d7420A7a4cE4dc6c91a2a0fDf5"]
-        ]
+        "__empty": true
       },
       "pool2": {
         "tokensAndOwners": [
