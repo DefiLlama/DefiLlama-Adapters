@@ -24,8 +24,9 @@ async function tvl(api) {
   const treasuryOwed = await api.call({ target: GRID_MINING, abi: 'uint256:treasuryOwed' })
   const triggerReserve = await api.call({ target: AUTO_MINER, abi: 'uint256:triggerReserve' })
   const autoMinerFees = await api.call({ target: AUTO_MINER, abi: 'uint256:accumulatedFees' })
-  api.add(nullAddress, (BigInt(gridBnb) - BigInt(triggerFloat) - BigInt(feeOwed) - BigInt(treasuryOwed)).toString())
-  api.add(nullAddress, (BigInt(autoBnb) - BigInt(triggerReserve) - BigInt(autoMinerFees)).toString())
+  const nonNegative = (v) => (v > 0n ? v : 0n).toString()
+  api.add(nullAddress, nonNegative(BigInt(gridBnb) - BigInt(triggerFloat) - BigInt(feeOwed) - BigInt(treasuryOwed)))
+  api.add(nullAddress, nonNegative(BigInt(autoBnb) - BigInt(triggerReserve) - BigInt(autoMinerFees)))
 
   await api.sumTokens({ owners: accounts, tokens: [nullAddress] })
   // WBNB waiting to become Goldpot gold, the Goldpot's and players' XAUt, and the XAUt owed to stakers
