@@ -18284,7 +18284,10 @@ const configs = {
         "__empty": true
       },
       "staking": {
-        "owner": "2Czxg7U54ZyGMzjt35EYX9g98H9UjFqteuYWX5CSgGCYWAjg1ng2jgm4BHjA6u1Azeo7EYQsBMVLbhRreNASJu54ho"
+        "owner": "2Czxg7U54ZzDcguzu4zt6SEfu9oUm4t5MH7Qsdt5pmVrbqqR9U1hwxSdpnzJ2Vo9EnSNtvVyYmcTzQWFtSVa8zh4Cp",
+        "tokens": [
+          "d4f0192622b440afc09711aa0545eacd04d78ad3f8a063523f451e10d3d0e6ef"
+        ]
       }
     },
   },
