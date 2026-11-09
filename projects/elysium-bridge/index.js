@@ -1,15 +1,17 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
 // Elysium is Kinetiq's Arbitrum Orbit chain, settling to HyperEVM. Its canonical bridge escrows
 // deposits on HyperEVM: native HYPE in the rollup's Bridge contract and ERC-20s in the
 // standard ERC20 gateway behind the gateway router.
 const BRIDGE = '0x503D572157113fAaaD4DbeD2647Bb10b949216B6'
 const ERC20_GATEWAY = '0xd97B30dE0bA0C2eAeE942afce77530e06c5F122c'
+const ERC20_GATEWAY_FROM_BLOCK = 48957103
 
-// HyperEVM tokens with a representation on Elysium
+// HyperEVM tokens with a representation on Elysium; any other token deposited through the
+// gateway is picked up from its DepositInitiated events
 const tokens = [
-  ADDRESSES.null, // HYPE
   ADDRESSES.hyperliquid.WHYPE,
   '0xfD739d4e423301CE9385c1fb8850539D657C296D', // kHYPE
   '0x360C140E5344A1A0593D44B4ea6Fc7C3DAf0C473', // kmHYPE
@@ -28,9 +30,26 @@ const tokens = [
   '0x07c57E32a3C29D5659bda1d3EFC2E7BF004E3035', // NEST
 ]
 
+const tvl = async (api) => {
+  const deposits = await getLogs({
+    api,
+    target: ERC20_GATEWAY,
+    fromBlock: ERC20_GATEWAY_FROM_BLOCK,
+    eventAbi: 'event DepositInitiated(address l1Token, address indexed _from, address indexed _to, uint256 indexed _sequenceNumber, uint256 _amount)',
+    onlyArgs: true,
+  })
+  const depositedTokens = deposits.map((i) => i.l1Token)
+  return sumTokens2({
+    api,
+    tokensAndOwners: [
+      [ADDRESSES.null, BRIDGE], // HYPE
+      ...[...new Set([...tokens, ...depositedTokens].map((t) => t.toLowerCase()))].map((t) => [t, ERC20_GATEWAY]),
+    ],
+  })
+}
+
 module.exports = {
-  methodology: 'Counts HYPE and ERC-20 tokens locked on HyperEVM in the Elysium canonical bridge: native HYPE in the rollup Bridge contract and tokens in its ERC20 gateway.',
-  hyperliquid: {
-    tvl: sumTokensExport({ owners: [BRIDGE, ERC20_GATEWAY], tokens }),
-  },
+  methodology: 'Counts HYPE and ERC-20 tokens locked on HyperEVM in the Elysium canonical bridge: native HYPE in the rollup Bridge contract and tokens in its ERC20 gateway, including any token found in the gateway\'s deposit events.',
+  start: '2026-10-19',
+  hyperliquid: { tvl },
 }
