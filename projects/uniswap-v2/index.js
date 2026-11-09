@@ -29,6 +29,7 @@ const config = {
   ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
   arc: '0x89e5db8b5aa49aa85ac63f691524311aeb649eba',
   wc: '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f',
+  elysium: '0xBbBcC62853a5fA27b93d6Bab3E6F7ce841E25Df2',
 }
 
 Object.keys(config).forEach(chain => {

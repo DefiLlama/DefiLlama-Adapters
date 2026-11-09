@@ -33,6 +33,7 @@ const config = {
   celo: { factory: "0x288dc841a52fca2707c6947b3a777c5e56cd87bc", fromBlock: 43985163 },
   hyperliquid: { factory: "0x12d4fd9c5dedd00ab8a0bce2cf0167bbf94b6b1f", fromBlock: 45998366 },
   linea: { factory: "0x248083fb965359d82b06c1f5322480dcfc1ad857", fromBlock: 28974969 },
+  elysium: { factory: "0xE2e105d3F7209A9DA11f83cCf3E7398a753823F1", fromBlock: 256083 },
   soneium: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 2473300, useIndexerSql: true },
   avax: { factory: "0x06380c0e0912312b5150364b9dc4542ba0dbbc85", fromBlock: 56195376, useIndexerSql: true },
   bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, useIndexerSql: true, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343', '0x8145eb83744aac883b68ae34060bebb5031d8f5c',
