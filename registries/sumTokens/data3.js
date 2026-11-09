@@ -1301,4 +1301,18 @@ module.exports = {
       "solOwners": ["6ShdjduDkwcBi9jEeYQFbAvsqUGgYrX2ASxjfHypEkYa"]
     },
   },
+  "ipusd": {
+    "methodology": "ipUSD reserves (USDSC and USDC.e held by the IPUSDWrapper contract) plus the reserve assets backing sIPUSD, the yield-bearing version of ipUSD (PGIP+ held by the IP Vault contract). ipUSD held inside the IP Vault is excluded to avoid counting the same reserves twice.",
+    "start": "2026-10-24",
+    "soneium": {
+      "tvl": {
+        "tokensAndOwners": [
+          ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a", "0xef63d926A0d15e6e7d96d767665f9312Cb7993C4"],
+          ["0xbA9986D2381edf1DA03B0B9c1f8b00dc4AacC369", "0xef63d926A0d15e6e7d96d767665f9312Cb7993C4"],
+          ["0x0D90a6eE85d5668734bb3A515147f53EBDfE866c", "0x2Ba3FC5BDbBE7BE2630fB71e759739625246bCd9"]
+        ]
+      }
+    }
+  },
+
 }
