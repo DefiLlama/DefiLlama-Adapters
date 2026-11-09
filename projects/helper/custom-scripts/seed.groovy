@@ -145,3 +145,31 @@ pipelineJob('tvl-custom-scripts/pcs-v2') {
         }
     }
 }
+
+// XRPL DEX (AMM) TVL - every 12 hours
+pipelineJob('tvl-custom-scripts/xrpl-dex') {
+    displayName('XRPL DEX AMM snapshot')
+    description('Values every XRPL AMM pool with amm_info at one validated ledger and publishes the TVL for projects/xrpl-dex')
+
+    logRotator {
+        numToKeep(21)
+    }
+
+    triggers {
+        cron('H */12 * * *')
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url(repoUrl)
+                    }
+                    branches('main')
+                }
+            }
+            scriptPath("${customScriptsPath}/xrpl-dex/jfile")
+        }
+    }
+}
