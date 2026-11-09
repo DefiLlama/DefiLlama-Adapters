@@ -441,6 +441,8 @@ module.exports = {
     "bc1ps398h24s2zwm763k0n6c7hq9y4r6jm94pf6mxntrwprtj47nyt8q8qacet", // add on 21/10/2026
     "bc1p0jm3ucw8sh7edx37lw06ce9aaem09tcx2yr2zuenqr33hqce3lps67k0ns", // add on 21/10/2026
     "bc1pk0ynqw5zt36sep3eq5qe3c70w7vcwremwv092e02e0htm9wlm7zsf4dvt6", // add on 21/10/2026
+    "19E7ErLwXbACKhfNoBAngYK6DBPukmx9V1", // add on 09/11/2026
+    "1EDu33g4TfWtQHktDK9uNS6GvhqhrmqP2q", // add on 09/11/2026
   ],
   bitmake: [
     // wallet provide by a bitmake team

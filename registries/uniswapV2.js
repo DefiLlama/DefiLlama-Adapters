@@ -2966,6 +2966,7 @@ const uniV2Configs = {
     polygon_zkevm: ADDRESSES.shibarium.BONE_1,
   },
   'bcswap': {
+    deadFrom: '2026-10-29', // chain state  wiped
     bcypher: '0x927bf500361987b365f6d0ff38c1d45155f4975c',
   },
   'velox': {
