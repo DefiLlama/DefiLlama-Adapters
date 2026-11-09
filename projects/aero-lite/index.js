@@ -19,6 +19,7 @@ const config = {
   ethereum: {factories: ['0xF4Fd2E6c5B60c5b365cd1B96DD6245E6D60414c2']},
   ink: {factories: ['0x7660BF2aDefC687C22906112ca323d60A00358cF']},
   robinhood: {factories: ['0xc63d7338c178e805c544B8f897066bD3BBcBE136']},
+  elysium: {factories: ['0xEfd7A089D3057F05189B05f74Ffcf30610c42891']},
 }
 
 const exportsList = []
