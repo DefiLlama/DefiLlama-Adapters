@@ -1,43 +1,25 @@
-// Custom script (Jenkins job tvl-custom-scripts/xrpl-dex): values every XRPL AMM pool and publishes the
-// balances to the custom-scripts log, which projects/xrpl-dex/index.js reads (same pattern as metadao).
-//
-// Why it changed: the old job listed pools with a full ledger_data walk on xrplcluster.com, which is now
-// rate limited ("units quota (10000 per 60s) exhausted" on the first page; the same walk is about 9,900
-// pages of 9-12 s on the public Clio nodes), and read reserves from XRPScan. Its cache was last written on
-// 2025-03-18, so the adapter has served 26,830,826.65581 XRP since 2025-05-14.
-//
-// Steps:
-//  1. discovery only: XRPScan pool list (GET /api/v1/amm/pools), walked with several page sizes until the union is complete
-//  2. pin a validated ledger 10 behind the tip and keep only endpoints that serve it
-//  3. amounts: amm_info for every pool at that ledger via sdk.chains.xrpl, up to 3 passes; every pool must be
-//     read or confirmed deleted, otherwise nothing is published
-//  4. value with transformDexBalances (tokens keyed by currency.issuer, XRP and RLUSD as core tokens),
-//     publish with sdk.elastic.writeLog and read the record back
-//
-// Endpoints: sdk defaults (xrplcluster.com, s1/s2.ripple.com). XRPL_RPC adds endpoints in front of the
-// defaults; XRPL_WHITELISTED_RPC replaces them. Set XRPL_DEX_DRY_RUN=1 to print the balances without publishing.
+// Values every XRPL AMM pool with amm_info at one validated ledger. Too slow for the hourly runner (about 32k reads), so the
+// custom-scripts runner (helper/custom-scripts/sushi-analytics-v2, bulky group) runs it and stores the result for ./index.js.
+// XRPScan is used only to list the pools. Test with: node test.js projects/xrpl-dex/api.js
 const sdk = require('@defillama/sdk')
 const axios = require('axios')
 const { PromisePool } = require('@supercharge/promise-pool')
-const { transformDexBalances } = require('../../portedTokens')
+const { transformDexBalances } = require('../helper/portedTokens')
 
 const { xrpl } = sdk.chains
 const PROJECT = 'xrpl-dex'
-const CHAIN = 'ripple'
 const POOL_LIST_URL = 'https://api.xrpscan.com/api/v1/amm/pools'
 const PAGE_SIZES = [5000, 1000, 2500]
 const MAX_POOL_ROWS = 100000
 const RLUSD = '524C555344000000000000000000000000000000.rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De'
-const MIN_POOLS = 20000 // the ledger held 32,117 AMM pools on 2026-11-09
+const MIN_POOLS = 20000 // the ledger held 32,121 AMM pools on 2026-11-09
 const MAX_DELETED_SHARE = 0.01 // a normal run sees about 10 pools deleted between listing and reading
-const CONCURRENCY = 20 // the sdk caps in-flight XRPL requests at 5; extra slots stay busy during retry waits
+const CONCURRENCY = 20 // the sdk caps in-flight XRPL requests at 5, extra slots stay busy during retry waits
 const RPC_TIMEOUT = 10_000
 const LEDGER_LAG = 10
 const RLUSD_DECIMALS = 6 // coins-server decimals for RLUSD on ripple, see helper/sumTokens.js
-const DRY_RUN = !!process.env.XRPL_DEX_DRY_RUN
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-const envValue = (key) => process.env['LLAMA_SDK_' + key] ?? process.env['SDK_' + key] ?? process.env[key]
 
 // amm_info amount: XRP as a drops string, issued tokens as { currency, issuer, value }, MPTs as { mpt_issuance_id, value }
 const parseSide = (s) => typeof s === 'string' ? ['XRP', Number(s) / 1e6]
@@ -87,7 +69,6 @@ async function pickEndpoints(ledgerIndex) {
     }
   }
   if (!healthy.length) throw new Error(`${PROJECT}: no endpoint serves ledger ${ledgerIndex}`)
-  process.env.XRPL_WHITELISTED_RPC = healthy.join(',')
   return healthy
 }
 
@@ -117,25 +98,7 @@ async function readPools(accounts, ledgerIndex) {
   return pools
 }
 
-async function verifyPublished(timestamp) {
-  for (let attempt = 1; attempt <= 5; attempt++) {
-    await sleep(5_000)
-    const res = await sdk.elastic.search({
-      index: 'custom-scripts*',
-      body: {
-        query: { bool: { must: [{ match: { project: PROJECT } }, { match: { chain: CHAIN } }, { match: { 'metadata.type': 'tvl' } }] } },
-        sort: [{ timestamp: { order: 'desc' } }],
-        size: 1,
-      },
-    })
-    if (res?.hits?.hits?.[0]?._source?.timestamp === timestamp) return
-  }
-  throw new Error(`${PROJECT}: published record for ${timestamp} not found in custom-scripts`)
-}
-
-async function main() {
-  if (!DRY_RUN && !envValue('ELASTICSEARCH_CONFIG')) throw new Error(`${PROJECT}: ELASTICSEARCH_CONFIG is not set, nothing would be published`)
-
+async function tvl(api) {
   const accounts = await listPools()
   if (accounts.length < MIN_POOLS) throw new Error(`${PROJECT}: only ${accounts.length} pools listed`)
 
@@ -144,7 +107,16 @@ async function main() {
   const endpoints = await pickEndpoints(ledger.number)
   console.log(`${PROJECT}: ${accounts.length} pools listed, ledger ${ledger.number}, endpoints: ${endpoints.join(' ')}`)
 
-  const pools = await readPools(accounts, ledger.number)
+  // the sdk reads the endpoint list from env on every call, restore it since the runner shares the process
+  const previous = process.env.XRPL_WHITELISTED_RPC
+  process.env.XRPL_WHITELISTED_RPC = endpoints.join(',')
+  let pools
+  try {
+    pools = await readPools(accounts, ledger.number)
+  } finally {
+    if (previous === undefined) delete process.env.XRPL_WHITELISTED_RPC
+    else process.env.XRPL_WHITELISTED_RPC = previous
+  }
   if (pools.length < MIN_POOLS) throw new Error(`${PROJECT}: only ${pools.length} pools read`)
 
   const data = pools.map(({ amount, amount2 }) => {
@@ -154,25 +126,14 @@ async function main() {
   }).filter((p) => p.token0Bal > 0 && p.token1Bal > 0) // an emptied AMM keeps its account until AMMDelete
   if (data.length < MIN_POOLS) throw new Error(`${PROJECT}: only ${data.length} of ${pools.length} pools have reserves`)
 
-  const { XRP: xrp = 0, [RLUSD]: rlusd = 0 } = transformDexBalances({ chain: CHAIN, coreTokens: new Set(['XRP', RLUSD]), data })
-  const api = new sdk.ChainApi({ chain: CHAIN })
+  const { XRP: xrp = 0, [RLUSD]: rlusd = 0 } = transformDexBalances({ chain: api.chain, coreTokens: new Set(['XRP', RLUSD]), data })
   api.addCGToken('ripple', xrp)
   if (rlusd) api.add(RLUSD, rlusd * 10 ** RLUSD_DECIMALS)
-  const balances = api.getBalances()
-  console.log(`${PROJECT}: ledger ${ledger.number} closed ${new Date(ledger.timestamp * 1000).toISOString()}, ${data.length} of ${pools.length} pools valued`, balances)
-
-  if (DRY_RUN) return
-  await sdk.elastic.writeLog('custom-scripts', {
-    metadata: { type: 'tvl' },
-    chain: CHAIN,
-    project: PROJECT,
-    balances,
-    timestamp: ledger.timestamp,
-  })
-  await verifyPublished(ledger.timestamp)
+  console.log(`${PROJECT}: ledger ${ledger.number} closed ${new Date(ledger.timestamp * 1000).toISOString()}, ${data.length} of ${pools.length} pools valued`)
+  return api.getBalances() // the custom-scripts runner stores what tvl returns
 }
 
-main().then(() => process.exit(0)).catch((e) => {
-  console.error(e)
-  process.exit(1)
-})
+module.exports = {
+  timetravel: false,
+  ripple: { tvl },
+}
