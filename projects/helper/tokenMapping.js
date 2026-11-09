@@ -62,6 +62,10 @@ const fixBalancesTokens = {
   platon: {
     [ADDRESSES.null]: { coingeckoId: 'platon-network', decimals: 18 },
   },
+  // Elysium (Kinetiq's Hyperliquid L2): wrapped HYPE used by ArkhamPad pools
+  elysium: {
+    '0x43ca3cee078d8cb8528915b16e8bdcc9adbe6090': { coingeckoId: 'hyperliquid', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

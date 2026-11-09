@@ -1968,7 +1968,11 @@ const uniV3Configs = {
   'vectaswap': {
     arbitrum: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 518470299},
     base: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 53245146}
-  }
+  },
+  'arkhampad': {
+    methodology: 'TVL is the value of tokens held in ArkhamPad launch pools (Uniswap v3 style pools created by the ArkhamPad factory on Elysium). Launch liquidity is locked forever.',
+    elysium: { factory: '0x75656d8d2A59293DBdA4178F11Af6EE506ef60dD', fromBlock: 65264 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
