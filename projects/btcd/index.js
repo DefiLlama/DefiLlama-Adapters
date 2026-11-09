@@ -123,11 +123,9 @@ class SkipStrategy extends Error {}
  * debt rounded up as Morpho does) and the posted collateral.
  */
 async function morphoPosition(api, marketId, user) {
-  const [pos, market, params] = await Promise.all([
-    api.call({ target: MORPHO_BLUE, abi: abi.morphoPosition, params: [marketId, user] }),
-    api.call({ target: MORPHO_BLUE, abi: abi.morphoMarket, params: [marketId] }),
-    api.call({ target: MORPHO_BLUE, abi: abi.morphoMarketParams, params: [marketId] }),
-  ]);
+  const pos = await api.call({ target: MORPHO_BLUE, abi: abi.morphoPosition, params: [marketId, user] });
+  const market = await api.call({ target: MORPHO_BLUE, abi: abi.morphoMarket, params: [marketId] });
+  const params = await api.call({ target: MORPHO_BLUE, abi: abi.morphoMarketParams, params: [marketId] });
   const supplyAssets = BigInt(market.totalSupplyAssets) + MORPHO_VIRTUAL_ASSETS;
   const supplyShares = BigInt(market.totalSupplyShares) + MORPHO_VIRTUAL_SHARES;
   const borrowAssets = BigInt(market.totalBorrowAssets) + MORPHO_VIRTUAL_ASSETS;
@@ -146,10 +144,8 @@ async function morphoPosition(api, marketId, user) {
  * converted through the vault's own convertToAssets.
  */
 async function erc4626Holding(api, vault, owner) {
-  const [shares, asset] = await Promise.all([
-    api.call({ target: vault, abi: 'erc20:balanceOf', params: [owner] }),
-    api.call({ target: vault, abi: abi.asset }),
-  ]);
+  const shares = await api.call({ target: vault, abi: 'erc20:balanceOf', params: [owner] });
+  const asset = await api.call({ target: vault, abi: abi.asset });
   const amount = await api.call({ target: vault, abi: abi.convertToAssets, params: [shares] });
   return [asset, amount];
 }
@@ -169,16 +165,12 @@ const VALUERS = {
   // USDC supplied on Aave, minus the WBTC borrowed against it, plus that WBTC
   // supplied to the PM's Morpho Blue market.
   async AAVECARRY(api, { target }) {
-    const [marketId, aUsdc, debtWbtc] = await Promise.all([
-      getter(api, target, abi.MARKET_ID),
-      getter(api, target, abi.A_USDC),
-      getter(api, target, abi.VARIABLE_DEBT_WBTC),
-    ]);
-    const [{ loanToken, supplied }, aUsdcBalance, debt] = await Promise.all([
-      morphoPosition(api, marketId, target),
-      balanceOf(api, aUsdc, target),
-      balanceOf(api, debtWbtc, target),
-    ]);
+    const marketId = await getter(api, target, abi.MARKET_ID);
+    const aUsdc = await getter(api, target, abi.A_USDC);
+    const debtWbtc = await getter(api, target, abi.VARIABLE_DEBT_WBTC);
+    const { loanToken, supplied } = await morphoPosition(api, marketId, target);
+    const aUsdcBalance = await balanceOf(api, aUsdc, target);
+    const debt = await balanceOf(api, debtWbtc, target);
     return [[loanToken, supplied], [ADDRESSES.ethereum.USDC, aUsdcBalance], [ADDRESSES.ethereum.WBTC, -BigInt(debt)]];
   },
   // WBTC collateral, minus the loan token borrowed against it, plus that loan
@@ -186,10 +178,8 @@ const VALUERS = {
   async MORPHOCARRY(api, { target, investment }) {
     const venue = MORPHOCARRY_VENUES[investment];
     if (!venue) throw new SkipStrategy('no venue in MORPHOCARRY_VENUES');
-    const [{ loanToken, collateralToken, borrowed, collateral }, vaultHolding] = await Promise.all([
-      morphoPosition(api, venue.marketId, target),
-      erc4626Holding(api, venue.vault, target),
-    ]);
+    const { loanToken, collateralToken, borrowed, collateral } = await morphoPosition(api, venue.marketId, target);
+    const vaultHolding = await erc4626Holding(api, venue.vault, target);
     return [[collateralToken, collateral], [loanToken, -borrowed], vaultHolding];
   },
   // Shares of the ERC-4626 vault the PM names.
@@ -207,13 +197,16 @@ const VALUERS = {
   },
   // Curve LP held directly and staked in the PM's gauge (1:1 LP).
   async CURVE(api, { target }) {
-    const [pool, gauge] = await Promise.all([getter(api, target, abi.POOL), getter(api, target, abi.gauge)]);
-    const [held, staked] = await Promise.all([balanceOf(api, pool, target), balanceOf(api, gauge, target)]);
+    const pool = await getter(api, target, abi.POOL);
+    const gauge = await getter(api, target, abi.gauge);
+    const held = await balanceOf(api, pool, target);
+    const staked = await balanceOf(api, gauge, target);
     return [[pool, held], [pool, staked]];
   },
   // YieldBasis LT shares redeemed at the LT's preview_withdraw.
   async YIELDBASIS(api, { target }) {
-    const [lt, asset] = await Promise.all([getter(api, target, abi.LT), getter(api, target, abi.ASSET)]);
+    const lt = await getter(api, target, abi.LT);
+    const asset = await getter(api, target, abi.ASSET);
     const shares = await balanceOf(api, lt, target);
     if (BigInt(shares) === 0n) return [];
     return [[asset, await api.call({ target: lt, abi: abi.previewWithdraw, params: [shares] })]];
@@ -250,10 +243,8 @@ async function addYieldBasisHybrid(api) {
   const ltShares = await api.multiCall({ abi: 'erc20:balanceOf', calls: YB_HYBRID_LTS.map((lt) => ({ target: lt, params: [YB_HYBRID_VAULT] })) });
   const held = YB_HYBRID_LTS.map((lt, i) => [lt, ltShares[i]]).filter(([, shares]) => BigInt(shares) > 0n);
   if (!held.length) return;
-  const [assets, amounts] = await Promise.all([
-    api.multiCall({ abi: abi.ltAsset, calls: held.map(([lt]) => lt) }),
-    api.multiCall({ abi: abi.previewWithdraw, calls: held.map(([lt, shares]) => ({ target: lt, params: [shares] })) }),
-  ]);
+  const assets = await api.multiCall({ abi: abi.ltAsset, calls: held.map(([lt]) => lt) });
+  const amounts = await api.multiCall({ abi: abi.previewWithdraw, calls: held.map(([lt, shares]) => ({ target: lt, params: [shares] })) });
   api.add(assets, amounts);
 }
 
@@ -280,7 +271,7 @@ async function ethereumTvl(api) {
       return { ...s, protocol, investment };
     });
 
-  await Promise.all(strategies.map((strategy) => addStrategyPosition(api, strategy)));
+  for (const strategy of strategies) await addStrategyPosition(api, strategy);
   await sumTokens2({ api, owners: [...STATIC_CUSTODY, ...strategies.map(({ target }) => target)], tokens: idleTokens });
   await addYieldBasisHybrid(api);
 }
@@ -298,11 +289,9 @@ async function ethereumTvl(api) {
  * factored in — only the realized GM balance and idle inventory are counted.
  */
 async function arbitrumTvl(api) {
-  const [longToken, shortToken, gmToken] = await Promise.all([
-    api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function LONG_TOKEN() view returns (address)' }),
-    api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function SHORT_TOKEN() view returns (address)' }),
-    api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function GM_TOKEN() view returns (address)' }),
-  ]);
+  const longToken = await api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function LONG_TOKEN() view returns (address)' });
+  const shortToken = await api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function SHORT_TOKEN() view returns (address)' });
+  const gmToken = await api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function GM_TOKEN() view returns (address)' });
 
   const raw = await api.call({
     target: ARBITRUM_GM_POSITION_MANAGER,
