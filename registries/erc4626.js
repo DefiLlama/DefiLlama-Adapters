@@ -575,6 +575,13 @@ const configs = {
     start: '2026-04-07',
     base: { vaults: [], stakingVaults: ['0x60Bf63729f688287a450299962b36Cef0aFfaa42'] },
   },
+  'hypertokens': {
+    methodology: 'TVL is the sum of ERC-4626 totalAssets() across the Ensemble iVOL and VOL vaults on HyperEVM, counted in their underlying USDC. Hyper Tokens (hypertokens.io) is the non-custodial front end for trading these ~6x leveraged BTC exposure tokens.',
+    hyperliquid: [
+      '0x59A72A4b8D632005112f7D2bc0D035E06bE043D9', // iVOL
+      '0xEb22eC1b402dcc4155B9D8d2E1db2f2d229162CC', // VOL
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
