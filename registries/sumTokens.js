@@ -16127,6 +16127,16 @@ const configs = {
       ]
     },
   },
+  "hollow": {
+    "methodology": "TVL is the WETH held by the Hollow Treasury, the reserve HLO holders redeem against at the floor price. HLO in the lock contract is not counted, since its backing is the Treasury already counted in TVL. The protocol-owned Uniswap v4 position is not counted.",
+    "start": "2026-11-07",
+    "ethereum": {
+      "owner": "0x2a737e134f968D94F70B9f669AAd0cc829BE345b",
+      "tokens": [
+        ADDRESSES.ethereum.WETH
+      ]
+    },
+  },
   "hoodbets": {
     "methodology": "TVL is the native ETH held by the HoodBets contract: open parimutuel betting pools plus settled winnings awaiting claim. Markets are settled permissionlessly against Chainlink stock price feeds.",
     "robinhood": {
