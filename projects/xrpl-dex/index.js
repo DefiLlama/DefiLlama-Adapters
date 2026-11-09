@@ -1,6 +1,6 @@
 const { customScriptTvlExports } = require('../helper/utils')
 
-// TVL is computed by the custom script projects/xrpl-dex/api.js (Jenkins job tvl-custom-scripts/xrpl-dex)
+// TVL is computed by the custom script projects/helper/custom-scripts/xrpl-dex/index.js (Jenkins job tvl-custom-scripts/xrpl-dex)
 // and read from the custom-scripts log; a run older than 24 hours is not used.
 module.exports = {
   ...customScriptTvlExports({ ripple: 'xrpl-dex' }),

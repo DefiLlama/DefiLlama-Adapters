@@ -31,8 +31,8 @@ pipeline {
         stage('Build XRPL AMM reserve snapshot') {
             steps {
                 nodejs(nodeJSInstallationName: 'node') {
-                    dir("${env.WORKSPACE}/projects/xrpl-dex") {
-                        sh 'node api.js'
+                    dir("${env.WORKSPACE}/projects/helper/custom-scripts/xrpl-dex") {
+                        sh 'node index.js'
                     }
                 }
             }

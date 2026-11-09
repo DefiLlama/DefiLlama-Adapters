@@ -7,25 +7,27 @@
 // 2025-03-18, so the adapter has served 26,830,826.65581 XRP since 2025-05-14.
 //
 // Steps:
-//  1. discovery only: XRPScan pool list (GET /api/v1/amm/pools, 5000 per page)
+//  1. discovery only: XRPScan pool list (GET /api/v1/amm/pools), walked with several page sizes until the union is complete
 //  2. pin a validated ledger 10 behind the tip and keep only endpoints that serve it
 //  3. amounts: amm_info for every pool at that ledger via sdk.chains.xrpl, up to 3 passes; every pool must be
 //     read or confirmed deleted, otherwise nothing is published
-//  4. value with ./value.js, publish with sdk.elastic.writeLog and read the record back
+//  4. value with transformDexBalances (tokens keyed by currency.issuer, XRP and RLUSD as core tokens),
+//     publish with sdk.elastic.writeLog and read the record back
 //
 // Endpoints: sdk defaults (xrplcluster.com, s1/s2.ripple.com). XRPL_RPC adds endpoints in front of the
 // defaults; XRPL_WHITELISTED_RPC replaces them. Set XRPL_DEX_DRY_RUN=1 to print the balances without publishing.
 const sdk = require('@defillama/sdk')
 const axios = require('axios')
 const { PromisePool } = require('@supercharge/promise-pool')
-const { valuePools, RLUSD } = require('./value')
+const { transformDexBalances } = require('../../portedTokens')
 
 const { xrpl } = sdk.chains
 const PROJECT = 'xrpl-dex'
 const CHAIN = 'ripple'
 const POOL_LIST_URL = 'https://api.xrpscan.com/api/v1/amm/pools'
-const PAGE_SIZE = 5000
-const MAX_PAGES = 20
+const PAGE_SIZES = [5000, 1000, 2500]
+const MAX_POOL_ROWS = 100000
+const RLUSD = '524C555344000000000000000000000000000000.rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De'
 const MIN_POOLS = 20000 // the ledger held 32,117 AMM pools on 2026-11-09
 const MAX_DELETED_SHARE = 0.01 // a normal run sees about 10 pools deleted between listing and reading
 const CONCURRENCY = 20 // the sdk caps in-flight XRPL requests at 5; extra slots stay busy during retry waits
@@ -37,10 +39,14 @@ const DRY_RUN = !!process.env.XRPL_DEX_DRY_RUN
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const envValue = (key) => process.env['LLAMA_SDK_' + key] ?? process.env['SDK_' + key] ?? process.env[key]
 
-async function getPoolPage(offset) {
+// amm_info amount: XRP as a drops string, issued tokens as { currency, issuer, value }, MPTs as { mpt_issuance_id, value }
+const parseSide = (s) => typeof s === 'string' ? ['XRP', Number(s) / 1e6]
+  : [s.mpt_issuance_id ? `MPT.${s.mpt_issuance_id}` : `${s.currency}.${s.issuer}`, Number(s.value)]
+
+async function getPoolPage(offset, limit) {
   for (let attempt = 1; ; attempt++) {
     try {
-      const { data } = await axios.get(POOL_LIST_URL, { params: { limit: PAGE_SIZE, offset }, timeout: 60_000 })
+      const { data } = await axios.get(POOL_LIST_URL, { params: { limit, offset }, timeout: 60_000 })
       if (!Array.isArray(data)) throw new Error('unexpected pool list response')
       return data
     } catch (e) {
@@ -50,16 +56,22 @@ async function getPoolPage(offset) {
   }
 }
 
+// XRPScan sorts by the pool's XRP balance, which moves between requests and ties at 0, so one offset walk skips pools
 async function listPools() {
   const accounts = new Set()
-  let offset = 0
-  for (let page = 0; page < MAX_PAGES; page++) {
-    const data = await getPoolPage(offset)
-    if (!data.length) break
-    data.forEach((pool) => { if (pool?.Account) accounts.add(pool.Account) })
-    offset += data.length
+  let rows = 0
+  for (const limit of PAGE_SIZES) {
+    rows = 0
+    for (let offset = 0; offset < MAX_POOL_ROWS; offset += limit) {
+      const data = await getPoolPage(offset, limit)
+      data.forEach((pool) => { if (pool?.Account) accounts.add(pool.Account) })
+      rows += data.length
+      if (data.length < limit) break
+    }
+    console.log(`${PROJECT}: pool list walk of ${limit}: ${rows} rows, ${accounts.size} unique so far`)
+    if (accounts.size >= rows) return [...accounts]
   }
-  return [...accounts]
+  throw new Error(`${PROJECT}: pool list incomplete, ${accounts.size} unique of ${rows} rows`)
 }
 
 // keep only the endpoints that serve the pinned ledger, so a lagging or hanging node cannot stall the run
@@ -135,12 +147,19 @@ async function main() {
   const pools = await readPools(accounts, ledger.number)
   if (pools.length < MIN_POOLS) throw new Error(`${PROJECT}: only ${pools.length} pools read`)
 
-  const { xrp, tokens, stats } = valuePools(pools)
+  const data = pools.map(({ amount, amount2 }) => {
+    const [token0, token0Bal] = parseSide(amount)
+    const [token1, token1Bal] = parseSide(amount2)
+    return { token0, token0Bal, token1, token1Bal }
+  }).filter((p) => p.token0Bal > 0 && p.token1Bal > 0) // an emptied AMM keeps its account until AMMDelete
+  if (data.length < MIN_POOLS) throw new Error(`${PROJECT}: only ${data.length} of ${pools.length} pools have reserves`)
+
+  const { XRP: xrp = 0, [RLUSD]: rlusd = 0 } = transformDexBalances({ chain: CHAIN, coreTokens: new Set(['XRP', RLUSD]), data })
   const api = new sdk.ChainApi({ chain: CHAIN })
   api.addCGToken('ripple', xrp)
-  if (tokens[RLUSD]) api.add(RLUSD, tokens[RLUSD] * 10 ** RLUSD_DECIMALS)
+  if (rlusd) api.add(RLUSD, rlusd * 10 ** RLUSD_DECIMALS)
   const balances = api.getBalances()
-  console.log(`${PROJECT}: ledger ${ledger.number} closed ${new Date(ledger.timestamp * 1000).toISOString()}`, JSON.stringify(stats), balances)
+  console.log(`${PROJECT}: ledger ${ledger.number} closed ${new Date(ledger.timestamp * 1000).toISOString()}, ${data.length} of ${pools.length} pools valued`, balances)
 
   if (DRY_RUN) return
   await sdk.elastic.writeLog('custom-scripts', {
