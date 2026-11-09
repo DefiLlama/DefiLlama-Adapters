@@ -42,6 +42,11 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  // Robinhood Chain: $KYTE is priced on CoinGecko (id kyte) but the coins service has no price for the token
+  // address on this chain yet, so staked KYTE in the Kyte staking pool otherwise reads 0.
+  robinhood: {
+    '0x072d88c2f31f568c0f4b8f613692eb489541ed45': { coingeckoId: 'kyte', decimals: 18 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
