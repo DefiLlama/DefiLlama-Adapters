@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { staking } = require('../helper/staking')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Kyte: non-custodial, fully collateralised options market on Robinhood Chain (https://kyte.sh).
 // Sellers lock the underlying token (covered calls) or WETH (cash-secured puts) in the market contracts until the
@@ -39,6 +39,7 @@ module.exports = {
   start: '2026-10-25',
   robinhood: {
     tvl,
-    staking: staking(STAKING_POOLS, KYTE),
+    // sumTokens2 (not api.sumTokens) so the KYTE -> coingecko mapping in helper/tokenMapping.js is applied
+    staking: (api) => sumTokens2({ api, owners: STAKING_POOLS, tokens: [KYTE] }),
   },
 }
