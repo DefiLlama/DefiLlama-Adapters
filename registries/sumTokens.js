@@ -24687,6 +24687,13 @@ const configs = {
       ]
     },
   },
+  "roulana": {
+    "start": "2026-10-01",
+    "methodology": "TVL is the USDC held in the Roulana table program's vault: the bank funded by its investors, the players' own safes, and fees not yet paid out.",
+    "solana": {
+      "tokenAccounts": ["BPJmrTZFCBi4iK6bA4FxV43wM1qQqiHXBGMHbfd4aw56"] // USDC vault of table AfyXCSmsshBZ998TCCNbuUSB5hcw4RnJFeEk1LWhh63J
+    },
+  },
   "routerprotocol": {
     "methodology": "All tokens locked in Router Protocol contracts.",
     "arbitrum": {
