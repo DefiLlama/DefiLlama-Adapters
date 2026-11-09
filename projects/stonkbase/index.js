@@ -7,7 +7,7 @@ const STONKBASE_PREDICTIONS = '0x4282b85efc3c0f42fffc4bb6ee7f4fb5a1741c54'
 
 module.exports = {
   methodology:
-    'Counts Circle USDC collateral locked in StonkBaseStockDesk (24/7 leveraged US stock margin positions powered by Base Mainnet Pyth Equities) and StonkBasePredictions (Call the Open parimutuel US equity opening-bell prediction rounds and bonus reserves) on Base Mainnet.',
+    'Counts user-deposited Circle USDC collateral locked in StonkBaseStockDesk (24/7 leveraged US stock margin positions powered by Base Mainnet Pyth Equities) and StonkBasePredictions (active parimutuel US equity opening-bell prediction rounds) on Base Mainnet.',
   base: {
     tvl: (api) =>
       sumTokens2({
