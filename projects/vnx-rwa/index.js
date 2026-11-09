@@ -1,5 +1,6 @@
 const { getTokenSupplies } = require("../helper/solana");
 const { get } = require("../helper/http");
+const { stellar } = require("@defillama/sdk").chains;
 
 const ASSETS = {
   EVM: {
@@ -80,10 +81,8 @@ const MAPPINGS = {
 };
 
 const fetchStellarSupply = async (asset) => {
-  const stellarApi = `https://api.stellar.expert/explorer/public/asset/${asset}`;
-  const response = await fetch(stellarApi);
-  const { supply } = await response.json();
-  return supply / 1e7 * 1e18;  // supply / stellar dec * eth dec
+  const { supply } = await stellar.getAssetSupply({ asset }); // stroops
+  return BigInt(supply) * 10n ** 11n;  // 7 stellar decimals -> 18 ethereum decimals
 };
 
 const solanaTvl = async (api, assets) => {
@@ -92,11 +91,10 @@ const solanaTvl = async (api, assets) => {
 };
 
 const stellarTvl = async (api, assets) => {
-  const supplies = await Promise.all(assets.map(fetchStellarSupply));
-  supplies.forEach((supply, index) => {
-    const ethereumAsset = MAPPINGS.stellar[assets[index]];
-    api.add(`ethereum:${ethereumAsset}`, supply, { skipChain: true });
-  });
+  for (const asset of assets) {
+    const supply = await fetchStellarSupply(asset);
+    api.add(`ethereum:${MAPPINGS.stellar[asset]}`, supply.toString(), { skipChain: true });
+  }
 };
 
 const evmTvl = (chain, assets) => {

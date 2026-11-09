@@ -4,6 +4,7 @@ const sui = require("../helper/chain/sui");
 const { function_view } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
 const {post} = require("../helper/http");
+const { stellar } = require("@defillama/sdk").chains;
 
 const RIPPLE_ENDPOINT = 'https://xrplcluster.com';
 
@@ -122,10 +123,8 @@ Object.keys(config).forEach((chain) => {
         const ousgSupply = (await getXrplTokenBalances(XRPL_OUSG_ISSUER, XRPL_OUSG_CURRENCY)) * Math.pow(10, 6);
         api.addTokens(config.ripple.OUSG, ousgSupply);
       } else if (chain === "stellar") {
-        const [code, issuer] = config.stellar.USDY.split('-');
-        const res = await get(`https://api.stellar.expert/explorer/public/asset/${code}-${issuer}`);
-
-        api.addTokens(config.stellar.USDY, res.supply);
+        const { supply } = await stellar.getAssetSupply({ asset: config.stellar.USDY }); // stroops
+        api.addTokens(config.stellar.USDY, supply);
       } else if (chain === "plume_mainnet") {
         // Plume's Multicall3 implementation has known issues, use individual calls
         for (const token of fundAddresses) {

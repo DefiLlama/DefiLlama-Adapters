@@ -1,49 +1,52 @@
-const { get } = require('../helper/http')
-const { getConfig } = require('../helper/cache')
-const { callSoroban, parseScVal } = require('../helper/chain/stellar')
+const { getCache, setCache } = require('../helper/cache')
+const { callSoroban, parseScVal, getContractEvents } = require('../helper/chain/stellar')
 
 const FACTORY = 'CD3KRKGDRVWPXVB3VXLUMQKMX6XZ6Q2H334IVZD4XXNAMKSRVQL5GLYF'
-const STELLAR_EXPERT = 'https://api.stellar.expert/explorer/public'
 
-async function getContractEvents({ contract, topic, limit = 200 }) {
-  const all = []
-  let cursor
-  for (let page = 0; page < 50; page++) {
-    const url = `${STELLAR_EXPERT}/contract/${contract}/events?order=asc&limit=${limit}` + (cursor ? `&cursor=${cursor}` : '')
-    const data = await get(url)
-    const records = data?._embedded?.records || []
-    if (!records.length) break
-    for (const r of records) {
-      if (!topic || r.topics?.[0] === topic) all.push(r)
-    }
-    if (records.length < limit) break
-    cursor = records[records.length - 1].paging_token
+// The factory does not enumerate its pools, so the list is built from `pool_created` events.
+// The Soroban RPC only keeps ~7 days of events, hence the list is persisted in the llama cache and only ever grows;
+// each run merges in whatever the RPC still has.
+async function getPools() {
+  const cached = (await getCache('sushi-stellar', 'stellar'))?.pools ?? []
+  const pools = {}
+  cached.forEach(p => pools[p.pool_address] = p)
+
+  // one-off seed from the stellar.expert event list the adapter cached before that API went paid
+  if (!cached.length) {
+    const legacy = await getCache('config-cache', `sushi-stellar/${FACTORY}`)
+    if (Array.isArray(legacy))
+      legacy.forEach(ev => addPool(parseScVal(Buffer.from(ev.bodyXdr, 'base64'), 0).value))
   }
-  return all
-}
 
-async function getPoolsFromFactory(factory) {
-  const events = await getConfig(`sushi-stellar/${factory}`, null, {
-    fetcher: () => getContractEvents({ contract: factory, topic: 'pool_created' }),
-  })
-  return events.map(ev => parseScVal(Buffer.from(ev.bodyXdr, 'base64'), 0).value)
+  try {
+    const events = await getContractEvents({ contractId: FACTORY, topic: 'pool_created' })
+    events.forEach(({ data }) => addPool(data))
+  } catch (e) {
+    if (!Object.keys(pools).length) throw e
+    console.log('sushi-stellar: getEvents failed, using cached pool list:', e.message)
+  }
+
+  const list = Object.values(pools)
+  if (list.length > cached.length) await setCache('sushi-stellar', 'stellar', { pools: list })
+  return list
+
+  function addPool({ pool_address, token0, token1 }) {
+    pools[pool_address] = { pool_address, token0, token1 }
+  }
 }
 
 async function tvl(api) {
-  const pools = await getPoolsFromFactory(FACTORY)
-
-  const balances = await Promise.all(pools.flatMap(p => [
-    callSoroban(p.token0, 'balance', [p.pool_address]).catch(() => 0n),
-    callSoroban(p.token1, 'balance', [p.pool_address]).catch(() => 0n),
-  ]))
-
-  pools.forEach((p, i) => {
-    api.add(p.token0, balances[i * 2].toString())
-    api.add(p.token1, balances[i * 2 + 1].toString())
-  })
+  const pools = await getPools()
+  for (const { pool_address, token0, token1 } of pools) {
+    for (const token of [token0, token1]) {
+      const balance = await callSoroban(token, 'balance', [pool_address]).catch(() => 0n)
+      api.add(token, balance.toString())
+    }
+  }
 }
 
 module.exports = {
   timetravel: false,
+  methodology: 'Token balances held by every pool created by the Sushi Stellar factory.',
   stellar: { tvl },
 }

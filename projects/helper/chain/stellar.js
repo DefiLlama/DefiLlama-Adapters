@@ -1,6 +1,5 @@
 // Horizon / Soroban transport and the StrKey / XDR / ScVal codec live in @defillama/sdk (`sdk.chains.stellar`);
 // this file keeps the TVL helpers (sumTokens, addUSDCBalance) and the historical export shapes.
-const { get } = require('../http')
 const { transformBalances } = require('../portedTokens')
 const { stellar } = require('@defillama/sdk').chains
 
@@ -18,15 +17,24 @@ async function getAssetSupply(asset) {
   return supply
 }
 
+const USDC = 'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN'
+
+// USDC held by a Soroban contract (read through the asset's SAC)
 async function addUSDCBalance(api, account) {
-  const { balances } = await get(`https://api.stellar.expert/explorer/public/contract/${account}/value`)
-  const usdc = balances.find(({ asset }) => asset === 'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1')
-  if (usdc) {
-    api.addCGToken('usd-coin', usdc.value / 1e7)
-  }
+  const raw = await stellar.getTokenBalance({ asset: USDC, address: account })
+  api.add(`${USDC}-1`, raw)
 }
 
+// balance key in the format the coins server prices: `XLM` for the native asset,
+// `CODE-ISSUER-1` (alphanum4) / `CODE-ISSUER-2` (alphanum12) for trustlines, pool shares are skipped
+function balanceKey({ asset, assetType, code, issuer }) {
+  if (assetType === 'native') return 'XLM'
+  if (assetType === 'credit_alphanum4') return `${code}-${issuer}-1`
+  if (assetType === 'credit_alphanum12') return `${code}-${issuer}-2`
+  return null
+}
 
+// classic account balances via Horizon; an account that was never funded is logged and skipped
 async function sumTokens(config) {
   const { api, owners = [], owner, ...rest } = config
   if (owners?.length) {
@@ -34,21 +42,39 @@ async function sumTokens(config) {
       await sumTokens({ ...rest, owner, api, skiTransform: true })
     return transformBalances(api.chain, api.getBalances())
   } else {
-    // validateStatus lets a 404 (account not yet created/funded on-chain) through so it can be skipped instead of thrown
-    const res = await get(`https://api.stellar.expert/explorer/public/account/${owner}/value`, { validateStatus: (s) => s < 500, })
-    if (res?.status === 404 || !Array.isArray(res?.balances)) {
-      console.log(`[stellar] account ${owner} not found on-chain, skipping`)
-      if (config.skiTransform) return api.getBalances()
-      return transformBalances(api.chain, api.getBalances())
+    const balances = await stellar.getAccountBalances({ address: owner })
+    if (!balances.length) console.log(`[stellar] account ${owner} not found on-chain, skipping`)
+    for (const bal of balances) {
+      const key = balanceKey(bal)
+      if (key) api.add(key, bal.raw)
     }
-    // `balance` is the raw on-chain amount (7 decimals); `value` is a USD estimate and must not be used as a balance
-    res.balances.forEach(({ asset, balance }) => {
-      api.add(asset, balance)
-    })
   }
   if (config.skiTransform) return api.getBalances()
   return transformBalances(api.chain, api.getBalances())
+}
 
+/**
+ * Events emitted by a contract within the Soroban RPC retention window (~7 days on the public RPCs), oldest first.
+ * `topic` keeps only events whose first topic symbol matches. Each event carries decoded `topics` and `data` (the event value).
+ * Full history is not available from the RPC: persist what this returns (see sushi-stellar, blend-pools-v2).
+ */
+async function getContractEvents({ contractId, topic, lookbackLedgers = 100_000, limit = 200 }) {
+  const latest = await stellar.getLatestSorobanLedger()
+  const filters = [{ type: 'contract', contractIds: [contractId] }]
+  let params = { startLedger: Math.max(1, latest.number - lookbackLedgers), filters, pagination: { limit } }
+  const events = []
+  while (true) {
+    const res = await stellar.sorobanRpc('getEvents', params)
+    const page = res.events ?? []
+    for (const ev of page) {
+      const topics = ev.topic.map(t => stellar.parseScVal(t))
+      if (topic && topics[0] !== topic) continue
+      events.push({ ...ev, topics, data: stellar.parseScVal(ev.value) })
+    }
+    if (page.length < limit) break
+    params = { filters, pagination: { limit, cursor: res.cursor } }
+  }
+  return events
 }
 
 /**
@@ -100,6 +126,7 @@ module.exports = {
   getAssetSupply,
   addUSDCBalance,
   sumTokens,
+  getContractEvents,
   getTokenBalance,
   decodeStrKey,
   callSoroban,
