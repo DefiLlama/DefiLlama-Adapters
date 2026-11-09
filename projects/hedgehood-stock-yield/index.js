@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { staking } = require('../helper/staking')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Stock Yield by HedgeHood: covered-call vaults on tokenized stocks, on Robinhood Chain and BNB Chain (bStocks).
@@ -21,10 +20,6 @@ const V2_REGISTRIES = {
     ['0xC78b6A83d75C5612a1A7323702B56038254a6459', 131164584], // v2.1, 2026-11-02
   ],
 }
-// HEDGE staking: gates v1 deposits; stakers are paid a share of the funds' protocol fee
-const HEDGE = '0x3f9108a3bECa998C14c6dda822a7e8EaEb88E20D'
-const HEDGE_STAKING_GATE = '0x48ae41142bb0Ddd18DC49BD659b55207FAcE64d8'
-
 async function v1Tvl(api) {
   const stocks = await api.multiCall({ abi: 'address:stock', calls: VAULTS })
   // managedBalances = depositor stock (active + queued deposits + redeemed but unclaimed) and earned, unclaimed USDG
@@ -57,11 +52,10 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL counts what depositors own in each Stock Yield vault. v1 vaults are read from managedBalances(): the stock token (active, queued for the next epoch, and redeemed but not yet claimed) plus earned premiums not yet claimed, in USDG. v2 funds, discovered from the v2.0 and v2.1 VaultRegistries on Robinhood Chain and the v2.1 VaultRegistry on BNB Chain, count the stock token and the stablecoin (USDG on Robinhood Chain, USDT on BNB Chain) each fund holds. Staking counts HEDGE staked in the HEDGE staking contract.",
+    "TVL counts what depositors own in each Stock Yield vault. v1 vaults are read from managedBalances(): the stock token (active, queued for the next epoch, and redeemed but not yet claimed) plus earned premiums not yet claimed, in USDG. v2 funds, discovered from the v2.0 and v2.1 VaultRegistries on Robinhood Chain and the v2.1 VaultRegistry on BNB Chain, count the stock token and the stablecoin (USDG on Robinhood Chain, USDT on BNB Chain) each fund holds.",
   start: 1791614176, // 2026-10-10 06:36:16 UTC, first vault's deployment block 84792706
   robinhood: {
     tvl,
-    staking: staking(HEDGE_STAKING_GATE, HEDGE),
   },
   bsc: {
     tvl: v2Tvl,
