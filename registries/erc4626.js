@@ -529,6 +529,13 @@ const configs = {
     methodology: 'Counts LP assets reported by totalAssets() in the Ace.Pro V5 shared HYPE and USDC liquidity vaults on HyperEVM. Excludes round escrow, claimable payouts and protocol revenue held for the team and treasury, Lucky Draw prize pools and legacy vaults.',
     hyperliquid: ['0xd39C426bd1a40b5cdB89B8CEb8464C4f78AbB29d', '0xf725Ac947c7B3EF790a3E68e2Ca2Fb48ce4023eD'],
   },
+  'hypertokens': {
+    methodology: 'TVL is the sum of ERC-4626 totalAssets() across the Ensemble iVOL and VOL vaults on HyperEVM, counted in their underlying USDC. Hyper Tokens (hypertokens.io) is the non-custodial front end for trading these ~6x leveraged BTC exposure tokens.',
+    hyperliquid: [
+      '0x59A72A4b8D632005112f7D2bc0D035E06bE043D9', // iVOL
+      '0xEb22eC1b402dcc4155B9D8d2E1db2f2d229162CC', // VOL
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
