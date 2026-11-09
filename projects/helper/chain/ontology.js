@@ -1,12 +1,15 @@
-const { get } = require('../http')
+// Ontology explorer access lives in @defillama/sdk (`sdk.chains.ontology`, `ONTOLOGY_EXPLORER` overrides the url);
+// this file keeps the TVL helper (native ONT / ONG sumTokens).
+const sdk = require('@defillama/sdk')
 const { sleep } = require('../utils')
 
-// native ONT / ONG balances (already in whole coins) from the Ontology explorer
+const ontology = sdk.chains.ontology
+
+// native ONT / ONG balances (already in whole coins)
 const ASSETS = { ont: 'ontology', ong: 'ong' }
 
 async function getNativeBalances(address) {
-  const { result } = await get(`https://explorer.ont.io/v2/addresses/${address}/native/balances`)
-  return result ?? []
+  return ontology.getNativeBalances({ address })
 }
 
 async function sumTokens({ api, owners = [] }) {

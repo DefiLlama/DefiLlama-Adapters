@@ -1,4 +1,6 @@
+const { PublicKey } = require('@solana/web3.js')
 const { getLogs2 } = require('../helper/cache/getLogs')
+const { getConnection, sumTokens2 } = require('../helper/solana')
 
 const launched = 'event Launched(address indexed market, address indexed token, address indexed creator, address quote, bool nativeAlpha)'
 
@@ -14,13 +16,30 @@ const config = {
 async function tvl(api) {
   const { factory, fromBlock } = config[api.chain]
   const logs = await getLogs2({ api, target: factory, eventAbi: launched, fromBlock })
-  // A market's quote balance also holds unsettled fees, so read the curve principal instead
-  const principals = await api.multiCall({ abi: 'uint256:principal', calls: logs.map(l => l.market) })
-  api.add(logs.map(l => l.quote), principals)
+  return api.sumTokens({ tokensAndOwners: logs.map(l => [l.quote, l.market]) })
+}
+
+// ALPHA launch program on Solana
+const SOLANA_PROGRAM = new PublicKey('r4yX8Q9Z5zSLY2fjoq1DgijfoHLru49zfikq79pa1fa')
+// Base58 of the Anchor `Market` account discriminator
+const MARKET_DISCRIMINATOR = 'dkokXHR3DTw'
+// Market account: 8 discriminator, 5 header, then ten pubkeys, of which the quote vault is the seventh
+const QUOTE_VAULT_OFFSET = 13 + 32 * 6
+
+// Graduation moves the vault's balance to Meteora DAMM v2, so the balance needs no stage check
+async function solanaTvl(api) {
+  const markets = await getConnection().getProgramAccounts(SOLANA_PROGRAM, {
+    filters: [{ memcmp: { offset: 0, bytes: MARKET_DISCRIMINATOR } }],
+    dataSlice: { offset: QUOTE_VAULT_OFFSET, length: 32 },
+  })
+  return sumTokens2({ api, tokenAccounts: markets.map(m => new PublicKey(m.account.data).toBase58()) })
 }
 
 module.exports = {
-  methodology: 'TVL is the pairing asset held as curve principal by each ALPHA bonding-curve market. Markets are read from the factory Launched events. Fees waiting to be settled are excluded. Graduated liquidity sits in Uniswap v4 and is not counted here.',
+  // Solana is read from current account state, which has no history
+  timetravel: false,
+  methodology: 'TVL is the pairing asset held by each ALPHA bonding-curve market. Markets are read from the factory Launched events on EVM chains and from the program Market accounts on Solana, and counted at the pairing asset balance they hold, which includes fees waiting to be settled. Graduated liquidity sits in Uniswap v4 or Meteora DAMM v2 and is not counted here.',
+  solana: { tvl: solanaTvl },
 }
 
 Object.keys(config).forEach(chain => {

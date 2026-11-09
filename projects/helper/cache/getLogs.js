@@ -5,7 +5,10 @@ const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
-const problematicChainSet = new Set(['rbn',])
+const problematicChainSet = new Set([
+  'rbn',
+  'cronos_zkevm', // deprecated
+])
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,

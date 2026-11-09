@@ -122,21 +122,16 @@ async function nearCall(contract, method, args) {
 // ------------------------------------------------------------------- neo3
 
 // NEO is staked by holding it (voting for a council candidate does not move the
-// balance), so this reports the NEP-17 NEO/GAS holdings of the account. Only the
-// two native assets are counted - the rest of an account's NEP-17 list is spam.
-const NEO3_NATIVE = {
-  '0xd2a4cff31913016155e38e474a2c06d08be276cf': { id: 'gas', decimals: 8 },
-  '0xef4073a0f2b305a38ec4050e4d3d28bc40ea63f5': { id: 'neo', decimals: 0 },
-}
-
+// balance), so this reports the NEP-17 holdings of the account; anything the coins
+// server does not price (spam tokens) counts as $0.
 async function neo3Staked(api, owners) {
   for (const owner of owners) {
     const { result } = await post('https://mainnet1.neo.coz.io:443', {
       jsonrpc: '2.0', id: 1, method: 'getnep17balances', params: [owner],
     })
     for (const { assethash, amount } of result.balance ?? []) {
-      const native = NEO3_NATIVE[assethash.toLowerCase()]
-      if (native) api.addCGToken(native.id, Number(amount) / 10 ** native.decimals)
+      // the coins server knows the chain as `neo`, not `neo3`, and holds decimals/pricing for NEO, GAS, ...
+      api.add(`neo:${assethash.toLowerCase()}`, amount, { skipChain: true })
     }
   }
 }
