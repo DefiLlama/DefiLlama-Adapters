@@ -179,10 +179,11 @@ async function handleStrategies(api, holder, underlying, strats, onlyboost, blac
   if (yearn.length > 0) {
     const yearnBalance = await api.multiCall({ abi: "erc20:balanceOf", calls: yearn.map((el) => el.balance) });
     const yearnPricePerShare = await api.multiCall({ abi: ABI.pricePerShare, calls: yearn.map((el) => el.vault) });
+    const yearnDecimals = await api.multiCall({ abi: "erc20:decimals", calls: yearn.map((el) => el.vault) });
 
     for (let i = 0; i < yearn.length; ++i) {
-      const tokenBalance = (yearnBalance[i] * yearnPricePerShare[i]) / 1e18;
-      api.add(yearn[i].token, tokenBalance);
+      const tokenBalance = BigInt(yearnBalance[i]) * BigInt(yearnPricePerShare[i]) / (10n ** BigInt(yearnDecimals[i]));
+      api.add(yearn[i].token, tokenBalance.toString());
     }
   }
 

@@ -1,14 +1,17 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { function_view } = require('../helper/chain/aptos');
+const { function_view, sumTokens } = require('../helper/chain/aptos');
 const { getConfig } = require("../helper/cache");
 
 const PROPS_FA = "0x6dba1728c73363be1bdd4d504844c40fbb893e368ccbeff1d1bd83497dbc756d";
+const PROPS_COIN = "0xe50684a338db732d8fb8a3ac71c4b8633878bd0193bca5de2ebc852a83b35099::propbase_coin::PROPS";
 const USDC_FA = ADDRESSES.aptos.USDC_3;
+
+const getData = () => getConfig('propbase/config', `https://contractaddress.propbase.app/production`)
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: `TVL includes USDC tokens deposited in Nova pools (RWA) and Rental pools. 
+  methodology: `TVL includes USDC tokens deposited in Nova pools (RWA) and Rental pools.
   RWA assets are paired with USDC in on - chain liquidity pools built on Trader Joe’s CLMM contracts,
   which allows users to buy and sell property tokens directly against USDC.
   Redemption is AMM- based and depends on pool liquidity and active price bins,
@@ -17,29 +20,10 @@ module.exports = {
   aptos: {
     tvl: async (api) => {
       const chain = "aptos";
-      const data = await getConfig('propbase/config', `https://contractaddress.propbase.app/production`);
+      const data = await getData();
 
-      // --- RWA Pools (USDC) ---
-      for (const pool of data.NOVA_POOLS) {
-        const fa_balance = await function_view({
-          functionStr: `0x1::primary_fungible_store::balance`,
-          type_arguments: ["0x1::fungible_asset::Metadata"],
-          args: [pool, USDC_FA],
-          chain,
-        });
-        api.addTokens(USDC_FA, fa_balance);
-      }
-
-      // --- Rental Pools (USDC) ---
-      for (const pool of data.RENTAL_POOLS) {
-        const fa_balance = await function_view({
-          functionStr: `0x1::primary_fungible_store::balance`,
-          type_arguments: ["0x1::fungible_asset::Metadata"],
-          args: [pool, USDC_FA],
-          chain,
-        });
-        api.addTokens(USDC_FA, fa_balance);
-      }
+      // --- RWA (Nova) and Rental pools hold plain USDC: one indexer query covers every pool ---
+      api.addBalances(await sumTokens({ api, owners: [...data.NOVA_POOLS, ...data.RENTAL_POOLS], tokens: [USDC_FA] }))
 
       // ---- RWA assets current values in USDC ---
       for (const pool of data.RWA_POOLS) {
@@ -81,19 +65,11 @@ module.exports = {
     },
 
     staking: async (api) => {
-      const chain = "aptos";
-      const data = await getConfig('propbase/config', `https://contractaddress.propbase.app/production`);
-
-      for (const pool of data.STAKING_POOLS) {
-        const fa_balance = await function_view({
-          functionStr: `0x1::primary_fungible_store::balance`,
-          type_arguments: ["0x1::fungible_asset::Metadata"],
-          args: [pool, PROPS_FA],
-          chain,
-        });
-
-        api.addTokens(PROPS_FA, fa_balance);
-      }
+      const data = await getData();
+      // staking pools hold PROPS: one indexer query instead of one balance view per pool.
+      // PROPS is a coin-paired FA, which the indexer reports under the coin type
+      const balances = await sumTokens({ api, owners: data.STAKING_POOLS, tokens: [PROPS_COIN] })
+      api.add(PROPS_FA, balances[`aptos:${PROPS_COIN}`] ?? 0)
     },
   },
 };

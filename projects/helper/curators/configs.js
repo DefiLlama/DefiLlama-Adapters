@@ -50,6 +50,12 @@ const ABI = {
     collateral: 'address:collateral',
     totalStake: 'uint256:totalStake',
   },
+  aaveV4Hub: {
+    getAssetCount: 'uint256:getAssetCount',
+    getAssetUnderlyingAndDecimals: 'function getAssetUnderlyingAndDecimals(uint256) view returns (address, uint8)',
+    getAddedAssets: 'function getAddedAssets(uint256) view returns (uint256)',
+    getAssetDeficitRay: 'function getAssetDeficitRay(uint256) view returns (uint256)',
+  },
 }
 
 const MorphoConfigs = {
@@ -439,6 +445,7 @@ const SiloConfigs = {
       '0x9a1bf5365edbb99c2c61ca6d9ffad0b705acfc6f',
       '0xb6a23cb29e512df41876b28d7a848bd831f9c5ba',
       '0xf6bc16b79c469b94cdd25f3e2334dd4fee47a581',
+      '0xcc7bdb3ff050d65918b96e4bdf1060a1aa0bb409',
     ]
   },
   ethereum: {

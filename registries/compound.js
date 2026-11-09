@@ -83,7 +83,7 @@ const configs = {
   },
   'capyfi': {
     lac: { comptroller: '0x123Abe3A273FDBCeC7fc0EBedc05AaeF4eE63060', cether: '0x465ebfceb3953e2922b686f2b4006173664d16ce' },
-    ethereum: { comptroller: '0x0b9af1fd73885aD52680A1aeAa7A3f17AC702afA', cether: '0x37DE57183491Fa9745d8Fa5DCd950f0c3a4645c9', blacklistedTokens: ['0xbaa6bc4e24686d710b9318b49b0bb16ec7c46bfa'] },
+    ethereum: { comptroller: '0x0b9af1fd73885aD52680A1aeAa7A3f17AC702afA', cether: '0x37DE57183491Fa9745d8Fa5DCd950f0c3a4645c9', blacklistedTokens: ['0xbaa6bc4e24686d710b9318b49b0bb16ec7c46bfa', '0xed025a9fe4b30bcd68460bca42583090c2266468'] },
     wc: { comptroller: '0x589d63300976759a0fc74ea6fA7D951f581252D7', cether: '0xaAd91abe333c4536FFbF02b83daBaB49C9Aa23ed' },
     base: { comptroller: '0x00dc4965916e03A734190fA382633657c71f867E', cether: '0x654A9003Cb09ab8050D4Fdba12F4c5d3C60A548e' },
   },
@@ -627,7 +627,6 @@ const configs = {
       { comptroller: '0xB08A309eFBFFa41f36A06b2D0C9a4629749b17a2' },
       { comptroller: '0xBd82D36B9CDfB9747aA12025CeCE3782EDe767FE' },
       { comptroller: '0xF1ABd146B4620D2AE67F34EA39532367F73bbbd2' },
-      { comptroller: '0xBd82D36B9CDfB9747aA12025CeCE3782EDe767FE' },
       { comptroller: '0x59013D8a77D656777329D74ea1C88DA796005F1B' },
     ],
     arbitrum: [
@@ -654,7 +653,19 @@ const configs = {
     methodology: 'TVL counts the underlying tokens (KKUB and USDT) held as cash by every market listed by the KINETIXDAO Comptroller on KUB Chain, i.e. supplied minus borrowed. Native KUB is wrapped to KKUB by the gateway before it is supplied, so it is counted as KKUB. Borrowed counts the totalBorrows of each market and is not included in TVL.',
     start: '2026-10-08',
     bitkub: [{comptroller: '0xc5DD9f1cE32f19C0a76a924F681914A8D10E8008'},]
-  }
+  },
+  'mimas-finance': {
+    // borrowed zeroed out (isInsolvent empties the borrowed bucket)
+    cronos: {
+      comptroller: '0xdD8c94211dD19155EFFbd57EAb6D4e0DE31A3b9E', cether: '0xff024211741059a2540b01f5Be2e75fC0c1b3d82', isInsolvent: true,
+      staking: ['0x268E2E1e5a465034Ee5742DA578feb41B228ad7B', '0x10C9284E6094b71D3CE4E38B8bFfc668199da677'],
+    },
+  },
+  'kilolend': {
+    methodology: 'This gets the total value locked in KiloLend',
+    bitkub: { comptroller: '0x42f098E6aE5e81f357D3fD6e104BAA77A195133A', cether: '0x0cA8DaD1e517a9BB760Ba0C27051C4C3A036eA75' },
+    klaytn: { comptroller: '0x2591d179a0B1dB1c804210E111035a3a13c95a48', cether: '0x2029f3E3C667EBd68b1D29dbd61dc383BdbB56e5' },
+  },
 }
 
 module.exports = buildProtocolExports(configs, compoundExportFn)

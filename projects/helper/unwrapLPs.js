@@ -1298,7 +1298,7 @@ async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, ba
 
     const underlyingTokens = await api.call({ target: underlyingPool, abi: getCurrentTokens, })
 
-    const tempBalances = await sumTokens2({ owner: underlyingPool, tokens: underlyingTokens, api, })
+    const tempBalances = await sumTokens2({ owner: underlyingPool, tokens: underlyingTokens, api, balances: {}, })
     for (const [token, value] of Object.entries(tempBalances)) {
       const newValue = BigNumber(value * ratio).toFixed(0)
       sdk.util.sumSingleBalance(balances, token, newValue)

@@ -21,7 +21,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'provenance', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band', 'axiome', 'allora',
   'celestia', 'dydx', 'dungeon', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion', 'zigchain', 'thorchain',
-  'akash', 'fetchhub', 'initia',
+  'akash', 'fetchhub', 'initia', 'luxa',
 ]
 const caseSensitiveChains = [...ibcChains, ...svmChains, 'canton', 'mina', 'decred', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', 'aleo',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash', 'qubic', 'constellation', 'supra',
@@ -42,6 +42,12 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  // OmniCoin L1 (chain 88008): USDC arrives as an ICTT ERC20TokenRemote minted
+  // 1:1 against collateral on Avalanche; the coins service has no price for the
+  // bridged address on this chain.
+  xom: {
+    '0x81f4072fcca24d373ffcb34c248995dfc6c1219c': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
@@ -55,6 +61,10 @@ const fixBalancesTokens = {
   // the coins service has no platon:<null address> entry for the gas token
   platon: {
     [ADDRESSES.null]: { coingeckoId: 'platon-network', decimals: 18 },
+  },
+  // Elysium (Kinetiq's Hyperliquid L2): wrapped HYPE used by ArkhamPad pools
+  elysium: {
+    '0x43ca3cee078d8cb8528915b16e8bdcc9adbe6090': { coingeckoId: 'hyperliquid', decimals: 18 },
   },
 }
 

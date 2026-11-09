@@ -4,6 +4,7 @@ const { sumTokensExport } = require('../helper/sumTokens')
 const sdk = require('@defillama/sdk')
 const { getCEXTokensOnBinanceOnChain } = require('./utils/cex')
 const { svmChainsSet } = require('./svmChainConfig')
+const { addHypercoreBalances } = require('./chain/hyperliquid')
 
 const defaultTokens = {
   ethereum: [
@@ -277,7 +278,7 @@ const defaultTokens = {
     "0x6FDcdfef7c496407cCb0cEC90f9C5Aaa1Cc8D888", // VET
     "0xfb6115445Bff7b52FeB98650C87f44907E58f802", // AAVE
     "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce", // BEAM
-    "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", // CAKE
+    ADDRESSES.bsc.CAKE, // CAKE
     "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153", // FIL
     "0x43C934A845205F0b514417d757d7235B8f53f1B9", // XLM
     "0x1Ba42e5193dfA8B03D15dd1B86a3113bbBEF8Eeb", // ZEC
@@ -561,7 +562,7 @@ function cexExports(config) {
   }
   if (btcExport) exportObj.bitcoin = { tvl: btcExport }
   chains.forEach(chain => {
-    let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = config[chain]
+    let { tokensAndOwners, owners, tokens, blacklistedTokens = [], fungibleAssets, ownTokens = [], ...rest } = config[chain]
 
     if (!tokensAndOwners && !tokens && chain !== 'solana') {
       tokens = defaultTokens[chain]
@@ -571,7 +572,7 @@ function cexExports(config) {
       }
     }
 
-    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens }
+    const options = { ...rest, tokensAndOwners, owners, tokens, chain, blacklistedTokens: [...ownTokens, ...blacklistedTokens] }
     if (svmChainsSet.has(chain)) options.solOwners = owners // count native balances on all SVM chains
     if (chain === 'solana') {
       if (!options.blacklistedTokens) options.blacklistedTokens = []
@@ -592,7 +593,20 @@ function cexExports(config) {
         }
         const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
         if (chain === 'solana') runtimeOptions.solOwners = owners
+        // hyperliquid owners hold funds both on HyperEVM (summed above) and on HyperCore
+        // (spot + perp margin), which no on-chain lookup sees
+        if (chain === 'hyperliquid')
+          await addHypercoreBalances({ api, owners, blacklistedTokens: options.blacklistedTokens })
+
         return sumTokensExport(runtimeOptions)(api)
+      }
+    }
+
+    if (ownTokens.length > 0) {
+      exportObj[chain].ownTokens = async (api) => {
+        let owners = typeof options.owners === 'function' ? await options.owners(api) : options.owners
+        if (!owners) owners = [...new Set(tokensAndOwners.map(([, owner]) => owner))]
+        return sumTokensExport({ chain, owners, tokens: ownTokens, permitFailure: true })(api)
       }
     }
   })

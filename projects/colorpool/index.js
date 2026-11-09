@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require("../helper/http")
 
 // Colorpool dex chain on Chromia; node list and RID from the dex.colorpool.xyz app config
@@ -12,7 +13,7 @@ const NODES = [
 // tokens the coins server prices as chromia:<asset id>
 const PRICED = new Set([
   '5f16d1545a0881f971b164f1601cbbf51c29efd0633b2730da18c403c3b428b5', // CHR
-  '9bacd576f40b6674aa76b8bfa1330077a3b94f581bfdb2ef806122c384dcdf25', // USDC
+  ADDRESSES.chromia.USDC, // USDC
   '9084de203ef2afc7c6bfd647660aa3265d3b9ef1105139077ed3c81b26e2976e', // ALICE
   'd85153c53bc78c6bf177113c5da873669f97bd46db1ab7411e2f8932c7cdd0a8', // D
 ])

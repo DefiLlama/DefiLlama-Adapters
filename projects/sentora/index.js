@@ -68,6 +68,7 @@ const customConfig = {
       { vault: '0x3cc0d33b1aeac3d23ea89214b3ac5b4607032167', deployBlock: 23682851 }, // Upshift vault BTC
       { vault: '0xd0271e199f886ff943859579465498b18ecf1e9d', deployBlock: 24241435 }, // Upshift vault ETH
       { vault: '0xd000E6BcAd5457E8F4de67eDdeFe50BCC4B3d743', deployBlock: 25279501 }, // Upshift Sentora RWA (PYUSD)
+      { vault: '0xe7Ea85080426e69388AC444b72B6c4c5409d29FC', deployBlock: 26041853 }, // Upshift USD Earn with Uphold (RLUSD)
     ],
     supervisedLoans: [
       '0xc936e848688c9f035fa0e7a0e4dbcf26a01245f3', // Loan Manager (Position Manager 0xc1d4e31c05457f7a87f49e0ef556977e9e216250)
@@ -103,6 +104,9 @@ const curatorExport = getCuratorExport({
       morpho: ethereumMorphoVaults,
       morphoVaultOwners: ethereumMorphoVaultOwners,
       boringVaults: ethereumBoringVaults,
+      aaveV4Hubs: [
+        '0xD138FcB0E8C52fDbB2Ac4573FA4d8925cf11e9c2', // Sentora hub
+      ],
     },
     ink: {
       boringVaults: [

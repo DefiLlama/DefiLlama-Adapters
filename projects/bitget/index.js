@@ -163,6 +163,7 @@ const config = {
       "3NCT4RE6ix2Qfdw1c5kfNYBfJmVHPcJd9cABQ6aP6Zzg", // add on 21/10/2026
       "7ScZfANFtjzDZWk94DLb2eZUs8zBgYmnotYrsDd1MfYv", // add on 21/10/2026
       "HnxVDcZamsojYy3AFZndHEtQ9y5sf1H1V1pyLYyWk3BN", // add on 21/10/2026
+      "H4QWaqSy5TDXvy5hCRWRvQ2LfwF24r8q8aSCpHqBxEU4", // add on 09/11/2026
     ],
   },
   doge: {
@@ -261,11 +262,18 @@ const config = {
   xdc: { owners: ["0x68c34a122c3b632e7ecd39f553dd5ffc1433f45b"] }, // xdc68c34a122c3b632e7ecd39f553dd5ffc1433f45b
   harmony: { owners: ["0xb09dd9c27da4cbbf28f92109eb13615b34257fd3"] }, // one1kzwansna5n9m728eyyy7kymptv6z2l7n92uudx
   fetchhub: { owners: ["fetch1s3l4s5f2j79872qjtt9f3p86vxxyf6g854lw4v"] },
-  zcash: { owners: ["t1Xd1Lx2EXi2qwE1Kpc2F95TE2VrdKuJriY"] },
+  zcash: {
+    owners: [
+      "t1Xd1Lx2EXi2qwE1Kpc2F95TE2VrdKuJriY",
+      "t1Tz755oKrYcjh4M5DzH9kmE2opn75SLpnU", // add on 09/11/2026
+      "t1buK2T66Wrkf8TTc1Um2Y9co9dR3Pb5uFW", // add on 09/11/2026
+    ],
+  },
   bittensor: {
     owners: [
       "5ELWnR5A7DUmmqHsYPA3iZMFu1BX3gceruEqFPtsmTkCqR7J",
       "5HbDZ6ULuwZegAMSPaS2kaUfBLMDaht5t48RcDrQATSgGCAR",
+      "5EbxNU8FqoWcY5g8HpyGnLFTUbyx3qfsfhSLUq3YvKLkYEN2", // add on 09/11/2026
     ],
   },
   pi: { owners: ["GDFNWH6ZFJVHJDLBMNOUT35X4EEKQVJAO3ZDL4NL7VQJLC4PJOQFWJ75"] },
@@ -273,9 +281,17 @@ const config = {
     owners: [
       "0x48d1db7cb8529f17c88300515ed068bb8bbf01e6bd60ac81071d1160562a5144",
       "0xbabf76f1e6ac1af9c2666c07be12f90b188ed484fcef0bf1408961b5461373e9",
+      "0xd5c940e87dc41b83b8371d77e2daece86312f7d5dede5af3b564fc0ad21c4c97", // add on 09/11/2026
     ],
   },
-  litecoin: { owners: ["LSm75uocx76va8UvrVqyTztkWwXDvjS416"] },
+  litecoin: {
+    owners: [
+      "LSm75uocx76va8UvrVqyTztkWwXDvjS416",
+      "LcQnFxNQgTiwWXamwSrU4N9N4TCHMiSFHq", // add on 09/11/2026
+      "LhNRam9LPfSHbgnewAdcDpqbvZrDVQqUJz", // add on 09/11/2026
+    ],
+  },
+  bitcoincash: { owners: ["18G6Xwo3rD4Rqf1c9QVZKmWfrhPtRhjozX"] }, // add on 09/11/2026
   stellar: { owners: ["GBD6CUO335LQMOIZ53CE3L6QJ3X3DAQVC7F5TWE2BKI7AQWTHDUHFNJ4"] },
   hedera: { owners: ["0.0.4735544"] },
   kaspa: { owners: ["kaspa:qqywx2wszmnrsu0mzgav85rdwvzangfpdj9j3ady9jpr7hu4u8c2wl9wqgd6j"] },
@@ -284,6 +300,7 @@ const config = {
       "1hBczpJHSWrEejKT5hevU3h2oBKNBpY26zPo7jTpVanj3JV",
       "13KjpoC6rn9NsKzweB5p68oBcsp77NvMSGdp6BZTMHjHTupB",
       "15u2N1pqWr56teREjQTP5M3tk1SPQjEoUAV6jFfcQCoVy3S5",
+      "12cWLsubAGAiyoUGtgAG58yJZeRZv1wxeFeZaExEVR7CPKVK", // add on 09/11/2026
     ],
   },
   injective: { owners: ["inj18seg7en3tdhy4ugvfv3s93srapdlkkpv6z56r4"] },
@@ -349,6 +366,8 @@ config.kava.owners.push("0x602e1c0d892ab4fecb472863b05acd8b1ac4fc01") // kava1vq
 config.ethereum.blacklistedTokens = [
   "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
 ]
+config.ethereum.ownTokens = ["0x54d2252757e1672eead234d27b1270728ff90581"] // BGB
+config.morph.ownTokens = ["0x389C08Bc23A7317000a1FD76c7c5B0cb0b4640b5"] // BGB
 
 const withdrawalAddresses = [
   '0x334cf9ceef9178c7a9bb5495ac8790e9bed316a3',

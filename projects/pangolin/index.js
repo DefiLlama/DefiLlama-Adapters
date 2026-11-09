@@ -1,4 +1,4 @@
-const { staking, stakingPriceLP } = require("../helper/staking");
+const { staking } = require("../helper/staking");
 const { getUniTVL } = require('../helper/unknownTokens')
 const { cachedGraphQuery } = require("../helper/cache");
 const { transformDexBalances } = require("../helper/portedTokens");
@@ -31,13 +31,7 @@ module.exports = {
   },
   songbird: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.songbird.factory, }),
-    staking: stakingPriceLP(
-      contracts.songbird.stakingContract,
-      contracts.songbird.png,
-      '0xEd87F64065fdB4e4Ee580de1F768E2F8bD240A10',
-      "songbird",
-      false
-    ),
+    staking: staking(contracts.songbird.stakingContract, contracts.songbird.png),
   },
   flare: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.flare.factory, }),

@@ -29,7 +29,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
   const abi = { ...uniswapAbi, ...abis }
 
-  return async (api) => {
+  const factoryTvlFunction = (factory) => async (api) => {
     let chain = api?.chain
     if (!chain)
       chain = _chain
@@ -55,7 +55,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       coreAssets = getCoreAssets(chain)
     const coreAssetsSet = new Set(coreAssets?.map(i => normalizeAddress(i, chain)))
 
-    let cache = await _getCache(cacheFolder, key, api)
+    let cache = await _getCache(cacheFolder, key, api, factory)
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await api.call({ abi: abi.allPairsLength, target: factory, })
@@ -210,7 +210,20 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     return transformBalances(chain, balances)
   }
 
-  async function _getCache(cacheFolder, key, api) {
+  if (Array.isArray(factory)) {
+    return async (api) => {
+      for (const f of factory) {
+        const balances = await factoryTvlFunction(f)(api)
+        // memoryOptimization writes straight into api and returns api.getBalances(), so adding it again would double count
+        if (!memoryOptimization) api.addBalances(balances)
+      }
+      return api.getBalances()
+    }
+  }
+
+  return factoryTvlFunction(factory)
+
+  async function _getCache(cacheFolder, key, api, factory) {
     let cache = await getCache(cacheFolder, key)
     if (cache.pairs) {
       for (let i = 0; i < cache.pairs.length; i++) {

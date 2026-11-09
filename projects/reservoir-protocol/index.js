@@ -207,6 +207,7 @@ const config = {
   pharos: {
     tokensAndOwners: [
       ['0x047cD0a91E9B92ED979189a6C8A120bf280f02E5', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // mmUSDC (Morpho Rockaway USDC)
+      ['0x1275671ccbff43d9a0676f70c22d99a9328a5842', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // roxRESERVOIR (Morpho Rockaway USDC Reservoir Ecosystem)
     ]
   },
   hyperliquid: {

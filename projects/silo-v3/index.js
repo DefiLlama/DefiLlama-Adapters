@@ -50,10 +50,20 @@ const configV3 = {
       },
     ],
   },
+  injective: {
+    factories: [
+      {
+        // public injective rpcs are pruned and return no logs for old blocks, so silos are read from the factory ids instead
+        START_BLOCK: 155660036,
+        SILO_FACTORY: '0x39021662ef7679845e6851e38e01912f556a861f',
+        useSiloIds: true,
+      },
+    ],
+  },
 }
 
 const methodology = [
-  'Silo V3 addresses are retrieved from SiloFactory NewSilo() events.',
+  'Silo V3 addresses are retrieved from SiloFactory NewSilo() events (on Injective, from SiloFactory idToSiloConfig()).',
   'TVL is calculated as the balance of underlying assets across all deployed silos.',
   'It excludes borrowed assets and is equal to the sum of current liquidity and protected deposits.',
   'The total borrowed amount across all deployed silos, including accrued interest, obtained via the getDebtAssets() function'
@@ -63,12 +73,26 @@ const getAssetAbi = 'address:asset'
 const getDebtAssetsAbi = 'function getDebtAssets() external view returns (uint256 totalDebtAssets)'
 const newSiloEvent = 'event NewSilo(address indexed implementation, address indexed token0, address indexed token1, address silo0, address silo1, address siloConfig)'
 
+// SiloFactory ids start at 3001, idToSiloConfig keeps every deployed market
+async function getSilosFromIds(api, factory) {
+  const nextId = await api.call({ target: factory, abi: 'uint256:getNextSiloId' })
+  const ids = Array.from({ length: Number(nextId) - 3001 }, (_, i) => 3001 + i)
+  const configs = await api.multiCall({ target: factory, abi: 'function idToSiloConfig(uint256) view returns (address)', calls: ids })
+  const silos = await api.multiCall({ abi: 'function getSilos() view returns (address silo0, address silo1)', calls: configs })
+  return silos.flatMap(i => [i.silo0, i.silo1])
+}
+
 async function getSilos(api) {
   let siloAddresses = []
   if (!configV3[api.chain]) return siloAddresses
 
   for (const factory of configV3[api.chain].factories) {
-    const { SILO_FACTORY, START_BLOCK } = factory
+    const { SILO_FACTORY, START_BLOCK, useSiloIds } = factory
+    if (useSiloIds) {
+      if (api.block && api.block < START_BLOCK) continue
+      siloAddresses.push(...await getSilosFromIds(api, SILO_FACTORY))
+      continue
+    }
 
     const logChunk = await getLogs2({
       api,
@@ -122,4 +146,5 @@ module.exports = {
   sonic: { tvl, borrowed },
   xdc: { tvl, borrowed },
   megaeth: { tvl, borrowed },
+  injective: { tvl, borrowed },
 }

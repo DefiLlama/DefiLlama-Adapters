@@ -25,7 +25,7 @@ async function tvl(api) {
   if (api.chain === "ethereum") {
     toa.push(...[[Bayc, P2PPairStaking], [Mayc, P2PPairStaking], [Bakc, P2PPairStaking]])
   }
-  return sumTokens2({ chain: api.chain, balances, tokensAndOwners: toa, blacklistedTokens: [ADDRESSES.linea.WETH_1, address.ethereum.cAPE] })
+  return sumTokens2({ chain: api.chain, api, balances, tokensAndOwners: toa, blacklistedTokens: [ADDRESSES.linea.WETH_1, address.ethereum.cAPE] })
 }
 
 async function borrowed(api) {

@@ -28,6 +28,11 @@ module.exports = uniV3Export({
     isAlgebra: true,
     fromBlock: 85606804,
   },
+  anubi: {
+    factory: '0x10253594A832f967994b44f33411940533302ACb',
+    isAlgebra: true,
+    fromBlock: 14481466,
+  },
 /*   mantra: {
     factory: '0x10253594A832f967994b44f33411940533302ACb',
     isAlgebra: true,

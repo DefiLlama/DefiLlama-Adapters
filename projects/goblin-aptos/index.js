@@ -17,42 +17,28 @@ const vaults = [
   '0x3f6d0c2044a7e0cfd8e07a89a884c1776e67c10580cf384c5ddceb4f51ead95f', // sUSDe-USDC private
   '0xb77d3cf996f088b574a5ec7ddd24aa56b413ffe8e861f734558a4cfd49d68d84', // xBTC-aBTC private
 ];
-async function getVaultsLiquidity() {
-  const vaultResources = []
-  const vaultsLiquidityList = []
-  for (const vault of vaults) {
-    const resource = await getResource(vault, '0x19bcbcf8e688fd5ddf52725807bc8bf455a76d4b5a6021cfdc4b5b2652e5cd55::vaults::Vault')
-    try {
-      const liquidity = await function_view({
-        functionStr: "0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c::router_v3::get_amount_by_liquidity",
-        args: [resource.position_id],
-        type_arguments: [],
-      })
-      vaultResources.push(resource)
-      vaultsLiquidityList.push(liquidity)
-    } catch (e) {
-      // closed/migrated positions abort on-chain - skip them
-    }
-  }
-  return {vaultResources, vaultsLiquidityList};
+
+// FA -> paired coin type is a fixed on-chain mapping and most vaults share the same
+// handful of assets, so resolve each FA once per process instead of once per vault
+const pairedCoinCache = {}
+
+function getCoinType(faType) {
+  if (!pairedCoinCache[faType]) pairedCoinCache[faType] = _getCoinType(faType).catch(e => { delete pairedCoinCache[faType]; throw e })
+  return pairedCoinCache[faType]
 }
 
-async function _getCoinInfo(faType) {
+async function _getCoinType(faType) {
   const coinInfo = await function_view({
     functionStr: "0x1::coin::paired_coin",
     args: [faType],
     type_arguments: [],
   });
 
-  if (coinInfo.vec.length > 0) {
-    const address = coinInfo.vec[0].account_address;
-    const module = Buffer.from(coinInfo.vec[0].module_name.replace('0x', ''), 'hex').toString('utf-8');
-    const struct = Buffer.from(coinInfo.vec[0].struct_name.replace('0x', ''), 'hex').toString('utf-8');
-
-    return (address + "::" + module + "::" + struct);
-  } else {
-    return null;
-  }
+  if (!coinInfo.vec.length) return faType
+  const { account_address, module_name, struct_name } = coinInfo.vec[0]
+  const module = Buffer.from(module_name.replace('0x', ''), 'hex').toString('utf-8');
+  const struct = Buffer.from(struct_name.replace('0x', ''), 'hex').toString('utf-8');
+  return `${account_address}::${module}::${struct}`
 }
 
 module.exports = {
@@ -60,16 +46,21 @@ module.exports = {
   methodology: "Counts the total vault position in the corresponding liquidity pool on Hyperion.",
   aptos: {
     tvl: async (api) => {
-      const {vaultResources, vaultsLiquidityList} = await getVaultsLiquidity();
-
-      for (const [index, vaultResource] of vaultResources.entries()) {
-        const coin1 = await _getCoinInfo(vaultResource.token_a.inner) || vaultResource.token_a.inner;
-        const coin2 = await _getCoinInfo(vaultResource.token_b.inner) || vaultResource.token_b.inner;
-
-        api.add(coin1, vaultsLiquidityList[index][0]);
-        api.add(coin2, vaultsLiquidityList[index][1]);
+      for (const vault of vaults) {
+        const resource = await getResource(vault, '0x19bcbcf8e688fd5ddf52725807bc8bf455a76d4b5a6021cfdc4b5b2652e5cd55::vaults::Vault')
+        let liquidity
+        try {
+          liquidity = await function_view({
+            functionStr: "0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c::router_v3::get_amount_by_liquidity",
+            args: [resource.position_id],
+            type_arguments: [],
+          })
+        } catch (e) {
+          continue // closed/migrated positions abort on-chain - skip them
+        }
+        api.add(await getCoinType(resource.token_a.inner), liquidity[0]);
+        api.add(await getCoinType(resource.token_b.inner), liquidity[1]);
       }
     },
   },
 };
-

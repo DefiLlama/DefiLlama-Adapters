@@ -294,7 +294,9 @@ module.exports = {
         return data.filter(i => i.network === 'BTC').map(item => item.address)
       }
     })
-    return Array.from(new Set(staticAddresses))
+    // listed in Binance PoR snapshot (2026-10-31, Ceffu custody) but missing from the PoR api
+    const extraAddresses = ['bc1qcpkpym5d3k4pjgz9dwk3xnasefgshd3nq5js0s']
+    return Array.from(new Set([...staticAddresses, ...extraAddresses]))
   },
   vishwa: async () => {
     const staticAddresses = await getConfig('vishwa', undefined, {

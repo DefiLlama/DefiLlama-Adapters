@@ -43,8 +43,8 @@ const tvl = async ({ api }) => {
         }))
     })
 ])
-     Object.values(pools).forEach((pool, i) => {
-        api.add(pool, totalDeposit[i].totalAmount - totalBorrowed[i].totalAmount)
+     Object.values(pools).forEach((pool, index) => {
+        api.add(pool, (BigInt(totalDeposit[index].totalAmount) - BigInt(totalBorrowed[index].totalAmount)).toString())
      })
 }
 

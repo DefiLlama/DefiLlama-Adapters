@@ -56,8 +56,10 @@ async function tvl(api) {
   const { minters, genesis } = config[api.chain];
   const allContracts = [...minters, ...genesis];
 
-  const collateralTokens = await api.multiCall({ abi: 'address:WRAPPED_COLLATERAL_TOKEN', calls: allContracts, });
-  await api.sumTokens({ tokensAndOwners2: [collateralTokens, allContracts] });
+  // deprecated markets revert on WRAPPED_COLLATERAL_TOKEN; skip them
+  const collateralTokens = await api.multiCall({ abi: 'address:WRAPPED_COLLATERAL_TOKEN', calls: allContracts, permitFailure: true, });
+  const tokensAndOwners = allContracts.map((owner, i) => [collateralTokens[i], owner]).filter(([token]) => token);
+  await api.sumTokens({ tokensAndOwners });
 }
 
 module.exports = {

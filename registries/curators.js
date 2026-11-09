@@ -6,7 +6,7 @@ const { getCuratorExport } = require('../projects/helper/curators')
 const configs = {
   "kamui": {
     config: {
-      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced and Boosted vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. Also counted under Lagoon.',
+      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced, Boosted and kGear vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. kGear is counted net of its Gearbox debt. Also counted under Lagoon.',
       start: '2026-08-27', // vaults redeployed through the Lagoon OptinProxyFactory
       blockchains: {
         ethereum: {
@@ -14,6 +14,7 @@ const configs = {
             '0xcDA323c2DF692d989B24BA51D0aCCa924cf9a344', // Lagoon: Kamui Stable Vault (USDst)
             '0xA5AE405242f42C47996a0C6857ff10a77F9bdeE6', // Lagoon: Kamui Balanced Vault (USDbl)
             '0x9E0DB8F43bb91e2148B0Db920E21370525CF3Aab', // Lagoon: Kamui Boosted Vault (USDbt)
+            '0xe9Fc51dF9168361c9cF00383C644Ae9dcF2aD6b0', // Lagoon: Kamui kGear (leveraged, Gearbox)
           ],
         },
       }
@@ -1787,7 +1788,39 @@ const configs = {
         },
       }
     }
-  }
+  },
+  "hedgehood-share-lending": {
+    config: {
+      methodology: 'Counts USDG deposited in the HedgeHood-curated Morpho Vault V2 (hhUSDG), including assets lent against Stock Yield fund shares. Uses the standard curator accounting and is marked doublecounted because the vault supplies Morpho Blue. Pledged fund shares and their underlying assets are excluded.',
+      start: 1793674144, // 2026-11-03 02:49:04 UTC, block 104721572: vault moved to the v2.1 market
+      blockchains: {
+        robinhood: {
+          // EOA-deployed and transferred to the HedgeHood Safe; owner discovery would miss it.
+          morpho: ['0x54Bc097643BB9fd4ab004f11859893655529E954'], // hhUSDG
+        },
+      },
+    },
+  },
+  "navi-curator": {
+    config: {
+      methodology: "Counts total_assets of the NAVI vaults on Sui (USDC and SUI, Prime and High Yield), found on-chain by their navi_vault::Vault type, and totalAssets() of the Lagoon vaults curated by NAVI Protocol on Ethereum. The NAVI vaults supply into NAVI lending markets, and Lagoon deposits are bridged to Sui and supplied through NAVI vaults, so they are also counted under NAVI Lending and Lagoon.",
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x47491305479635357df29fe0cb6f1af10e51d4da', // Lagoon: USDC High Yield (nUSDC)
+          ],
+        },
+        sui: {
+          naviVaultPackages: [
+            '0x51cecaacaed0bd436f04ebbd8ba0ca1627c9c4d0e54ad28eff095ca78591518c', // navi_vault original package
+          ],
+        },
+      },
+    },
+    _meta: {
+      timetravel: false, // sui vaults are read at their latest state
+    },
+  },
 }
 
 const allProtocols = {}

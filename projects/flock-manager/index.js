@@ -1,9 +1,11 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-// Flock Manager on Robinhood Chain: auto-compounding gauge LP vaults, plus a
-// Tarot-core lending layer that takes those vault shares as collateral.
+// Flock Manager on Robinhood Chain: auto-compounding LP vaults, plus a
+// Tarot-core lending layer that takes those vault shares as collateral. The
+// vaults come from two factories: UPDEX vaults stake in the DEX gauge, and
+// GigaDex vaults stake Giga Classic LP in Giga's ClassicChef.
 //
-// Value flows LP -> vault (staked in the DEX gauge) -> vault shares ->
+// Value flows LP -> vault (staked in the gauge or chef) -> vault shares ->
 // collateral -> borrow from the borrowables. Counting both the vault LP and
 // the collateral would count the same assets twice, because the collateral
 // contract holds nothing but the vault share wrapper. So TVL is:
@@ -19,6 +21,9 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 // already inside the borrowable figures above.
 const LEND_FACTORY = '0x8F50BCb1f34D22adAe05955E1994b0153603cB16'
 const VAULT_FACTORY = '0x4c2302416bf50B4F11dDEE7A8feA2D1BA96d8EfE'
+// Deployed 2026-10-24 at block 96985642, after the adapter's start date.
+const GIGA_VAULT_FACTORY = '0x1955e758aDb00a75Bc1A471082254d13Ab8D1347'
+const GIGA_VAULT_FACTORY_START = 1792868400 // 2026-10-24 19:00 UTC, just after the deploy block
 const RVH = '0x96765066f6a040a21EB027167D2315B707c82633'
 
 const abi = {
@@ -29,6 +34,9 @@ const abi = {
   getLendingPool: 'function getLendingPool(address) view returns (bool initialized, uint24 lendingPoolId, address collateral, address borrowable0, address borrowable1)',
   underlying: 'address:underlying',
   gauge: 'address:gauge',
+  chef: 'address:chef',
+  pid: 'uint256:pid',
+  userInfo: 'function userInfo(uint256 pid, address user) view returns (uint256 amount, uint256 rewardDebt)',
   token0: 'address:token0',
   token1: 'address:token1',
   totalBorrows: 'function totalBorrows() view returns (uint112)',
@@ -50,9 +58,11 @@ async function getBorrowables(api) {
   return borrowables
 }
 
-// The vaults stake their LP in the DEX gauge, so the LP is not held by the
-// vault address. Read each vault's gauge balance, then let resolveLP unwrap it.
-async function addVaultLp(api, isPool2) {
+// The vaults stake their LP, so it is not held by the vault address. UPDEX
+// vaults hold it in the DEX gauge (read as the vault's gauge balance), GigaDex
+// vaults in Giga's ClassicChef (read as the chef's userInfo for the vault's
+// pid). resolveLP then unwraps the LP into its two tokens.
+async function getUpdexStaked(api) {
   const vaults = await api.fetchList({
     lengthAbi: abi.allVaultsLength,
     itemAbi: abi.allVaults,
@@ -60,12 +70,37 @@ async function addVaultLp(api, isPool2) {
   })
   const lps = await api.multiCall({ abi: abi.underlying, calls: vaults })
   const gauges = await api.multiCall({ abi: abi.gauge, calls: vaults })
-  const token0s = await api.multiCall({ abi: abi.token0, calls: lps })
-  const token1s = await api.multiCall({ abi: abi.token1, calls: lps })
   const staked = await api.multiCall({
     abi: 'erc20:balanceOf',
     calls: vaults.map((vault, i) => ({ target: gauges[i], params: vault })),
   })
+  return { lps, staked }
+}
+
+async function getGigaStaked(api) {
+  if (api.timestamp < GIGA_VAULT_FACTORY_START) return { lps: [], staked: [] }
+  const vaults = await api.fetchList({
+    lengthAbi: abi.allVaultsLength,
+    itemAbi: abi.allVaults,
+    target: GIGA_VAULT_FACTORY,
+  })
+  const lps = await api.multiCall({ abi: abi.underlying, calls: vaults })
+  const chefs = await api.multiCall({ abi: abi.chef, calls: vaults })
+  const pids = await api.multiCall({ abi: abi.pid, calls: vaults })
+  const infos = await api.multiCall({
+    abi: abi.userInfo,
+    calls: vaults.map((vault, i) => ({ target: chefs[i], params: [pids[i], vault] })),
+  })
+  return { lps, staked: infos.map((info) => info.amount) }
+}
+
+async function addVaultLp(api, isPool2) {
+  const updex = await getUpdexStaked(api)
+  const giga = await getGigaStaked(api)
+  const lps = [...updex.lps, ...giga.lps]
+  const staked = [...updex.staked, ...giga.staked]
+  const token0s = await api.multiCall({ abi: abi.token0, calls: lps })
+  const token1s = await api.multiCall({ abi: abi.token1, calls: lps })
 
   const isRvh = (token) => token.toLowerCase() === RVH.toLowerCase()
   lps.forEach((lp, i) => {
@@ -98,13 +133,12 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  timetravel: true,
   doublecounted: true,
   // Both factories went live on 2026-10-01 (blocks 77687484 and 77687985) and
   // the first market followed at 77688034. Starting on the 2nd rather than
   // the 1st so no historical query lands on a block where the factories have
   // no code yet, which would revert rather than report zero.
   start: '2026-10-02',
-  methodology: 'TVL is the up-v2 LP staked by the Flock Manager auto-compounding vaults, read from each vault\'s gauge balance and unwrapped into its underlying tokens, plus the idle underlying held by each Flock Lend borrowable. Vault LP paired with RVH, the protocol\'s token, is reported as pool2. Collateral contracts are not counted because they hold only vault shares, a wrapper around LP already counted. The LP is also counted by the up-v2 listing, so the protocol is marked as double counted. Borrowed is the outstanding debt of each borrowable and is reported separately, not included in TVL.',
+  methodology: 'TVL is the LP staked by the Flock Manager auto-compounding vaults, unwrapped into its underlying tokens, plus the idle underlying held by each Flock Lend borrowable. UPDEX (up-v2) vaults are read from each vault\'s gauge balance and GigaDex vaults from Giga\'s ClassicChef userInfo. Vault LP paired with RVH, the protocol\'s token, is reported as pool2. Collateral contracts are not counted because they hold only vault shares, a wrapper around LP already counted. The LP is also counted by the DEX listings, so the protocol is marked as double counted. Borrowed is the outstanding debt of each borrowable and is reported separately, not included in TVL.',
   robinhood: { tvl, pool2, borrowed },
 }

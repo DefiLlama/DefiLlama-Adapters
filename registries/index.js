@@ -1,3 +1,7 @@
+// Metric V0 is archived under the "metric" key in deadAdapters.json. Changes to its
+// TVL methodology (including restoring a live adapter) require further approval
+// before merging because a Trueo market depends on this data.
+
 const deadAdapters = require('./deadAdapters.json');
 
 const adapterRoutes = [

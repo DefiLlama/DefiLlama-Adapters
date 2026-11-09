@@ -1,17 +1,21 @@
 const { getLogs2 } = require("../helper/cache/getLogs");
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const FACTORY = {
-  ethereum: { factory: '0x6D961c9DCF1AD73566822BA4B087892e3839B849', fromBlock: 24949282 },
+const FACTORIES = {
+  ethereum: {
+    factoryV1: { factory: '0x6D961c9DCF1AD73566822BA4B087892e3839B849', fromBlock: 24949282 },
+    factory: { factory: '0xc68F3e777f28c52FF9DB0276a14F59D96Aa2f931', fromBlock: 26077148 },
+  },
 }
 
 const CREATE_DEPLOYMENT_EVENT =
   'event Deployed(address indexed lender, address indexed coin, address indexed vault)';
 
 async function tvl(api) {
-  const { factory, fromBlock } = FACTORY[api.chain]
-  const logs = await getLogs2({ api, factory, fromBlock, eventAbi: CREATE_DEPLOYMENT_EVENT })
-  const lenders = logs.map(l => l.lender)
+  const logs = await Promise.all(Object.values(FACTORIES[api.chain]).map(({ factory, fromBlock }) =>
+    getLogs2({ api, factory, fromBlock, eventAbi: CREATE_DEPLOYMENT_EVENT })
+  ))
+  const lenders = logs.flat().map(l => l.lender)
 
   const [collaterals, psmVaults] = await Promise.all([
     api.multiCall({ abi: 'address:collateral', calls: lenders }),

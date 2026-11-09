@@ -105,6 +105,7 @@ module.exports = {
       // 'yodeswap': '/yodeswap/api',  // dogechain is dead
       // 'dogeswap-org': '/dogeswap-org/api',  // dogechain is dead
       'o2': '/o2/api',
+      'xrpl-dex': '/xrpl-dex/api',
 
       // breaks often
       // 'equilibrium': '/equilibrium/api',

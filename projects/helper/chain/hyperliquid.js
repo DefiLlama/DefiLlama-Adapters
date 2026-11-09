@@ -57,4 +57,23 @@ async function addHypercoreSpotBalances({ api, owners = [], blacklistedTokens = 
   }
 }
 
-module.exports = { getUserStakingSummary, getHypercoreStakedHype, addHypercoreSpotBalances }
+/**
+ * Add a user's HyperCore perp margin equity (accountValue, USDC-denominated) to the api.
+ */
+async function addHypercorePerpMargin({ api, owners = [] }) {
+  for (const user of owners) {
+    const { marginSummary } = await post(API_URL, { type: 'clearinghouseState', user })
+    const accountValue = +(marginSummary?.accountValue ?? 0)
+    if (accountValue) api.addUSDValue(accountValue)
+  }
+}
+
+/**
+ * Add a user's full HyperCore holdings: spot balances plus perp margin equity.
+ */
+async function addHypercoreBalances({ api, owners = [], blacklistedTokens = [] }) {
+  await addHypercoreSpotBalances({ api, owners, blacklistedTokens })
+  await addHypercorePerpMargin({ api, owners })
+}
+
+module.exports = { getUserStakingSummary, getHypercoreStakedHype, addHypercoreSpotBalances, addHypercorePerpMargin, addHypercoreBalances }

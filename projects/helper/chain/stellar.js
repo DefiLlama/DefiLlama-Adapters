@@ -34,9 +34,15 @@ async function sumTokens(config) {
       await sumTokens({ ...rest, owner, api, skiTransform: true })
     return transformBalances(api.chain, api.getBalances())
   } else {
-    const { balances } = await get(`https://api.stellar.expert/explorer/public/account/${owner}/value`)
+    // validateStatus lets a 404 (account not yet created/funded on-chain) through so it can be skipped instead of thrown
+    const res = await get(`https://api.stellar.expert/explorer/public/account/${owner}/value`, { validateStatus: (s) => s < 500, })
+    if (res?.status === 404 || !Array.isArray(res?.balances)) {
+      console.log(`[stellar] account ${owner} not found on-chain, skipping`)
+      if (config.skiTransform) return api.getBalances()
+      return transformBalances(api.chain, api.getBalances())
+    }
     // `balance` is the raw on-chain amount (7 decimals); `value` is a USD estimate and must not be used as a balance
-    balances.forEach(({ asset, balance }) => {
+    res.balances.forEach(({ asset, balance }) => {
       api.add(asset, balance)
     })
   }

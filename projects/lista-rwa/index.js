@@ -5,6 +5,8 @@ const abi = {
   asset: "address:asset",
   totalAssets: "uint256:totalAssets",
   getVaultInfo: "function getVaultInfo() view returns (uint256 maxCapacity, uint256 totalDeposited, uint256 stakingDays)",
+  totalPrincipal: "uint256:totalPrincipal",
+  totalPendingWithdraw: "uint256:totalPendingWithdraw",
 }
 
 async function tvl(api) {
@@ -23,6 +25,21 @@ async function tvl(api) {
 
     for (let i = 0; i < poolContracts.length; i++) {
       api.add(assets[i], totalAssets[i])
+    }
+  }
+
+  // BPN products (BpnEarnPool): deposits are forwarded to the partner through the pool's adapter,
+  // so the pool holds no cash and has no totalAssets(). Shares are 1:1 with the asset:
+  // totalPrincipal = shares still earning, totalPendingWithdraw = redemptions requested but not yet claimed.
+  const bpnProducts = products.filter(p => p.group === 'bpn')
+  if (bpnProducts.length > 0) {
+    const bpnContracts = bpnProducts.map(p => getAddress(p.contract))
+    const assets = await api.multiCall({ calls: bpnContracts, abi: abi.asset })
+    const principals = await api.multiCall({ calls: bpnContracts, abi: abi.totalPrincipal })
+    const pendings = await api.multiCall({ calls: bpnContracts, abi: abi.totalPendingWithdraw })
+
+    for (let i = 0; i < bpnContracts.length; i++) {
+      api.add(assets[i], BigInt(principals[i]) + BigInt(pendings[i]))
     }
   }
 
@@ -51,7 +68,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing totalAssets of pool-like RWA products (Centrifuge on BSC, slisXAUE/XAUTStaking on Ethereum) and totalDeposited from Dowsure vault products on BSC. For Dowsure multi-asset vaults, the entire TVL is attributed to the primary asset (first in metadata) since per-asset breakdown is not available on-chain.",
+  methodology: "TVL is calculated by summing totalAssets of pool-like RWA products (Centrifuge on BSC, slisXAUE/XAUTStaking on Ethereum) totalDeposited from Dowsure vault products on BSC, and totalPrincipal plus pending redemptions from BPN vault products on BSC. For Dowsure multi-asset vaults, the entire TVL is attributed to the primary asset (first in metadata) since per-asset breakdown is not available on-chain.",
   bsc: {
     tvl,
   },

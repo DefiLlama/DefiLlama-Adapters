@@ -1,24 +1,7 @@
-const { get } = require('../helper/http')
-
-async function tvl(api) {
-
-    const endpoint = 'http://api.ociswap.com/statistics/pool-types';
-    const options = {
-        headers: {
-            'accept': 'application/json'
-        }
-    };
-
-    const statistics = await get(endpoint, options)
-
-    const precisionIndex = statistics.findIndex(pool => pool.pool_type === 'precision')
-
-    return {
-        'radix': statistics[precisionIndex].total_value_locked.xrd.now
-    }
-}
+const { ociswapTvl } = require('../ociswap/pools')
 
 module.exports = {
-    timetravel: false,
-    radixdlt: { tvl }
+  timetravel: false,
+  methodology: 'Sums the token reserves held on-chain by Ociswap precision (concentrated liquidity) pools, discovered through the Ociswap pool list.',
+  radixdlt: { tvl: ociswapTvl(['precision']) },
 }

@@ -8,6 +8,7 @@ const { nullAddress } = require("../helper/tokenMapping");
 const config = {
   bitcoin: { owners: bitcoinAddressBook.okex },
   ethereum: {
+    ownTokens: ['0x75231f58b43240c9718dd58b4967c5114342a86c'], // OKB
     owners: [
       "0x03ae1a796dfe0400439211133d065bda774b9d3e",
       "0x5041ed759dd4afc3a72b8192c143f72f4724081a",
@@ -687,6 +688,7 @@ const config = {
     ],
   },
   xlayer: {
+    ownTokens: [ADDRESSES.null], // OKB (native)
     owners: [
       "0x0f5a137dce05fb40d1ff1880db49e088a8bf8224",
       "0xdc9700dc816d8fa38d7ee201e4d3a8f35fdf6a8f",

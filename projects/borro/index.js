@@ -10,6 +10,10 @@ const { nullAddress } = require("../helper/tokenMapping")
 //     collateral, so a lender can borrow USDG against the stock it has lent.
 // Thirteen Morpho Vault V2s (one per stock plus a USDG vault) supply these markets through their adapters.
 //
+// The gAIX desk (Goldstein Group's gAIX fund token) has the same two markets and its own vault (bgAIX),
+// with two differences: its USDG market takes gAIX itself as collateral, and its gAIX-loan market takes
+// bgSHORT, which wraps Steakhouse USDG vault shares.
+//
 // The deployment is shared with other curators (Longbow and others), so the singleton's token
 // balances cannot be attributed by a token union; the markets are enumerated instead and each is
 // attributed from its own state, exactly as projects/longbow does on the same deployment.
@@ -47,6 +51,8 @@ const desks = {
   AAPL: ["0x24Fe7bCAEB75bC2202A42ECD48a177a27782c64a", "0x5242d7dcb608526f2f76b3f6914b9adf34634cdf67220c54bfce0718540c4550", "0x4cb59d58f0752990c41de36de0fe47a28179f50e69eae0cc727011162614ddcc"],
   GOOGL: ["0xf0731B1022ABD1e3f543Cfd837C7eBA42ED60E4f", "0x5826469e3b7df54fe18c921aafe850865552bc79b366a90ad0dc23c330ee0b75", "0x3abd7c179f694a9b3cf1008c97aa005ace5c6378e0298007154c563d3fd5b1a1"],
   MSFT: ["0x8032C80a7817a3C4C401b096515B27b2CedA4e71", "0x00f685fcd58b2a04c6953ac74b5d6b8f288e45e9a393077acf6711d6c51957bf", "0x098b730c59fbac64a01db3d3e0751386c2a68ced08754170a74ffdb9c6d0ed57"],
+  // added 2026-11-04 (bgAIX deploy block 101936242)
+  gAIX: ["0x0bd00e6cB94F9C06d7926A62B7EF7d816D2ea7A3", "0x198c6ba22d7a2feb3e8deb9e6372e00aae3d6ed9310dae514649acc2f67c2789", "0x761fbcc92be3ab5d682adc222817a4267c2f444cffab892456c5e3e4761af061"],
 }
 
 const vaults = [USDG_VAULT, ...Object.values(desks).map((d) => d[0])]
@@ -77,7 +83,7 @@ function borrowerCache({ cache, logs }) {
 async function collateralByMarket(api) {
   const toBlock = (await api.getBlock()) - 200 // the log cache is append-only, stay clear of reorgs at the tip
   // the cache keeps only pairs for markets listed when it read the logs; the key changes when markets are added
-  const pairs = await getLogs2({ api, target: MORPHO, eventAbi: supplyCollateralAbi, fromBlock: FROM_BLOCK, toBlock, extraKey: "borro-borrowers-v2", customCacheFunction: borrowerCache })
+  const pairs = await getLogs2({ api, target: MORPHO, eventAbi: supplyCollateralAbi, fromBlock: FROM_BLOCK, toBlock, extraKey: "borro-borrowers-v3", customCacheFunction: borrowerCache })
   const calls = pairs.map((p) => ({ params: p.split(":") }))
   const positions = await api.multiCall({ target: MORPHO, abi: positionAbi, calls })
   const net = {}
@@ -116,7 +122,8 @@ async function vaultHoldings(api) {
 }
 
 async function tvl(api) {
-  const [{ params, data }, collateral] = await Promise.all([marketState(api), collateralByMarket(api)])
+  const { params, data } = await marketState(api)
+  const collateral = await collateralByMarket(api)
 
   markets.forEach((id, i) => {
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
@@ -147,6 +154,6 @@ module.exports = {
   doublecounted: true,
   start: "2026-10-05",
   methodology:
-    "Counts the isolated Morpho Blue markets Borro creates and curates on Robinhood Chain: a stock-loan market and a USDG market per stock. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Collateral that is itself a Borro vault share (bNVDA and the rest, posted on the USDG markets) is not added, because the stock behind it is already counted in the stock-loan market. What Borro's Morpho Vault V2s hold outside these markets (idle, or parked in another Morpho vault through an adapter) is added as the vault's asset; what they supply into the markets is counted once, in the markets. Marked double counted because Morpho Blue reports the same markets.",
+    "Counts the isolated Morpho Blue markets Borro creates and curates on Robinhood Chain: a stock-loan market and a USDG market per stock, plus the same pair for Goldstein Group's gAIX fund token. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Collateral that is itself a Borro vault share (bNVDA and the rest, posted on the USDG markets) is not added, because the stock behind it is already counted in the stock-loan market. What Borro's Morpho Vault V2s hold outside these markets (idle, or parked in another Morpho vault through an adapter) is added as the vault's asset; what they supply into the markets is counted once, in the markets. Marked double counted because Morpho Blue reports the same markets.",
   robinhood: { tvl, borrowed },
 }

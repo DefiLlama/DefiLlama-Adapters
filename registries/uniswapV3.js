@@ -3,6 +3,14 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'peddleswap-v3': {
+    start: '2026-09-12',
+    methodology: 'Token balances in PeddleSwap V3 pools on Robinhood Chain, Base, Arc and Anubis, discovered from factory PoolCreated events.',
+    robinhood: { factory: '0xd0E25fD59A18f9728E11A04a24CaF0982231cf95', fromBlock: 61044184 },
+    base: { factory: '0x8f5890e843C89a7f963ecdEFF84D0900518AE106', fromBlock: 51852483 },
+    arc: { factory: '0x94C0883ec4A24BD69610bdD408Fd8263119827A2', fromBlock: 23924352 },
+    anubi: { factory: '0xE645978542a389697c235763DacD2eb960295656', fromBlock: 18380937 },
+  },
   'bbbfi-swap-v3': {
     methodology: 'Token balances in BBBFi-owned V3 pools on XDC and BSC, discovered from factory PoolCreated events. Tokens retain their original chain and address for DefiLlama pricing. Staked position NFTs are not counted a second time; reward budgets and bridge reserves are excluded.',
     xdc: { factory: '0x5037e5B64B677311Ed5332eee7b8C766fFe24088', fromBlock: 106991944 },
@@ -384,6 +392,7 @@ const uniV3Configs = {
       factory: '0xfb8Ed3485EfA29a0e4bed93351dD51B59fC4b0f0',
       fromBlock: 23739977,
       isAlgebra: true,
+      customPools: true,
     },
   },
   'dackieswap': {
@@ -676,10 +685,12 @@ const uniV3Configs = {
     era: {
       factory: '0x1153D1d27A558471eF051c5D2D075d7D07B84A07',
       fromBlock: 31199635,
+      permitFailure: true,
     },
     berachain: {
       factory: '0xCaca5910586473646F294d8FA5530cA9E8E3fc38',
       fromBlock: 782955,
+      permitFailure: true,
     },
   },
   'honeypop': {
@@ -977,10 +988,15 @@ const uniV3Configs = {
   },
   'morpheus': {
     start: '2026-08-13',
-    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain.',
+    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain and BSC.',
     robinhood: {
       factory: '0x10253594A832f967994b44f33411940533302ACb',
       fromBlock: 35371149,
+      isAlgebra: true,
+    },
+    bsc: {
+      factory: '0x2D071bA94C32A8a9bA594771EbF628b2b48b4389',
+      fromBlock: 131415661,
       isAlgebra: true,
     },
   },
@@ -1202,6 +1218,10 @@ const uniV3Configs = {
       factory: '0xE0c4ceb92d08CA985bB70fe0a22fEb121A9854A8',
       fromBlock: 15761673,
     },
+    elysium: {
+      factory: '0x29cd8852FF040CfE74fb20277A121eD1293AFb41',
+      fromBlock: 61399,
+    }
   },
   'reservoir-tools-v3': {
     abstract: {
@@ -1222,6 +1242,10 @@ const uniV3Configs = {
       factory: '0x91e1B99072f238352f59e58de875691e20Dc19c1',
       fromBlock: 43939793,
     },
+  },
+  'rocketswap-anubis-v3': {
+    methodology: 'TVL is the value of tokens held in RocketSwap V3 liquidity pools on Anubis.',
+    anubi: { factory: '0xbf1b0e9878e782c799010454c1A65ACd334f666F', fromBlock: 16113175 },
   },
   'satsuma': {
     citrea: {
@@ -1939,6 +1963,19 @@ const uniV3Configs = {
   'vetrade-v3': {
     start: '2026-10-11',
     vechain: { factory: '0xc2faf0f48fb7763b28e6f7e415c50b360cc1a096', fromBlock: 26117867 },
+  },
+  'camelot-v4': {
+    start: '2025-10-21', // factory deployed at block 391829824 (2025-10-21 10:16 UTC)
+    methodology: 'Value of the tokens held in the Camelot V4 (Algebra Integral) pools on Arbitrum, discovered from the factory Pool events.',
+    arbitrum: { factory: '0xBefC4b405041c5833f53412fF997ed2f697a2f37', fromBlock: 391829824, isAlgebra: true },
+  },
+  'vectaswap': {
+    arbitrum: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 518470299},
+    base: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 53245146}
+  },
+  'arkhampad': {
+    methodology: 'TVL is the value of tokens held in ArkhamPad launch pools (Uniswap v3 style pools created by the ArkhamPad factory on Elysium). Launch liquidity is locked forever.',
+    elysium: { factory: '0x75656d8d2A59293DBdA4178F11Af6EE506ef60dD', fromBlock: 65264 },
   },
 }
 

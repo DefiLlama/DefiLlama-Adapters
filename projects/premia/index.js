@@ -22,6 +22,7 @@ Object.keys(config).forEach(chain => {
           eventAbi: 'event DeployPool (address indexed base, address indexed underlying, int128 indexed initialCLevel64x64, address baseOracle, address underlyingOracle, address pool)',
           onlyArgs: true,
           fromBlock,
+          onlyUseExistingCache: true,
         })
         logs.forEach((v) => ownerTokens.push([[v.underlying, v.base], v.pool]))
       }

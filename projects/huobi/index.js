@@ -7,6 +7,7 @@ const config = {
     owners: bitcoinAddressBook.huobi,
   },
   ethereum: {
+    ownTokens: ['0x6f259637dcd74c767781e37bc6133cd6a68aa161'], // HT
     owners: [
       "0xa929022c9107643515f5c777ce9a910f0d1e490c",
       "0x18709e89bd403f470088abdacebe86cc60dda12e",

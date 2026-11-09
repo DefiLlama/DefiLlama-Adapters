@@ -1,4 +1,4 @@
-const { stakingPriceLP } = require("../helper/staking");
+const { staking } = require("../helper/staking");
 const { sumUnknownTokens } = require('../helper/unknownTokens')
 const abi = {
   "poolLength": "uint256:poolLength",
@@ -67,10 +67,6 @@ module.exports = {
   cronos: {
     tvl:vault,
     pool2: (api) => pool2Balances(api, masterChef),
-    staking: stakingPriceLP(
-      boardroom,
-      sky,
-      "0xaA0845EE17e4f1D4F3A8c22cB1e8102baCf56a77"
-    ),
+    staking: staking(boardroom, sky),
   },
 };

@@ -7,6 +7,7 @@ const config = {
     owners: bitcoinAddressBook.bitfinex,
   },
   ethereum: {
+    ownTokens: ['0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3'], // LEO
     owners: [
       '0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec', // ETH/ERC20 hot wallet
       '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', // ETH/ERC20 cold wallet

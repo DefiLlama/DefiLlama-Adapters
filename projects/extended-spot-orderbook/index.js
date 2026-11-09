@@ -1,27 +1,20 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
 const { getConfig } = require('../helper/cache')
-const { multiCall } = require('../helper/chain/starknet')
 
 const API_URL = 'https://api.starknet.extended.exchange/api/v1'
-const USDC = ADDRESSES.starknet.USDC_CIRCLE
-
-const decimalsAbi = {
-  name: 'decimals',
-  type: 'function',
-  inputs: [],
-  outputs: [{ name: 'decimals', type: 'felt' }],
-  stateMutability: 'view',
-}
+const USDC = ADDRESSES.arc.USDC
 
 async function tvl(api) {
   const { data: markets } = await getConfig('extended-spot-orderbook', `${API_URL}/info/markets`)
-  const spotMarkets = markets.filter(m => m.type === 'SPOT' && m.active && m.status === 'ACTIVE')
+  const { data: assets } = await getConfig('extended-spot-orderbook/assets', `${API_URL}/info/assets`)
+  const arcAddress = Object.fromEntries(assets.filter(a => a.arcAddress).map(a => [a.name, a.arcAddress]))
+  const spotMarkets = markets.filter(m => m.type === 'SPOT' && m.active && m.status === 'ACTIVE' && arcAddress[m.assetName])
 
-  const tokens = spotMarkets.map(m => m.l2Config.syntheticId)
-  const decimals = await multiCall({ abi: decimalsAbi, calls: tokens })
+  const tokens = spotMarkets.map(m => arcAddress[m.assetName])
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
 
-  await Promise.all(spotMarkets.map(async (mkt, i) => {
+  for (const [i, mkt] of spotMarkets.entries()) {
     const { data: ob } = await get(`${API_URL}/info/markets/${mkt.name}/orderbook`)
     const tokenDecimals = Number(decimals[i])
     const collateralResolution = Number(mkt.l2Config.collateralResolution)
@@ -30,12 +23,13 @@ async function tvl(api) {
     api.add(USDC, Math.round(bidsUSDC * collateralResolution))
 
     const asksTokens = (ob.ask || []).reduce((s, a) => s + Number(a.qty), 0)
-    api.add(mkt.l2Config.syntheticId, Math.round(asksTokens * 10 ** tokenDecimals))
-  }))
+    api.add(tokens[i], Math.round(asksTokens * 10 ** tokenDecimals))
+  }
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL represents assets locked in limit orders on the Extended spot order book.',
-  starknet: { tvl },
+  methodology: 'TVL represents assets locked in limit orders on the Extended spot order book. Extended settles on Arc since 22 October 2026.',
+  starknet: { tvl: () => ({}) },
+  arc: { tvl },
 }

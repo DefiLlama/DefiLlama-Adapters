@@ -206,9 +206,9 @@ module.exports = {
     },
   },
   "aquabank": {
-    "methodology": "TVL is calculated from the total supply of bUSDT, bUSDC, and bAUSD, each fully backed 1:1 by stablecoins deposited into Benqi and Euler vaults.",
+    "methodology": "TVL is calculated from the yield-bearing protocol token balances held by AquaBank minting contracts, representing the stablecoins backing bUSDT, bUSDC, and bAUSD across Benqi, Euler, and Aave V3.",
     "avax": {
-      "tvl": { "owners": ["0x7D336B49879a173626E51BFF780686D88b8081ec","0xb06DE2E9a339d201661045b7D845De3d20373b4F","0xcCB7De5b7788de551E3b85b50e4834D5B7e3F27c","0x61E8f77eD693d3edeCBCc2dd9c55c1d987c47775"], "tokens": ["0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF","0xa446938b0204Aa4055cdFEd68Ddf0E0d1BAB3E9E","0xB715808a78F6041E46d61Cb123C9B4A27056AE9C","0x190D94613A09ad7931FcD17CD6A8F9B6B47ad414"] },
+      "tvl": { "owners": ["0x7D336B49879a173626E51BFF780686D88b8081ec","0xb06DE2E9a339d201661045b7D845De3d20373b4F","0xcCB7De5b7788de551E3b85b50e4834D5B7e3F27c","0x61E8f77eD693d3edeCBCc2dd9c55c1d987c47775","0xa62BF981Ad60bF389f6935585b7861a8EF4D404f","0x01C72156E8265182A728c51A30Caa70F263E4D66","0x1958a8026389F35EaBDeBd9093D960eda15d36B0"], "tokens": ["0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF","0xa446938b0204Aa4055cdFEd68Ddf0E0d1BAB3E9E","0xB715808a78F6041E46d61Cb123C9B4A27056AE9C","0x190D94613A09ad7931FcD17CD6A8F9B6B47ad414","0x625E7708f30cA75bfd92586e17077590C60eb4cD","0x724dc807b04555b71ed48a6896b6F41593b8C637","0x6ab707Aca953eDAeFBc4fD23bA73294241490620"] },
     },
   },
   "unit": {
@@ -1193,19 +1193,24 @@ module.exports = {
     },
   },
   "lincoln-protocol": {
-    "methodology": "Each Lincoln privacy pool is an immutable contract holding a single asset (ETH, USDG or a Robinhood tokenized stock). TVL is the on-chain balance of every pool. Route adapters and relays hold no user funds between transactions, so they are not counted.",
+    "methodology": "Each Lincoln privacy pool is an immutable contract holding a single asset (ETH, USDG/USDe, a Robinhood tokenized stock, or the protocol tokens LINCOLN/SPCX). TVL is the on-chain balance of every pool. Route adapters and relays hold no user funds between transactions, so they are not counted.",
     "start": "2026-10-17",
     "robinhood": {
       "ownerTokens": [
         [[ADDRESSES.null], "0xF9c767CAb9B9A7dE8Dd959967269787880267ab2"], // ETH
-        [["0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"], "0x5Cd4c081eb747406DAb66e22004324600f1928C9"], // USDG
-        [["0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"], "0x4C8BAEb78b032EA3610E0F5D4C8B5Bb4fF5995f7"], // NVDA
+        [[ADDRESSES.robinhood.USDG], "0x5Cd4c081eb747406DAb66e22004324600f1928C9"], // USDG
+        [[ADDRESSES.robinhood.NVDA], "0x4C8BAEb78b032EA3610E0F5D4C8B5Bb4fF5995f7"], // NVDA
         [["0x117cc2133c37B721F49dE2A7a74833232B3B4C0C"], "0x8a29Db84A20B0A3CA528FAE0F69F50FfD39c6C39"], // SPY
-        [["0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35"], "0xA2078e02A631ae9218DBAa84987a24741bD24d10"], // META
-        [["0x322F0929c4625eD5bAd873c95208D54E1c003b2d"], "0xE8c619705B7452c2281cA8fA675a355846D34BFE"], // TSLA
-        [["0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3"], "0x31Bd720527D9875b444c0946c5795351a56d9d8B"], // GOOGL
+        [[ADDRESSES.robinhood.META], "0xA2078e02A631ae9218DBAa84987a24741bD24d10"], // META
+        [[ADDRESSES.robinhood.TSLA], "0xE8c619705B7452c2281cA8fA675a355846D34BFE"], // TSLA
+        [[ADDRESSES.robinhood.GOOGL], "0x31Bd720527D9875b444c0946c5795351a56d9d8B"], // GOOGL
         [["0xD5f3879160bc7c32ebb4dC785F8a4F505888de68"], "0xd4375275F5FA231e238c9FF1237A8e8666Be6B62"], // QQQ
-        [["0xec262a75e413fAfD0dF80480274532C79D42da09"], "0x207Dc4DD4E40Ab280dF9eC10CD5Edf04685e9d88"], // MSTR
+        [[ADDRESSES.robinhood.MSTR], "0x207Dc4DD4E40Ab280dF9eC10CD5Edf04685e9d88"], // MSTR
+        [[ADDRESSES.robinhood.AAPL], "0xC2991be873dD0EC1D93a0911dC1068bcCcf4D3B4"], // AAPL
+        [[ADDRESSES.robinhood.CASHCAT], "0xe6711cbb2E44A0Ce72d301cC27EfBC244cBD75fb"], // CASHCAT
+        [[ADDRESSES.robinhood.PONS], "0x757335BD24807EAc290521Ee6b3Ab2CB86fd9F18"], // PONS
+        [[ADDRESSES.robinhood.SPCX], "0xd5Fc86f3251cE49F0Bd7B94b28B0334f21F6E42b"], // SPCX
+        [[ADDRESSES.avax.USDe], "0x4AC6D3EB4379Bd82f1dcD5C8A61c6b8F15b7812C"], // USDE
       ]
     },
   },
@@ -1249,4 +1254,65 @@ module.exports = {
       "blacklistedTokens": ["HgTGdc29D5bDMrDvsCLnorxz899VyDj7ZN7FPa6vpump"], // $VEIL
     },
   },
+  "megawatt-markets": {
+    "methodology": "USDC trader collateral deposited in the Megawatt Markets CollateralVault on Arbitrum.",
+    "arbitrum": {
+      "tvl": { "owner": "0xAfE63c71bA1D70992C9d7B01c0F1eD5c51941a8f", "tokens": [ADDRESSES.arbitrum.USDC_CIRCLE] },
+    }
+  },
+  "ignite-dex": {
+    // Live vault and asset list: https://api.ignite.trade/v1/escrow/config and https://api.ignite.trade/v1/solana/status
+    "methodology": "TVL is the balance of the assets held in the Ignite custody vaults: the escrow vault contracts on Ethereum, Base and BNB Chain, and the Squads multisig vault on Solana. It includes trader deposits and the liquidity in Ignite pools, which is held in the same vaults.",
+    "ethereum": {
+      "owner": "0x01dDd01Ba9C32795a39cfDa71184958d47E0a08E",
+      "tokens": [
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT,
+        "0xbd79b7db6f70979df7f4124e161eb3586085d140", // LAX
+        "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39", // HEX
+        "0xff74317e948695297acb79cb2de06111f5cc16b3", // ONE
+      ]
+    },
+    "base": {
+      "owner": "0x01dDd01Ba9C32795a39cfDa71184958d47E0a08E",
+      "tokens": [
+        ADDRESSES.base.USDC,
+        ADDRESSES.base.USDT,
+        "0xe7645444eb4e8e04d886c7038dd0152d331d3680", // LAX
+      ]
+    },
+    "bsc": {
+      "owner": "0x4368ED53e2F31F5B3540369466E5775fD0422eDE",
+      "tokens": [
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.USDT,
+        "0x11125e44843170467a7955d29776d63760ea4b6e", // LAX
+        "0xb2a1ca465cc250cdc16639e49be0d948e095febc", // JOT
+        "0x528605856a9eb9567688b0e912ed6961522a74d4", // MUSA
+        "0x36b2269fd151208a4bfc3dea503e0a6f2485fa78", // TUA
+        "0x21d6d37411d86fafdc565260e81e7a585bc44119", // FGPT
+        "0xaeb63742f2c7dd1538bbe2285b6789017a06b58b", // COLLE
+        "0x2e156a3e09782a785345b7a33c46c71596ffd551", // IMAGE
+      ]
+    },
+    "solana": {
+      // Squads multisig EaPDGTPXFun7oLAv7ApwBUZfAHruxrAQTBTE9L7TDmT8, vault index 0: SOL plus SPL / Token-2022 deposits
+      "owner": "6ShdjduDkwcBi9jEeYQFbAvsqUGgYrX2ASxjfHypEkYa",
+      "solOwners": ["6ShdjduDkwcBi9jEeYQFbAvsqUGgYrX2ASxjfHypEkYa"]
+    },
+  },
+  "ipusd": {
+    "methodology": "ipUSD reserves (USDSC and USDC.e held by the IPUSDWrapper contract) plus the reserve assets backing sIPUSD, the yield-bearing version of ipUSD (PGIP+ held by the IP Vault contract). ipUSD held inside the IP Vault is excluded to avoid counting the same reserves twice.",
+    "start": "2026-10-24",
+    "soneium": {
+      "tvl": {
+        "tokensAndOwners": [
+          ["0x3f99231dD03a9F0E7e3421c92B7b90fbe012985a", "0xef63d926A0d15e6e7d96d767665f9312Cb7993C4"],
+          ["0xbA9986D2381edf1DA03B0B9c1f8b00dc4AacC369", "0xef63d926A0d15e6e7d96d767665f9312Cb7993C4"],
+          ["0x0D90a6eE85d5668734bb3A515147f53EBDfE866c", "0x2Ba3FC5BDbBE7BE2630fB71e759739625246bCd9"]
+        ]
+      }
+    }
+  },
+
 }
