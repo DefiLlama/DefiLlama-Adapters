@@ -34,6 +34,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: "TVL: BNB and gold (XAUt) held for players: the current round, unclaimed payouts, AutoMiner and Loop deposits, the Goldpot and gold owed to stakers. Staking: MING staked, plus mined MING held for players until they claim it, priced from the MING/WBNB PancakeSwap pool.",
   start: '2026-11-05',
   bsc: {
