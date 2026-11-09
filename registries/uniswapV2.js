@@ -1395,6 +1395,7 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     hyperliquid: '0x889fd0ada8453c7619cd7f11e9029a1f0848fdf5',
+    elysium: '0x8b3f6eb2C9BFBEE74CFc5372EB88A6353EA0a887',
   },
   'netswap': {
     metis: '0x70f51d68D16e8f9e418441280342BD43AC9Dff9f',
