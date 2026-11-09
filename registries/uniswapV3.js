@@ -1218,6 +1218,10 @@ const uniV3Configs = {
       factory: '0xE0c4ceb92d08CA985bB70fe0a22fEb121A9854A8',
       fromBlock: 15761673,
     },
+    elysium: {
+      factory: '0x29cd8852FF040CfE74fb20277A121eD1293AFb41',
+      fromBlock: 61399,
+    }
   },
   'reservoir-tools-v3': {
     abstract: {

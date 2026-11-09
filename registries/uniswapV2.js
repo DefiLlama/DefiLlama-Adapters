@@ -2787,6 +2787,7 @@ const uniV2Configs = {
     arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
     robinhood: '0x43B2Bf9f33036a02fC7A00935571c2A6b0108e66',
+    elysium: "0x088703700f4FA35BF9EABc8CDbCeAD3678432779",
   },
   'raphael': {
     misrepresentedTokens: true,
