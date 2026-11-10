@@ -26,7 +26,7 @@ pipeline {
                         pnpm --version
                         
                         echo "=== Installing root dependencies ==="
-                        pnpm install --frozen-lockfile --ignore-scripts
+                        pnpm install --frozen-lockfile --ignore-scripts --ignore-workspace --config.minimum-release-age=0
                     '''
                 }
             }
@@ -38,7 +38,9 @@ pipeline {
                     dir("${env.WORKSPACE}/projects/helper/custom-scripts/metadao") {
                         sh '''
                             echo "=== Installing metadao dependencies ==="
-                            pnpm install --frozen-lockfile --ignore-scripts
+                            # --ignore-workspace: the repo root has a pnpm-workspace.yaml with no packages, without the flag
+                            # pnpm resolves to the root workspace, reports "Already up to date" and never installs this package.json
+                            pnpm install --frozen-lockfile --ignore-scripts --ignore-workspace
                         '''
                     }
                 }
@@ -52,7 +54,9 @@ pipeline {
                         script {
                             def timestamp = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone('UTC'))
 
-                            sh """
+                            // bash + pipefail: with plain sh the pipeline only sees tee's exit code, so a crashing script was reported as SUCCESS
+                            sh """#!/bin/bash
+                                set -eo pipefail
                                 echo "=== Running MetaDAO TVL Script ==="
                                 echo "Start time: ${timestamp}"
 
