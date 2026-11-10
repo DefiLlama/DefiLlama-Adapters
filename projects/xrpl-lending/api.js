@@ -10,7 +10,7 @@
 //
 // Objects are listed with ledger_data filtered by type at one pinned validated ledger. A rippled node answers a full
 // type-filtered walk in about 200 pages; the public Clio nodes (s1/s2.ripple.com) need thousands, so the walk uses
-// xrplcluster.com unless XRPL_WHITELISTED_RPC names other nodes. Three walks per run, so it runs in the custom-scripts
+// xrplcluster.com unless XRPL_WHITELISTED_RPC names other nodes. Three walks per run (about 600 calls), so it runs in the custom-scripts
 // runner (helper/custom-scripts/sushi-analytics-v2, bulky group) and ./index.js reads the stored result.
 // Test with: node test.js projects/xrpl-lending/api.js
 const axios = require('axios')
@@ -71,9 +71,8 @@ function getSnapshot() {
     const endpoints = configured.length ? configured : DEFAULT_ENDPOINTS
     const latest = await rpc(endpoints, 'ledger', { ledger_index: 'validated' })
     const ledgerIndex = Number(latest.ledger_index) - LEDGER_LAG
-    const vaults = await listObjects(endpoints, 'vault', ledgerIndex)
-    const brokers = await listObjects(endpoints, 'loan_broker', ledgerIndex)
-    const loans = await listObjects(endpoints, 'loan', ledgerIndex)
+    // three walks side by side: about 5 minutes on xrplcluster.com, inside the 10 minute limit of test.js
+    const [vaults, brokers, loans] = await Promise.all(['vault', 'loan_broker', 'loan'].map((type) => listObjects(endpoints, type, ledgerIndex)))
     return {
       ledgerIndex,
       vaults: Object.fromEntries(vaults.map((v) => [v.index, v])),
