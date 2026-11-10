@@ -666,6 +666,9 @@ const configs = {
     bitkub: { comptroller: '0x42f098E6aE5e81f357D3fD6e104BAA77A195133A', cether: '0x0cA8DaD1e517a9BB760Ba0C27051C4C3A036eA75' },
     klaytn: { comptroller: '0x2591d179a0B1dB1c804210E111035a3a13c95a48', cether: '0x2029f3E3C667EBd68b1D29dbd61dc383BdbB56e5' },
   },
+  'aurumlend': {
+    arc: { comptroller: '0x966168Ecd30bf368acB7d18f1c64afEE34941233', }
+  }
 }
 
 module.exports = buildProtocolExports(configs, compoundExportFn)
