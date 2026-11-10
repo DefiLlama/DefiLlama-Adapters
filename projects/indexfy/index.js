@@ -18,16 +18,15 @@ async function tvl(api) {
     onlyArgs: true,
   })
   const allFolios = logs.map((log) => log.folio)
-  // skip fully redeemed indexes: a cheap totalSupply read instead of the basket read
-  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: allFolios, permitFailure: true })
-  const folios = allFolios.filter((_, i) => supplies[i] && BigInt(supplies[i]) > 0n)
+  // skip fully redeemed indexes: a cheap totalSupply read instead of the basket read.
+  // Every address comes from the factory's own events, so a failed read is an error, not an empty index.
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: allFolios })
+  const folios = allFolios.filter((_, i) => BigInt(supplies[i]) > 0n)
   const baskets = await api.multiCall({
     abi: 'function totalAssets() view returns (address[] _assets, uint256[] _amounts)',
     calls: folios,
-    permitFailure: true,
   })
   baskets.forEach((basket) => {
-    if (!basket) return
     basket._assets.forEach((asset, i) => {
       const mapped = TOKEN_MAPPING[asset.toLowerCase()]
       if (mapped) api.add(mapped, basket._amounts[i], { skipChain: true })
