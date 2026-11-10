@@ -17014,6 +17014,14 @@ const configs = {
       "resolveUniV3": true
     },
   },
+  "kalos-fate": {
+    "start": "2026-11-09",
+    "methodology": "TVL is the native HYPE held by the Kalos Fate house contract: the kFATE bankroll that pays for winning attempts, plus the stakes it escrows for attempts not settled yet.",
+    "elysium": {
+      "owner": "0xCA10517731a5D3709b40A76DdF382A647852d6ac",
+      "tokens": [ADDRESSES.null]
+    },
+  },
   "katana-perps": {
     "methodology": "TVL counts the USDC (Vault Bridge USDC) held in the Katana Perps contract on the Katana chain.",
     "katana": {
