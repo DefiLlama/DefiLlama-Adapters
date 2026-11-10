@@ -1,5 +1,6 @@
 const sui = require('../helper/chain/sui')
 const { normalizeCoinType } = require('@defillama/sdk').chains.sui
+const { addPointEscrow } = require('./point-escrow')
 
 // Original type IDs survive package upgrades; discover all live market vaults.
 const SCALLOP_VAULT = '0xe77999674332f5bd078c8d7182002f7bbf7844591f4d36dbfd1182b25ae071c0::scallop_market_vault::ScallopMarketVault'
@@ -41,11 +42,12 @@ async function tvl(api) {
     const [, receipt] = sui.parseStructTag(type).typeParams
     api.add(receipt, fields.receipt_balance)
   }
+  await addPointEscrow(api)
 }
 
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: 'Counts the receipt assets held in Jitter market vaults, including pending withdrawals until paid. Scallop MarketCoin shares are converted using on-chain (cash + debt - revenue) / market_coin_supply. Haedal and Ember receipts are priced as their own tokens. SY, PT, YT, LP and treasury assets are not added separately. The backing assets overlap with Scallop, Haedal and Ember Protocol TVL.',
+  methodology: 'Counts receipt assets in Jitter market vaults, including pending withdrawals until paid, plus quote coins locked in Jitter Points bids and their unspent maker-fee reserves. Scallop shares use on-chain (cash + debt - revenue) / market_coin_supply; Haedal and Ember receipts are priced as their own tokens. Own Jitter Points on asks, accrued point-trading protocol fees, and separate SY/PT/YT/LP or treasury balances are excluded. Yield backing overlaps with Scallop, Haedal and Ember TVL.',
   sui: { tvl },
 }
