@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2, unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
 
 // Flowlex is non-custodial. Two products, both on Uniswap V3:
@@ -8,39 +8,57 @@ const { sumTokens2, unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
 //    other Uniswap positions, so we count only the token ids the manager itself minted (it emits them).
 //  - Auto Vaults: single-owner vaults created by the vault factory; each one holds its position NFTs
 //    and idle tokens, all of which are counted.
-// Closed positions are dropped: withdraw leaves zero liquidity and burn removes the NFT.
+// Every position is counted as liquidity plus its uncollected fees. Closed positions drop out:
+// withdraw leaves zero liquidity and burn removes the NFT.
 const config = {
   base: {
     manager: '0xE20435aC8160aa58ADea4A1fc5641bB5aDAED053',
     managerFromBlock: 44474281,
+    openEvents: ['positionOpened'],
     vaultFactory: '0x002dADf330A4746ac16c21f1B0828396AcF132c1',
     vaultFactoryFromBlock: 46821794,
     nfpm: '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1', // Uniswap V3 NonfungiblePositionManager
     idleTokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH, ADDRESSES.base.cbBTC],
   },
+  robinhood: {
+    // same manager address as on Base; this deployment can also open from the pool's own tokens
+    manager: '0xE20435aC8160aa58ADea4A1fc5641bB5aDAED053',
+    managerFromBlock: 106211342,
+    openEvents: ['positionOpened', 'positionOpenedDual'],
+    nfpm: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3',
+  },
 }
 
 const abis = {
   positionOpened: 'event PositionOpened(address indexed user, uint256 indexed tokenId, address pool, uint256 depositAmount, uint256 commission)',
+  positionOpenedDual: 'event PositionOpenedDual(address indexed user, uint256 indexed tokenId, address pool, uint256 amountUsdc, uint256 amountOther, uint256 commissionUsdc, uint256 commissionOther)',
   positionRebalanced: 'event PositionRebalanced(address indexed user, uint256 indexed oldTokenId, uint256 indexed newTokenId)',
   vaultCreated: 'event VaultCreated(address indexed user, address indexed vault)',
   tokenOfOwnerByIndex: 'function tokenOfOwnerByIndex(address, uint256) view returns (uint256)',
+  ownerOf: 'function ownerOf(uint256) view returns (address)',
+  positions: 'function positions(uint256) view returns (uint96 nonce, address operator, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
+  factory: 'address:factory',
+  getPool: 'function getPool(address, address, uint24) view returns (address)',
+  slot0: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
+  feeGrowthGlobal0X128: 'uint256:feeGrowthGlobal0X128',
+  feeGrowthGlobal1X128: 'uint256:feeGrowthGlobal1X128',
+  ticks: 'function ticks(int24) view returns (uint128 liquidityGross, int128 liquidityNet, uint256 feeGrowthOutside0X128, uint256 feeGrowthOutside1X128, int56 tickCumulativeOutside, uint160 secondsPerLiquidityOutsideX128, uint32 secondsOutside, bool initialized)',
 }
 
-async function managerTokenIds(api, { manager, managerFromBlock }) {
-  const [opened, rebalanced] = await Promise.all([
-    getLogs({ api, target: manager, eventAbi: abis.positionOpened, fromBlock: managerFromBlock, onlyArgs: true }),
-    getLogs({ api, target: manager, eventAbi: abis.positionRebalanced, fromBlock: managerFromBlock, onlyArgs: true }),
-  ])
-  return [...opened.map(i => i.tokenId), ...rebalanced.map(i => i.newTokenId)].map(String)
+async function managerTokenIds(api, cfg) {
+  const fetch = (event) => getLogs2({ api, target: cfg.manager, eventAbi: abis[event], fromBlock: cfg.managerFromBlock, extraKey: event })
+  const [rebalanced, ...opened] = await Promise.all([fetch('positionRebalanced'), ...cfg.openEvents.map(fetch)])
+  return [...opened.flat().map(i => i.tokenId), ...rebalanced.map(i => i.newTokenId)].map(String)
 }
 
-async function getVaults(api, { vaultFactory, vaultFactoryFromBlock }) {
-  const logs = await getLogs({ api, target: vaultFactory, eventAbi: abis.vaultCreated, fromBlock: vaultFactoryFromBlock, onlyArgs: true })
+async function getVaults(api, cfg) {
+  if (!cfg.vaultFactory) return []
+  const logs = await getLogs2({ api, target: cfg.vaultFactory, eventAbi: abis.vaultCreated, fromBlock: cfg.vaultFactoryFromBlock, extraKey: 'vaultCreated' })
   return logs.map(i => i.vault)
 }
 
 async function vaultTokenIds(api, vaults, nfpm) {
+  if (!vaults.length) return []
   const counts = await api.multiCall({ abi: 'erc20:balanceOf', target: nfpm, calls: vaults })
   const calls = []
   vaults.forEach((vault, i) => {
@@ -50,32 +68,77 @@ async function vaultTokenIds(api, vaults, nfpm) {
   return ids.map(String)
 }
 
+// Fees a position could collect right now: tokensOwed plus what it earned since its last update,
+// using the same fee-growth math as the Uniswap V3 position manager.
+const Q128 = 2n ** 128n
+const MOD = 2n ** 256n
+const sub = (a, b) => ((a - b) % MOD + MOD) % MOD
+
+async function addUncollectedFees(api, nfpm, positionIds) {
+  const positions = (await api.multiCall({ abi: abis.positions, target: nfpm, calls: positionIds })).filter(p => BigInt(p.liquidity) > 0n || BigInt(p.tokensOwed0) > 0n || BigInt(p.tokensOwed1) > 0n)
+  if (!positions.length) return
+
+  const factory = await api.call({ abi: abis.factory, target: nfpm })
+  const pools = await api.multiCall({ abi: abis.getPool, target: factory, calls: positions.map(p => ({ params: [p.token0, p.token1, p.fee] })) })
+  const uniquePools = [...new Set(pools)]
+  const [slot0s, global0s, global1s, lowers, uppers] = await Promise.all([
+    api.multiCall({ abi: abis.slot0, calls: uniquePools }),
+    api.multiCall({ abi: abis.feeGrowthGlobal0X128, calls: uniquePools }),
+    api.multiCall({ abi: abis.feeGrowthGlobal1X128, calls: uniquePools }),
+    api.multiCall({ abi: abis.ticks, calls: positions.map((p, i) => ({ target: pools[i], params: [p.tickLower] })) }),
+    api.multiCall({ abi: abis.ticks, calls: positions.map((p, i) => ({ target: pools[i], params: [p.tickUpper] })) }),
+  ])
+  const poolState = {}
+  uniquePools.forEach((pool, i) => { poolState[pool] = { tick: Number(slot0s[i].tick), global: [BigInt(global0s[i]), BigInt(global1s[i])] } })
+
+  positions.forEach((p, i) => {
+    const { tick, global } = poolState[pools[i]]
+    const tickLower = Number(p.tickLower)
+    const tickUpper = Number(p.tickUpper)
+    const liquidity = BigInt(p.liquidity)
+    const last = [BigInt(p.feeGrowthInside0LastX128), BigInt(p.feeGrowthInside1LastX128)]
+    const owed = [BigInt(p.tokensOwed0), BigInt(p.tokensOwed1)]
+    const outside = (t, k) => BigInt(t[k === 0 ? 'feeGrowthOutside0X128' : 'feeGrowthOutside1X128'])
+
+    ;[p.token0, p.token1].forEach((token, k) => {
+      const below = tick >= tickLower ? outside(lowers[i], k) : sub(global[k], outside(lowers[i], k))
+      const above = tick < tickUpper ? outside(uppers[i], k) : sub(global[k], outside(uppers[i], k))
+      const inside = sub(sub(global[k], below), above)
+      const earned = (liquidity * sub(inside, last[k])) / Q128
+      const total = owed[k] + earned
+      if (total > 0n) api.add(token, total.toString())
+    })
+  })
+}
+
 async function tvl(api) {
   const cfg = config[api.chain]
   const [managerIds, vaults] = await Promise.all([managerTokenIds(api, cfg), getVaults(api, cfg)])
-  const vaultIds = vaults.length ? await vaultTokenIds(api, vaults, cfg.nfpm) : []
+  const vaultIds = await vaultTokenIds(api, vaults, cfg.nfpm)
 
   // A manual position can be moved into a vault later; the set keeps it from being counted twice.
   const allIds = [...new Set([...managerIds, ...vaultIds])]
+  if (allIds.length) {
+    // Burned NFTs revert on positions(), so keep only ids that still exist.
+    const owners = await api.multiCall({ abi: abis.ownerOf, target: cfg.nfpm, calls: allIds, permitFailure: true })
+    const positionIds = allIds.filter((_, i) => owners[i])
+    if (positionIds.length) {
+      await unwrapUniswapV3NFT({ api, nftAddress: cfg.nfpm, uniV3ExtraConfig: { positionIds } })
+      await addUncollectedFees(api, cfg.nfpm, positionIds)
+    }
+  }
 
-  // Burned NFTs revert on positions(), so keep only ids that still exist.
-  const owners = await api.multiCall({ abi: 'function ownerOf(uint256) view returns (address)', target: cfg.nfpm, calls: allIds, permitFailure: true })
-  const positionIds = allIds.filter((_, i) => owners[i])
-
-  if (positionIds.length)
-    await unwrapUniswapV3NFT({ api, nftAddress: cfg.nfpm, uniV3ExtraConfig: { positionIds } })
-
-  if (vaults.length)
+  if (vaults.length && cfg.idleTokens)
     await sumTokens2({ api, owners: vaults, tokens: cfg.idleTokens })
 }
 
 module.exports = {
   doublecounted: true,
   methodology:
-    'Counts the Uniswap V3 liquidity opened through Flowlex. Manual positions are the position NFTs minted by the Flowlex LP manager ' +
-    '(found by its PositionOpened and PositionRebalanced events); they sit in the users\' own smart wallets, and other Uniswap ' +
-    'positions in those wallets are not counted. Auto Vaults are the single-owner vaults created by the Flowlex vault factory; ' +
-    'their position NFTs and idle token balances are counted. Each position is valued from its liquidity at the pool\'s current price. ' +
+    'Counts the Uniswap V3 liquidity opened through Flowlex, valued at the pool\'s current price, plus each position\'s uncollected fees. ' +
+    'Manual positions are the position NFTs minted by the Flowlex LP manager (found by its PositionOpened and PositionRebalanced events); ' +
+    'they sit in the users\' own smart wallets, and other Uniswap positions in those wallets are not counted. Auto Vaults are the ' +
+    'single-owner vaults created by the Flowlex vault factory; their position NFTs and idle token balances are counted. ' +
     'Closed and burned positions are excluded. Double counted with Uniswap V3.',
 }
 
