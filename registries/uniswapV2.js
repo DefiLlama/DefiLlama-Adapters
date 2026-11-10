@@ -3336,6 +3336,9 @@ const uniV2Configs = {
     morph: '0x174c4C03DfeA09682728A5959A253bf1F7C7766F',
   },
   'aerodrome-ignition': {
+    // 0xade65... is the Slipstream "Gauge Caps" CL factory, also counted by aerodrome-CL (Aerodrome Slipstream)
+    doublecounted: true,
+    methodology: 'Value of the tokens held in the pools of the Aerodrome Slipstream Gauge Caps CL factory used by Ignition launches. These pools are also counted in Aerodrome Slipstream (aerodrome-CL), so this listing is marked as double counted.',
     base: {
       factory: '0xade65c38cd4849adba595a4323a8c7ddfe89716a', blacklistedTokens: [], fetchBalances: true, useDefaultCoreAssets: false,
       abis: { allPairsLength: 'uint256:allPoolsLength', allPairs: 'function allPools(uint) view returns (address)' },
