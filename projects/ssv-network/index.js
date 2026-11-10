@@ -52,6 +52,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   methodology: 'Sums the beacon chain balances of all validators registered on the SSV Network contract (ValidatorAdded minus ValidatorRemoved, replayed in chain order).',
   ethereum: { tvl },
 }
