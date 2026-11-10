@@ -17,6 +17,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Counts collateral backing Flying Tulip put positions: current underlying asset value held by yield wrappers registered in PutManager, including deployed strategy assets and accrued yield, plus idle collateral held by PutManager. Excludes FT tokens, put notional value, and investor multisig assets held outside these wrappers.',
+  misrepresentedTokens: true, // Strategy receipt tokens are reported as their underlying collateral.
+  doublecounted: true, // Deployed collateral is also counted by the underlying yield protocols.
+  methodology: 'Counts collateral backing Flying Tulip put positions: current underlying asset value held by yield wrappers registered in PutManager, including deployed strategy assets and accrued yield, plus idle collateral held by PutManager. Strategy receipts are valued in underlying collateral units; these assets are also counted by the underlying yield protocols. Excludes FT tokens, put notional value, and investor multisig assets held outside these wrappers.',
   ethereum: { tvl },
 }
