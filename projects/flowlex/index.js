@@ -42,6 +42,18 @@ async function managerTokenIds(api, cfg) {
   return [...new Set([...opened.flat().map(i => i.tokenId), ...rebalanced.map(i => i.newTokenId)].map(String))]
 }
 
+// A failed ownerOf in the batch is retried alone: the id is dropped only when the position manager confirms the token
+// does not exist (burned); any other failure (e.g. RPC) throws instead of silently undercounting.
+async function isLive(api, nfpm, id) {
+  try {
+    await api.call({ abi: abis.ownerOf, target: nfpm, params: [id] })
+    return true
+  } catch (e) {
+    if (String(e?.message ?? e).includes('nonexistent token')) return false
+    throw e
+  }
+}
+
 // Fees a position could collect right now: tokensOwed plus what it earned since its last update,
 // using the same fee-growth math as the Uniswap V3 position manager.
 const Q128 = 2n ** 128n
@@ -92,7 +104,10 @@ async function tvl(api) {
 
   // Burned NFTs revert on positions(), so keep only ids that still exist.
   const owners = await api.multiCall({ abi: abis.ownerOf, target: cfg.nfpm, calls: ids, permitFailure: true })
-  const positionIds = ids.filter((_, i) => owners[i])
+  const positionIds = []
+  for (let i = 0; i < ids.length; i++) {
+    if (owners[i] || await isLive(api, cfg.nfpm, ids[i])) positionIds.push(ids[i])
+  }
   if (!positionIds.length) return
 
   await unwrapUniswapV3NFT({ api, nftAddress: cfg.nfpm, uniV3ExtraConfig: { positionIds } })
