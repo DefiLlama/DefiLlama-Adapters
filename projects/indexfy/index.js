@@ -1,13 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // IndexfyFolioFactory on Base: every Indexfy index (a Reserve Folio) is deployed through it
 const FACTORY = '0xf6e0F9eB258F3201738b5ced92beA1ef44F9C497'
 const FROM_BLOCK = 52828011
-
-// Chainlink CCIP-bridged WBNB on Base has no price feed; value it as WBNB on BSC (both 18 decimals)
-const TOKEN_MAPPING = {
-  '0x740dc69e4d89f0ca67ccde0c543c252b90eacdbd': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-}
 
 async function tvl(api) {
   const logs = await getLogs({
@@ -22,17 +18,13 @@ async function tvl(api) {
   // Every address comes from the factory's own events, so a failed read is an error, not an empty index.
   const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: allFolios })
   const folios = allFolios.filter((_, i) => BigInt(supplies[i]) > 0n)
+  // the basket tokens of each index, then each index's balance of them
   const baskets = await api.multiCall({
     abi: 'function totalAssets() view returns (address[] _assets, uint256[] _amounts)',
     calls: folios,
   })
-  baskets.forEach((basket) => {
-    basket._assets.forEach((asset, i) => {
-      const mapped = TOKEN_MAPPING[asset.toLowerCase()]
-      if (mapped) api.add(mapped, basket._amounts[i], { skipChain: true })
-      else api.add(asset, basket._amounts[i])
-    })
-  })
+  const tokensAndOwners = folios.flatMap((folio, i) => baskets[i]._assets.map((token) => [token, folio]))
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
