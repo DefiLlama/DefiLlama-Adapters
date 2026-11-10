@@ -22,8 +22,8 @@ const abi = {
 }
 
 // A position is one (owner, boxId) pair. Its collateral and debt sit in a money market (Morpho, Aave, Euler, ...)
-// under a per-position account, and the looper view reads both balances from the money market.
-async function getPositions(api) {
+// under a per-position account, and the looper view reads the collateral balance from the money market.
+async function tvl(api) {
   const { fromBlock } = config[api.chain]
   const logs = await getLogs2({ api, target: LOOPER, eventAbi: abi.PositionIncreased, fromBlock })
   const seen = new Set()
@@ -40,33 +40,14 @@ async function getPositions(api) {
   const boxById = Object.fromEntries(boxIds.map((id, i) => [id, boxes[i]]))
 
   const balances = await api.multiCall({ abi: abi.getAll, target: LOOPER_VIEW, calls: positions.map(p => ({ params: [p.owner, p.boxId] })) })
-  return positions.map((p, i) => ({
-    collateral: boxById[p.boxId].spokePt,
-    debtToken: boxById[p.boxId].spokeDebtToken,
-    collateralAmount: balances[i].mmPtBalance,
-    debtAmount: balances[i].mmDebtBalance,
-  }))
-}
-
-// tvl = collateral - debt (the users' own capital), borrowed = debt
-async function tvl(api) {
-  const positions = await getPositions(api)
-  positions.forEach(({ collateral, debtToken, collateralAmount, debtAmount }) => {
-    api.add(collateral, collateralAmount)
-    api.add(debtToken, -debtAmount)
-  })
-}
-
-async function borrowed(api) {
-  const positions = await getPositions(api)
-  positions.forEach(({ debtToken, debtAmount }) => api.add(debtToken, debtAmount))
+  balances.forEach((balance, i) => api.add(boxById[positions[i].boxId].spokePt, balance.mmPtBalance))
 }
 
 module.exports = {
   doublecounted: true,
-  methodology: 'PendleLoop opens leveraged positions on Pendle PTs and other yield-bearing tokens through lending markets (Morpho, Aave, Euler and others). TVL is the collateral of every position minus its debt, so only the capital the users put in is counted. The debt is reported under borrowed. The collateral is held in the lending markets and PT collateral is also part of Pendle TVL, so the listing is doublecounted.',
+  methodology: 'PendleLoop opens leveraged positions on Pendle PTs and other yield-bearing tokens through lending markets (Morpho, Aave, Euler and others). TVL is the collateral of every position. The collateral is held in the lending markets and PT collateral is also part of Pendle TVL, so the listing is doublecounted.',
 }
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl, borrowed }
+  module.exports[chain] = { tvl }
 })
