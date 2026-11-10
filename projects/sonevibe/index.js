@@ -11,6 +11,12 @@ const dex = {
   arbitrum: '0xA95107ebE4e54480bA755061eF3207c3421150f0',
 }
 
+// Drain-free Soneium factory, deployed 2026-11-10 03:56:01 UTC (block 30574105),
+// tx 0x69f8165d69abe21ac04f9e9b2e05e67fe97a2fd7ee976d97732068c0a2e57ad4.
+// The original soneium factory stays in `dex` so historical TVL still reads those pairs.
+const soneiumNewFactory = '0x77b141dCFDa726e239efF005E3DE7A47AeBFf948'
+const soneiumNewFactoryStartBlock = 30574105
+
 const lending = {
   // V_Master has no getAllMarkets(), so markets are pinned (from networks.json)
   // Arbitrum One has an empty master and no cTokens there, so it stays DEX-only.
@@ -29,10 +35,20 @@ Object.entries(dex).forEach(([chain, factory]) => {
 // allPairsLength is still 0 then. The WETH/USDC pair is created in block 521390325 at 05:41:58Z.
 dexExports.arbitrum.start = 1793855370
 
+const soneiumNewFactoryTVL = getUniTVL({ factory: soneiumNewFactory, useDefaultCoreAssets: true })
+const soneiumNewExports = {
+  soneium: {
+    tvl: async (api) => {
+      if (api.block != null && Number(api.block) < soneiumNewFactoryStartBlock) return {}
+      return soneiumNewFactoryTVL(api)
+    },
+  },
+}
+
 const lendingExports = {}
 Object.entries(lending).forEach(([chain, config]) => {
   lendingExports[chain] = compoundExports2(config)
 })
 
-module.exports = mergeExports([dexExports, lendingExports])
-module.exports.methodology = 'DEX TVL: reserves of all VibeSwap pairs created by the factory (core assets only). Lending TVL: underlying tokens held by SoneVibe cTokens listed by the comptroller; borrowed = total borrows. Arbitrum counts those factory reserves only; that chain has no comptroller or cTokens.'
+module.exports = mergeExports([dexExports, soneiumNewExports, lendingExports])
+module.exports.methodology = 'DEX TVL: reserves of all VibeSwap pairs created by the factories (core assets only). On Soneium this includes the original factory 0x06C0b58287794a0bdce20ce768b601CA974618DC, kept for history, and the drain-free factory 0x77b141dCFDa726e239efF005E3DE7A47AeBFf948 from block 30574105 (2026-11-10). Lending TVL: underlying tokens held by SoneVibe cTokens listed by the comptroller; borrowed = total borrows. Arbitrum counts those factory reserves only; that chain has no comptroller or cTokens.'
