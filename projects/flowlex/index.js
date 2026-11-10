@@ -1,13 +1,9 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
-const { sumTokens2, unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
+const { unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
 
-// Flowlex is non-custodial. Two products, both on Uniswap V3:
-//  - Manual positions: users open them through the LP manager, a pass-through helper that holds no
-//    funds and sends the position NFT straight to the user's own smart wallet. Those wallets can hold
-//    other Uniswap positions, so we count only the token ids the manager itself minted (it emits them).
-//  - Auto Vaults: single-owner vaults created by the vault factory; each one holds its position NFTs
-//    and idle tokens, all of which are counted.
+// Flowlex is non-custodial: users open Uniswap V3 positions through the LP manager, a pass-through helper that holds
+// no funds and sends the position NFT straight to the user's own smart wallet. Those wallets can hold other Uniswap
+// positions, so we count only the token ids the manager itself minted (it emits them).
 // Every position is counted as liquidity plus its uncollected fees. Closed positions drop out:
 // withdraw leaves zero liquidity and burn removes the NFT.
 const config = {
@@ -15,10 +11,7 @@ const config = {
     manager: '0xE20435aC8160aa58ADea4A1fc5641bB5aDAED053',
     managerFromBlock: 44474281,
     openEvents: ['positionOpened'],
-    vaultFactory: '0x002dADf330A4746ac16c21f1B0828396AcF132c1',
-    vaultFactoryFromBlock: 46821794,
     nfpm: '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1', // Uniswap V3 NonfungiblePositionManager
-    idleTokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH, ADDRESSES.base.cbBTC],
   },
   robinhood: {
     // same manager address as on Base; this deployment can also open from the pool's own tokens
@@ -33,8 +26,6 @@ const abis = {
   positionOpened: 'event PositionOpened(address indexed user, uint256 indexed tokenId, address pool, uint256 depositAmount, uint256 commission)',
   positionOpenedDual: 'event PositionOpenedDual(address indexed user, uint256 indexed tokenId, address pool, uint256 amountUsdc, uint256 amountOther, uint256 commissionUsdc, uint256 commissionOther)',
   positionRebalanced: 'event PositionRebalanced(address indexed user, uint256 indexed oldTokenId, uint256 indexed newTokenId)',
-  vaultCreated: 'event VaultCreated(address indexed user, address indexed vault)',
-  tokenOfOwnerByIndex: 'function tokenOfOwnerByIndex(address, uint256) view returns (uint256)',
   ownerOf: 'function ownerOf(uint256) view returns (address)',
   positions: 'function positions(uint256) view returns (uint96 nonce, address operator, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
   factory: 'address:factory',
@@ -48,24 +39,7 @@ const abis = {
 async function managerTokenIds(api, cfg) {
   const fetch = (event) => getLogs2({ api, target: cfg.manager, eventAbi: abis[event], fromBlock: cfg.managerFromBlock, extraKey: event })
   const [rebalanced, ...opened] = await Promise.all([fetch('positionRebalanced'), ...cfg.openEvents.map(fetch)])
-  return [...opened.flat().map(i => i.tokenId), ...rebalanced.map(i => i.newTokenId)].map(String)
-}
-
-async function getVaults(api, cfg) {
-  if (!cfg.vaultFactory) return []
-  const logs = await getLogs2({ api, target: cfg.vaultFactory, eventAbi: abis.vaultCreated, fromBlock: cfg.vaultFactoryFromBlock, extraKey: 'vaultCreated' })
-  return logs.map(i => i.vault)
-}
-
-async function vaultTokenIds(api, vaults, nfpm) {
-  if (!vaults.length) return []
-  const counts = await api.multiCall({ abi: 'erc20:balanceOf', target: nfpm, calls: vaults })
-  const calls = []
-  vaults.forEach((vault, i) => {
-    for (let j = 0; j < Number(counts[i]); j++) calls.push({ params: [vault, j] })
-  })
-  const ids = await api.multiCall({ abi: abis.tokenOfOwnerByIndex, target: nfpm, calls })
-  return ids.map(String)
+  return [...new Set([...opened.flat().map(i => i.tokenId), ...rebalanced.map(i => i.newTokenId)].map(String))]
 }
 
 // Fees a position could collect right now: tokensOwed plus what it earned since its last update,
@@ -113,33 +87,25 @@ async function addUncollectedFees(api, nfpm, positionIds) {
 
 async function tvl(api) {
   const cfg = config[api.chain]
-  const [managerIds, vaults] = await Promise.all([managerTokenIds(api, cfg), getVaults(api, cfg)])
-  const vaultIds = await vaultTokenIds(api, vaults, cfg.nfpm)
+  const ids = await managerTokenIds(api, cfg)
+  if (!ids.length) return
 
-  // A manual position can be moved into a vault later; the set keeps it from being counted twice.
-  const allIds = [...new Set([...managerIds, ...vaultIds])]
-  if (allIds.length) {
-    // Burned NFTs revert on positions(), so keep only ids that still exist.
-    const owners = await api.multiCall({ abi: abis.ownerOf, target: cfg.nfpm, calls: allIds, permitFailure: true })
-    const positionIds = allIds.filter((_, i) => owners[i])
-    if (positionIds.length) {
-      await unwrapUniswapV3NFT({ api, nftAddress: cfg.nfpm, uniV3ExtraConfig: { positionIds } })
-      await addUncollectedFees(api, cfg.nfpm, positionIds)
-    }
-  }
+  // Burned NFTs revert on positions(), so keep only ids that still exist.
+  const owners = await api.multiCall({ abi: abis.ownerOf, target: cfg.nfpm, calls: ids, permitFailure: true })
+  const positionIds = ids.filter((_, i) => owners[i])
+  if (!positionIds.length) return
 
-  if (vaults.length && cfg.idleTokens)
-    await sumTokens2({ api, owners: vaults, tokens: cfg.idleTokens })
+  await unwrapUniswapV3NFT({ api, nftAddress: cfg.nfpm, uniV3ExtraConfig: { positionIds } })
+  await addUncollectedFees(api, cfg.nfpm, positionIds)
 }
 
 module.exports = {
   doublecounted: true,
   methodology:
-    'Counts the Uniswap V3 liquidity opened through Flowlex, valued at the pool\'s current price, plus each position\'s uncollected fees. ' +
-    'Manual positions are the position NFTs minted by the Flowlex LP manager (found by its PositionOpened and PositionRebalanced events); ' +
-    'they sit in the users\' own smart wallets, and other Uniswap positions in those wallets are not counted. Auto Vaults are the ' +
-    'single-owner vaults created by the Flowlex vault factory; their position NFTs and idle token balances are counted. ' +
-    'Closed and burned positions are excluded. Double counted with Uniswap V3.',
+    'Counts the Uniswap V3 positions opened through Flowlex, valued at the pool\'s current price, plus each position\'s uncollected fees. ' +
+    'Positions are the NFTs minted by the Flowlex LP manager (found by its PositionOpened and PositionRebalanced events); they sit in ' +
+    'the users\' own smart wallets, and other Uniswap positions in those wallets are not counted. Closed and burned positions are ' +
+    'excluded. Double counted with Uniswap V3.',
 }
 
 Object.keys(config).forEach(chain => {
