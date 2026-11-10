@@ -604,7 +604,7 @@ async function main() {
     chain: 'solana',
     project: 'metadao/futarchy-dao-treasuries',
     balances,
-    timestamp: Math.floor(Date.now() / 1000),
+    timestamp: Date.now(), // epoch ms, what getCustomScriptTvl's freshness check expects
   });
 }
 
