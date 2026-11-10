@@ -18,7 +18,7 @@ const iface = new Interface([VALIDATOR_ADDED, VALIDATOR_REMOVED])
 // raw logs (no eventAbi) keep block number and log index for ordering, skipCache keeps them out of the cache
 const getEvents = (api, name, fromBlock, toBlock) => getLogs2({
   api, target: SSV_NETWORK, topics: [iface.getEvent(name).topicHash], extraKey: name, fromBlock, toBlock, skipCache: true,
-  transform: log => ({ order: log.blockNumber * 1e5 + Number(log.logIndex ?? log.index), isAdd: name === 'ValidatorAdded', key: iface.parseLog(log).args.publicKey.toLowerCase() }),
+  transform: log => ({ block: log.blockNumber, index: Number(log.logIndex ?? log.index), isAdd: name === 'ValidatorAdded', key: iface.parseLog(log).args.publicKey.toLowerCase() }),
 })
 
 async function getValidatorKeys(api) {
@@ -31,7 +31,7 @@ async function getValidatorKeys(api) {
     const fromBlock = toBlock + 1
     toBlock = Math.min(toBlock + CATCH_UP_BLOCKS, end)
     const events = (await Promise.all(['ValidatorAdded', 'ValidatorRemoved'].map(name => getEvents(api, name, fromBlock, toBlock)))).flat()
-    events.sort((a, b) => a.order - b.order).forEach(({ isAdd, key }) => isAdd ? live.add(key) : live.delete(key))
+    events.sort((a, b) => a.block - b.block || a.index - b.index).forEach(({ isAdd, key }) => isAdd ? live.add(key) : live.delete(key))
     if (toBlock === end || Date.now() - savedAt > 60_000) {
       await setCache('ssv-network', 'validators', { toBlock, keys: [...live] })
       savedAt = Date.now()
