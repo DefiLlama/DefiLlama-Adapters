@@ -24,7 +24,8 @@ const V4_MANAGERS = [
   { address: '0x63b202b8c36b0cd35782af0068d0a60fd1394b86', fromBlock: 334629 },
 ]
 
-// Uniswap v4 PositionManagers Homer opens positions through, and their PoolManager.
+// Uniswap v4 PositionManagers Homer opens positions through, and their PoolManager (any other is
+// asked for its poolManager() at run time).
 const V4_POOL_MANAGER = {
   '0x1f9b957071228a3190280e062cc62a3f66b6a13a': '0x5fb015a49f5b35073f9ce01c2adb287a75f89600', // ElysPump's v4
   '0x1d1c51b9d07fd27d36412a2b66cc23d19eb3e518': '0xe2e105d3f7209a9da11f83ccf3e7398a753823f1', // Uniswap v4
@@ -64,12 +65,21 @@ async function v4Positions(api) {
   if (!live.length) return
   const infos = await api.multiCall({ abi: POOL_AND_INFO, calls: live.map((p) => p.call) })
 
+  // Each PositionManager's PoolManager: the known ones from the list, any other asked directly
+  // (a Homer V4 manager can be allowed a new PositionManager later; TVL must not fail on it).
+  const poolManagers = { ...V4_POOL_MANAGER }
+  const unknown = [...new Set(live.map((p) => p.nft))].filter((nft) => !poolManagers[nft])
+  if (unknown.length) {
+    const found = await api.multiCall({ abi: 'address:poolManager', calls: unknown })
+    unknown.forEach((nft, i) => { poolManagers[nft] = found[i].toLowerCase() })
+  }
+
   // Pool price from the PoolManager's storage (slot0 of each pool), the way StateView reads it.
   const coder = new (require('ethers').AbiCoder)()
   const { keccak256 } = require('ethers')
   const poolOf = infos.map(({ poolKey: k }, i) => {
     const id = keccak256(coder.encode(['address', 'address', 'uint24', 'int24', 'address'], [k.currency0, k.currency1, k.fee, k.tickSpacing, k.hooks]))
-    return { id, manager: V4_POOL_MANAGER[live[i].nft] }
+    return { id, manager: poolManagers[live[i].nft] }
   })
   const slots = await api.multiCall({
     abi: EXTSLOAD,
