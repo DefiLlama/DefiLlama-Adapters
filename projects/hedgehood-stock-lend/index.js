@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // StockLend by HedgeHood (hedgehood.io/loan): isolated stock-lending markets on Robinhood Chain. Lenders deposit a
@@ -13,35 +12,39 @@ const MARKETS = [
   '0x5C88B4f4a1acBBb1E5E63d4414bc194477bD2A7a', // CRCL
   '0x6Ddc8f2dE5DCe2ff2EAc2c12CD96C936948C2912', // USO
   // retired: closed to new loans, lenders and borrowers can still exit
-  '0x118266F880d8A99c8D4F3E507B87c6CabdDF2339', // GME v1
-  '0x028727fcf3b76Bcc1a1877100f77a38A73B9eb35', // GME v2
-  '0x4BC618Fd846602113D494d5f86A0B915257d8d10', // SPCX v2
   '0xD233AC577cd0010A7B67EF2d0DA0447FD02375f8', // GME v3, SGOV collateral
   '0x412a33d1266B5D408191E66b31c372580d9168c8', // GME v3, SPY collateral
   '0x3D15BB430a70c3dD4ADf329ee7E089885a887e09', // GME v3
 ]
+// retired, first contract version: USDG collateral only, read from usdg() (there is no collateral() getter)
+const LEGACY_MARKETS = [
+  '0x118266F880d8A99c8D4F3E507B87c6CabdDF2339', // GME v1
+  '0x028727fcf3b76Bcc1a1877100f77a38A73B9eb35', // GME v2
+  '0x4BC618Fd846602113D494d5f86A0B915257d8d10', // SPCX v2
+]
+const ALL = [...MARKETS, ...LEGACY_MARKETS]
 
+// A failed read fails the run: a market silently dropped, or priced in the wrong collateral, would misstate TVL.
 async function tokens(api) {
-  const [stocks, collaterals] = await Promise.all([
-    api.multiCall({ abi: 'address:stock', calls: MARKETS, permitFailure: true }),
-    api.multiCall({ abi: 'address:collateral', calls: MARKETS, permitFailure: true }),
+  const [stocks, collaterals, legacyCollaterals] = await Promise.all([
+    api.multiCall({ abi: 'address:stock', calls: ALL }),
+    api.multiCall({ abi: 'address:collateral', calls: MARKETS }),
+    api.multiCall({ abi: 'address:usdg', calls: LEGACY_MARKETS }),
   ])
-  // the first market versions (GME v1/v2, SPCX v2) take USDG only and have no collateral() getter
-  return { stocks, collaterals: collaterals.map((token) => token ?? ADDRESSES.robinhood.USDG) }
+  return { stocks, collaterals: [...collaterals, ...legacyCollaterals] }
 }
 
 // idle lender stock and borrowers' collateral, both held by the market
 async function tvl(api) {
   const { stocks, collaterals } = await tokens(api)
-  const tokensAndOwners = MARKETS.flatMap((market, i) => [[stocks[i], market], [collaterals[i], market]]).filter(([token]) => token)
-  return sumTokens2({ api, tokensAndOwners })
+  return sumTokens2({ api, tokensAndOwners: ALL.flatMap((market, i) => [[stocks[i], market], [collaterals[i], market]]) })
 }
 
 // stock out on loan
 async function borrowed(api) {
   const { stocks } = await tokens(api)
-  const lent = await api.multiCall({ abi: 'uint256:lentOut', calls: MARKETS, permitFailure: true })
-  lent.forEach((amount, i) => { if (stocks[i] && amount) api.add(stocks[i], amount) })
+  const lent = await api.multiCall({ abi: 'uint256:lentOut', calls: ALL })
+  lent.forEach((amount, i) => api.add(stocks[i], amount))
 }
 
 module.exports = {
