@@ -38,8 +38,14 @@ const abis = {
 
 async function managerTokenIds(api, cfg) {
   const fetch = (event) => getLogs2({ api, target: cfg.manager, eventAbi: abis[event], fromBlock: cfg.managerFromBlock, extraKey: event })
-  const [rebalanced, ...opened] = await Promise.all([fetch('positionRebalanced'), ...cfg.openEvents.map(fetch)])
-  return [...new Set([...opened.flat().map(i => i.tokenId), ...rebalanced.map(i => i.newTokenId)].map(String))]
+  const ids = []
+  for (const event of cfg.openEvents) {
+    const logs = await fetch(event)
+    ids.push(...logs.map(i => i.tokenId))
+  }
+  const rebalanced = await fetch('positionRebalanced')
+  ids.push(...rebalanced.map(i => i.newTokenId))
+  return [...new Set(ids.map(String))]
 }
 
 // A failed ownerOf in the batch is retried alone: the id is dropped only when the position manager confirms the token
@@ -67,13 +73,11 @@ async function addUncollectedFees(api, nfpm, positionIds) {
   const factory = await api.call({ abi: abis.factory, target: nfpm })
   const pools = await api.multiCall({ abi: abis.getPool, target: factory, calls: positions.map(p => ({ params: [p.token0, p.token1, p.fee] })) })
   const uniquePools = [...new Set(pools)]
-  const [slot0s, global0s, global1s, lowers, uppers] = await Promise.all([
-    api.multiCall({ abi: abis.slot0, calls: uniquePools }),
-    api.multiCall({ abi: abis.feeGrowthGlobal0X128, calls: uniquePools }),
-    api.multiCall({ abi: abis.feeGrowthGlobal1X128, calls: uniquePools }),
-    api.multiCall({ abi: abis.ticks, calls: positions.map((p, i) => ({ target: pools[i], params: [p.tickLower] })) }),
-    api.multiCall({ abi: abis.ticks, calls: positions.map((p, i) => ({ target: pools[i], params: [p.tickUpper] })) }),
-  ])
+  const slot0s = await api.multiCall({ abi: abis.slot0, calls: uniquePools })
+  const global0s = await api.multiCall({ abi: abis.feeGrowthGlobal0X128, calls: uniquePools })
+  const global1s = await api.multiCall({ abi: abis.feeGrowthGlobal1X128, calls: uniquePools })
+  const lowers = await api.multiCall({ abi: abis.ticks, calls: positions.map((p, i) => ({ target: pools[i], params: [p.tickLower] })) })
+  const uppers = await api.multiCall({ abi: abis.ticks, calls: positions.map((p, i) => ({ target: pools[i], params: [p.tickUpper] })) })
   const poolState = {}
   uniquePools.forEach((pool, i) => { poolState[pool] = { tick: Number(slot0s[i].tick), global: [BigInt(global0s[i]), BigInt(global1s[i])] } })
 
