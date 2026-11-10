@@ -88,6 +88,9 @@ async function markedPositions(api) {
   return [...found]
 }
 
+// Adds what the marked positions hold now: each one's current liquidity over its tick range, at its
+// pool's current tick. Burned or emptied positions add nothing, and positions in Helios' own pools are
+// skipped because those pools' reserves are already counted in full.
 async function addMarkedPositions(api) {
   const positions = (await markedPositions(api)).map((key) => key.split(':'))
   if (!positions.length) return
@@ -124,6 +127,7 @@ async function addMarkedPositions(api) {
   })
 }
 
+// TVL: the reserves of every pool on a Helios fee hook, then the marked positions in other DEXes' pools.
 async function tvl(api) {
   const pools = []
   for (const hook of FEE_HOOKS)
