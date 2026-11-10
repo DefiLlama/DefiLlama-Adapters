@@ -456,6 +456,32 @@
       "pool2": "_f"
     }
   },
+  "alienbase-area51": {
+    "methodology": "Value of the tokens locked in the liquidity pools.",
+    "base": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2026-11-03",
+        "Product retired"
+      ]
+    ],
+    "deadFrom": "2026-11-03"
+  },
+  "alienbase-stableswap": {
+    "methodology": "Queries balances of StableSwap pools and sums their total value",
+    "base": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2025-12-31",
+        "Product retired"
+      ]
+    ],
+    "deadFrom": "2025-12-31"
+  },
   "allbridge-core": {
     "methodology": "All tokens locked in Allbridge Core pool contracts.",
     "deadFrom": "2026-08-31",

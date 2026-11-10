@@ -102,9 +102,6 @@ const uniV2Configs = {
     base: '0xAf39606bec181887951Ab6912Ac7EA216Bd6E4B4',
     bsc: '0xAf39606bec181887951Ab6912Ac7EA216Bd6E4B4',
   },
-  'alienbase-area51': {
-    base: '0x2d5dd5fa7B8a1BFBDbB0916B42280208Ee6DE51e',
-  },
   'allinxswap': {
     bsc: '0xB755953681f0b54f59336294f6758aE9e2E3aB5e',
     op_bnb: '0xAFcA85A70Bd1C2Bf98DB7F24b2380134F76Af7f1',
