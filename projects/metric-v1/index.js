@@ -28,6 +28,8 @@ const config = {
   avax: [FACTORY],
   monad: [FACTORY],
   megaeth: [FACTORY],
+  // Elysium (Kinetiq's Arbitrum Orbit chain, chain id 99901): factory live since 2026-10-29.
+  elysium: [FACTORY],
 }
 
 Object.keys(config).forEach(chain => {
