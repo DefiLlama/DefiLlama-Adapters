@@ -1,15 +1,7 @@
-const { queryContract, endPoints } = require('../helper/chain/cosmos');
+const { queryContract } = require('../helper/chain/cosmos');
 const { transformBalances } = require('../helper/portedTokens');
-const { get } = require('../helper/http');
-const { getConfig } = require('../helper/cache');
 
 const VALDORA_STAKER_CONTRACT = 'zig18nnde5tpn76xj3wm53n0tmuf3q06nruj3p6kdemcllzxqwzkpqzqk7ue55';
-const VAULTS_API = 'https://valdora.finance/api/vaults';
-const FALLBACK_VAULTS = [
-  'zig1h3au5n3lsyqm32ydz3usgy7r9z7wpx4gttcxmypfecz29adtu64svluenp',
-  'zig1mayx7wkzensav40j3qc8c5lh6s884jlhsu0c0js058t4u9xcg0mql58gkq',
-  'zig1m526fltgrf70qdsufx9k9fdl4x07usjlydcn32jn83fs6za9c5cswd9grk',
-];
 
 async function fetchStakerAUM() {
   const { funds_raised } = await queryContract({
@@ -21,38 +13,11 @@ async function fetchStakerAUM() {
   return funds_raised;
 }
 
-async function queryRaw({ contract, key }) {
-  const keyB64 = Buffer.from(key).toString('base64');
-  const url = `${endPoints.zigchain}/cosmwasm/wasm/v1/contract/${contract}/raw/${keyB64}`;
-  const { data } = await get(url);
-  if (!data) return null;
-  return JSON.parse(Buffer.from(data, 'base64').toString());
-}
-
-async function fetchVaultBalance(vaultAddress) {
-  const [{ aum }, assetDenom] = await Promise.all([
-    queryContract({ contract: vaultAddress, chain: 'zigchain', data: { aum: {} } }),
-    queryRaw({ contract: vaultAddress, key: 'asset_denom' }),
-  ]);
-  return { aum, assetDenom };
-}
-
 async function tvl(api) {
   const balances = api.getBalances();
 
   const stakerAum = await fetchStakerAUM();
   if (stakerAum) balances['zigchain:azig'] = stakerAum;
-
-  const payload = await getConfig('valdora/vaults', VAULTS_API);
-  const vaults = Array.isArray(payload) && payload.length ? payload : FALLBACK_VAULTS.map(address => ({ address }));
-  const results = await Promise.all(
-    vaults.map(v => fetchVaultBalance(v.address))
-  );
-  for (const r of results) {
-    if (!r || !r.aum || !r.assetDenom) continue;
-    const key = `zigchain:${r.assetDenom}`;
-    balances[key] = (BigInt(balances[key] || 0) + BigInt(r.aum)).toString();
-  }
 
   return transformBalances('zigchain', balances);
 }
@@ -60,6 +25,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
-  methodology: "Total USD value of assets held in Valdora smart contracts, including ZIG deposited into Valdora liquid staking and assets deposited across active Valdora Vault contracts. Receipt tokens such as stZIG and vault tokens are excluded to avoid double-counting.",
+  methodology: "Total ZIG deposited into Valdora liquid staking. The stZIG receipt token is excluded to avoid double-counting. Valdora Vaults (short-duration private credit) are real-world assets tracked on the RWA dashboard, not in TVL.",
   zigchain: { tvl },
 };
