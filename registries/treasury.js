@@ -3190,6 +3190,25 @@ const configs = {
       ownTokens: ["0x91fbB2503AC69702061f1AC6885759Fc853e6EaE"]
     },
   },
+  'treasury/kalos': {
+    elysium: {
+      owners: [
+        '0xcA105395094Ceb27e6AfdA492c6379cBF468CDb8', // revenue splitter
+        '0xca10595e1F7a722ed80A6BEc7Ac27d183F3C541C', // Treasury vault
+        '0xCA1058B5339e97cE75AB2885A56570Ecb2F54881', // Team vault
+        '0xcA10538C4e513512cf1a222A2e00cF720b9CA9Cc', // Rewards vault
+        '0xCA105Dd42d1563889D4eF0905Fdf91E97517Df46', // Liquidity vault
+      ],
+      tokens: [
+        nullAddress,
+        ADDRESSES.elysium.WHYPE,
+        ADDRESSES.elysium.USDC,
+        ADDRESSES.elysium.USDT0,
+        ADDRESSES.elysium.kHYPE,
+        '0xe45a355d9e9cAd2aD85F2d03E3eE3102A036acF0', // KNTQ
+      ],
+    },
+  },
   'treasury/kayen-finance': {
     chz: {
       tokens: [nullAddress],

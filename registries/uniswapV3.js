@@ -1977,6 +1977,12 @@ const uniV3Configs = {
     methodology: 'TVL is the value of tokens held in ArkhamPad launch pools (Uniswap v3 style pools created by the ArkhamPad factory on Elysium). Launch liquidity is locked forever.',
     elysium: { factory: '0x75656d8d2A59293DBdA4178F11Af6EE506ef60dD', fromBlock: 65264 },
   },
+  'kalos-dex': {
+    // Kalos DEX (https://www.kalos.fun): the canonical Uniswap V3 contracts deployed unmodified by Kalos, https://www.kalos.fun/learn/contracts
+    start: '2026-11-05',
+    methodology: 'TVL is the tokens held in Kalos DEX pools, the Uniswap V3 pools created by the Kalos factory (found from its PoolCreated events).',
+    elysium: { factory: '0x8C60243181370bDA9A7d1a45b1249A8263da0158', fromBlock: 915221 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
