@@ -593,8 +593,16 @@ const configs = {
   },
   'treasury/alienbase': {
     base: {
-      owners: ['0x4aB9070B7680f802cBf8322e597a4409902171e5'],
-      ownTokens: ['0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4'],
+      owners: [
+        '0xdD8Bb6779D6d7A2540C38caE1e95c2A1c350A390', // multisig: v2 feeTo, LoC beneficiary
+        '0x4aB9070B7680f802cBf8322e597a4409902171e5', // factory owner
+      ],
+      ownTokens: [
+        '0x1b23704e3f4bc7081fb00cec582183e3fe43cef7', // ALB
+        '0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4', // legacy ALB
+        '0x32d9f29170a023794025375df6949f56844e4473', // esALB
+        '0x7fdb2cbe3dd946b6b4521d4a2cce62296ec1441d', // govALB
+      ],
     },
   },
   'treasury/alkimiya': {
