@@ -308,7 +308,8 @@ const config = {
       "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ", // Gate Earn, nominator (bonded DOT stays in the account)
       // "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
       // "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
-      // "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2"
+      "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2", // Gate Earn 
+      "15FWs1pcTz8NbjGvBAMzmqUdWPnaLhBPwDNsJEVoAG4jc22n" // Gate Earn, nominator
     ]
   },
   "scroll": {
