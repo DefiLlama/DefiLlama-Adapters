@@ -14,7 +14,6 @@ async function tvl(api) {
     api.call({
       abi: 'uint256:bonusReserve',
       target: STONKBASE_PREDICTIONS,
-      permitFailure: true,
     }),
     sumTokens2({
       api,
