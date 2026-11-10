@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { cexExports } = require("../helper/cex");
+const { cexExports, defaultTokens } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { cosmosStaked, suiStaked, aptosStaked, nearStaked, bittensorStaked, confluxStaked, cardanoStaked, algorandStaked, starknetStaked, aleoStaked, neo3Staked } = require("../helper/stakingHelper");
@@ -308,7 +308,8 @@ const config = {
       "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ", // Gate Earn, nominator (bonded DOT stays in the account)
       // "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
       // "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
-      // "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2"
+      "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2", // Gate Earn 
+      "15FWs1pcTz8NbjGvBAMzmqUdWPnaLhBPwDNsJEVoAG4jc22n" // Gate Earn, nominator
     ]
   },
   "scroll": {
@@ -1859,7 +1860,9 @@ const config = {
       "UQDQSAWWKRBUm0VnUrny-9Ni_deobis0aC6XpEtalxxl_eUa",
       "UQCalNyv57ob7KK1r7nsVaY4VivZu712RTlqiEYAffoM3kJ-",
       "EQC0lrj3O0af8GotieYsTXChA_wijIIVN7Sd_wkgYLwoH07q",
-    ]
+    ],
+    // default TON whitelist + EVAA (EVAA Protocol), held in Gate's TON reserve wallet UQDQSAWW...
+    tokens: [...defaultTokens.ton, 'EQBKMfjX_a_dsOLm-juxyVZytFP7_KKnzGv6J01kGc72gVBp'],
   },
   "umee": {
     "owners": [
@@ -1983,7 +1986,9 @@ const config = {
       "zil1melkmjzv6v784dlk30rhx2ck4zccqpprsdd3jt",
       "zil12zn46cppzsg0thgn7e66ugjd3c25hcl0acjaud",
       "zil1jcmadzrm6w49gegqw94esdkyhfq75y4fxl9wrv",
-      "zil12acrew80f00m4v3cs4hw9yawx7m74fwdwtmdj5"
+      "zil12acrew80f00m4v3cs4hw9yawx7m74fwdwtmdj5",
+      "zil1ezptzyd8tsxx2l79qlqyl07d9nycfur3wgesc7", // = 0xc882b111a75c0c657fc507c04fbfcd2cc984f071
+      "zil1p5rs093e2te0hfva6phjksj6eeqtfyh70mhnw4", // = 0x0d0707963952f2fba59dd06f2b425ace40b492fe
     ]
   },
   "zircuit": {
@@ -2029,13 +2034,25 @@ const config = {
       "zig1xunyznpjmj9jv5e2zwngp2qrzmulr2ggejyvt7",
     ]
   },
+  kusama: {
+    owners: [
+      "J5VsgNemdBg2bfvHresAtBZdxE67WrS656Caup3MgsBE2y7",
+      "CspNJ5uJ9WcF6Nf6sJY9YRQL3dWZmKrMnmd2qY4BXMTGEgi",
+    ]
+  },
+  initia: {
+    owners: [
+      "init1xunyznpjmj9jv5e2zwngp2qrzmulr2ggkwpdz5",
+      "init155svs6sgxe55rnvs6ghprtqu0mh69kehd907tp",
+    ]
+  },
   robinhood: {
     owners: ['0xc882b111a75c0c657fc507c04fbfcd2cc984f071', '0x0d0707963952f2fba59dd06f2b425ace40b492fe'],
   }
 };
 
 // remove chains w/o historical tvl
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'cmp', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'nibiru', 'ontology', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bone', 'callisto', 'clv', 'concordium', 'cmp', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'nibiru', 'parallel', 'pokt', 'polkadex', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'velas', 'venom', 'vite', 'waves', 'wax', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
   'vinu', 'rollux', 'aelf', 'ailayer', 'archway',
 ]
 

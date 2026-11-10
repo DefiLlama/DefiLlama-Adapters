@@ -17,6 +17,7 @@ async function sumTokens({ api, owners = [] }) {
       api.add(`neo:${assethash.toLowerCase()}`, amount, { skipChain: true })
     await sleep(200)
   }
+  return api.getBalances()
 }
 
 module.exports = {
