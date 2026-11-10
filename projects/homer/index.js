@@ -5,7 +5,8 @@
 // TVL is marked as double counted. Staked $HOMER is reported separately.
 
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
+const { staking } = require('../helper/staking')
 
 // HomerLiquidityManager versions (v3 positions). Positions opened in earlier versions stay there
 // until their owners move them, so every version is counted.
@@ -33,7 +34,6 @@ const V4_POOL_MANAGER = {
 
 const HOMER = '0x365be4728d0ee2140e8b75a05c5dcf6b7d76399a'
 const HOMER_STAKING = '0x5bdc2d45b54f909bae587ff3a051299e802fd6e8'
-const HOMER_POOL = '0x42225e9732882875ad07e3acedfe5f4badf5b794' // KleosSwap v3 WHYPE/HOMER (token0 WHYPE, token1 HOMER)
 
 const MINTED = 'event Minted(address indexed user, address indexed manager, uint256 indexed tokenId, uint128 liquidity, uint256 amount0, uint256 amount1)'
 const REBALANCED = 'event Rebalanced(address indexed user, address indexed manager, uint256 indexed oldTokenId, uint256 newTokenId, uint128 liquidity, uint256 amount0, uint256 amount1)'
@@ -44,15 +44,21 @@ const POOLS_SLOT = 6n // PoolManager's `_pools` mapping
 
 const int24 = (v) => { const n = Number(v & 0xffffffn); return n >= 0x800000 ? n - 0x1000000 : n }
 
+// keep only "<positionManager>:<tokenId>" in the log cache, not the raw logs
+const idCache = (field) => ({ cache, logs }) => {
+  cache.logs = [...new Set([...(cache.logs ?? []), ...logs.map((l) => `${l.manager.toLowerCase()}:${l[field]}`)])]
+  return cache
+}
+
 async function v4Positions(api) {
   // Every position a Homer v4 manager opened (minted or created by a rebalance), still held by it.
   const held = [] // { nft, tokenId }
   for (const { address, fromBlock } of V4_MANAGERS) {
     const [minted, rebalanced] = await Promise.all([
-      getLogs({ api, target: address, eventAbi: MINTED, fromBlock, onlyArgs: true, extraKey: 'minted' }),
-      getLogs({ api, target: address, eventAbi: REBALANCED, fromBlock, onlyArgs: true, extraKey: 'rebalanced' }),
+      getLogs2({ api, target: address, eventAbi: MINTED, fromBlock, extraKey: 'minted-ids', customCacheFunction: idCache('tokenId') }),
+      getLogs2({ api, target: address, eventAbi: REBALANCED, fromBlock, extraKey: 'rebalanced-ids', customCacheFunction: idCache('newTokenId') }),
     ])
-    const ids = [...minted.map((l) => [l.manager, l.tokenId]), ...rebalanced.map((l) => [l.manager, l.newTokenId])]
+    const ids = [...minted, ...rebalanced].map((i) => i.split(':'))
     const owners = await api.multiCall({ abi: 'function ownerOf(uint256) view returns (address)', calls: ids.map(([nft, id]) => ({ target: nft, params: [id] })), permitFailure: true })
     ids.forEach(([nft, id], i) => { if (owners[i] && owners[i].toLowerCase() === address) held.push({ nft: nft.toLowerCase(), tokenId: id }) })
   }
@@ -101,33 +107,21 @@ async function v4Positions(api) {
   })
 }
 
-// Staked $HOMER, valued in HYPE at the pool's price (WHYPE is 1:1 HYPE).
-async function staking(api) {
-  const [staked, slot0] = await Promise.all([
-    api.call({ abi: 'erc20:balanceOf', target: HOMER, params: [HOMER_STAKING] }),
-    api.call({ abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)', target: HOMER_POOL }),
-  ])
-  const sqrtP = BigInt(slot0.sqrtPriceX96)
-  // price = HOMER per WHYPE = sqrtP^2 / 2^192, so HYPE value = staked * 2^192 / sqrtP^2
-  const hype = (BigInt(staked) << 192n) / (sqrtP * sqrtP)
-  api.addGasToken(hype.toString())
-  return api.getBalances()
-}
-
 async function tvl(api) {
   // Each manager lists the position managers (Uniswap v3 NFTs) it accepts.
   const nfts = await api.multiCall({ abi: 'address[]:managers', calls: V3_MANAGERS })
   await sumTokens2({ api, uniV3nftsAndOwners: V3_MANAGERS.flatMap((owner, i) => nfts[i].map((nft) => [nft, owner])) })
   await v4Positions(api)
+  api.removeTokenBalance(HOMER) // own token stays out of tvl
   return api.getBalances()
 }
 
 module.exports = {
   doublecounted: true,
-  methodology: 'TVL is the liquidity in positions users opened through Homer: Uniswap v3-style NFTs held by HomerLiquidityManager contracts and Uniswap v4 positions held by HomerV4Manager contracts. These positions sit in other DEXes\' pools, so the TVL is double counted with those DEXes. Staking is the $HOMER staked in HomerStaking.',
+  methodology: 'TVL is the liquidity in positions users opened through Homer: Uniswap v3-style NFTs held by HomerLiquidityManager contracts and Uniswap v4 positions held by HomerV4Manager contracts. These positions sit in other DEXes\' pools, so the TVL is double counted with those DEXes. HOMER inside positions is excluded. Staking is the $HOMER staked in HomerStaking.',
   start: '2026-10-30',
   elysium: {
     tvl,
-    staking,
+    staking: staking(HOMER_STAKING, HOMER),
   },
 }
