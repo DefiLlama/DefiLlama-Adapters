@@ -1,5 +1,5 @@
-const { get } = require('../http')
-const { sleep, sliceIntoChunks } = require('../utils')
+const { post } = require('../http')
+const { sleep } = require('../utils')
 
 // Avalanche X-Chain (AVM) native AVAX balances; these addresses are not on the C-Chain so the evm
 // path never sees them. Added to the `avax` chain by the caller.
