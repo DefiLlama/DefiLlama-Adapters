@@ -21,6 +21,8 @@ const POOLS_QUERY = `{
   }
 }`
 
+const LOANS_QUERY = (skip) => `{ openTermLoans(first: 1000, skip: ${skip}) { id fundingPool { id } loanMeta { type } } }`
+
 // keyed by poolCollaterals `blockchain:asset`, tokens are only needed on EVM chains
 const COLLATERALS = {
   'Bitcoin:BTC': { chain: 'bitcoin' },
@@ -53,6 +55,24 @@ async function getPools() {
   })
   if (!pools?.length) throw new Error('Maple: no pools')
   return pools
+}
+
+// open-term loans Maple labels (amm, defi, intercompany, strategy, tBills, termBasis...) deploy pool cash and are not loans to borrowers
+async function getLabelledLoans() {
+  const { loans } = await getConfig('maple/labelled-open-term-loans', undefined, {
+    fetcher: async () => {
+      const loans = []
+      for (let skip = 0; ; skip += 1000) {
+        const { data, errors } = await post('https://api.maple.finance/v2/graphql', { query: LOANS_QUERY(skip) })
+        if (errors?.length || !data?.openTermLoans) throw new Error('Maple: invalid openTermLoans response')
+        loans.push(...data.openTermLoans)
+        if (data.openTermLoans.length < 1000) break
+      }
+      if (!loans.length) throw new Error('Maple: no open-term loans')
+      return { loans: loans.filter(l => l.loanMeta?.type) }
+    },
+  })
+  return loans
 }
 
 // custody addresses of the collateral currently backing loans, grouped by chain
@@ -99,11 +119,19 @@ const collateralTvl = (chain) => async (api) => {
 }
 
 async function borrowed(api) {
+  const pools = await getPools()
   const loanManagers = {}
-  for (const p of await getPools())
+  for (const p of pools)
     for (const lm of [p.loanManager, p.openTermLoanManager]) if (lm) loanManagers[lm.id.toLowerCase()] = p.asset.id
   const principal = await api.multiCall({ abi: 'uint256:principalOut', calls: Object.keys(loanManagers) })
   api.addTokens(Object.values(loanManagers), principal)
+  // the loan managers' principalOut includes the labelled loans, take their principal back out
+  const poolAssets = Object.fromEntries(pools.map(p => [p.id.toLowerCase(), p.asset.id]))
+  const labelled = await getLabelledLoans()
+  const assets = labelled.map(l => poolAssets[l.fundingPool.id.toLowerCase()])
+  if (assets.some(a => !a)) throw new Error('Maple: labelled loan from an unknown pool')
+  const labelledPrincipal = await api.multiCall({ abi: 'uint256:principal', calls: labelled.map(l => l.id) })
+  api.addTokens(assets, labelledPrincipal.map(v => -v))
 }
 
 async function staking(api) {
@@ -111,7 +139,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the cash held by Maple pools on Ethereum, including cash deployed to yield strategies, plus borrower collateral: the balances of the collateral tokens at the custody addresses Maple publishes for each pool, read on the chain where they are held (BTC on Bitcoin, XRP on the XRP Ledger, ETH, wstETH, PYUSD and other tokens on Ethereum). Collateral Maple reports that is not held at those addresses is not counted. Borrowed is the principal outstanding in the pools\' loan managers. Staking is SYRUP deposited in stSYRUP.',
+  methodology: 'TVL is the cash held by Maple pools on Ethereum, including cash deployed to yield strategies, plus borrower collateral: the balances of the collateral tokens at the custody addresses Maple publishes for each pool, read on the chain where they are held (BTC on Bitcoin, XRP on the XRP Ledger, ETH, wstETH, PYUSD and other tokens on Ethereum). Collateral Maple reports that is not held at those addresses is not counted. Borrowed is the principal outstanding in the pools\' loan managers, less the open-term loans Maple labels as its own cash deployments (AMM, DeFi, intercompany, strategy, T-bills, term basis), which Maple does not count as loans. Staking is SYRUP deposited in stSYRUP.',
   // custody addresses are only published for current loans
   timetravel: false,
   doublecounted: true, // we are counting collateral on other chains like bitcoin, these are not smart contracts, so should not be treated as defi tvl.
