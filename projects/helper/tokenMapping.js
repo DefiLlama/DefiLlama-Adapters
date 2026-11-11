@@ -68,6 +68,13 @@ const fixBalancesTokens = {
     '0x43ca3cee078d8cb8528915b16e8bdcc9adbe6090': { coingeckoId: 'hyperliquid', decimals: 18 },
     '0xceeb06009b870430ac2872e3ba875ab6a9ab6699': { coingeckoId: 'hyperliquid', decimals: 18 },
   },
+  // $STRATO is native to the STRATO chain; the Ethereum ERC-20
+  // (0x4c93b9fbf7fd1777ccbcbc538b1d0a8b58fb1ad6) is its bridged representation,
+  // backed 1:1 by STRATO locked in the StratoNativeBridge custody vault.
+  // CoinGecko lists the ERC-20 as `ethereum-strato`; map the native token to the same id.
+  strato: {
+    '0x2ca3e170e6714282da77815f7864b17f612f5f83': { coingeckoId: 'ethereum-strato', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
