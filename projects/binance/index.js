@@ -170,13 +170,14 @@ async function getOwners(api) {
     getConfig('binance-cex/lock-info', LOCK_INFO_ENDPOINT),
   ])
 
+  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'arc', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'robinhood', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
+  const isEvm = evmChains.includes(chain)
+
   const contracts = data.data
     .filter(({ network }) => networks.includes(network.toUpperCase()))
     .map(({ address }) => address)
     .filter(Boolean)
-
-  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'arc', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'robinhood', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
-  const isEvm = evmChains.includes(chain)
+    .filter(a => !isEvm || /^0x[0-9a-fA-F]{40}$/.test(a)) // PoR api sometimes lists non-evm addresses under evm networks
   const porAddresses = new Set(contracts.map(a => a.toLowerCase()))
 
   const lockInfoAddresses = []
