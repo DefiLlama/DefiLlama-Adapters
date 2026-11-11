@@ -92,6 +92,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: "2026-11-01", // migrated to v2
   ethereum: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
