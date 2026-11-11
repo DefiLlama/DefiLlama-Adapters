@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
+const SOLIDLY_VE_NFT_ABI = require('../helper/abis/solidlyVeNft.json');
 
 const vaultMapping = {
   optimism: ['0x08dCDBf7baDe91Ccd42CB2a4EA8e5D199d285957'],
@@ -98,22 +98,22 @@ async function getAvaxTvl(api) {
     await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[chain]['blackhole'], veNft: veNftMapping[chain]['blackhole'], owner:fortyAcresMapping[chain][1],isAltAbi:true});
 }
 
+// same as unwrapSolidlyVeNft but batched across all portfolios: 3 multicalls total instead of 3 calls per portfolio
 async function getPortfolioVeNftTvl(api) {
   const chain = api.chain;
+  const veNft = veNftMapping[chain]
   const factories = await api.call({ target: portfolioManager, abi: allFactoriesAbi })
   const portfolios = await api.multiCall({ calls: factories.map(f => ({target: f})), abi: portfolioAbi});
   const allPortfolios = [...new Set(portfolios.flat().map(a => a.toLowerCase()))]
-  
-  await sdk.util.runInPromisePool({
-    items: allPortfolios,
-    concurrency: 10,
-    processor: owner => unwrapSolidlyVeNft({
-      api,
-      baseToken: baseTokenMapping[chain],
-      veNft: veNftMapping[chain],
-      owner,
-    }),
-  });
+
+  const counts = await api.multiCall({ abi: 'erc20:balanceOf', calls: allPortfolios, target: veNft })
+  const idCalls = []
+  counts.forEach((count, i) => {
+    for (let j = 0; j < +count; j++) idCalls.push({ params: [allPortfolios[i], j] })
+  })
+  const tokenIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.ownerToNFTokenIdList, calls: idCalls, target: veNft })
+  const locked = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.locked, calls: tokenIds, target: veNft })
+  locked.forEach(i => api.add(baseTokenMapping[chain], i.amount))
 }
 
 module.exports = {
