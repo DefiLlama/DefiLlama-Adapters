@@ -24,6 +24,11 @@ const YIELD_VAULTS = [
 
 const RAY = 10n ** 27n
 
+/**
+ * Assets held by STRATO's CDP, lending, savings, safety-module, vault, PSM and
+ * YieldVault contracts. USDST (issued against that collateral) and $STRATO (the
+ * protocol's own token) are excluded.
+ */
 async function tvl(api) {
   // Swap pool liquidity is listed separately (strato-dex). The pools are still enumerated here only
   // as the token universe to probe the CDP vault and PSM with: neither holder enumerates its assets.
@@ -100,9 +105,12 @@ async function borrowed(api) {
   if (cdpDebt > 0n) api.add(usdst, cdpDebt.toString())
 }
 
-// Phase 1 $STRATO staking. There is no receipt token; stake is tracked as
-// internal accounting on StratoStaking. Principal = delegated user stake +
-// operator self-bond. Unbonding stake and the reward reserve are excluded.
+/**
+ * Phase 1 $STRATO staking. There is no receipt token; stake is tracked as
+ * internal accounting on StratoStaking. Principal = delegated user stake +
+ * operator self-bond. Unbonding stake and the reward reserve are excluded.
+ * Reported under the native $STRATO address, priced via helper/tokenMapping.
+ */
 async function staking(api) {
   const [totalUserStake, totalSelfBond] = await batchCall([
     { target: STRATO_STAKING, abi: 'function totalUserStake() view returns (uint256)' },
