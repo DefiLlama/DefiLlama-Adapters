@@ -1175,6 +1175,20 @@ const configs = {
       }
     },
   },
+  "sigma-labs": {
+    config: {
+      methodology: 'Counts the settled NAV (totalAssets) of the Lagoon vaults curated by σ-Labs on Ethereum: Cross-chain USDC Lending (sigmaUSDC), stETH Redemption Carry (rcETH) and Stablecoin Market Making (sigmaLPP). sigmaUSDC lends part of its USDC on other chains and its whole NAV is counted on Ethereum, where the vault lives. Also counted under Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xF02030AB0d7385CE4CC2f7F64b7B44430fB44c89', // Lagoon: Cross-chain USDC Lending (sigmaUSDC)
+            '0x2746f31096f23670Caf4043f8b30D8D02405a257', // Lagoon: stETH Redemption Carry (rcETH)
+            '0x8595f5eE036e1F7C4f3ca66327Ba5f38C21cb7Fb', // Lagoon: Stablecoin Market Making (sigmaLPP)
+          ],
+        },
+      },
+    },
+  },
   "singularv": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by singularV.',
