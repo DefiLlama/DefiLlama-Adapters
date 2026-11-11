@@ -34,12 +34,6 @@ const PEARL_PAIR_FACTORY = '0xEaF188cdd22fEEBCb345DCb529Aa18CA9FcB4FBd';
 const PEARL_VOTER = '0xa26C2A6BfeC5512c13Ae9EacF41Cb4319d30cCF0';
 
 async function getInsuranceFundValue(api, INSURANCE_FUND) {
-  await Promise.all([
-    addVePearlBal(api, INSURANCE_FUND),
-    addVeTetuBal(api, INSURANCE_FUND),
-    caviarTvl(api, INSURANCE_FUND),
-    pearlFactoryTvl(api, INSURANCE_FUND),
-  ])
   return sumTokens2({ api, owner: INSURANCE_FUND, tokens: Object.values(insuranceTokens), resolveUniV3: true, resolveLP: true, blacklistedTokens: [
     insuranceTokens.USDR,
     insuranceTokens.WUSDR,
@@ -47,42 +41,44 @@ async function getInsuranceFundValue(api, INSURANCE_FUND) {
   ] })
 }
 
-async function caviarTvl(api, owner) {
+// the helpers below take all insurance fund owners at once, so each read is one multiCall instead of one call per owner
+async function caviarTvl(api, owners) {
+  // the staking chef's pending reward is wUSDR and not counted, so it is not read
   const [
-    stakingAmount, pendingStakingReward, stakingRewardToken, pendingRebaseReward, rebaseRewardToken
+    stakingAmounts, pendingRebaseRewards, rebaseRewardToken
   ] = await Promise.all([
-    api.call({ target: CAVIAR_STAKING_CHEF, abi: CAVIAR_CHEF_ABI.userInfo, params: [owner] }),
-    api.call({ target: CAVIAR_STAKING_CHEF, abi: CAVIAR_CHEF_ABI.pendingReward, params: [owner] }),
-    api.call({ target: CAVIAR_STAKING_CHEF, abi: CAVIAR_CHEF_ABI.rewardToken, }),
-    api.call({ target: CAVIAR_REBASE_CHEF, abi: CAVIAR_CHEF_ABI.pendingReward, params: [owner] }),
+    api.multiCall({ target: CAVIAR_STAKING_CHEF, abi: CAVIAR_CHEF_ABI.userInfo, calls: owners }),
+    api.multiCall({ target: CAVIAR_REBASE_CHEF, abi: CAVIAR_CHEF_ABI.pendingReward, calls: owners }),
     api.call({ target: CAVIAR_REBASE_CHEF, abi: CAVIAR_CHEF_ABI.rewardToken, }),
   ])
 
-  // api.add(stakingRewardToken, pendingStakingReward); // it is wUSDR
-  api.add(rebaseRewardToken, pendingRebaseReward);
-  api.add(insuranceTokens.CAVIAR, stakingAmount.amount);
-}
-
-async function pearlFactoryTvl(api, owner) {
-  const pairs = await api.fetchList({ lengthAbi: 'uint256:allPairsLength', itemAbi: "function allPairs(uint256) view returns (address)", target: PEARL_PAIR_FACTORY })
-  const gauges = await api.multiCall({ abi: "function gauges(address) view returns (address)", calls: pairs, target: PEARL_VOTER })
-  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: gauges.map(g => ({ target: g, params: owner })) })
-  bals.forEach((bal, i) => {
-    if (pairs[i].toLowerCase() !== '0x0edc235693c20943780b76d79dd763236e94c751')
-      api.add(pairs[i], bal)
+  owners.forEach((_, i) => {
+    api.add(rebaseRewardToken, pendingRebaseRewards[i]);
+    api.add(insuranceTokens.CAVIAR, stakingAmounts[i].amount);
   })
 }
 
-async function addVePearlBal(api, INSURANCE_FUND) {
-  const count = await api.call({ abi: 'erc20:balanceOf', target: UTILITY_TOKENS.VE_PEARL, params: INSURANCE_FUND })
-  const tokenIds = await api.multiCall({ abi: VE_VELO_ABI.tokenOfOwnerByIndex, calls: createIncrementArray(count).map(i => ({ params: [INSURANCE_FUND, i] })), target: UTILITY_TOKENS.VE_PEARL })
+async function pearlFactoryTvl(api, owners) {
+  const pairs = await api.fetchList({ lengthAbi: 'uint256:allPairsLength', itemAbi: "function allPairs(uint256) view returns (address)", target: PEARL_PAIR_FACTORY })
+  const gauges = await api.multiCall({ abi: "function gauges(address) view returns (address)", calls: pairs, target: PEARL_VOTER })
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: owners.flatMap(owner => gauges.map(g => ({ target: g, params: owner }))) })
+  bals.forEach((bal, i) => {
+    const pair = pairs[i % pairs.length]
+    if (pair.toLowerCase() !== '0x0edc235693c20943780b76d79dd763236e94c751')
+      api.add(pair, bal)
+  })
+}
+
+async function addVePearlBal(api, owners) {
+  const counts = await api.multiCall({ abi: 'erc20:balanceOf', target: UTILITY_TOKENS.VE_PEARL, calls: owners })
+  const tokenIds = await api.multiCall({ abi: VE_VELO_ABI.tokenOfOwnerByIndex, calls: owners.flatMap((owner, j) => createIncrementArray(counts[j]).map(i => ({ params: [owner, i] }))), target: UTILITY_TOKENS.VE_PEARL })
   const bals = await api.multiCall({ abi: VE_VELO_ABI.lockedPearl, calls: tokenIds, target: UTILITY_TOKENS.VE_PEARL })
   bals.forEach(i => api.add(insuranceTokens.PEARL, i.amount))
 }
 
-async function addVeTetuBal(api, INSURANCE_FUND) {
-  const count = await api.call({ abi: 'erc20:balanceOf', target: UTILITY_TOKENS.VE_TETU, params: INSURANCE_FUND })
-  const tokenIds = await api.multiCall({ abi: VE_VELO_ABI.tokenOfOwnerByIndex, calls: createIncrementArray(count).map(i => ({ params: [INSURANCE_FUND, i] })), target: UTILITY_TOKENS.VE_TETU })
+async function addVeTetuBal(api, owners) {
+  const counts = await api.multiCall({ abi: 'erc20:balanceOf', target: UTILITY_TOKENS.VE_TETU, calls: owners })
+  const tokenIds = await api.multiCall({ abi: VE_VELO_ABI.tokenOfOwnerByIndex, calls: owners.flatMap((owner, j) => createIncrementArray(counts[j]).map(i => ({ params: [owner, i] }))), target: UTILITY_TOKENS.VE_TETU })
   const bals = await api.multiCall({ abi: VE_VELO_ABI.lockedAmounts, calls: tokenIds.map(i => ({ params: [i, insuranceTokens.TETU_BPT] })), target: UTILITY_TOKENS.VE_TETU })
   bals.forEach(i => api.add(insuranceTokens.TETU_BPT, i))
 }
@@ -203,10 +199,16 @@ async function treasuryTvl(api) {
 }
 
 async function insuranceTvl(api) {
-  await Promise.all(insuranceConfig.polygon.owners.map(i => (async () => {
-    await unwrapBalancerToken(api, i);
-    await getInsuranceFundValue(api, i);
-  })()))
+  const owners = insuranceConfig.polygon.owners
+  await Promise.all([
+    unwrapBalancerToken(api, owners),
+    addVePearlBal(api, owners),
+    addVeTetuBal(api, owners),
+    caviarTvl(api, owners),
+    pearlFactoryTvl(api, owners),
+  ])
+  // one owner at a time: each call also unwraps the LPs already in the balances
+  for (const owner of owners) await getInsuranceFundValue(api, owner)
 }
 
 async function insuranceTvlOp(api) {
@@ -238,47 +240,43 @@ async function rwaTVL(api) {
     params: ["0xadbe96ac53cb4ca392e9ee5a7e23c7d7c8450cb015ceaad4d4677fae1c0bb1a4"], //keccak of underlying
   })
 
-  //now we fetch value of all tnfts ever minted
-  await Promise.all(tnftContractsAddresses.map(async (tnft) => {
+  //now we fetch value of all tnfts ever minted, every tnft contract in the same multiCalls
 
-    //fetch all token ids
-    let ids = [];
-    const tokenIds = await api.fetchList({ target: tnft, itemAbi: getTokenByIndex, lengthAbi: getTotalSupply, })
-    if (!tokenIds.length) return;
-    const inTangibleCustody = await api.multiCall({ target: tnft, abi: getTnftCustody, calls: tokenIds, })
-    inTangibleCustody.forEach((v, i) => {
-      if (v) ids.push(tokenIds[i])
-    })
+  //fetch all token ids
+  const tokenIds = await api.fetchList({ targets: tnftContractsAddresses, itemAbi: getTokenByIndex, lengthAbi: getTotalSupply, groupedByInput: true, })
+  const custodyCalls = tnftContractsAddresses.flatMap((tnft, t) => tokenIds[t].map(id => ({ target: tnft, params: [id], t })))
+  const inTangibleCustody = await api.multiCall({ abi: getTnftCustody, calls: custodyCalls.map(({ target, params }) => ({ target, params })), })
+  const ids = tnftContractsAddresses.map(() => [])
+  inTangibleCustody.forEach((v, i) => {
+    if (v) ids[custodyCalls[i].t].push(custodyCalls[i].params[0])
+  })
 
-    // now fetch all prices
-    const prices = await api.call({
-      abi: getItemPriceBatchTokenIds,
-      target: priceManagerAddress,
-      params: [tnft, underlyingAddress, ids],
-    })
+  // now fetch all prices (tnfts without any token are skipped)
+  const allPrices = await api.multiCall({
+    abi: getItemPriceBatchTokenIds,
+    target: priceManagerAddress,
+    calls: tnftContractsAddresses.map((tnft, t) => ({ params: [tnft, underlyingAddress, ids[t]], t })).filter(({ t }) => tokenIds[t].length).map(({ params }) => ({ params })),
+  })
 
+  allPrices.forEach(prices => {
     for (let i = 0; i < prices.weSellAt.length; i++) {
       api.add(underlyingAddress, prices.weSellAt[i]) // how can get the rwa value instead of the price you are willing to sell at?
       api.add(underlyingAddress, prices.lockedAmount[i])  // what is this amount?
     }
-  }))
+  })
 
 }
 
 async function tangiblePOL(api) {
 
-  //pearl pair api address
-  const pearlPairApi = await api.call({
+  //pearl pair api address and liquidity manager
+  const [pearlPairApi, liquidityManager] = await api.multiCall({
     abi: apGetAddress,
     target: ADDRESS_PROVIDER_ADDRESS,
-    params: ["0xd1e0c1a56a62f2e6553b45bde148c89c51a01f766c23f4bb2c612bd2c822f711"],//keccak of paerl api address
-  })
-
-  // liquidity manager
-  const liquidityManager = await api.call({
-    abi: apGetAddress,
-    target: ADDRESS_PROVIDER_ADDRESS,
-    params: ["0x6878742ff510854cb02c186504af5267007c4a6d33f490fc28ec83e83e1458e1"],//keccak of liquidity manager
+    calls: [
+      "0xd1e0c1a56a62f2e6553b45bde148c89c51a01f766c23f4bb2c612bd2c822f711",//keccak of paerl api address
+      "0x6878742ff510854cb02c186504af5267007c4a6d33f490fc28ec83e83e1458e1",//keccak of liquidity manager
+    ],
   })
 
   const { data } = await getConfig('tangible', "https://api.pearl.exchange/api/v15/pools");
@@ -323,20 +321,20 @@ module.exports = {
   real: { tvl: realTvl },
 }
 
-async function unwrapBalancerToken(api, owner) {
+async function unwrapBalancerToken(api, owners) {
   const gauge = '0x07222e30b751c1ab4a730745afe19810cfd762c0'
   const balancerToken = '0x9f9f548354b7c66dc9a9f3373077d86aaaccf8f2'
-  const [lpSupply, lpTokens] = await api.batchCall([
-    { abi: 'erc20:totalSupply', target: balancerToken },
-    { abi: 'erc20:balanceOf', target: gauge, params: owner },
-  ])
-  const ratio = lpTokens / lpSupply
+  const lpSupply = await api.call({ abi: 'erc20:totalSupply', target: balancerToken })
+  const lpTokens = await api.multiCall({ abi: 'erc20:balanceOf', target: gauge, calls: owners })
 
   const poolId = await api.call({ abi: 'function getPoolId() view returns (bytes32)', target: balancerToken })
   const vault = await api.call({ abi: 'address:getVault', target: balancerToken })
   const [tokens, bals] = await api.call({ abi: 'function getPoolTokens(bytes32) view returns (address[], uint256[],uint256)', target: vault, params: poolId })
-  tokens.forEach((v, i) => {
-    if (v.toLowerCase() === TNGBL) return;
-    api.add(v, bals[i] * ratio)
+  lpTokens.forEach(lpBal => {
+    const ratio = lpBal / lpSupply
+    tokens.forEach((v, i) => {
+      if (v.toLowerCase() === TNGBL) return;
+      api.add(v, bals[i] * ratio)
+    })
   })
 }

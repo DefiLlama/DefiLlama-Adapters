@@ -4,22 +4,27 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
-  async function tvl(api) {
+  // tvl and borrowed read the same pool list, fetch it once per chain/block and batch all factories together
+  const poolDataCache = {}
+  function getPoolData(api) {
+    const key = `${api.chain}-${api.block}`
+    if (!poolDataCache[key]) poolDataCache[key] = fetchPoolData(api)
+    return poolDataCache[key]
+  }
+
+  async function fetchPoolData(api) {
     const { factories } = config[api.chain]
+    const lendingPools = await api.fetchList({ lengthAbi: abi.allLendingPoolsLength, itemAbi: abi.allLendingPools, targets: factories, groupedByInput: true })
+    const calls = lendingPools.map((pools, i) => pools.map(pool => ({ target: factories[i], params: pool }))).flat()
+    return api.multiCall({ abi: abi.getLendingPool, calls, })
+  }
+
+  async function tvl(api) {
     const pools = []
-    await Promise.all(factories.map(async (factory) => {
-      const lendingPools = await api.fetchList({ lengthAbi: abi.allLendingPoolsLength, itemAbi: abi.allLendingPools, target: factory })
-
-      const poolData = await api.multiCall({
-        target: factory,
-        abi: abi.getLendingPool,
-        calls: lendingPools,
-      })
-
-      poolData.forEach(i => {
-        pools.push(i.collateral, i.borrowable0, i.borrowable1)
-      })
-    }))
+    const poolData = await getPoolData(api)
+    poolData.forEach(i => {
+      pools.push(i.collateral, i.borrowable0, i.borrowable1)
+    })
 
     const underlyings = await api.multiCall({
       abi: abi.underlying,
@@ -42,22 +47,12 @@ function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
   }
 
   async function borrowed(api) {
-    const { factories } = config[api.chain]
     const balances = {}
     const borrowables = []
-    await Promise.all(factories.map(async (factory) => {
-      const lendingPools = await api.fetchList({ lengthAbi: abi.allLendingPoolsLength, itemAbi: abi.allLendingPools, target: factory })
-
-      const poolData = await api.multiCall({
-        target: factory,
-        abi: abi.getLendingPool,
-        calls: lendingPools,
-      })
-
-      poolData.forEach(i => {
-        borrowables.push(i.borrowable0, i.borrowable1)
-      })
-    }))
+    const poolData = await getPoolData(api)
+    poolData.forEach(i => {
+      borrowables.push(i.borrowable0, i.borrowable1)
+    })
 
     const underlyings = await api.multiCall({
       abi: abi.underlying,

@@ -91,7 +91,19 @@ const getCompoundUsdcValues = async (
   });
 };
 
-const _getLogs = async (api, config) => {
+// tvl and staking both need the RToken creation logs: fetch them once per chain and run
+const rTokenLogs = {};
+const _getLogs = (api, config) => {
+  const key = `${api.chain}-${api.timestamp}`;
+  if (!rTokenLogs[key])
+    rTokenLogs[key] = _fetchLogs(api, config).catch((e) => {
+      delete rTokenLogs[key];
+      throw e;
+    });
+  return rTokenLogs[key];
+};
+
+const _fetchLogs = async (api, config) => {
   const resLog = (
     await Promise.all(
       config.deployerAddresses.map((deployerAddress) =>

@@ -172,7 +172,7 @@ async function tvl(api) {
 
   const [wrap4626Supplies, wrap4626Tokens] = await Promise.all(['uint256:totalSupply', 'address:token'].map( abi => api.multiCall({ abi, calls: wrap4626 }) ))
   
-  const wrap6426Assets = await Promise.all(wrap4626Supplies.map( (supply, i) => api.call({ abi: 'function convertToAssets(uint256 shares) external view returns (uint256 assets)', target: wrap4626[i], params: [supply] }) ))
+  const wrap6426Assets = await api.multiCall({ abi: 'function convertToAssets(uint256 shares) external view returns (uint256 assets)', calls: wrap4626Supplies.map( (supply, i) => ({ target: wrap4626[i], params: [supply] }) ) })
 
   wrap6426Assets.map( (value, i) => sdk.util.sumSingleBalance(balances, wrap4626Tokens[i], value, api.chain) )
 

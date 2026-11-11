@@ -382,37 +382,32 @@ async function getCuratorTvlErc4626(api, vaults, { euler = false, booked = new S
 
   const v2VaultSet = new Set(v2Vaults.map(v => v.vault))
 
+  // v2's deposits in v1: the v1 shares held by the v2 adapter, converted to underlying assets
+  // (two multicalls for all pairs instead of two calls per pair)
+  const deposits = [...v1Groups.values()].flatMap(({ v1, v2Vaults: v2List }) =>
+    v2List.filter(v2 => v2.depositor).map(v2 => ({ v1, v2 })))
+  const depositShares = await api.multiCall({
+    abi: ABI.ERC4626.balanceOf,
+    calls: deposits.map(({ v1, v2 }) => ({ target: v1.vault, params: [v2.depositor] })),
+    permitFailure: true,
+  })
+  const heldDeposits = deposits.map((d, i) => ({ ...d, shares: depositShares[i] })).filter(d => d.shares && BigInt(d.shares) > 0n)
+  const depositAssets = await api.multiCall({
+    abi: ABI.ERC4626.convertToAssets,
+    calls: heldDeposits.map(({ v1, shares }) => ({ target: v1.vault, params: [shares] })),
+    permitFailure: true,
+  })
+  const v2DepositsInV1 = new Map() // v1 address -> assets its v2 vaults hold in it
+  heldDeposits.forEach(({ v1 }, i) => {
+    if (!depositAssets[i]) return
+    const key = v1.vault.toLowerCase()
+    v2DepositsInV1.set(key, (v2DepositsInV1.get(key) || 0n) + BigInt(depositAssets[i]))
+  })
+
   // Process each unique V1 vault once, summing all V2 contributions
   for (const { v1, v2Vaults: v2List } of v1Groups.values()) {
-    let totalV2Assets = 0n
-    let totalV2DepositsInV1 = 0n
-
-    for (const v2 of v2List) {
-      totalV2Assets += v2.totalAssets
-
-      if (v2.depositor) {
-        // Get v2's deposits in v1 using the adapter that holds v1 shares
-        const v2AdapterSharesInV1 = await api.call({
-          abi: ABI.ERC4626.balanceOf,
-          target: v1.vault,
-          params: [v2.depositor],
-          permitFailure: true,
-        })
-
-        if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
-          // Convert v1 shares held by v2 adapter to underlying assets
-          const v2AssetsInV1 = await api.call({
-            abi: ABI.ERC4626.convertToAssets,
-            target: v1.vault,
-            params: [v2AdapterSharesInV1],
-            permitFailure: true,
-          })
-          if (v2AssetsInV1) {
-            totalV2DepositsInV1 += BigInt(v2AssetsInV1)
-          }
-        }
-      }
-    }
+    const totalV2Assets = v2List.reduce((sum, v2) => sum + v2.totalAssets, 0n)
+    const totalV2DepositsInV1 = v2DepositsInV1.get(v1.vault.toLowerCase()) || 0n
 
     // Unique TVL = V1 + sum(V2) - sum(v2_deposits_in_v1)
     // Count V1 totalAssets only ONCE regardless of how many V2 vaults wrap it

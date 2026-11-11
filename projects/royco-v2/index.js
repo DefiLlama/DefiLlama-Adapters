@@ -84,7 +84,16 @@ const strategyTypeAbi = "function strategyType() view returns (uint8)";
 const getMakinaMachineAbi = "function getMakinaMachine() view returns (address)";
 const hubCaliberAbi = "function hubCaliber() view returns (address)";
 
-const resolveStrategies = async (api, vault) => {
+// Promise memo scoped to one run (keyed by timestamp): every chain's run needs the same mainnet strategy
+// list and the same V2 market list, so they are read once instead of once per chain. A failed read is
+// evicted so the next caller retries.
+const memo = {};
+const memoize = (key, fn) => {
+    if (!memo[key]) memo[key] = fn().catch(e => { delete memo[key]; throw e; });
+    return memo[key];
+};
+
+const resolveStrategies = (api, vault) => memoize(`strategies:${vault}:${api.timestamp}`, async () => {
     const strategies = await api.call({ abi: getStrategiesAbi, target: vault });
     if (!strategies.length) return [];
 
@@ -96,7 +105,7 @@ const resolveStrategies = async (api, vault) => {
     const machines = await api.multiCall({ abi: getMakinaMachineAbi, calls: crosschain });
     const calibers = await api.multiCall({ abi: hubCaliberAbi, calls: machines });
     return [...selfCustody, ...calibers];
-};
+});
 
 // NAV_UNIT (18 decimals, USDC-denominated) -> USDC (6 decimals)
 const NAV_TO_USDC = 10n ** 12n;
@@ -169,7 +178,7 @@ const getEscrowedDeposits = async (api, generation, tokens, trancheShares) => {
     return escrowed;
 };
 
-const getTranches = async (api) => {
+const getTranches = (api) => memoize(`tranches:${api.chain}:${api.timestamp}`, async () => {
     const { factoryAddress, factoryFromBlock } = config[api.chain].v2;
     const marketDeployedLogs = await getLogs2({
         api,
@@ -182,10 +191,11 @@ const getTranches = async (api) => {
 
     const senior = deployed.map(market => market.seniorTranche);
     const junior = deployed.map(market => market.juniorTranche);
-    const seniorAssets = await api.multiCall({ abi: 'address:asset', calls: senior, permitFailure: true });
-    const juniorAssets = await api.multiCall({ abi: 'address:asset', calls: junior, permitFailure: true });
-    const seniorClaims = await api.multiCall({ abi: totalAssetsAbi, calls: senior, permitFailure: true });
-    const juniorClaims = await api.multiCall({ abi: totalAssetsAbi, calls: junior, permitFailure: true });
+    // senior and junior share each multiCall: first half senior, second half junior
+    const assets = await api.multiCall({ abi: 'address:asset', calls: [...senior, ...junior], permitFailure: true });
+    const claims = await api.multiCall({ abi: totalAssetsAbi, calls: [...senior, ...junior], permitFailure: true });
+    const seniorAssets = assets.slice(0, senior.length), juniorAssets = assets.slice(senior.length);
+    const seniorClaims = claims.slice(0, senior.length), juniorClaims = claims.slice(senior.length);
 
     const markets = deployed
         .map((market, i) => ({
@@ -200,7 +210,7 @@ const getTranches = async (api) => {
 
     logSkipped(api, 'V2', deployed.length - markets.length, deployed.length);
     return markets;
-};
+});
 
 const getDayMarkets = async (api) => {
     const { factoryAddress, factoryFromBlock } = config[api.chain].day;
@@ -217,9 +227,9 @@ const getDayMarkets = async (api) => {
     const collateralAssets = await api.multiCall({ abi: 'address:collateralAsset', calls: kernels, permitFailure: true });
     const quoteAssets = await api.multiCall({ abi: 'address:quoteAsset', calls: kernels, permitFailure: true });
     const lptAssets = await api.multiCall({ abi: 'address:lptAsset', calls: kernels, permitFailure: true });
-    const stClaims = await api.multiCall({ abi: dayTotalAssetsAbi, calls: deployed.map(market => market.seniorTranche), permitFailure: true });
-    const jtClaims = await api.multiCall({ abi: dayTotalAssetsAbi, calls: deployed.map(market => market.juniorTranche), permitFailure: true });
-    const lptClaims = await api.multiCall({ abi: dayTotalAssetsAbi, calls: deployed.map(market => market.liquidityProviderTranche), permitFailure: true });
+    // the three tranches share one multiCall: senior, then junior, then LPT
+    const claims = await api.multiCall({ abi: dayTotalAssetsAbi, calls: ['seniorTranche', 'juniorTranche', 'liquidityProviderTranche'].flatMap(tranche => deployed.map(market => market[tranche])), permitFailure: true });
+    const stClaims = claims.slice(0, deployed.length), jtClaims = claims.slice(deployed.length, 2 * deployed.length), lptClaims = claims.slice(2 * deployed.length);
 
     const resolved = deployed
         .map((market, i) => ({
@@ -388,24 +398,25 @@ const getStrategyNav = async (api, strategies, dawnMarkets) => {
     const tranches = markets.flatMap(market => [market.seniorTranche, market.juniorTranche]);
     if (!tranches.length) return 0n;
 
+    // every strategy x tranche in one multiCall
+    const holdings = strategies.flatMap(strategy => tranches.map(tranche => ({ tranche, strategy })));
+    if (!holdings.length) return 0n;
+    const shares = await api.multiCall({
+        abi: 'erc20:balanceOf',
+        calls: holdings.map(({ tranche, strategy }) => ({ target: tranche, params: [strategy] })),
+    });
+
+    // convert only the non-zero positions to their USDC value (nav).
+    const claimsCalls = holdings
+        .map(({ tranche }, i) => ({ target: tranche, params: [shares[i]] }))
+        .filter((_, i) => BigInt(shares[i]) > 0n);
+    if (!claimsCalls.length) return 0n;
+
     let nav = 0n;
-    for (const strategy of strategies) {
-        const shares = await api.multiCall({
-            abi: 'erc20:balanceOf',
-            calls: tranches.map(tranche => ({ target: tranche, params: [strategy] })),
-        });
-
-        // convert only the non-zero positions to their USDC value (nav).
-        const claimsCalls = tranches
-            .map((tranche, i) => ({ target: tranche, params: [shares[i]] }))
-            .filter((_, i) => BigInt(shares[i]) > 0n);
-        if (!claimsCalls.length) continue;
-
-        const claims = await api.multiCall({ abi: convertToAssetsAbi, calls: claimsCalls });
-        claims.forEach(claim => {
-            nav += BigInt(claim.nav);
-        });
-    }
+    const claims = await api.multiCall({ abi: convertToAssetsAbi, calls: claimsCalls });
+    claims.forEach(claim => {
+        nav += BigInt(claim.nav);
+    });
     return nav;
 };
 
@@ -436,35 +447,34 @@ const subtractDayStrategyPositions = async (api, markets, strategies, roycoToken
     const tranches = [...collateralTranches, ...markets.map(market => market.liquidityProviderTranche)];
 
     const strategyBpt = markets.map(() => 0n);
-    for (const strategy of strategies) {
-        const shares = await api.multiCall({
-            abi: 'erc20:balanceOf',
-            calls: tranches.map(tranche => ({ target: tranche, params: [strategy] })),
-        });
+    // every strategy x tranche in one multiCall; `i` stays the index into `tranches`
+    const holdings = strategies.flatMap(strategy => tranches.map((tranche, i) => ({ tranche, i, strategy })));
+    const shares = await api.multiCall({
+        abi: 'erc20:balanceOf',
+        calls: holdings.map(({ tranche, strategy }) => ({ target: tranche, params: [strategy] })),
+    });
 
-        const positions = tranches
-            .map((tranche, i) => ({ tranche, i, shares: BigInt(shares[i]) }))
-            .filter(position => position.shares > 0n);
-        if (!positions.length) continue;
+    const positions = holdings
+        .map(({ tranche, i }, h) => ({ tranche, i, shares: BigInt(shares[h]) }))
+        .filter(position => position.shares > 0n);
 
-        const claims = await api.multiCall({
-            abi: dayConvertToAssetsAbi,
-            calls: positions.map(position => ({ target: position.tranche, params: [position.shares] })),
-        });
+    const claims = positions.length ? await api.multiCall({
+        abi: dayConvertToAssetsAbi,
+        calls: positions.map(position => ({ target: position.tranche, params: [position.shares] })),
+    }) : [];
 
-        claims.forEach((claim, k) => {
-            const { i } = positions[k];
-            const market = i % markets.length;
-            if (i < collateralTranches.length) {
-                addMarketAsset(api, roycoTokens, collateralAssets[market], -BigInt(claim.collateralAssets));
-            } else {
-                // Settled below, once every holder's BPT is accumulated. (`claim.stShares` is
-                // untouched: the LPT's convertToAssets zeroes it, so idle premium shares were never
-                // attributed to this strategy.)
-                strategyBpt[market] -= BigInt(claim.lptAssets);
-            }
-        });
-    }
+    claims.forEach((claim, k) => {
+        const { i } = positions[k];
+        const market = i % markets.length;
+        if (i < collateralTranches.length) {
+            addMarketAsset(api, roycoTokens, collateralAssets[market], -BigInt(claim.collateralAssets));
+        } else {
+            // Settled below, once every holder's BPT is accumulated. (`claim.stShares` is
+            // untouched: the LPT's convertToAssets zeroes it, so idle premium shares were never
+            // attributed to this strategy.)
+            strategyBpt[market] -= BigInt(claim.lptAssets);
+        }
+    });
 
     // An LPT position's BPT claims BOTH pool legs, and BOTH were added, in different places: the quote
     // leg by addDayMarkets, the senior leg by the collateral claims above (a senior share sitting in

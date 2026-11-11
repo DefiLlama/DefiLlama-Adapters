@@ -148,7 +148,11 @@ async function tvl(api) {
   const allManagers = basketRes.flatMap(([tokens], i) =>
     tokens.map(() => backingManagers[i])
   );
-  const allNames = await api.multiCall({ abi: "string:name", calls: allTokens, });
+  // the same collateral tokens repeat across RTokens, read each name once
+  const uniqueTokens = [...new Set(allTokens)];
+  const uniqueNames = await api.multiCall({ abi: "string:name", calls: uniqueTokens, });
+  const nameOf = Object.fromEntries(uniqueTokens.map((token, i) => [token, uniqueNames[i]]));
+  const allNames = allTokens.map((token) => nameOf[token]);
 
 
   const aTokenWrappersV2 = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave") && allNames[i].includes("interest"));

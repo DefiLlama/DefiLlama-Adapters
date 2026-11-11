@@ -1,6 +1,7 @@
+const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const { aaveExports, methodology, aaveV2Export, } = require("../helper/aave");
+const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs");
+const { aaveExports, methodology, } = require("../helper/aave");
 const { mergeExports } = require('../helper/utils');
 
 const coreMarkets = {
@@ -52,19 +53,36 @@ const rizMarketsConfig = {
 }
 const rizMarketExports = {}
 
+const rizAbi = {
+  getReservesList: "address[]:getReservesList",
+  getReserveData: "function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
+}
+
+// same as aaveV2Export(pool) for each pool, but batched across all pools of the chain
+async function getRizReserves(api, pools) {
+  const reserves = await api.multiCall({ abi: rizAbi.getReservesList, calls: pools })
+  const calls = pools.map((pool, i) => reserves[i].map(token => ({ target: pool, params: token }))).flat()
+  const data = await api.multiCall({ abi: rizAbi.getReserveData, calls })
+  return data.map((v, i) => ({ underlying: calls[i].params, aTokenAddress: v.aTokenAddress, stableDebtTokenAddress: v.stableDebtTokenAddress, variableDebtTokenAddress: v.variableDebtTokenAddress }))
+}
+
 Object.keys(rizMarketsConfig).forEach(chain => {
   const pools = rizMarketsConfig[chain]
   rizMarketExports[chain] = {
     tvl: async (api) => {
-      for (const pool of pools) {
-        await aaveV2Export(pool).tvl(api)
-      }
+      const data = await getRizReserves(api, pools)
+      await sumTokens2({ api, tokensAndOwners: data.map(i => [i.underlying, i.aTokenAddress]) })
       return api.getBalances()
     },
     borrowed: async (api) => {
-      for (const pool of pools) {
-        await aaveV2Export(pool).borrowed(api)
-      }
+      const balances = api.getBalances()
+      const data = await getRizReserves(api, pools)
+      const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: data.map(i => i.variableDebtTokenAddress).concat(data.map(i => i.stableDebtTokenAddress)) })
+      data.forEach((i, idx) => {
+        const value = +supplies[idx] + +supplies[data.length + idx]
+        sdk.util.sumSingleBalance(balances, i.underlying, value, api.chain)
+      })
+      await sumTokens2({ api, balances })
       return api.getBalances()
     }
   }

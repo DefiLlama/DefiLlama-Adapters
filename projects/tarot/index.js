@@ -82,3 +82,5 @@ const config = {
 }
 
 tarotHelper(module.exports, config)
+
+module.exports.bsc.borrowed = () => ({}) // is insolvent

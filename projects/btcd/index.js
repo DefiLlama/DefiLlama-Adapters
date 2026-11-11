@@ -113,19 +113,12 @@ const abi = {
   morphoMarketParams: 'function idToMarketParams(bytes32 id) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)',
 };
 
-// SkipStrategy marks a strategy this adapter cannot value; it is logged and
-// left out instead of failing the chain's TVL.
-class SkipStrategy extends Error {}
-
 /**
- * Returns the Morpho Blue position of `user` in market `marketId`: supplied
- * and borrowed loan-token assets (shares converted with the virtual offsets;
+ * Converts a Morpho Blue position/market/params read into supplied and
+ * borrowed loan-token assets (shares converted with the virtual offsets;
  * debt rounded up as Morpho does) and the posted collateral.
  */
-async function morphoPosition(api, marketId, user) {
-  const pos = await api.call({ target: MORPHO_BLUE, abi: abi.morphoPosition, params: [marketId, user] });
-  const market = await api.call({ target: MORPHO_BLUE, abi: abi.morphoMarket, params: [marketId] });
-  const params = await api.call({ target: MORPHO_BLUE, abi: abi.morphoMarketParams, params: [marketId] });
+function morphoPosition(pos, market, params) {
   const supplyAssets = BigInt(market.totalSupplyAssets) + MORPHO_VIRTUAL_ASSETS;
   const supplyShares = BigInt(market.totalSupplyShares) + MORPHO_VIRTUAL_SHARES;
   const borrowAssets = BigInt(market.totalBorrowAssets) + MORPHO_VIRTUAL_ASSETS;
@@ -139,100 +132,110 @@ async function morphoPosition(api, marketId, user) {
   };
 }
 
-/**
- * Returns [asset, amount] for the ERC-4626 shares of `vault` held by `owner`,
- * converted through the vault's own convertToAssets.
- */
-async function erc4626Holding(api, vault, owner) {
-  const shares = await api.call({ target: vault, abi: 'erc20:balanceOf', params: [owner] });
-  const asset = await api.call({ target: vault, abi: abi.asset });
-  const amount = await api.call({ target: vault, abi: abi.convertToAssets, params: [shares] });
-  return [asset, amount];
-}
-
-const balanceOf = (api, token, owner) => api.call({ target: token, abi: 'erc20:balanceOf', params: [owner] });
-const getter = (api, target, getterAbi) => api.call({ target, abi: getterAbi });
-
 // Each valuer returns the [token, amount] holdings of one strategy position
-// manager, excluding idle tokens (those are counted by the balanceOf sweep).
-// Debt is a negative amount of the borrowed token.
+// manager from the reads addStrategyPositions stored on it, excluding idle
+// tokens (those are counted by the balanceOf sweep). Debt is a negative amount
+// of the borrowed token.
 const VALUERS = {
   // WBTC supplied to the Morpho Blue market the PM names.
-  async MORPHOBLUE(api, { target }) {
-    const { loanToken, supplied } = await morphoPosition(api, await getter(api, target, abi.MARKET_ID), target);
-    return [[loanToken, supplied]];
-  },
+  MORPHOBLUE: ({ morpho }) => [[morpho.loanToken, morpho.supplied]],
   // USDC supplied on Aave, minus the WBTC borrowed against it, plus that WBTC
   // supplied to the PM's Morpho Blue market.
-  async AAVECARRY(api, { target }) {
-    const marketId = await getter(api, target, abi.MARKET_ID);
-    const aUsdc = await getter(api, target, abi.A_USDC);
-    const debtWbtc = await getter(api, target, abi.VARIABLE_DEBT_WBTC);
-    const { loanToken, supplied } = await morphoPosition(api, marketId, target);
-    const aUsdcBalance = await balanceOf(api, aUsdc, target);
-    const debt = await balanceOf(api, debtWbtc, target);
-    return [[loanToken, supplied], [ADDRESSES.ethereum.USDC, aUsdcBalance], [ADDRESSES.ethereum.WBTC, -BigInt(debt)]];
-  },
+  AAVECARRY: ({ morpho, aUsdcBalance, debt }) =>
+    [[morpho.loanToken, morpho.supplied], [ADDRESSES.ethereum.USDC, aUsdcBalance], [ADDRESSES.ethereum.WBTC, -BigInt(debt)]],
   // WBTC collateral, minus the loan token borrowed against it, plus that loan
   // token deployed to the venue vault.
-  async MORPHOCARRY(api, { target, investment }) {
-    const venue = MORPHOCARRY_VENUES[investment];
-    if (!venue) throw new SkipStrategy('no venue in MORPHOCARRY_VENUES');
-    const { loanToken, collateralToken, borrowed, collateral } = await morphoPosition(api, venue.marketId, target);
-    const vaultHolding = await erc4626Holding(api, venue.vault, target);
-    return [[collateralToken, collateral], [loanToken, -borrowed], vaultHolding];
-  },
+  MORPHOCARRY: ({ morpho, vaultAsset, vaultAmount }) =>
+    [[morpho.collateralToken, morpho.collateral], [morpho.loanToken, -morpho.borrowed], [vaultAsset, vaultAmount]],
   // Shares of the ERC-4626 vault the PM names.
-  async MORPHOV2(api, { target }) {
-    return [await erc4626Holding(api, await getter(api, target, abi.VAULT), target)];
-  },
-  async FLUIDLITE(api, { target }) {
-    return [await erc4626Holding(api, await getter(api, target, abi.VAULT), target)];
-  },
+  MORPHOV2: ({ vaultAsset, vaultAmount }) => [[vaultAsset, vaultAmount]],
+  FLUIDLITE: ({ vaultAsset, vaultAmount }) => [[vaultAsset, vaultAmount]],
   // Stake DAO reward-vault shares, converted to the Curve LP token.
-  async STAKEDAO(api, { target, investment }) {
-    const vault = STAKEDAO_VAULTS[investment];
-    if (!vault) throw new SkipStrategy('no vault in STAKEDAO_VAULTS');
-    return [await erc4626Holding(api, vault, target)];
-  },
+  STAKEDAO: ({ vaultAsset, vaultAmount }) => [[vaultAsset, vaultAmount]],
   // Curve LP held directly and staked in the PM's gauge (1:1 LP).
-  async CURVE(api, { target }) {
-    const pool = await getter(api, target, abi.POOL);
-    const gauge = await getter(api, target, abi.gauge);
-    const held = await balanceOf(api, pool, target);
-    const staked = await balanceOf(api, gauge, target);
-    return [[pool, held], [pool, staked]];
-  },
+  CURVE: ({ pool, held, staked }) => [[pool, held], [pool, staked]],
   // YieldBasis LT shares redeemed at the LT's preview_withdraw.
-  async YIELDBASIS(api, { target }) {
-    const lt = await getter(api, target, abi.LT);
-    const asset = await getter(api, target, abi.ASSET);
-    const shares = await balanceOf(api, lt, target);
-    if (BigInt(shares) === 0n) return [];
-    return [[asset, await api.call({ target: lt, abi: abi.previewWithdraw, params: [shares] })]];
-  },
+  YIELDBASIS: ({ asset, shares, redeemed }) => BigInt(shares) === 0n ? [] : [[asset, redeemed]],
   // sUSDS and syrupUSDC are counted by the balanceOf sweep.
-  async SUSDS() { return []; },
-  async UNIV4SWAP() { return []; },
+  SUSDS: () => [],
+  UNIV4SWAP: () => [],
 };
 
-const isRevert = (e) => /revert|CALL_EXCEPTION/i.test(String(e && e.message));
-
 /**
- * Values one strategy position manager and adds its holdings. A strategy with
- * no valuer, a missing venue entry, or a reverting read is logged and skipped
- * so the rest of the chain's TVL still reports; other errors (RPC) propagate.
+ * Values the strategy position managers and adds their holdings. Reads are
+ * batched across strategies: one multicall per getter / read kind instead of
+ * one call per strategy. A strategy with no valuer, a missing venue entry, or
+ * a reverting read is logged and skipped so the rest of the chain's TVL still
+ * reports; other errors (RPC) propagate.
  */
-async function addStrategyPosition(api, strategy) {
-  const valuer = VALUERS[strategy.protocol];
-  try {
-    if (!valuer) throw new SkipStrategy('no valuation');
-    const holdings = await valuer(api, strategy);
-    holdings.forEach(([token, amount]) => api.add(token, amount));
-  } catch (e) {
-    if (!(e instanceof SkipStrategy) && !isRevert(e)) throw e;
-    sdk.log(`btcd: skipped ${strategy.typ} at ${strategy.target}: ${e instanceof SkipStrategy ? e.message : 'read reverted'}`);
+async function addStrategyPositions(api, strategies) {
+  const skipped = new Map();
+  const skip = (s, reason = 'read reverted') => { if (!skipped.has(s)) skipped.set(s, reason); };
+  const of = (...protocols) => strategies.filter((s) => protocols.includes(s.protocol) && !skipped.has(s));
+  // Runs calls[i] for list[i] in one multicall and stores each result on its
+  // strategy under `key`; a reverting read skips that strategy only.
+  const read = async (list, key, readAbi, toCall) => {
+    if (!list.length) return;
+    const res = await api.multiCall({ abi: readAbi, calls: list.map(toCall), permitFailure: true });
+    list.forEach((s, i) => (res[i] == null ? skip(s) : (s[key] = res[i])));
+  };
+  const self = (s) => s.target;
+
+  strategies.forEach((s) => {
+    if (!VALUERS[s.protocol]) return skip(s, 'no valuation');
+    if (s.protocol === 'STAKEDAO') {
+      s.vault = STAKEDAO_VAULTS[s.investment];
+      if (!s.vault) skip(s, 'no vault in STAKEDAO_VAULTS');
+    }
+    if (s.protocol === 'MORPHOCARRY') {
+      const venue = MORPHOCARRY_VENUES[s.investment];
+      if (!venue) return skip(s, 'no venue in MORPHOCARRY_VENUES');
+      s.marketId = venue.marketId;
+      s.vault = venue.vault;
+    }
+  });
+
+  // venue addresses the position managers name themselves
+  await read(of('MORPHOBLUE', 'AAVECARRY'), 'marketId', abi.MARKET_ID, self);
+  await read(of('AAVECARRY'), 'aUsdc', abi.A_USDC, self);
+  await read(of('AAVECARRY'), 'debtWbtc', abi.VARIABLE_DEBT_WBTC, self);
+  await read(of('MORPHOV2', 'FLUIDLITE'), 'vault', abi.VAULT, self);
+  await read(of('CURVE'), 'pool', abi.POOL, self);
+  await read(of('CURVE'), 'gauge', abi.gauge, self);
+  await read(of('YIELDBASIS'), 'lt', abi.LT, self);
+  await read(of('YIELDBASIS'), 'asset', abi.ASSET, self);
+
+  // Morpho Blue positions
+  const MORPHO = ['MORPHOBLUE', 'AAVECARRY', 'MORPHOCARRY'];
+  await read(of(...MORPHO), 'morphoPos', abi.morphoPosition, (s) => ({ target: MORPHO_BLUE, params: [s.marketId, s.target] }));
+  await read(of(...MORPHO), 'morphoMarket', abi.morphoMarket, (s) => ({ target: MORPHO_BLUE, params: [s.marketId] }));
+  await read(of(...MORPHO), 'morphoParams', abi.morphoMarketParams, (s) => ({ target: MORPHO_BLUE, params: [s.marketId] }));
+  of(...MORPHO).forEach((s) => { s.morpho = morphoPosition(s.morphoPos, s.morphoMarket, s.morphoParams); });
+
+  // every balanceOf any strategy needs: [protocols, token field, result field]
+  const VAULTS = ['MORPHOV2', 'FLUIDLITE', 'STAKEDAO', 'MORPHOCARRY'];
+  const balanceReads = [
+    [VAULTS, 'vault', 'vaultShares'],
+    [['AAVECARRY'], 'aUsdc', 'aUsdcBalance'],
+    [['AAVECARRY'], 'debtWbtc', 'debt'],
+    [['CURVE'], 'pool', 'held'],
+    [['CURVE'], 'gauge', 'staked'],
+    [['YIELDBASIS'], 'lt', 'shares'],
+  ].flatMap(([protocols, tokenKey, key]) => of(...protocols).map((s) => ({ s, token: s[tokenKey], key })));
+  if (balanceReads.length) {
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceReads.map(({ s, token }) => ({ target: token, params: [s.target] })), permitFailure: true });
+    balanceReads.forEach(({ s, key }, i) => (balances[i] == null ? skip(s) : (s[key] = balances[i])));
   }
+
+  // ERC-4626 shares converted through the vault's own convertToAssets
+  await read(of(...VAULTS), 'vaultAsset', abi.asset, (s) => s.vault);
+  await read(of(...VAULTS), 'vaultAmount', abi.convertToAssets, (s) => ({ target: s.vault, params: [s.vaultShares] }));
+  await read(of('YIELDBASIS').filter((s) => BigInt(s.shares) > 0n), 'redeemed', abi.previewWithdraw, (s) => ({ target: s.lt, params: [s.shares] }));
+
+  strategies.forEach((s) => {
+    if (skipped.has(s)) return sdk.log(`btcd: skipped ${s.typ} at ${s.target}: ${skipped.get(s)}`);
+    VALUERS[s.protocol](s).forEach(([token, amount]) => api.add(token, amount));
+  });
 }
 
 /**
@@ -271,7 +274,7 @@ async function ethereumTvl(api) {
       return { ...s, protocol, investment };
     });
 
-  for (const strategy of strategies) await addStrategyPosition(api, strategy);
+  await addStrategyPositions(api, strategies);
   await sumTokens2({ api, owners: [...STATIC_CUSTODY, ...strategies.map(({ target }) => target)], tokens: idleTokens });
   await addYieldBasisHybrid(api);
 }

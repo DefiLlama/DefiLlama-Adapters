@@ -69,7 +69,7 @@ Object.keys(config).forEach(chain => {
       async function addLogs(target, eventAbi) {
         if (!target) return;
         const convert = i => [[i.baseToken, i.quoteToken], i.pool]
-        let logs = await getLogs({ api, target, eventAbi, onlyArgs: true, fromBlock, })
+        let logs
         if (chain === 'base' && target === '0xc0F9553Df63De5a97Fe64422c8578D0657C360f7')
           logs = await getLogs({ api, target, eventAbi, onlyArgs: true, fromBlock: 8964122, }) // hard to get old logs, too far back in time, manually added missing pairs
         else

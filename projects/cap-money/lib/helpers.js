@@ -125,9 +125,18 @@ const mapWrappedAssetBalance = (chain, address, availableBalance) => {
     return [address, availableBalance];
 }
 
+// tvl and borrowed need the same data, so fetch it once per run
+const perRunCache = {}
+const cachedPerRun = (name, fn) => (api, chain) => {
+    if (!api.block && !api.timestamp) return fn(api, chain)
+    const key = `${name}-${chain}-${api.block}-${api.timestamp}`
+    if (!perRunCache[key]) perRunCache[key] = fn(api, chain).catch(e => { delete perRunCache[key]; throw e })
+    return perRunCache[key]
+}
+
 module.exports = {
-    fetchAgentConfigs,
-    fetchAssetAddresses,
+    fetchAgentConfigs: cachedPerRun('agentConfigs', fetchAgentConfigs),
+    fetchAssetAddresses: cachedPerRun('assetAddresses', fetchAssetAddresses),
     mapWrappedAssetBalance,
 }
 

@@ -1,9 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const { aaveExports } = require('../helper/aave')
+const { aaveExports: aaveMarketsExports } = require('../helper/aave')
 const methodologies = require('../helper/methodologies')
 const { mergeExports } = require('../helper/utils')
 
+// only records the market's data helper (the registry is unused when a data helper is set), markets are grouped per chain at the bottom
+const aaveExports = (_chain, _registry, _transform, dataHelpers, options) => ({ dataHelpers, options })
 
 
 //@note Main & Innovative Markets
@@ -110,7 +112,21 @@ const usdxMarkets = {
 }
 
 
-module.exports = mergeExports(
+const allMarkets = [
 	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets, uniIotxMarkets, usdxMarkets
+]
+
+// markets on the same chain with the same blacklist are read together: one set of multicalls per group instead of per market
+const marketGroups = {}
+allMarkets.forEach(markets => Object.entries(markets).forEach(([chain, { dataHelpers, options }]) => {
+	const key = `${chain}-${(options.blacklistedTokens || []).join().toLowerCase()}`
+	if (!marketGroups[key]) marketGroups[key] = { chain, dataHelpers: [], options }
+	marketGroups[key].dataHelpers.push(...dataHelpers)
+}))
+
+module.exports = mergeExports(
+	Object.values(marketGroups).map(({ chain, dataHelpers, options }) => ({ [chain]: aaveMarketsExports('', '', undefined, dataHelpers, options) }))
 )
 module.exports.methodology = methodologies.lendingMarket
+module.exports.merlin.borrowed = async () => ({}) // is insolvent
+module.exports.merlin.pharos = async () => ({}) // is insolvent

@@ -35,8 +35,26 @@ async function discoverLendingPairs (api) {
 }
 
 
+const balancesCache = {}
+
 const getTvl = async (api, isStaking) => {
-  const { indexManagerV2, indexManagerV3, leverageManager, peasToken } = config[api.chain];
+  const { peasToken } = config[api.chain];
+  // tvl and staking are the same balances split on the PEAS token, so fetch them once per run
+  const key = `${api.chain}-${api.block}-${api.timestamp}`
+  const useCache = api.block || api.timestamp
+  if (useCache && balancesCache[key]) api.addBalances(await balancesCache[key])
+  else {
+    const promise = fetchBalances(api)
+    if (useCache) balancesCache[key] = promise
+    await promise.catch(e => { delete balancesCache[key]; throw e })
+  }
+  Object.keys(api.getBalances())
+    .filter(token => new RegExp(peasToken, 'i').test(token) !== isStaking)
+    .forEach(t => api.removeTokenBalance(t));
+};
+
+const fetchBalances = async (api) => {
+  const { indexManagerV2, indexManagerV3, leverageManager } = config[api.chain];
   const ownerTokens = [];
   let indexesV3 = [];
   let indexesV2 = [];
@@ -89,9 +107,7 @@ const getTvl = async (api, isStaking) => {
 
   await sumTokens2({ api, ownerTokens, blacklistedTokens: [...indexesV2,...indexesV3, '0xc31389794ffac23331e0d9f611b7953f90aa5fdc'], resolveLP: true });
   [...indexesV2, ...indexesV3].forEach(t => api.removeTokenBalance(t));
-  Object.keys(api.getBalances())
-    .filter(token => new RegExp(peasToken, 'i').test(token) !== isStaking)
-    .forEach(t => api.removeTokenBalance(t));
+  return { ...api.getBalances() }
 };
 
 

@@ -12,6 +12,8 @@ const CONFIG = {
     etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
     cashBorrowerHelperContract: '0x0Da474E396F059594C0412ED79b2C9349bbc8087',
     cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+    // one eth_call covers 400 safes: the helper handles 600 per call here and reverts (gas) at 1200
+    multicallSize: 8,
   },
 }
 
@@ -27,14 +29,14 @@ const MULTICALL_SIZE = 3
 const CONCURRENCY = 80
 
 const tvl = async (api) => {
-  const { etherFiCashFactory, cashBorrowerHelperContract } = CONFIG[api.chain]
+  const { etherFiCashFactory, cashBorrowerHelperContract, multicallSize = MULTICALL_SIZE } = CONFIG[api.chain]
   const numSafes = (await api.call({ abi: abi.numContractsDeployed, target: etherFiCashFactory })) - 1
   const calls = []
   for (let i = 0; i < numSafes; i += SAFES_PER_CALL) {
     calls.push({ target: cashBorrowerHelperContract, params: [i, Math.min(SAFES_PER_CALL, numSafes - i)] })
   }
 
-  const chunks = sliceIntoChunks(calls, MULTICALL_SIZE)
+  const chunks = sliceIntoChunks(calls, multicallSize)
   let processed = 0
   let failures = 0
 

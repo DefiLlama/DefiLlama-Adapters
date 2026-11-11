@@ -60,14 +60,12 @@ const ethereumBorrowed = async (api) => {
         asset: asset,
     }))).flat()
 
-    const results = await api.batchCall(
-        agentAndAsset.map(({ agent, asset }) => ({
-            abi: capABI.Lender.debt,
-            target: infra.lender.address,
-            params: [agent, asset],
-            permitFailure: true
-        }))
-    );
+    const results = await api.multiCall({
+        abi: capABI.Lender.debt,
+        target: infra.lender.address,
+        calls: agentAndAsset.map(({ agent, asset }) => ({ params: [agent, asset] })),
+        permitFailure: true,
+    });
 
     for (const [{ asset }, debt] of arrayZip(agentAndAsset, results)) {
         if (!debt) continue;

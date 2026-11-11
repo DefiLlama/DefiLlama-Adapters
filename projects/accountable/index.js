@@ -101,28 +101,24 @@ async function getVaults(api) {
         (EXCLUDED_STRATEGIES[api.chain] || []).map((s) => s.toLowerCase())
     )
 
-    for (const factory of factories) {
-        const strategies = await api.fetchList({
-            target: factory,
-            lengthAbi: 'getStrategiesCount',
-            itemAbi: 'strategyProxies',
-        })
-        const validStrategies = strategies.filter(
-            (s) => s && s !== NULL_ADDRESS && !excludedStrategies.has(s.toLowerCase())
-        )
-        if (!validStrategies.length) continue
+    // all factories are read in the same multicalls
+    const strategies = await api.fetchList({
+        targets: factories,
+        lengthAbi: 'getStrategiesCount',
+        itemAbi: 'strategyProxies',
+        groupedByInput: true,
+    })
+    const calls = strategies.map((factoryStrategies, i) => factoryStrategies
+        .filter((s) => s && s !== NULL_ADDRESS && !excludedStrategies.has(s.toLowerCase()))
+        .map((strategy) => ({ target: factories[i], params: [strategy] }))
+    ).flat()
 
-        const factoryVaults = await api.multiCall({
-            target: factory,
-            abi: abis.strategyVaults,
-            calls: validStrategies.map((strategy) => ({ params: [strategy] })),
-        })
+    const factoryVaults = await api.multiCall({ abi: abis.strategyVaults, calls })
 
-        factoryVaults.forEach((vault) => {
-            if (!vault || vault === NULL_ADDRESS) return
-            vaults.add(vault.toLowerCase())
-        })
-    }
+    factoryVaults.forEach((vault) => {
+        if (!vault || vault === NULL_ADDRESS) return
+        vaults.add(vault.toLowerCase())
+    })
 
     for (const vault of (EXTRA_VAULTS[api.chain] || []))
         vaults.add(vault.toLowerCase())
@@ -135,24 +131,38 @@ async function getVaults(api) {
  * @param {boolean} isBorrowed When true, counts supplied assets minus idle vault liquidity.
  * @returns {Function} DefiLlama adapter handler.
  */
+async function fetchVaultData(api) {
+    const vaults = await getVaults(api)
+    if (!vaults.length) return { vaults }
+
+    const [supplies, underlyings] = await Promise.all([
+        api.multiCall({ abi: 'erc20:totalSupply', calls: vaults, permitFailure: true }),
+        api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true }),
+    ])
+
+    const [totalAssets, liquidity] = await Promise.all([
+        api.multiCall({
+            abi: abis.convertToAssets,
+            calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })),
+            permitFailure: true,
+        }),
+        api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
+    ])
+    return { vaults, underlyings, totalAssets, liquidity }
+}
+
+// tvl and borrowed are built from the same reads, fetch them once per chain/block
+const vaultDataCache = {}
+function getVaultData(api) {
+    const key = `${api.chain}-${api.block}`
+    if (!vaultDataCache[key]) vaultDataCache[key] = fetchVaultData(api)
+    return vaultDataCache[key]
+}
+
 function tvl(isBorrowed) {
     return async (api) => {
-        const vaults = await getVaults(api)
+        const { vaults, underlyings, totalAssets, liquidity } = await getVaultData(api)
         if (!vaults.length) return
-
-        const [supplies, underlyings] = await Promise.all([
-            api.multiCall({ abi: 'erc20:totalSupply', calls: vaults, permitFailure: true }),
-            api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true }),
-        ])
-        
-        const [totalAssets, liquidity] = await Promise.all([
-            api.multiCall({
-                abi: abis.convertToAssets,
-                calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })),
-                permitFailure: true,
-            }),
-            api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
-        ])
 
         vaults.forEach((vault, i) => {
             if (!underlyings[i] || !totalAssets[i]) return
