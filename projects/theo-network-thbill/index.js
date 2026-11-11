@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { getConnection } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 
@@ -22,7 +22,9 @@ const aMonUSDC     = '0x35a73bacb179d3740395a3cecc87ff2e581d6042' // Aave v3 on 
 const STABLEEARN   = '0xb7Df8db22A5DBBFA9ebeb94b3910aec6a4f05c08' // Morpho StableEarn vault on Stable (ERC4626, USDT0)
 const GPYUSDSE     = '0x8c3250f028a2c8d29319eb3ee3214b90462394ba' // Morpho StableEarn Prime PYUSD vault on Stable (ERC4626, PYUSD)
 const PYUSD_STABLE = '0x28f1f38a9f7db1f769a71af0a13e8bace2ab0e9f'
-const GPYUSDSE_DEPLOY_BLOCK = 44644572 // no code before this block, so calls to it fail
+// No code before these blocks, so calls to them fail
+const PYUSD_STABLE_DEPLOY_BLOCK = 38998158
+const GPYUSDSE_DEPLOY_BLOCK = 44644572
 
 // Solana
 const ULTRA_TOKEN_ACCOUNT = '6fk5UwZXF1Zs327zV5Fbmay2xTYCqg7eM5QeNQyyu7ae'
@@ -37,10 +39,15 @@ async function solanaTvl(api) {
   }
 }
 
-// Only the backing wallet's share of each vault; the shared erc4626 helper would count every depositor.
 async function stableTvl(api) {
+  const block = await api.getBlock()
+  const tokens = [ADDRESSES.stable.USDT0]
+  if (block >= PYUSD_STABLE_DEPLOY_BLOCK) tokens.push(PYUSD_STABLE)
+  await sumTokens2({ api, owner: BACKING, tokens })
+
+  // Only the backing wallet's share of each vault; the shared erc4626 helper would count every depositor.
   const vaults = [[STABLEEARN, ADDRESSES.stable.USDT0]]
-  if (await api.getBlock() >= GPYUSDSE_DEPLOY_BLOCK) vaults.push([GPYUSDSE, PYUSD_STABLE])
+  if (block >= GPYUSDSE_DEPLOY_BLOCK) vaults.push([GPYUSDSE, PYUSD_STABLE])
   for (const [vault, asset] of vaults) {
     const shares = await api.call({ abi: 'erc20:balanceOf', target: vault, params: BACKING })
     const assets = await api.call({ abi: 'function convertToAssets(uint256 shares) view returns (uint256)', target: vault, params: shares })
