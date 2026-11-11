@@ -177,7 +177,8 @@ async function getOwners(api) {
     .filter(({ network }) => networks.includes(network.toUpperCase()))
     .map(({ address }) => address)
     .filter(Boolean)
-    .filter(a => !isEvm || /^0x[0-9a-fA-F]{40}$/.test(a)) // PoR api sometimes lists non-evm addresses under evm networks
+    // PoR api sometimes lists non-evm addresses under evm networks; avax X-Chain owners are handled by sumTokens
+    .filter(a => !isEvm || /^0x[0-9a-fA-F]{40}$/.test(a) || (chain === 'avax' && /^(X-)?avax1[a-z0-9]{38}$/i.test(a)))
   const porAddresses = new Set(contracts.map(a => a.toLowerCase()))
 
   const lockInfoAddresses = []
