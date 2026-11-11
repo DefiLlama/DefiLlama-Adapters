@@ -18,7 +18,12 @@ function getGlobalVaultAddress(mint) {
   return globalVaultAddress;
 }
 
-async function listMarketPublicKeys(
+// Market account: base mint at bytes 16-48, quote mint at 48-80
+const MINTS_OFFSET = 16;
+const MINTS_LENGTH = 64;
+
+// one scan returns every market with just its two mints, no per-market fetch needed
+async function listMarkets(
   connection,
 ) {
   const accounts = await connection.getProgramAccounts(PROGRAM_ID, {
@@ -31,34 +36,21 @@ async function listMarketPublicKeys(
         },
       },
     ],
+    dataSlice: { offset: MINTS_OFFSET, length: MINTS_LENGTH },
   });
 
-  return accounts.map((a) => a.pubkey);
+  return accounts.map((a) => ({ pk: a.pubkey, data: a.account.data }));
 }
 
 async function tvl() {
   const connection = getConnection();
-  const marketPks = await listMarketPublicKeys(connection);
+  const markets = await listMarkets(connection);
 
   const vaultAccounts = [];
   let globalAccounts = [];
-  for (const pk of marketPks) {
-    const [buffer, _slot] = await connection
-      .getAccountInfoAndContext(pk)
-      .then(
-        (
-          getAccountInfoAndContext,
-        ) => {
-          return [
-            getAccountInfoAndContext.value?.data,
-            getAccountInfoAndContext.context.slot,
-          ];
-        },
-      );
-
-    let offset = 16;
-    const baseMint = new PublicKey(buffer.subarray(offset, offset + 32));
-    const quoteMint = new PublicKey(buffer.subarray(offset + 32, offset + 32 + 32));
+  for (const { pk, data } of markets) {
+    const baseMint = new PublicKey(data.subarray(0, 32));
+    const quoteMint = new PublicKey(data.subarray(32, 64));
 
     const baseVaultPk = getVaultAddress(pk, baseMint);
     const quoteVaultPk = getVaultAddress(pk, quoteMint);
