@@ -29,6 +29,14 @@ const ML_TOTAL_DEBT_OFFSET   = 56
 
 const ML_PDA_SEED = Buffer.from('market_linear')
 
+// Rise v2 runs on its own program. Market layout (Anchor): 8-byte discriminator,
+// mintMain at 78, vault (SPL token account) at 142, totalDebt (u64) at 445.
+const RISE_V2 = 'RiseP9yY3UnMxd1df7mgGJiR39frg9QGsr1ro3zxrDq'
+const V2_MARKET_DISC = bs58.encode(Buffer.from([219, 190, 213, 55, 0, 227, 198, 154]))
+const V2_MINT_MAIN_OFFSET  = 78
+const V2_VAULT_OFFSET      = 142
+const V2_TOTAL_DEBT_OFFSET = 445
+
 async function fetchRiseMarkets() {
   const programId = new PublicKey(MAYFLOWER)
   const connection = getConnection()
@@ -56,10 +64,24 @@ async function fetchRiseMarkets() {
   })
 }
 
+async function fetchV2Markets() {
+  const accounts = await getConnection().getProgramAccounts(new PublicKey(RISE_V2), {
+    encoding: 'base64',
+    filters: [{ memcmp: { offset: 0, bytes: V2_MARKET_DISC } }],
+    dataSlice: { offset: V2_MINT_MAIN_OFFSET, length: V2_TOTAL_DEBT_OFFSET + 8 - V2_MINT_MAIN_OFFSET },
+  })
+  return accounts.map(({ account: { data } }) => ({
+    mintMain:  new PublicKey(data.slice(0, 32)).toBase58(),
+    vault:     new PublicKey(data.slice(V2_VAULT_OFFSET - V2_MINT_MAIN_OFFSET, V2_VAULT_OFFSET - V2_MINT_MAIN_OFFSET + 32)).toBase58(),
+    totalDebt: data.readBigUInt64LE(V2_TOTAL_DEBT_OFFSET - V2_MINT_MAIN_OFFSET),
+  }))
+}
+
 async function tvl(api) {
-  const markets = await fetchRiseMarkets()
-  if (!markets.length) return
-  return sumTokens2({ api, tokenAccounts: markets.map(m => m.liqVaultMain) })
+  const [markets, v2Markets] = await Promise.all([fetchRiseMarkets(), fetchV2Markets()])
+  const tokenAccounts = [...markets.map(m => m.liqVaultMain), ...v2Markets.map(m => m.vault)]
+  if (!tokenAccounts.length) return
+  return sumTokens2({ api, tokenAccounts })
 }
 
 /**
@@ -68,7 +90,8 @@ async function tvl(api) {
  * token account to read).
  */
 async function borrowed(api) {
-  const markets = await fetchRiseMarkets()
+  const [markets, v2Markets] = await Promise.all([fetchRiseMarkets(), fetchV2Markets()])
+  v2Markets.forEach(m => { if (m.totalDebt > 0n) api.add(m.mintMain, m.totalDebt.toString()) })
   if (!markets.length) return
   const accounts = await getMultipleAccounts(markets.map(m => m.marketLinear), { api })
   accounts.forEach((acc, i) => {
@@ -80,6 +103,6 @@ async function borrowed(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: `TVL: sum of the main quote token (WSOL, USDC, etc.) actually held on-chain in each Rise market's liquidity vault (the liqVaultMain SPL token account stored on its MarketMeta). Borrowed: sum of MarketLinear.totalDebt across the same markets, representing main-token debt that users have drawn against their token collateral. Rise markets are identified on-chain by selecting Mayflower MarketMeta accounts whose marketGroup field is Rise's group pubkey (HA9pvTe8...).`,
+  methodology: `TVL: sum of the main quote token (WSOL, USDC, etc.) actually held on-chain in each Rise market's liquidity vault (the liqVaultMain SPL token account stored on its MarketMeta). Borrowed: sum of MarketLinear.totalDebt across the same markets, representing main-token debt that users have drawn against their token collateral. Rise markets are identified on-chain by selecting Mayflower MarketMeta accounts whose marketGroup field is Rise's group pubkey (HA9pvTe8...), plus every Market account of the Rise v2 program (RiseP9...), counted the same way (vault balance for TVL, totalDebt for borrowed).`,
   solana: { tvl, borrowed },
 }
