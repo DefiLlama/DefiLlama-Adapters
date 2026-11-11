@@ -19362,6 +19362,36 @@ const configs = {
       ]
     },
   },
+  "nara": {
+    "methodology": "TVL counts the ETH, WETH, USDC and cbBTC held by the CryptoSLIP slip vaults (user slip escrow plus fees not yet forwarded to the treasury) and any non-NARA balance in the V5 position-sale escrow and reward contracts. Staking counts NARA committed in NARAPrincipalLedgerV5 and NARA held in CryptoSLIP slips. The Treasury Safe, its range-order managers and the fee vault hold protocol-owned liquidity and are not counted.",
+    "base": {
+      "tvl": {
+        "owners": [
+          "0x3f80aa68Fb4834d6E119EE1cf932C14419Cf63EB",
+          "0x38BF0321FA7489576978353a6a8da4A3e85C2F18",
+          "0x04Ac83045d26259D46400Ce6beb9bBd0641df225",
+          "0xC72671D9438388638547444524F6542b650C9264",
+          "0x44130CC47b886D8488041F5eaE271477D1aFA909"
+        ],
+        "tokens": [
+          ADDRESSES.null,
+          ADDRESSES.base.USDC,
+          ADDRESSES.base.WETH,
+          ADDRESSES.base.cbBTC
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x7F866a9fbe41D54F0d9C35b6892fcf27Ea766DB2",
+          "0x3f80aa68Fb4834d6E119EE1cf932C14419Cf63EB",
+          "0x38BF0321FA7489576978353a6a8da4A3e85C2F18"
+        ],
+        "tokens": [
+          "0x91FB78A9F46B67f54BbD4489941d19666b2fAe0f"
+        ]
+      }
+    },
+  },
   "narbet": {
     "methodology": "NarBet TVL is the MON held in the BankrollAndStaking contract, which serves as the house liquidity pool. LPs deposit MON to earn yield from casino game outcomes across 11 on-chain games including Coin Flip, Dice/Range, Slots, Plinko, Mines, Roulette, Baccarat, Video Poker, Rock Paper Scissors, Limbo, and Fish Prawn Crab. All games use Pyth Entropy for verifiable randomness.",
     "start": "2025-11-11",
