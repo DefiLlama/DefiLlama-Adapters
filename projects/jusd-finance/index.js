@@ -59,7 +59,7 @@ async function aleoUsdcx() {
 }
 
 module.exports = {
-  methodology: 'TVL is the USDC value of JUSD on each chain it is issued on: the Accountable vault on Ethereum and the Venzo vault on Arbitrum (share supply valued with convertToAssets(), covering idle USDC and capital allocated to strategies, principally delta-neutral funding trades plus lending), and jusd_vault_arc_production.aleo on Aleo. Aleo deposits are bridged to Ethereum and held as Ethereum JUSD by the vault\'s adapter; that position is counted on Aleo, where the deposits were made, and subtracted from Ethereum, so nothing is counted twice. The Ethereum vault is also part of Accountable, so this listing is marked as double counted.',
+  methodology: 'TVL is the USDC value of USDdw on each chain it is issued on: the Accountable vault on Ethereum and the Venzo vault on Arbitrum (share supply valued with convertToAssets(), covering idle USDC and capital allocated to strategies, principally delta-neutral funding trades plus lending), and jusd_vault_arc_production.aleo on Aleo. Aleo deposits are bridged to Ethereum and held as Ethereum JUSD by the vault\'s adapter; that position is counted on Aleo, where the deposits were made, and subtracted from Ethereum, so nothing is counted twice. The Ethereum vault is also part of Accountable, so this listing is marked as double counted.',
   doublecounted: true,
   ethereum: { tvl },
   arbitrum: { tvl },
