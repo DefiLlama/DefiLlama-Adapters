@@ -165,12 +165,6 @@ const configs = {
       staking: { owners: ['0x0EFBE19Cb7B07D934D01990a8989E9CaA98b9009'], tokens: ['0xFf8104251E7761163faC3211eF5583FB3F8583d6']}
     }
   },
-  'nara': {
-    methodology: 'Total NARA locked in NARAEngineV4 on Base. Users lock NARA for a chosen duration to participate in protocol consensus and earn rewards every 15-minute epoch.',
-    base: {
-      staking: { owners: ['0x98ab6406D6B548F37dEF7110961bb45A399e5aFC'], tokens: ['0xB6333F5D4cEd8dffA80F3F13697D6aA3BB3f19c1']}
-    }
-  },
   'venice-protocol': {
     methodology: 'Counts the total VVV tokens locked in the Venice Protocol staking contract (sVVV) on Base.',
     base: {
