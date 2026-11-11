@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { getConnection } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 
@@ -20,6 +20,11 @@ const ULTRA_ARB    = '0xc26af85ede9cc25d449bcebef866bb85afd5d346'
 const GTUSDCP_BASE = '0x050ce30b927da55177a4914ec73480238bad56f0' // Morpho Gauntlet USDC Prime (Base)
 const aMonUSDC     = '0x35a73bacb179d3740395a3cecc87ff2e581d6042' // Aave v3 on Monad
 const STABLEEARN   = '0xb7Df8db22A5DBBFA9ebeb94b3910aec6a4f05c08' // Morpho StableEarn vault on Stable (ERC4626, USDT0)
+const GPYUSDSE     = '0x8c3250f028a2c8d29319eb3ee3214b90462394ba' // Morpho StableEarn Prime PYUSD vault on Stable (ERC4626, PYUSD)
+const PYUSD_STABLE = '0x28f1f38a9f7db1f769a71af0a13e8bace2ab0e9f'
+// No code before these blocks, so calls to them fail
+const PYUSD_STABLE_DEPLOY_BLOCK = 38998158
+const GPYUSDSE_DEPLOY_BLOCK = 44644572
 
 // Solana
 const ULTRA_TOKEN_ACCOUNT = '6fk5UwZXF1Zs327zV5Fbmay2xTYCqg7eM5QeNQyyu7ae'
@@ -34,11 +39,20 @@ async function solanaTvl(api) {
   }
 }
 
-// Only the backing wallet's share of the vault; the shared erc4626 helper would count every depositor.
 async function stableTvl(api) {
-  const shares = await api.call({ abi: 'erc20:balanceOf', target: STABLEEARN, params: BACKING })
-  const assets = await api.call({ abi: 'function convertToAssets(uint256 shares) view returns (uint256)', target: STABLEEARN, params: shares })
-  api.add(ADDRESSES.stable.USDT0, assets)
+  const block = await api.getBlock()
+  const tokens = [ADDRESSES.stable.USDT0]
+  if (block >= PYUSD_STABLE_DEPLOY_BLOCK) tokens.push(PYUSD_STABLE)
+  await sumTokens2({ api, owner: BACKING, tokens })
+
+  // Only the backing wallet's share of each vault; the shared erc4626 helper would count every depositor.
+  const vaults = [[STABLEEARN, ADDRESSES.stable.USDT0]]
+  if (block >= GPYUSDSE_DEPLOY_BLOCK) vaults.push([GPYUSDSE, PYUSD_STABLE])
+  for (const [vault, asset] of vaults) {
+    const shares = await api.call({ abi: 'erc20:balanceOf', target: vault, params: BACKING })
+    const assets = await api.call({ abi: 'function convertToAssets(uint256 shares) view returns (uint256)', target: vault, params: shares })
+    api.add(asset, assets)
+  }
 }
 
 module.exports = {
@@ -46,7 +60,7 @@ module.exports = {
   methodology:
     'thBILL TVL is the value of the reserve assets held in the thBILL backing wallets: tokenized Treasury ' +
     'fund shares (ULTRA, FILQ-A), stablecoins, and stablecoin lending positions (Aave v3, Morpho vaults) ' +
-    'across Ethereum, Arbitrum, Base, Monad, Stable and Solana. About 96% of thBILL supply is held as reserve by ' +
+    'across Ethereum, Arbitrum, Base, Monad, Stable and Solana. Most thBILL supply is held as reserve by ' +
     'thUSD (see Theo Network thUSD), so this adapter is flagged doublecounted under the Theo Network parent.',
   hallmarks: [
     ['2025-11-20', 'Reserve rotated into ULTRA on Ethereum, Arbitrum and Solana'],
@@ -54,6 +68,7 @@ module.exports = {
     ['2026-06-25', 'FILQ-A (Fidelity USD Digital Liquidity Fund) added to reserve'],
     ['2026-08-06', 'Aave v3 on Monad added to reserve'],
     ['2026-09-04', 'Solana ULTRA redeemed; USDC proceeds pending'],
+    ['2026-11-06', 'Aave v3 USDC (Ethereum) moved into the StableEarn Prime PYUSD vault on Stable'],
   ],
   ethereum: {
     tvl: sumTokensExport({
