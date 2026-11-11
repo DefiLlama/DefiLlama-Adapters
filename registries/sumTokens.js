@@ -20837,6 +20837,8 @@ const configs = {
     bsc: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT] },
     robinhood: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null] },
     avax: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt] },
+    arbitrum: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT] },
+    monad: { owner: '0xd64EF1417EB047ed0b54736a5a41F01178C391c6', tokens: [ADDRESSES.null, ADDRESSES.monad.USDC, ADDRESSES.monad.USDT] },
     solana: {
       solOwners: ['xVm2WXtsMh1h41HKgAS2Dymf5ex1GggWbqUeefXUsJg'], // SOL vault of the Nullmask program (Ee6we6Bnbok55FzHfa8fU8td7NDwbKa1qgLehP4iH1Uj)
       tokenAccounts: [ // coin vaults (CoinAdded events)
