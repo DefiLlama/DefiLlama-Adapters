@@ -430,6 +430,18 @@ module.exports = {
       ]
     },
   },
+  "horizen-bridge": {
+    // Horizen is an OP Stack L3 (Caldera) settling to Base. https://docs.horizen.io/horizen-chain/bridging/how-bridging-works
+    "methodology": "Counts assets escrowed on Base for Horizen's canonical bridge: ETH in the OptimismPortal and ERC-20s in the L1StandardBridge. ZEN, USDC and cbBTC reach Horizen through Stargate and are not included.",
+    "start": "2025-11-17", // first deposit through the OptimismPortal
+    "base": {
+      "owners": [
+        "0xf4a6cc4171fda694439f856d912777aa6ab05369", // L1StandardBridge
+        "0x78e794d10a355468A0e7A14AA1a9F9A253D78784"  // OptimismPortal2, L1StandardBridge.messenger().portal()
+      ],
+      "fetchCoValentTokens": true
+    },
+  },
   "immutable-zkevm": {
     "ethereum": {
       "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
