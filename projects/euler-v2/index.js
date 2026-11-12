@@ -27,6 +27,13 @@ const config = {
   hyperliquid: { factory: '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A', },
 }
 
+const streamTokens = [ // Stream finance collapse, xUSD price flaps between ~1.27 and ~0.01
+  '0xe2fc85bfb48c4cf147921fbe110cf92ef9f26f94', // xUSD
+  '0x12fd502e2052cafb41eccc5b596023d9978057d6', // xBTC
+  '0x7e586fbaf3084c0be7ab5c82c04ffd7592723153', // xETH
+  '0xba1edf4a4c7eb8cb0dae0594326179f9c7d909d2', // PT-xUSD-18DEC2025
+]
+
 async function fetchPriceMap(api, addresses) {
   const tokens = [...new Set(addresses.filter(Boolean).map(a => a.toLowerCase()))]
   if (!tokens.length) return {}
@@ -63,7 +70,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { vaults, tokens } = await getVaults(api)
-      return sumTokens2({ api, tokensAndOwners2: [tokens, vaults], permitFailure: true })
+      return sumTokens2({ api, tokensAndOwners2: [tokens, vaults], permitFailure: true, blacklistedTokens: chain === 'ethereum' ? streamTokens : [] })
     },
     borrowed: async (api) => {
       const { vaults, tokens } = await getVaults(api)

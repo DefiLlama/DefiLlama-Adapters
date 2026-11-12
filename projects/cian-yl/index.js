@@ -112,7 +112,15 @@ const tvl = async (api) => {
     await api.sumTokens({ token: '0xc152d5A599F83B3d0098cbAdb23FcE95F27Ff30B', owner: '0x821d2e44984168d278C698fD742d5138c01bAAA2' })
   }
   
-  return await api.erc4626Sum({ calls: [...vaults, ...preVaults], isOG4626: true, permitFailure: true })
+  const calls = [...vaults, ...preVaults]
+  const [tokens, totalAssets, underlyingTvl] = await Promise.all(['address:asset', 'uint256:totalAssets', 'uint256:underlyingTvl']
+    .map(abi => api.multiCall({ abi, calls, permitFailure: true })))
+  // totalAssets() reverts with PriceNotUpdated() on a stale vault price; underlyingTvl() is the same figure without that guard
+  tokens.forEach((token, i) => {
+    const balance = totalAssets[i] ?? underlyingTvl[i]
+    if (token && balance) api.add(token, balance)
+  })
+  return api.getBalances()
 }
 
 Object.keys(config).forEach((chain) => {

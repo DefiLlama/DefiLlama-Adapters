@@ -137,6 +137,7 @@ const configs = {
     xdai: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 37360338 },
     ethereum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 21332121, blacklistedTokens: [
       '0x8399c8fc273bd165c346af74a02e65f10e4fd78f', // vgUSDC
+      '0xe2fc85bfb48c4cf147921fbe110cf92ef9f26f94', // Stream xUSD, collapsed Nov 2025
     ] },
     arbitrum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 297810187 },
     base: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 25343854 },

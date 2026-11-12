@@ -1507,11 +1507,18 @@ const configs = {
             '0x7054b25D47b9342dA3517AD41A4BD083De8D3f70',
             '0x7d07BFdd01422D7b655B333157eB551B9712dCd8',
           ],
+          excludedVaults: [
+            '0x138c289Bb8b855CF271305C8bcf91DC31Ba30194', // Stream xUSD, collapsed Nov 2025
+          ],
         },
         ethereum: {
           eulerVaultOwners: [
             '0x7054b25D47b9342dA3517AD41A4BD083De8D3f70',
             '0x7d07BFdd01422D7b655B333157eB551B9712dCd8',
+          ],
+          excludedVaults: [
+            '0xf1BA8c5Ca5aB011d06f31e64DaD313d204aCb9Eb', // Stream xUSD, price flaps 1.27 / 0.01
+            '0x0f080Bf8Ba818001EcfB2f461708D8484323D0cE', // PT-xUSD-18DEC2025
           ],
         }
       }
