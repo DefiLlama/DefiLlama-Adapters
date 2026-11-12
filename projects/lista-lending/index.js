@@ -5,7 +5,7 @@ const MARKET_LIST_URL = 'https://api.lista.org/api/moolah/borrow/marketList?page
 
 const config = {
   bsc: { vault: '0x8F73b65B4caAf64FBA2aF91cC5D4a2A1318E5D8C' },
-  ethereum: { vault: '0xf820fB4680712CD7263a0D3D024D5b5aEA82Fd70' },
+  ethereum: { vault: '0xf820fB4680712CD7263a0D3D024D5b5aEA82Fd70', start: 1758872495 }, // vault deployed at block 23445769 (2025-09-26)
 }
 
 const abi = {
@@ -51,7 +51,8 @@ async function getAllMarketIds(api) {
 }
 
 async function tvl(api) {
-  const { vault } = config[api.chain]
+  const { vault, start } = config[api.chain]
+  if (start && api.timestamp < start) return {}
   const marketIds = await getMarketIdsForTvl(api)
   if (marketIds.length === 0) return {}
   const marketInfos = await api.multiCall({
@@ -64,7 +65,8 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  const { vault } = config[api.chain]
+  const { vault, start } = config[api.chain]
+  if (start && api.timestamp < start) return {}
   const marketIds = await getAllMarketIds(api)
   if (marketIds.length === 0) return {}
   const [marketInfos, marketData] = await Promise.all([
