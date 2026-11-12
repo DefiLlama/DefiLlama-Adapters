@@ -62,6 +62,8 @@ async function view(cache, packageId, module, functionName, typeArguments, args)
     const res = await sui.devInspectTransactionBlock(txBytes)
     return (res?.results?.[0]?.returnValues ?? []).map(v => v[0])
   } catch (e) {
+    // only a Move abort (paused market, stale feed) falls back, rpc errors fail the run
+    if (!/simulateTransaction failed|devInspectTransactionBlock failed/.test(String(e?.message))) throw e
     sdk.log(`[perpsplexity] ${module}::${functionName} aborted: ${String(e?.message ?? e).slice(0, 200)}`)
     return null
   }
@@ -186,6 +188,6 @@ module.exports = {
   timetravel: false,
   start: '2026-09-16', // first pool, ZUK on the immutable package
   doublecounted: true,
-  methodology: 'TVL is what every Perpsplexity pool and leveraged token holds, valued by its own contract through a read-only call on the latest chain state. Leveraged pools: composite_pool::observe (observe_cash while a pool rests in cash) returns quote_nav = cash in the pool + its Suilend deposit + idle margin in its Aftermath reserve account + the value of its Aftermath perp position (collateral plus unrealized PnL and funding); the treasury, unpaid holder dividends, uncollected platform and creator fees and launch escrow kept in the pool are added. Spot pools: the quote balance in the pool plus the same set-apart balances. Leveraged tokens: token::status nav (free cash plus perp position equity at the oracle price). Pool tokens themselves (the meme coins in each pool reserve) are not counted. Marked doublecounted because part of the pools\' cash is lent on Suilend and also appears in Suilend\'s TVL. Margin posted on Aftermath Perps is not counted by any other DefiLlama adapter (Aftermath Perps has no TVL adapter), so it is included here.',
+  methodology: 'TVL is what every Perpsplexity pool and leveraged token holds, valued by its own contract through a read-only call on the latest chain state. Leveraged pools: composite_pool::observe (observe_cash while a pool rests in cash) returns quote_nav = cash in the pool + its Suilend deposit + idle margin in its Aftermath reserve account + the value of its Aftermath perp position (collateral plus unrealized PnL and funding); the treasury, unpaid holder dividends, uncollected platform and creator fees and launch escrow kept in the pool are added. Spot pools: the quote balance in the pool plus the same set-apart balances. Leveraged tokens: token::status nav (free cash plus perp position equity at the oracle price). Pool tokens themselves (the meme coins in each pool reserve) are not counted. Marked doublecounted because part of the pools\' cash is lent on Suilend and also appears in Suilend\'s TVL. Margin posted on Aftermath Perps is not counted by any other DefiLlama adapter (the Aftermath afLP adapter counts only the afLP vault account), so it is included here.',
   sui: { tvl },
 }
