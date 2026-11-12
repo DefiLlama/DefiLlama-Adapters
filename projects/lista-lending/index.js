@@ -8,7 +8,16 @@ const config = {
   ethereum: { vault: '0xf820fB4680712CD7263a0D3D024D5b5aEA82Fd70', start: 1758872495 }, // vault deployed at block 23445769 (2025-09-26)
 }
 
+// Curator vaults counted under their own listing; their pro-rata market share is removed here to avoid double counting.
+const excludedVaults = {
+  bsc: ['0x87e01662febb5145ff648c1fa7b73d81519d9c66'], // Saturn USDT (saturn-protocol)
+}
+
 const abi = {
+  withdrawQueueLength: 'uint256:withdrawQueueLength',
+  withdrawQueue: 'function withdrawQueue(uint256) view returns (bytes32)',
+  position:
+    'function position(bytes32,address) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)',
   idToMarketParams:
     'function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)',
   market:
@@ -50,6 +59,28 @@ async function getAllMarketIds(api) {
   return list.map((m) => m.marketId).filter(Boolean)
 }
 
+/** Removes the excluded vaults' share of each market's liquidity (supply - borrow) and, for borrowed, of its borrows. */
+async function subtractExcludedVaults(api, kind) {
+  for (const excluded of excludedVaults[api.chain] ?? []) {
+    const { vault } = config[api.chain]
+    const length = await api.call({ target: excluded, abi: abi.withdrawQueueLength })
+    const ids = await api.multiCall({ target: excluded, abi: abi.withdrawQueue, calls: Array.from({ length: Number(length) }, (_, i) => i) })
+    const [params, markets, positions] = await Promise.all([
+      api.multiCall({ target: vault, abi: abi.idToMarketParams, calls: ids }),
+      api.multiCall({ target: vault, abi: abi.market, calls: ids }),
+      api.multiCall({ target: vault, abi: abi.position, calls: ids.map((id) => ({ params: [id, excluded] })) }),
+    ])
+    ids.forEach((_, i) => {
+      const { totalSupplyAssets, totalSupplyShares, totalBorrowAssets } = markets[i]
+      if (Number(totalSupplyShares) === 0) return
+      const share = BigInt(positions[i].supplyShares)
+      const supply = (share * BigInt(totalSupplyAssets)) / BigInt(totalSupplyShares)
+      const borrow = (share * BigInt(totalBorrowAssets)) / BigInt(totalSupplyShares)
+      api.add(params[i].loanToken, (kind === 'tvl' ? supply - borrow : borrow) * -1n)
+    })
+  }
+}
+
 async function tvl(api) {
   const { vault, start } = config[api.chain]
   if (start && api.timestamp < start) return {}
@@ -61,7 +92,9 @@ async function tvl(api) {
     calls: marketIds,
   })
   const tokens = marketInfos.flatMap((i) => [i.collateralToken, i.loanToken])
-  return api.sumTokens({ tokens, owner: vault })
+  await api.sumTokens({ tokens, owner: vault })
+  await subtractExcludedVaults(api, 'tvl')
+  return api.getBalances()
 }
 
 async function borrowed(api) {
@@ -76,6 +109,7 @@ async function borrowed(api) {
   const loanTokens = marketInfos.map((i) => i.loanToken)
   const borrowedAmounts = marketData.map((m) => m.totalBorrowAssets)
   api.add(loanTokens, borrowedAmounts)
+  await subtractExcludedVaults(api, 'borrowed')
   return api.getBalances()
 }
 
