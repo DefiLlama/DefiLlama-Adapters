@@ -10,7 +10,7 @@ const config = {
 
 // Curator vaults counted under their own listing; their pro-rata market share is removed here to avoid double counting.
 const excludedVaults = {
-  bsc: ['0x87e01662febb5145ff648c1fa7b73d81519d9c66'], // Saturn USDT (saturn-protocol)
+  bsc: [{ address: '0x87e01662febb5145ff648c1fa7b73d81519d9c66', start: 1788497446 }], // Saturn USDT (saturn-protocol), deployed at block 119857679 (2026-09-04)
 }
 
 const abi = {
@@ -61,7 +61,8 @@ async function getAllMarketIds(api) {
 
 /** Removes the excluded vaults' share of each market's liquidity (supply - borrow) and, for borrowed, of its borrows. */
 async function subtractExcludedVaults(api, kind) {
-  for (const excluded of excludedVaults[api.chain] ?? []) {
+  for (const { address: excluded, start } of excludedVaults[api.chain] ?? []) {
+    if (api.timestamp < start) continue // vault not deployed yet, nothing to subtract
     const { vault } = config[api.chain]
     const length = await api.call({ target: excluded, abi: abi.withdrawQueueLength })
     const ids = await api.multiCall({ target: excluded, abi: abi.withdrawQueue, calls: Array.from({ length: Number(length) }, (_, i) => i) })

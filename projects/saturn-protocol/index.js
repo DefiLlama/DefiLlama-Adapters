@@ -14,6 +14,7 @@ const VAULTS = {
   monad: ['0x75753e494e5e374C52E1d84fc04EB14B10F2C079'],
   bsc: ['0x87e01662febb5145ff648c1fa7b73d81519d9c66'], // Lista USDT vault; excluded from lista-lending
 };
+const BSC_VAULT_START = 1788497446; // vault deployed at block 119857679 (2026-09-04)
 
 async function vaultTvl(api) {
   const vaults = VAULTS[api.chain];
@@ -62,6 +63,6 @@ module.exports = {
     tvl: vaultTvl,
   },
   bsc: {
-    tvl: vaultTvl,
+    tvl: (api) => api.timestamp < BSC_VAULT_START ? {} : vaultTvl(api),
   },
 };
