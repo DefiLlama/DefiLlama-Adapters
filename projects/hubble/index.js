@@ -13,42 +13,58 @@ const poolInfoAbi =
   "function poolInfo(uint256) view returns (address token, uint256 totalStake, uint256 lastRewardTime, bool isStarted)";
 
 async function getPoolData(api, pair, protocolToken, quoteToken) {
-  const [
-    totalSupply,
-    stakedLp,
-    protocolReserve,
-    quoteReserve,
-  ] = await Promise.all([
-    api.call({
-      target: pair,
-      abi: "erc20:totalSupply",
-    }),
-    api.call({
-      target: pair,
-      abi: "erc20:balanceOf",
-      params: [MISSION_CONTROL],
-    }),
-    api.call({
-      target: protocolToken,
-      abi: "erc20:balanceOf",
-      params: [pair],
-    }),
-    api.call({
-      target: quoteToken,
-      abi: "erc20:balanceOf",
-      params: [pair],
-    }),
-  ]);
+  const [totalSupply, stakedLp, token0, token1, reserves] =
+    await Promise.all([
+      api.call({
+        target: pair,
+        abi: "erc20:totalSupply",
+      }),
+      api.call({
+        target: pair,
+        abi: "erc20:balanceOf",
+        params: [MISSION_CONTROL],
+      }),
+      api.call({
+        target: pair,
+        abi: "address:token0",
+      }),
+      api.call({
+        target: pair,
+        abi: "address:token1",
+      }),
+      api.call({
+        target: pair,
+        abi: "function getReserves() view returns (uint256 reserve0, uint256 reserve1, uint256 blockTimestampLast)",
+      }),
+    ]);
+
+  const normalizedToken0 = token0.toLowerCase();
+  const normalizedToken1 = token1.toLowerCase();
+  const normalizedProtocolToken = protocolToken.toLowerCase();
+  const normalizedQuoteToken = quoteToken.toLowerCase();
+
+  const containsExpectedTokens =
+    (normalizedToken0 === normalizedProtocolToken &&
+      normalizedToken1 === normalizedQuoteToken) ||
+    (normalizedToken0 === normalizedQuoteToken &&
+      normalizedToken1 === normalizedProtocolToken);
+
+  if (!containsExpectedTokens) {
+    throw new Error(`Unexpected tokens in LP ${pair}`);
+  }
+
+  const reserve0 = BigInt(reserves.reserve0 ?? reserves[0]);
+  const reserve1 = BigInt(reserves.reserve1 ?? reserves[1]);
 
   return {
     totalSupply: BigInt(totalSupply),
     stakedLp: BigInt(stakedLp),
-    protocolReserve: BigInt(protocolReserve),
-    quoteReserve: BigInt(quoteReserve),
+    protocolReserve:
+      normalizedToken0 === normalizedProtocolToken ? reserve0 : reserve1,
+    quoteReserve:
+      normalizedToken0 === normalizedQuoteToken ? reserve0 : reserve1,
   };
-}
-
-async function tvl(api) {
+}async function tvl(api) {
   const redemptionPool = await api.call({
     target: REDEEMER,
     abi: "address:redemptionPool",
