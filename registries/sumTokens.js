@@ -27446,6 +27446,19 @@ const configs = {
       ]
     },
   },
+  "swan-dao": {
+    "methodology": "TVL is the wstETH collateral and the sUSDS PSM reserves held by the Swan DAO Monolith lender. Staking is the SWAN held by the sSWAN staking contract.",
+    "doublecounted": true, // lender comes from the Monolith factory, also counted in monolith-market
+    "ethereum": {
+      "tvl": {
+        "owner": "0x4ed5c72816aBc1b67ac31DdAbE31cff4a8c56a15",
+        "tokens": [ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.sUSDS]
+      },
+      "staking": {
+        "__staking": ["0xcBC108384e874D9B0436adE3918685BaA709e48c", "0xD0a32F6d4850F9D6DF7d4F8f84af1Fcd3Cf993CC"]
+      }
+    },
+  },
   "swell-l2-farm": {
     "hallmarks": [
       [
