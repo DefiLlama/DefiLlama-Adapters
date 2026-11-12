@@ -52,7 +52,6 @@ async function getActiveV4PolPositionIds(api) {
     api.call({
       target: NARA_POL_POSITION_V5,
       abi: POL_TOKEN_ID_ABI,
-      permitFailure: true,
     }),
   ])
 
@@ -71,16 +70,14 @@ async function getActiveV4PolPositionIds(api) {
         target: manager,
         params: [offset, PAGE_SIZE],
         abi: GET_ACTIVE_ORDER_IDS_ABI,
-        permitFailure: true,
       })
-      const orderIds = page?.orderIds ?? []
+      const orderIds = page.orderIds
       if (!orderIds.length) break
 
       const orders = await api.multiCall({
         target: manager,
         calls: orderIds,
         abi: GET_ORDER_ABI,
-        permitFailure: true,
       })
       orders.forEach((order) => {
         if (order?.tokenId && String(order.tokenId) !== '0') {
@@ -113,12 +110,9 @@ treasury.base.tvl = async (api) => {
   await baseTvl(api)
 
   // Add Uniswap v4 PoolManager ERC-6909 POL claims held by NARAFeeVaultV5 (1 = ETH, 2 = USDC)
-  const [ethInv, usdcInv] = await Promise.all([
-    api.call({ target: NARA_FEE_VAULT_V5, params: [1], abi: FEE_VAULT_INVENTORY_ABI, permitFailure: true }),
-    api.call({ target: NARA_FEE_VAULT_V5, params: [2], abi: FEE_VAULT_INVENTORY_ABI, permitFailure: true }),
-  ])
-  if (ethInv?.booked?.polClaims) api.add(nullAddress, ethInv.booked.polClaims)
-  if (usdcInv?.booked?.polClaims) api.add(BASE_USDC, usdcInv.booked.polClaims)
+  const [ethInv, usdcInv] = await api.multiCall({ target: NARA_FEE_VAULT_V5, abi: FEE_VAULT_INVENTORY_ABI, calls: [1, 2] })
+  api.add(nullAddress, ethInv.booked.polClaims)
+  api.add(BASE_USDC, usdcInv.booked.polClaims)
 
   // Unwrap non-NARA side of active Uniswap v4 POL positions (Treasury Safe seed + RangeManager orders)
   const positionIds = await getActiveV4PolPositionIds(api)
@@ -145,9 +139,8 @@ treasury.base.ownTokens = async (api) => {
     target: NARA_FEE_VAULT_V5,
     params: [0],
     abi: FEE_VAULT_INVENTORY_ABI,
-    permitFailure: true,
   })
-  if (naraInv?.booked?.polClaims) api.add(NARA_TOKEN, naraInv.booked.polClaims)
+  api.add(NARA_TOKEN, naraInv.booked.polClaims)
 
   // Unwrap NARA side of active Uniswap v4 POL positions
   const positionIds = await getActiveV4PolPositionIds(api)
