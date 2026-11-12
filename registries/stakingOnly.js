@@ -52,6 +52,11 @@ const configs = {
       ],
     },
   },
+  'o1-wsto-vault': {
+    methodology: "Counts the O tokens held by each chain's wstO vault as staking.",
+    robinhood: { staking: ['0xE92bD1C05E4E308792003C8205127A6FA662b4D4', '0x500A02a20B0B0A3F3efCCFc0559543F5743bd1C4'] },
+    base: { staking: ['0x80C6BAE89B636c6Ee96FE8F198c0D6926C2C91df', '0x182FA643E5f29d5EcA75e7b9CF9336A3fe4620b2'] },
+  },
   'onecash': {
     misrepresentedTokens: true,
     methodology: "Counts liquidty on the Staking and Pool2 Only",
