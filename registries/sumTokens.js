@@ -19363,12 +19363,14 @@ const configs = {
     },
   },
   "nara": {
-    "methodology": "TVL counts the ETH, WETH, USDC and cbBTC held by the CryptoSLIP slip vaults (user slip escrow plus fees not yet forwarded to the treasury) and any non-NARA balance in the V5 position-sale escrow and reward contracts. Staking counts NARA committed in NARAPrincipalLedgerV5 and NARA held in CryptoSLIP slips. The Treasury Safe, its range-order managers and the fee vault hold protocol-owned liquidity and are not counted.",
+    "methodology": "TVL counts the ETH, WETH, USDC and cbBTC held by the CryptoSLIP slip vaults (user slip escrow plus fees not yet forwarded to the treasury) and any non-NARA balance in the V5 position-sale escrow and reward contracts. Staking counts NARA committed in NARAPrincipalLedgerV5 and NARA held in CryptoSLIP slips. The Treasury Safe, its range-order managers and the fee vault hold protocol-owned liquidity and are tracked separately under treasury/nara.js.",
     "base": {
       "tvl": {
         "owners": [
           "0x3f80aa68Fb4834d6E119EE1cf932C14419Cf63EB",
           "0x38BF0321FA7489576978353a6a8da4A3e85C2F18",
+          "0x4Dc2b5A801A81b17b8d05C737c727FEd1f30699A",
+          "0x87aadDF2d3aa11Cddf36939715508066a99BA415",
           "0x04Ac83045d26259D46400Ce6beb9bBd0641df225",
           "0xC72671D9438388638547444524F6542b650C9264",
           "0x44130CC47b886D8488041F5eaE271477D1aFA909"
