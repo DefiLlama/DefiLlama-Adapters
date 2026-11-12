@@ -3,6 +3,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // DeltaUSD strategy/reserve wallet (receives USDT from the dUSD owner on BSC)
 const owner = '0x12edd10a11fd9c94f9ac1b085a627f3745730899'
+// Additional X Layer Aave account identified by the operator as dUSD backing
+const xlayerAaveOwner = '0xacc5b404eb5b31728e225040830162a9482a81f9'
 const dUSD = '0x1851302297e318d658829fd94b89d5ae6528cb9e' // dUSD token, also the mint/redeem contract
 const operator = '0x929c98a6e23721f379b5e27cc694744a2b6d46c2' // dUSD owner
 
@@ -28,14 +30,14 @@ const kodiakNft = '0xfe5e8c83ffe4d9627a75eaa7fee864768db989bd'
 const sWBERA = '0x118d2ceee9785eaf70c15cd74cd84c9f8c3eec9a'
 
 // Supplied minus borrowed, per reserve; returns the reserve list so wallet balances of those tokens are counted too
-async function addAave(api) {
+async function addAave(api, account = owner) {
   const dataProvider = aaveDataProviders[api.chain]
   const reserves = await api.call({ target: dataProvider, abi: 'function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])' })
   const tokens = reserves.map(r => r.tokenAddress)
   const positions = await api.multiCall({
     target: dataProvider,
     abi: 'function getUserReserveData(address asset, address user) view returns (uint256 currentATokenBalance, uint256 currentStableDebt, uint256 currentVariableDebt, uint256 principalStableDebt, uint256 scaledVariableDebt, uint256 stableBorrowRate, uint256 liquidityRate, uint40 stableRateLastUpdated, bool usageAsCollateralEnabled)',
-    calls: tokens.map(t => ({ params: [t, owner] })),
+    calls: tokens.map(t => ({ params: [t, account] })),
   })
   positions.forEach((p, i) => api.add(tokens[i], BigInt(p.currentATokenBalance) - BigInt(p.currentStableDebt) - BigInt(p.currentVariableDebt)))
   return tokens
@@ -64,6 +66,7 @@ async function base(api) {
 
 async function xlayer(api) {
   const tokens = await addAave(api)
+  await addAave(api, xlayerAaveOwner)
   return sumTokens2({ api, owner, tokens: [...tokens, ADDRESSES.null] })
 }
 
@@ -94,7 +97,7 @@ async function berachain(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: 'Counts configured on-chain DeltaUSD backing: BSC USDT at the dUSD mint/redeem contract, configured operator staging address and reserve wallet, wallet balances of tracked assets, proportional AMM deposits, owner-held Kodiak V3 NFT liquidity, deposits across the configured Aave Base, XLayer and Plasma pools, and the configured Base Morpho SOL/JitoSOL market. Subtracts Dolomite borrowing, all stable/variable debt across the configured lending pools, and Morpho debt. Excludes the Solana network, issued dUSD, Binance balances and futures, GoMining NFTs, unclaimed rewards/fees, and unconfigured positions including WETH/FAI and WETH/AVNT LPs. Assets deployed into other protocols overlap their TVL. This is a partial on-chain backing measure, not total reserves or a solvency attestation.',
+  methodology: 'Counts configured on-chain DeltaUSD backing: BSC USDT at the dUSD mint/redeem contract, configured operator staging address and reserve wallet, wallet balances of tracked assets, proportional AMM deposits, owner-held Kodiak V3 NFT liquidity, deposits across the configured Aave Base, XLayer and Plasma pools, and the configured Base Morpho SOL/JitoSOL market. Includes Aave deposits and debt of the additional XLayer account 0xacc5b404eb5b31728e225040830162a9482a81f9, identified by the operator as dUSD backing. Subtracts Dolomite borrowing, all stable/variable debt across the configured lending pools, and Morpho debt. Excludes the Solana network, issued dUSD, Binance balances and futures, GoMining NFTs, unclaimed rewards/fees, and unconfigured positions including WETH/FAI and WETH/AVNT LPs. Assets deployed into other protocols overlap their TVL. This is a partial on-chain backing measure, not total reserves or a solvency attestation.',
   bsc: { tvl: bsc },
   base: { tvl: base },
   xlayer: { tvl: xlayer },
