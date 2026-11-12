@@ -11,6 +11,9 @@ const config = {
   bsc: { factory: '0x71abe80C8f08ebE5dac018601170e687ED737AC3', fromBlock: 131062839 },
   ethereum: { factory: '0x2DC4f507BD30c6b5df90B288FaeCDeCE627386Ec', fromBlock: 26320476 },
   arc: { factory: '0x11A5ac5fC2A1e7D4bF61B781b0b784462C2BD9e7', fromBlock: 28998006 },
+  monad: { factory: '0xB2Aa70bF167AEc63DBC49f14F12d4301E5a3c2A8', fromBlock: 121283239 },
+  avax: { factory: '0xB2Aa70bF167AEc63DBC49f14F12d4301E5a3c2A8', fromBlock: 100053182 },
+  arbitrum: { factory: '0xB2Aa70bF167AEc63DBC49f14F12d4301E5a3c2A8', fromBlock: 523406566 },
 }
 
 async function tvl(api) {
