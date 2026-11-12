@@ -20714,6 +20714,10 @@ const configs = {
       ]
     },
   },
+  "noxfund": {
+    "methodology": "Counts the USDT held in the NoxFund contract.",
+    "bsc": { owner: '0x433830E36585bdACC840E1caB419C4211bBf13f5', tokens: [ADDRESSES.bsc.USDT] },
+  },
   "nord-finance": {
     "ethereum": {
       "tvl": {
