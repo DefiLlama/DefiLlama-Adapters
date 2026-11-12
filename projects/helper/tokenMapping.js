@@ -53,23 +53,6 @@ const fixBalancesTokens = {
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
-  // ZIGChain v5 migrates the native denom from uzig (6 decimals) to azig (18 decimals);
-  // azig is not priced under zigchain:azig by the coins service yet
-  zigchain: {
-    azig: { coingeckoId: 'zignaly', decimals: 18 },
-  },
-  // the coins service has no platon:<null address> entry for the gas token
-  platon: {
-    [ADDRESSES.null]: { coingeckoId: 'platon-network', decimals: 18 },
-  },
-  // Elysium (Kinetiq's Hyperliquid L2): wrapped HYPE used by ArkhamPad pools, and the WETH9-bytecode wrapped HYPE
-  // Gully Core's pools are quoted in (deployment record: https://github.com/gully-labs/gully-core); neither is priced by the coins service
-  elysium: {
-    '0x43ca3cee078d8cb8528915b16e8bdcc9adbe6090': { coingeckoId: 'hyperliquid', decimals: 18 },
-    '0xceeb06009b870430ac2872e3ba875ab6a9ab6699': { coingeckoId: 'hyperliquid', decimals: 18 },
-    // Kleos's wrapped HYPE (WETH9-style), which KleosSwap pools are quoted in (https://thekleos.pro)
-    '0x0269031ace34a7821e9d9980d087c35ce7c19eef': { coingeckoId: 'hyperliquid', decimals: 18 },
-  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
