@@ -8,7 +8,7 @@ const SAFETY_MODULE    = '0x0000000000000000000000000000000000001015'
 const SAVE_USDST_VAULT = '0x22550671fcad04a213697ac7ae4f4366e96446ed'
 const VAULT            = '0x34bc729f66106a146b0864e673a3571b28fa23e1'
 const STRATO_STAKING   = '0xf30a022ce83bed7adeafc286c719388dcc3b3988'
-// $STRATO, native to the STRATO chain. Priced via helper/tokenMapping (`ethereum-strato`).
+// $STRATO, native to the STRATO chain
 const STRATO_TOKEN     = '0x2ca3e170e6714282da77815f7864b17f612f5f83'
 // DirectMintPSM: mints USDST 1:1 against stablecoin reserves it holds.
 const DIRECT_MINT_PSM  = '0xb1efdc86eecfbedf83d0295671214fee451786f3'
@@ -109,7 +109,6 @@ async function borrowed(api) {
  * Phase 1 $STRATO staking. There is no receipt token; stake is tracked as
  * internal accounting on StratoStaking. Principal = delegated user stake +
  * operator self-bond. Unbonding stake and the reward reserve are excluded.
- * Reported under the native $STRATO address, priced via helper/tokenMapping.
  */
 async function staking(api) {
   const [totalUserStake, totalSelfBond] = await batchCall([
