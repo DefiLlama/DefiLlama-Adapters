@@ -1,9 +1,9 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 
-const YLD = '0x0000014563b23d9ac3ac11fe68d63cdfc19a43db'
+const YLD = '0x00007e639751Af64b8b108c3E40b1Cd7faDdE627'
 const pairCreated = 'event PairCreated(uint256 indexed pairId, address indexed token0, address indexed token1)'
 
-const startBlocks = { ethereum: 26167740, base: 52457955, robinhood: 85678610 }
+const startBlocks = { ethereum: 26391743, base: 56052624, robinhood: 111707405 }
 
 async function tvl(api) {
   const block = await api.getBlock()
@@ -20,28 +20,19 @@ async function tvl(api) {
   const tokens = [...new Set(pairs.flatMap(({ token0, token1 }) => [token0.toLowerCase(), token1.toLowerCase()]))]
   if (!tokens.length) return
 
-  const [liabilities, fees] = await Promise.all([
-    api.multiCall({ target: YLD, abi: 'function tokenLiability(address) view returns (uint256)', calls: tokens }),
-    api.multiCall({ target: YLD, abi: 'function accruedProtocolFees(address) view returns (uint256)', calls: tokens }),
-  ])
+  const liabilities = await api.multiCall({ target: YLD, abi: 'function tokenLiability(address) view returns (uint256)', calls: tokens })
 
   tokens.forEach((token, i) => {
     const liability = BigInt(liabilities[i])
-    const protocolFees = BigInt(fees[i])
-
-    if (protocolFees > liability) {
-      throw new Error(`yld.cx ${api.chain}: fees exceed liability for ${token}`)
-    }
-
     if (liability > 0n) {
-      api.add(token, (liability - protocolFees).toString())
+      api.add(token, liability.toString())
     }
   })
 }
 
 module.exports = {
-  start: '2026-10-11',
-  methodology: 'User-owned ERC-20 assets held by Yield Orders: on-chain tokenLiability minus accruedProtocolFees at the snapshot block.',
+  start: '2026-11-11',
+  methodology: 'Yield Orders v0.4 TVL includes yld.cx user-owned assets tracked by on-chain tokenLiability.',
   ethereum: { tvl },
   base: { tvl },
   robinhood: { tvl },
