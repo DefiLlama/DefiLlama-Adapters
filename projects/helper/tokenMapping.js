@@ -67,6 +67,8 @@ const fixBalancesTokens = {
   elysium: {
     '0x43ca3cee078d8cb8528915b16e8bdcc9adbe6090': { coingeckoId: 'hyperliquid', decimals: 18 },
     '0xceeb06009b870430ac2872e3ba875ab6a9ab6699': { coingeckoId: 'hyperliquid', decimals: 18 },
+    // Kleos's wrapped HYPE (WETH9-style), which KleosSwap pools are quoted in (https://thekleos.pro)
+    '0x0269031ace34a7821e9d9980d087c35ce7c19eef': { coingeckoId: 'hyperliquid', decimals: 18 },
   },
 }
 
