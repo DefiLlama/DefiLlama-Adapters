@@ -12,7 +12,9 @@ const USDC = ADDRESSES.ethereum.USDC;
 const VAULTS = {
   ethereum: ['0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240'],
   monad: ['0x75753e494e5e374C52E1d84fc04EB14B10F2C079'],
+  bsc: ['0x87e01662febb5145ff648c1fa7b73d81519d9c66'], // Lista USDT vault; excluded from lista-lending
 };
+const BSC_VAULT_START = 1788497446; // vault deployed at block 119857679 (2026-09-04)
 
 async function vaultTvl(api) {
   const vaults = VAULTS[api.chain];
@@ -53,11 +55,14 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "USDat backing (the PYUSDx reserve, legacy $M, and USDC held by the USDat contract) plus the STRC digital-credit backing of sUSDat, priced via DefiLlama's tradfi STRC feed (NASDAQ: STRC), plus USDC deposits in Saturn's co-curated Morpho vaults on Ethereum and Monad.",
+  methodology: "USDat backing (the PYUSDx reserve, legacy $M, and USDC held by the USDat contract) plus the STRC digital-credit backing of sUSDat, priced via DefiLlama's tradfi STRC feed (NASDAQ: STRC), plus USDC deposits in Saturn's co-curated Morpho vaults on Ethereum and Monad and its Lista USDT vault on BSC.",
   ethereum: {
     tvl,
   },
   monad: {
     tvl: vaultTvl,
+  },
+  bsc: {
+    tvl: (api) => api.timestamp < BSC_VAULT_START ? {} : vaultTvl(api),
   },
 };
