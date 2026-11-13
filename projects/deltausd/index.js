@@ -24,6 +24,9 @@ const avnt = '0x696f9436b67233384889472cd7cd58a6fb5df4f1'
 
 const dolomite = '0x003ca23fd5f0ca87d01f6ec6cd14a8ae60c2b97d'
 const dolomiteAccounts = ['0', '53264408180604475640276221492191081784140241066643000915729132825556750807079']
+const mantleDolomite = '0xe6ef4f0b2455bab92ce7cc78e35324ab58917de8'
+// Account numbers discovered in Dolomite's subgraph and verified on-chain for the reserve owner
+const mantleDolomiteAccounts = ['0', '94109458643557659221009538510460159269947386444327873651138030750987690255911']
 const kodiakIsland = '0xe5a2ab5d2fb268e5ff43a5564e44c3309609aff9'
 const kodiakFarm = '0x75da1d58a8d97f7b626224e7e71fa44db13689f2'
 const kodiakNft = '0xfe5e8c83ffe4d9627a75eaa7fee864768db989bd'
@@ -94,6 +97,21 @@ async function berachain(api) {
   return sumTokens2({ api, owner, tokens: [...tokens], uniV3nftsAndOwners: [[kodiakNft, owner]] })
 }
 
+async function mantle(api) {
+  const accounts = await api.multiCall({
+    target: mantleDolomite,
+    abi: 'function getAccountBalances((address owner, uint256 number) account) view returns (uint256[], address[], (bool sign, uint128 value)[], (bool sign, uint256 value)[])',
+    calls: mantleDolomiteAccounts.map(number => ({ params: [[owner, number]] })),
+  })
+  const tokens = new Set([ADDRESSES.mantle.USDT, ADDRESSES.null])
+  for (const [, accountTokens, , values] of accounts)
+    accountTokens.forEach((token, i) => {
+      api.add(token, values[i].sign ? values[i].value : -BigInt(values[i].value))
+      tokens.add(token)
+    })
+  return sumTokens2({ api, owner, tokens: [...tokens] })
+}
+
 module.exports = {
   timetravel: false,
   doublecounted: true,
@@ -103,4 +121,5 @@ module.exports = {
   xlayer: { tvl: xlayer },
   plasma: { tvl: plasma },
   berachain: { tvl: berachain },
+  mantle: { tvl: mantle },
 }
