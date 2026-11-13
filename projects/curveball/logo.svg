@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Curveball logo">
+  <rect width="512" height="512" rx="146" fill="#c8f135"/>
+  <circle cx="256" cy="256" r="150" fill="#121714"/>
+  <circle cx="256" cy="256" r="114" fill="#c8f135"/>
+  <path d="M256 256 -718 31 -718 1230 31 1230Z" fill="#c8f135"/>
+</svg>
