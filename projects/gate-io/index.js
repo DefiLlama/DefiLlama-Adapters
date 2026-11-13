@@ -208,6 +208,11 @@ const config = {
     ]
   },
   "solana": {
+    // Exclude delisted The Anthropic Order (TAO),
+    // a different asset from Bittensor TAO.
+    blacklistedTokens: [
+      "9cYXqd1ggyMTjwZFWnbDuf5EfLEcLuumMG67jRkJpump",
+    ],
     "owners": [
       "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w",
       "HiRpdAZifEsZGdzQ5Xo5wcnaH3D2Jj9SoNsUzcYNK78J",
