@@ -362,6 +362,9 @@ const CURATED_VAULTS = {
   base: {
     "0x392B3CCf36C8adB8094F45573346B457414cD752": "Morpho",  // v2 USDC Yield
   },
+  xdai: {
+    "0xaf204776c7245bF4147c2612BF6e5972Ee483701": "Maker",   // Savings xDAI (sDAI), see TOKEN_PROTOCOLS
+  },
   // arc is not a ZODIAC_CHAIN, so the on-chain sweep never reads this entry; it is
   // here so the DeBank view's CURATED tag covers the vault if a mandate ever holds it
   arc: {
