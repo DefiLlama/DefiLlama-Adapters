@@ -9,6 +9,7 @@ const NARA_TOKEN = '0x91FB78A9F46B67f54BbD4489941d19666b2fAe0f'
 const BASE_USDC = ADDRESSES.base.USDC
 const BASE_WETH = ADDRESSES.base.WETH
 const BASE_CBBTC = ADDRESSES.base.cbBTC
+const BASE_AERO = ADDRESSES.base.AERO
 
 const TREASURY_SAFE = '0xe320C281c86079eA85f2Bc67864E873A61D551E3'
 const ACTIVE_RANGE_MANAGER_V5 = '0x221c625d2BC416460C397035C1286C1f4A4D3A7C'
@@ -95,10 +96,11 @@ async function getActiveV4PolPositionIds(api) {
 
 const treasury = treasuryExports({
   base: {
-    tokens: [nullAddress, BASE_USDC, BASE_WETH, BASE_CBBTC],
+    tokens: [nullAddress, BASE_USDC, BASE_WETH, BASE_CBBTC, BASE_AERO],
     owners: TREASURY_OWNERS,
     ownTokens: [NARA_TOKEN],
     resolveUniV3: true,
+    resolveSlipstream: true,
     fetchCoValentTokens: false,
   },
 })
@@ -122,7 +124,7 @@ treasury.base.tvl = async (api) => {
       resolveUniV4: true,
       uniV4ExtraConfig: {
         positionIds,
-        whitelistedTokens: [nullAddress, BASE_USDC, BASE_WETH, BASE_CBBTC],
+        whitelistedTokens: [nullAddress, BASE_USDC, BASE_WETH, BASE_CBBTC, BASE_AERO],
       },
       blacklistedTokens: [NARA_TOKEN],
     })
@@ -152,7 +154,7 @@ treasury.base.ownTokens = async (api) => {
         positionIds,
         whitelistedTokens: [NARA_TOKEN],
       },
-      blacklistedTokens: [nullAddress, BASE_USDC, BASE_WETH, BASE_CBBTC],
+      blacklistedTokens: [nullAddress, BASE_USDC, BASE_WETH, BASE_CBBTC, BASE_AERO],
     })
   }
 
@@ -161,6 +163,6 @@ treasury.base.ownTokens = async (api) => {
 
 module.exports = {
   methodology:
-    'Treasury TVL counts non-NARA reserves (ETH, USDC, WETH, cbBTC) held in the NARA Treasury Safe, NARATreasuryRangeManagerV5, NARAFeeVaultV5 (including Uniswap v4 ERC-6909 POL claims), NARACapitalBudgetV5, and Protocol-Owned Liquidity (POL) across Uniswap v4 and Uniswap v3. Protocol NARA held in those contracts and LP positions is reported separately under ownTokens, excluding unissued NARAEmissionReserveV5 reserves.',
+    'Treasury TVL counts non-NARA reserves (ETH, USDC, WETH, cbBTC, AERO) held in the NARA Treasury Safe, NARATreasuryRangeManagerV5, NARAFeeVaultV5 (including Uniswap v4 ERC-6909 POL claims), NARACapitalBudgetV5, and Protocol-Owned Liquidity (POL) across Uniswap v4, Uniswap v3, and Aerodrome Slipstream. Protocol NARA held in those contracts and LP positions is reported separately under ownTokens, excluding unissued NARAEmissionReserveV5 reserves.',
   ...treasury,
 }
