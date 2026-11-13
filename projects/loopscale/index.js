@@ -307,19 +307,45 @@ async function getDeposits(connection) {
         Object.entries(rawDeposits).filter(([key, value]) => value !== 0n)
     ));
     
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            rawBalances: rawDeposits
-        })
-    });
+    return decompileMints(rawDeposits);
+}
 
-    const parsedDeposits = parseBigIntStringMap(await response.json());
+// the endpoint fails the whole request if a single mint can't be decompiled, so the mints it
+// names in the error are dropped from the request and reported as-is (raw mint, undecompiled)
+async function decompileMints(rawBalances) {
+    const pending = { ...rawBalances };
+    const passthrough = {};
 
-    return parsedDeposits;
+    for (let attempt = 0; attempt < 5; attempt++) {
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                rawBalances: pending
+            })
+        });
+        const data = await response.json();
+
+        if (response.ok && !data.error) {
+            const parsed = parseBigIntStringMap(data);
+            for (const [mint, balance] of Object.entries(passthrough))
+                parsed[mint] = (parsed[mint] || 0n) + BigInt(balance);
+            return parsed;
+        }
+
+        const failedMints = [...String(data.error).matchAll(/ratio\(([1-9A-HJ-NP-Za-km-z]+)\)/g)]
+            .map(m => m[1]).filter(mint => mint in pending);
+        if (!failedMints.length) throw new Error(`loopscale decompile_mints failed: ${data.error}`);
+
+        for (const mint of failedMints) {
+            passthrough[mint] = pending[mint];
+            delete pending[mint];
+        }
+    }
+
+    throw new Error('loopscale decompile_mints: still failing after dropping unpriceable mints');
 }
 
 async function tvl(api) {

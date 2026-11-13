@@ -128,3 +128,4 @@ module.exports = {
   doublecounted: true, // liquidity sits inside Uniswap pools, which DefiLlama counts under Uniswap
   robinhood: { tvl, staking },
 }
+module.exports.isHeavyProtocol = true;
