@@ -19,7 +19,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is what the SPYdw contract holds on-chain: its USDdw shares (the principal floor of each note, deposited into the Drakewell USDdw vault on Ethereum and valued with convertToAssets()) plus USDC waiting in the contract for deposit requests. The S&P 500 call options bought with each deposit\'s premium are held off-chain and are not counted. The USDdw shares are subtracted from the Drakewell USDdw listing, so they are counted once.',
+  methodology: 'TVL is what the SPYdw contract holds on-chain: its USDdw shares (the principal floor of each note, deposited into the Drakewell USDdw vault on Ethereum and valued with convertToAssets()) plus USDC waiting in the contract for deposit requests. The S&P 500 call options bought with each deposit\'s premium are held off-chain and are not counted. The USDdw shares are subtracted from the Drakewell USDdw listing, so they are counted once within Drakewell. The USDdw vault is also part of Accountable, so this listing is marked as double counted.',
+  doublecounted: true,
   start: 1793734883, // SPYdw deployment, 3 Nov 2026 (block 26336431)
   ethereum: { tvl },
 }
