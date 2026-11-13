@@ -27,7 +27,7 @@ const GearboxCompressorABI = {
 // ---- Config (extend as needed) ----
 const configs = {
   methodology:
-    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), the Savings xDAI (sDAI) vault on Gnosis Chain, Gearbox v3.1 credit account collateral, kpk Fund AUM, positions in Safes actively managed by kpk via Zodiac Roles Modifier, and the dYdX mandate's DYDX delegated, unbonding and held on dYdX chain.",
+    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox, Savings xDAI on Gnosis Chain), Gearbox v3.1 credit account collateral, kpk Fund AUM, positions in Safes actively managed by kpk via Zodiac Roles Modifier, and the dYdX mandate's DYDX delegated, unbonding and held on dYdX chain.",
   blockchains: {
     ethereum: {
       // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
