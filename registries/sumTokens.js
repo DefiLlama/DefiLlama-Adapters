@@ -22603,24 +22603,12 @@ const configs = {
     "ethereum": {
       "tokensAndOwners": [
         [
-          "0x79eB84B5E30Ef2481c8f00fD0Aa7aAd6Ac0AA54d",
-          "0xE7aEC21BF6420FF483107adCB9360C4b31d69D78"
+          "0xb45ad160634c528Cc3D2926d9807104FA3157305",
+          "0x981c7BE1460c7C8Cb40B8EB5908B29510Ae0B7EE"
         ],
         [
           "0xa7569A44f348d3D70d8ad5889e50F78E33d80D35",
-          "0x8b4A75290A1C4935eC1dfd990374AC4BD4D33952"
-        ],
-        [
-          ADDRESSES.ethereum.sUSDe,
-          "0xFc629bC5F6339F77635f4F656FBb114A31F7bCB3"
-        ],
-        [
-          "0x79eB84B5E30Ef2481c8f00fD0Aa7aAd6Ac0AA54d",
-          "0x90ce274b20A2aF4265152B369d09ce6E6Dc177F9"
-        ],
-        [
-          "0xa7569A44f348d3D70d8ad5889e50F78E33d80D35",
-          "0x90af002Ee537Ad5C2c9817Ebd4EF22B2e8952470"
+          "0xaFDf8DeA96a0F37Aae4869f813901bf73a3eAB83"
         ],
         [
           ADDRESSES.ethereum.sUSDe,
