@@ -42243,6 +42243,15 @@ const configs = {
       ],
     },
   },
+  "zkapi": {
+    "methodology": "TVL is the ETH escrowed in the ZkApiVault contract, which users prepay for anonymous API access.",
+    "ethereum": {
+      "owner": "0x4386FDbdA35D995beB3BF8625118Ec5982ec81fe",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
   "zkasino": {
     "bsc": {
       "owners": [
