@@ -299,6 +299,8 @@ module.exports = {
     'bc1pyz7l3u2wdhvdwgej0n6myhp6wzrr0qa3982l7zq5v3k5f6fxgmyqg5vkxu'
   ],
   merlin: [
+    "18uXVhRrCZW4QXx5nxgF4ZwzqVfSNseo4B", //add on 13/11/2026
+    "17S9U4SdX3Bs39EbT5Qf6gntf5XSc4FWJN", //add on 13/11/2026
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
     "15zVuow5e9Zwj4nTrxSH3Rvupk32wiKEsr",
     "bc1q4gfsheqz7ll2wdgfwjh2l5hhr45ytc4ekgxaex",
