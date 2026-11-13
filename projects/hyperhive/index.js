@@ -5,12 +5,12 @@ const GET_MARKETS_ABI =
 
 async function tvl(api) {
   const markets = await api.call({ target: MARKET_HUB, abi: GET_MARKETS_ABI })
-  return api.sumTokens({ tokensAndOwners: markets.map(m => [m.asset, m.market]) })
+  markets.forEach(market => api.add(market.asset, market.totalAssets))
 }
 
 module.exports = {
   methodology:
-    'Counts the tokens held by every HyperHive market listed in the HiveMarketHub contract.',
+    'Counts the total assets managed by every HyperHive market listed in the HiveMarketHub contract.',
   hyperliquid: {
     tvl,
   },
