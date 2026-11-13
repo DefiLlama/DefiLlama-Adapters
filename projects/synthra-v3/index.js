@@ -13,6 +13,10 @@ const CONFIG = {
     { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 12953009 }, // V3
     { factory: '0x84169f9adf4f5f0e483bfc350498a85b1d7ec638', fromBlock: 21893415 }, // V3.1
   ],
+  // https://docs.synthra.org/docs/contract-addresses:
+  elysium: [
+    { factory: '0x6307fc239C7964942c1BfFE51930E55606619c74', fromBlock: 105690 },
+  ],
 }
 
 async function tvl(api, factories) {
