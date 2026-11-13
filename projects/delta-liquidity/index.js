@@ -1,6 +1,12 @@
+const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
+const { getCache, setCache } = require('../helper/cache')
 const ADDRESSES = require('../helper/coreAssets.json')
+
+const PROJECT = 'delta-liquidity'
+const MANAGED_OPEN_V4_ABI = 'event ManagedOpenV4(address indexed owner, bytes32 indexed poolId, uint256[] tokenIds)'
+const RESCAN_BLOCKS = 2000 // overlap re-scanned each run so events near the previous head are not missed
 
 // Delta v3 (live stack)
 const VAULT_FACTORY = '0x68EDc4948F60D21c4a7Dcbb8Ed4500cE6D0b153c'
@@ -30,7 +36,19 @@ const V4_POSM = '0x58daec3116aae6D93017bAAea7749052E8a04fA7' // UniswapV4 Positi
 const V4_STATE_VIEW = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b'
 const DELTA = '0xe8ffd7e24187F72afB08d75B1bb13088A989a791'
 
+// tvl and staking need the same owners / LP tokens / v4 position ids, so the discovery
+// (factory lists, event scan, ownerOf multicall) runs once per block and is shared
+const discoveryCache = {}
 async function getOwnersAndTokens(api) {
+    const block = await api.getBlock()
+    if (!discoveryCache[block]) {
+        Object.keys(discoveryCache).forEach(key => delete discoveryCache[key])
+        discoveryCache[block] = _getOwnersAndTokens(api)
+    }
+    return discoveryCache[block]
+}
+
+async function _getOwnersAndTokens(api) {
     // Delta vaults (each vault custodies one Uniswap v3 position NFT)
     const vaults = await api.fetchList({
         lengthAbi: 'uint256:vaultCount',
@@ -48,19 +66,43 @@ async function getOwnersAndTokens(api) {
     const lpTokens = farmsV2.length ? await api.multiCall({ abi: 'address:stakingToken', calls: farmsV2 }) : []
     const owners = [...LADDER_MANAGERS, ROUTER_V3, ROUTER_V2, ...vaults, ...farmsV2]
 
-    // Uniswap v4 positions managed by the ladder managers.
-    // No v4 subgraph on this chain, so position ids are enumerated from each
-    // manager's own events, then filtered to those the manager still holds.
+    const positionIds = await getV4PositionIds(api)
+
+    return { owners, lpTokens, positionIds }
+}
+
+// Uniswap v4 positions managed by the ladder managers.
+// No v4 subgraph on this chain, so position ids are enumerated from each
+// manager's own events, then filtered to those the manager still holds.
+//
+// ~99% of the ids ever opened are burned, and a burned id never comes back. So current runs
+// keep the ids that still exist plus the last scanned block in the cache, and only look at
+// those ids and the events since that block, instead of re-checking every id ever opened.
+// Historical runs (and the first run, with an empty cache) take the full path.
+async function getV4PositionIds(api) {
+    const block = await api.getBlock()
+    const isCurrentRun = !api.timestamp || Date.now() / 1e3 - api.timestamp < 3600
+    const cache = isCurrentRun ? await getCache(PROJECT, api.chain) : {}
+    const toIds = logs => logs.flatMap(i => i.tokenIds.map(j => j.toString()))
+
     let candidateIds = []
-    for (const { address: target, fromBlock } of LADDER_MANAGER_CONFIGS) {
-        const opened = await getLogs2({
-            api,
-            target,
-            eventAbi: 'event ManagedOpenV4(address indexed owner, bytes32 indexed poolId, uint256[] tokenIds)',
-            fromBlock,
-            extraKey: 'managed-open-v4',
+    if (cache.lastBlock && cache.lastBlock <= block) {
+        const opened = await sdk.getEventLogs({
+            chain: api.chain,
+            targets: LADDER_MANAGERS,
+            eventAbi: MANAGED_OPEN_V4_ABI,
+            fromBlock: cache.lastBlock - RESCAN_BLOCKS,
+            toBlock: block,
+            onlyArgs: true,
+            flatten: true,
+            skipCache: true,
         })
-        candidateIds.push(...opened.flatMap(i => i.tokenIds.map(j => j.toString())))
+        candidateIds = [...cache.liveIds, ...toIds(opened)]
+    } else {
+        for (const { address: target, fromBlock } of LADDER_MANAGER_CONFIGS) {
+            const opened = await getLogs2({ api, target, eventAbi: MANAGED_OPEN_V4_ABI, fromBlock, extraKey: 'managed-open-v4' })
+            candidateIds.push(...toIds(opened))
+        }
     }
     candidateIds = [...new Set(candidateIds)]
 
@@ -69,10 +111,12 @@ async function getOwnersAndTokens(api) {
         calls: candidateIds.map(i => ({ target: V4_POSM, params: [i] })),
         permitFailure: true, // closed positions are burned and revert
     })
-    const managerSet = new Set(LADDER_MANAGERS.map(i => i.toLowerCase()))
-    const positionIds = candidateIds.filter((_, i) => positionOwners[i] && managerSet.has(positionOwners[i].toLowerCase()))
 
-    return { owners, lpTokens, positionIds }
+    if (isCurrentRun)
+        await setCache(PROJECT, api.chain, { lastBlock: block, liveIds: candidateIds.filter((_, i) => positionOwners[i]) })
+
+    const managerSet = new Set(LADDER_MANAGERS.map(i => i.toLowerCase()))
+    return candidateIds.filter((_, i) => positionOwners[i] && managerSet.has(positionOwners[i].toLowerCase()))
 }
 
 async function tvl(api) {
