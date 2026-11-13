@@ -97,7 +97,7 @@ async function berachain(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: 'Counts configured on-chain DeltaUSD backing: BSC USDT at the dUSD mint/redeem contract, configured operator staging address and reserve wallet, wallet balances of tracked assets, proportional AMM deposits, owner-held Kodiak V3 NFT liquidity, deposits across the configured Aave Base, XLayer and Plasma pools, and the configured Base Morpho SOL/JitoSOL market. Includes Aave deposits and debt of the additional XLayer account 0xacc5b404eb5b31728e225040830162a9482a81f9, identified by the operator as dUSD backing. Subtracts Dolomite borrowing, all stable/variable debt across the configured lending pools, and Morpho debt. Excludes the Solana network, issued dUSD, Binance balances and futures, GoMining NFTs, unclaimed rewards/fees, and unconfigured positions including WETH/FAI and WETH/AVNT LPs. Assets deployed into other protocols overlap their TVL. This is a partial on-chain backing measure, not total reserves or a solvency attestation.',
+  methodology: 'Counts tracked on-chain DeltaUSD reserve balances and DeFi positions, minus borrowing. Excludes issued dUSD, off-chain assets and untracked positions. DeFi deposits are also counted in the TVL of the protocols used.',
   bsc: { tvl: bsc },
   base: { tvl: base },
   xlayer: { tvl: xlayer },
