@@ -4,6 +4,7 @@ const SHIELD_SWAP = 'shield_swap.aleo'
 
 const TOKENS = [
   { program: 'shield_swap_arc20_credits.aleo', coingeckoId: 'aleo', decimals: 6 },
+  { program: 'shield_swap_arc20_wrapped_bat.aleo', coingeckoId: 'basic-attention-token', decimals: 18 },
   { program: 'arc20_eth.aleo', coingeckoId: 'ethereum', decimals: 18 },
   { program: 'arc20_sol.aleo', coingeckoId: 'solana', decimals: 9 },
   { program: 'arc20_wbtc.aleo', coingeckoId: 'bitcoin', decimals: 8 },
@@ -36,6 +37,6 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
-    'TVL is the aggregate balance held by shield_swap.aleo in Shield Swap\'s verified ALEO, ETH, SOL, WBTC, ZEC, USDCx, and USDG token programs, read directly from Aleo chain state. It includes pool capital, accrued fees, and funds awaiting claims.',
+    'TVL is the aggregate balance held by shield_swap.aleo in Shield Swap\'s verified ALEO, BAT, ETH, SOL, WBTC, ZEC, USDCx, and USDG token programs, read directly from Aleo chain state. It includes pool capital, accrued fees, and funds awaiting claims.',
   aleo: { tvl },
 }
