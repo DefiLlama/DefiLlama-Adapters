@@ -1,55 +1,37 @@
-/**
- * Decibel TVL adapter for DefiLlama.
- * Decibel is a perpetual futures DEX on Aptos.
- * TVL is computed from the protocol's on-chain USDC collateral stores.
- * @module decibel
- */
+const { get } = require("../helper/http");
+const { getEnv } = require("../helper/env");
 
-const ADDRESSES = require("../helper/coreAssets.json");
-const { function_view } = require("../helper/chain/aptos");
+// Endpoint implementation: https://github.com/aptos-labs/etna/pull/6093
+const DAILY_STATS_URL = "https://api.mainnet.aptoslabs.com/decibel/api/v1/daily_stats";
 
-/** @constant {string} DECIBEL_PERP - Decibel perp engine package address on Aptos */
-const DECIBEL_PERP = "0x50ead22afd6ffd9769e3b3d6e0e64a2a350d68e8b102c4e72e33d0b8cfdfdb06";
-
-/** @constant {string} DECIBEL_PREDEPOSIT - Decibel predeposit package address on Aptos */
-const DECIBEL_PREDEPOSIT = "0xc5939ec6e7e656cb6fed9afa155e390eb2aa63ba74e73157161829b2f80e1538";
-
-/** @constant {string} USDC - Native USDC fungible asset address on Aptos */
-const USDC = ADDRESSES.aptos.USDC_3;
-
-/**
- * Calculates TVL for Decibel on Aptos.
- * Sums USDC collateral in the perp engine and predeposit vault.
- * @param {object} api - DefiLlama ChainApi instance
- */
 async function tvl(api) {
-  // Perp engine collateral
-  const perpBalance = await function_view({
-    functionStr: `${DECIBEL_PERP}::perp_engine::get_global_primary_store_balance`,
+  const apiKey = getEnv("APTOS_API_KEY");
+  if (!apiKey) throw new Error("Decibel TVL requires APTOS_API_KEY");
+  const endTimestamp = Math.floor(Date.now() / 1000);
+  const { tvl: snapshot } = await get(`${DAILY_STATS_URL}?start_timestamp=${endTimestamp - 86400}&end_timestamp=${endTimestamp}&include_tvl=true`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
   });
-  api.add(USDC, perpBalance);
+  if (!Array.isArray(snapshot?.protocols) || !Number.isSafeInteger(snapshot.timestamp_ms)
+    || snapshot.timestamp_ms >= endTimestamp * 1000
+    || endTimestamp * 1000 - snapshot.timestamp_ms > 60000)
+    throw new Error("Decibel daily_stats is missing a fresh TVL snapshot");
 
-  // Predeposit vault (ua deposits + DLP contributions)
-  const stateAddr = await function_view({
-    functionStr: `${DECIBEL_PREDEPOSIT}::predeposit::predeposit_address`,
-    args: [DECIBEL_PREDEPOSIT],
-  });
-  const uaTotal = await function_view({
-    functionStr: `${DECIBEL_PREDEPOSIT}::predeposit::ua_total`,
-    args: [stateAddr],
-  });
-  api.add(USDC, uaTotal);
+  const data = snapshot.protocols.find(i => i?.protocol === "Decibel Perps DEX");
+  const tokens = data?.tokens?.filter(i => i.token === "APT" || i.token === "USDC");
+  if (tokens?.length !== 2 || new Set(tokens.map(i => i.token)).size !== 2)
+    throw new Error("Decibel daily_stats is missing APT or native USDC TVL");
 
-  const dlpTotal = await function_view({
-    functionStr: `${DECIBEL_PREDEPOSIT}::predeposit::dlp_total`,
-    args: [stateAddr],
+  tokens.forEach(i => {
+    const value = Number(i.usdc_value);
+    if (typeof i.usdc_value !== "string" || !/^\d+(\.\d+)?$/.test(i.usdc_value) || !Number.isFinite(value))
+      throw new Error("Decibel daily_stats contains an invalid USDC valuation");
+    api.addCGToken("usd-coin", value);
   });
-  api.add(USDC, dlpTotal);
 }
 
-/** @type {object} DefiLlama adapter export */
 module.exports = {
-  methodology: "TVL is the total USDC collateral in the Decibel perp engine plus USDC in the predeposit vault.",
+  methodology: "TVL is APT collateral valued using Decibel's oracle plus native USDC collateral, reported in USDC.",
+  misrepresentedTokens: true,
   timetravel: false,
   aptos: { tvl },
 };
