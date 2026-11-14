@@ -14,6 +14,7 @@ const config = {
   monad: { factory: '0xB2Aa70bF167AEc63DBC49f14F12d4301E5a3c2A8', fromBlock: 121283239 },
   avax: { factory: '0xB2Aa70bF167AEc63DBC49f14F12d4301E5a3c2A8', fromBlock: 100053182 },
   arbitrum: { factory: '0xB2Aa70bF167AEc63DBC49f14F12d4301E5a3c2A8', fromBlock: 523406566 },
+  polygon: { factory: '0xB2Aa70bF167AEc63DBC49f14F12d4301E5a3c2A8', fromBlock: 97230966 },
 }
 
 async function tvl(api) {
