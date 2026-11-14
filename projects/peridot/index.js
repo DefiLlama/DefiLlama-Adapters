@@ -33,8 +33,10 @@ async function stellarBorrowed(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the underlying held by the protocol: on BSC and Monad the cash of every Peridot market listed on the comptroller, on Stellar the available liquidity of each Soroban ReceiptVault (underlying held directly plus underlying the vault has forwarded into its DeFindex boosted vault). Outstanding debt is reported separately as borrowed.',
+  methodology: 'TVL is the underlying held by the protocol: on BSC, Monad and Robinhood Chain the cash of every Peridot market listed on the comptroller (on Robinhood Chain getCash() already includes the share each market has forwarded into its paired liquidity vault), on Stellar the available liquidity of each Soroban ReceiptVault (underlying held directly plus underlying the vault has forwarded into its DeFindex boosted vault). Outstanding debt is reported separately as borrowed.',
   bsc: compoundExports2({ comptroller: '0x6fC0c15531CB5901ac72aB3CFCd9dF6E99552e14' }),
   monad: compoundExports2({ comptroller: '0x6D208789f0a978aF789A3C8Ba515749598940716', blacklistedMarkets: ['0xf8255935e62aa000c89de46a97d2f00bfff147e7'], cether: '0x2FB2861402A22244464435773dd1C6951735CdF7' }),
+  // USDG / NVDA lending markets behind the isolated-margin product; margin collateral is pUSDG, so it is in the market cash.
+  robinhood: compoundExports2({ comptroller: '0x6148183676e304dbe63a85c350c208da3ceac39c' }),
   stellar: { tvl: stellarTvl, borrowed: stellarBorrowed },
 }
