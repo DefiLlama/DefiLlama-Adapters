@@ -57,13 +57,8 @@ async function getPoolAssets() {
 // Actual reserve-token custody is lending TVL; borrowed tokens are excluded.
 async function tvl(api) {
   for (const { pool, assets } of await getPoolAssets())
-    for (const asset of assets) {
-      try {
-        api.add(asset, (await callSoroban(asset, "balance", [pool])).toString());
-      } catch (e) {
-        // A malformed reserve that is not a token is unpriceable and contributes no custody.
-      }
-    }
+    for (const asset of assets)
+      api.add(asset, (await callSoroban(asset, "balance", [pool])).toString());
 }
 
 async function borrowed(api) {
@@ -84,8 +79,8 @@ async function getCometState(comet, pair) {
     throw new Error(`Unexpected canonical Comet configuration: ${comet}`);
 
   const [blntReserve, pairReserve] = await Promise.all([
-    callSoroban(BLNT, "balance", [comet]),
-    callSoroban(pair, "balance", [comet]),
+    callSoroban(comet, "get_balance", [BLNT]),
+    callSoroban(comet, "get_balance", [pair]),
   ]);
   return { lpBalance, totalSupply, blntReserve, pairReserve };
 }
@@ -93,12 +88,13 @@ async function getCometState(comet, pair) {
 // DefiLlama does not currently price BLNT. Represent the backstop's BLNT
 // exposure in USDC using the canonical BLNT:USDC 80/20 Comet marginal price.
 // The paired USDC and XLM exposure remains denominated in its actual asset,
-// and direct USDC-tier custody is included at face value.
+// and direct USDC- and XLM-tier custody is included at face value.
 async function pool2(api) {
-  const [anchor, xlmPool, directUsdc] = await Promise.all([
+  const [anchor, xlmPool, directUsdc, directXlm] = await Promise.all([
     getCometState(BLNT_USDC, USDC),
     getCometState(BLNT_XLM, XLM),
     callSoroban(USDC, "balance", [BACKSTOP]),
+    callSoroban(XLM, "balance", [BACKSTOP]),
   ]);
   if (anchor.blntReserve <= 0n)
     throw new Error("Canonical BLNT:USDC Comet pool has no BLNT reserve");
@@ -114,13 +110,13 @@ async function pool2(api) {
     / anchor.blntReserve;
 
   api.add(USDC, (anchorValueUsdc + xlmPoolBlntValueUsdc + directUsdc).toString());
-  api.add(XLM, xlmShare.toString());
+  api.add(XLM, (xlmShare + directXlm).toString());
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: `${methodologies.lendingMarket} TVL is the on-chain reserve-token custody of every pool deployed by the BLNT V3 factory; borrowed is each reserve's outstanding debt (d_supply * d_rate). Pool2 includes the backstop's proportional holdings in both canonical BLNT Comet pools and its direct USDC-tier custody. Because BLNT is not priced by DefiLlama, its pool2 value is represented in USDC using the canonical BLNT:USDC 80/20 pool's on-chain marginal price. Raw BLNT emissions held by the backstop are excluded.`,
+  methodology: `${methodologies.lendingMarket} TVL is the on-chain reserve-token custody of every pool deployed by the BLNT V3 factory; borrowed is each reserve's outstanding debt (d_supply * d_rate). Pool2 includes the backstop's proportional holdings in both canonical BLNT Comet pools and its direct USDC- and XLM-tier custody. Because BLNT is not priced by DefiLlama, its pool2 value is represented in USDC using the canonical BLNT:USDC 80/20 pool's on-chain marginal price. Raw BLNT emissions held by the backstop are excluded.`,
   stellar: {
     tvl,
     borrowed,
