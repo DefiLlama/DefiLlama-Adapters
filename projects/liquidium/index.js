@@ -6,12 +6,14 @@ const USDT_POOL_CANISTER_ID = 'hnnn4-iyaaa-aaaar-qb4bq-cai'
 const USDC_POOL_CANISTER_ID = '6sna2-oiaaa-aaaar-qb66q-cai'
 const ICP_POOL_CANISTER_ID = 'r2pk3-4yaaa-aaaar-qb7zq-cai'
 const ETH_POOL_CANISTER_ID = 'qcg7y-syaaa-aaaar-qb75q-cai'
+const SOL_POOL_CANISTER_ID = 'xhh4q-qyaaa-aaaar-qci2q-cai'
 const ALLOWED_POOL_CANISTERS = new Set([
   BTC_POOL_CANISTER_ID,
   USDT_POOL_CANISTER_ID,
   USDC_POOL_CANISTER_ID,
   ICP_POOL_CANISTER_ID,
   ETH_POOL_CANISTER_ID,
+  SOL_POOL_CANISTER_ID,
 ])
 const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER)
 
