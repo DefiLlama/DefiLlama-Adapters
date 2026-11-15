@@ -2,38 +2,34 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { compoundExports2 } = require('../helper/compound')
 const { callSoroban } = require('../helper/chain/stellar')
 
-// Peridot on Stellar is a Soroban deployment (not a Compound fork port): each market is a
-// ReceiptVault contract that custodies the underlying SAC and tracks its own debt ledger.
-// https://github.com/PeridotFinance/Peridot-Soroban/blob/main/peridot-contracts/contracts/receipt-vault/src/lib.rs
+// Peridot on Stellar is a Soroban deployment (not a Compound fork port). Since 2026-11-12 it runs
+// supply-only cash markets: each market contract custodies its underlying SAC directly, with
+// borrowing disabled and no yield source attached. The previous ReceiptVault markets
+// (CBU4Y7CJ..., CBVUJJIJ..., CD3WN3PL...) were retired after a key compromise and hold nothing.
 const stellarMarkets = [
-  { vault: 'CBU4Y7CJFOUZZE3QBOXTKM54UTUYW3SDJWTNMDGJBNCR5HS5UCEKV3BE', underlying: ADDRESSES.stellar.XLM },
-  { vault: 'CBVUJJIJTRJNOORPPCVH72DP7YDCOMDHI6WYKP3WOFVEPSCVP3TBXHIN', underlying: ADDRESSES.stellar.USDC },
-  { vault: 'CD3WN3PLW63HFZXE56OTRLMBV46WG54TFPGRL4RDQ43HQTTWVB4RPO3G', underlying: ADDRESSES.stellar.EURC },
+  { market: 'CDW3GDNKLUEPPJLEUVGLJSKGYLB3YYDQBUY7NBHJILGQWNN55AYFHY3F', underlying: ADDRESSES.stellar.USDC },
+  { market: 'CBHMG4CNJO2CRGADUMIO3UJ45C5MTWGCBFECMR6QE2TDDCDBB3N24WMS', underlying: ADDRESSES.stellar.XLM },
+  { market: 'CD6OTGA6J6UIEKXTXA5CLPLSJA4VQ5HEOYP3CA375CZEHI3KMIL2OYZC', underlying: 'CCCRWH6Q3FNP3I2I57BDLM5AFAT7O6OF6GKQOC6SSJNDAVRZ57SPHGU2' }, // PYUSD
+  { market: 'CAXWP5M2SF74DW22EQAYOXR4ZHN2FO2HGL737KQ2WFPEZTA4Z3W5E2M4', underlying: ADDRESSES.stellar.EURC },
 ]
 
-// Unborrowed underlying owned by the vault, i.e. the Soroban equivalent of Compound's getCash().
-//
-// This must be read from the vault's own ledger rather than from the SAC balance of the vault
-// address: each ReceiptVault forwards idle underlying into a DeFindex "boosted" vault for extra
-// yield, so the underlying it owns is (SAC balance held directly) + (value of the DeFindex shares
-// it holds). get_available_liquidity() returns that sum. Reading balance(underlying, vault) sees
-// only the un-swept remainder and understates every market by roughly an order of magnitude.
+// Unborrowed underlying held by each market, i.e. the Soroban equivalent of Compound's getCash().
 async function stellarTvl(api) {
-  await Promise.all(stellarMarkets.map(async ({ vault, underlying }) => {
-    const cash = await callSoroban(vault, 'get_available_liquidity')
+  await Promise.all(stellarMarkets.map(async ({ market, underlying }) => {
+    const cash = await callSoroban(market, 'get_available_liquidity')
     api.add(underlying, cash.toString())
   }))
 }
 
 async function stellarBorrowed(api) {
-  await Promise.all(stellarMarkets.map(async ({ vault, underlying }) => {
-    const borrowed = await callSoroban(vault, 'get_total_borrowed')
+  await Promise.all(stellarMarkets.map(async ({ market, underlying }) => {
+    const borrowed = await callSoroban(market, 'get_total_borrowed')
     api.add(underlying, borrowed.toString())
   }))
 }
 
 module.exports = {
-  methodology: 'TVL is the underlying held by the protocol: on BSC, Monad and Robinhood Chain the cash of every Peridot market listed on the comptroller (on Robinhood Chain getCash() already includes the share each market has forwarded into its paired liquidity vault), on Stellar the available liquidity of each Soroban ReceiptVault (underlying held directly plus underlying the vault has forwarded into its DeFindex boosted vault). Outstanding debt is reported separately as borrowed.',
+  methodology: 'TVL is the underlying held by the protocol and not lent out: on BSC, Monad and Robinhood Chain the underlying balance of every Peridot market listed on the comptroller, on Stellar the available liquidity of each cash market (USDC, XLM, PYUSD, EURC). Outstanding debt is reported separately as borrowed.',
   bsc: compoundExports2({ comptroller: '0x6fC0c15531CB5901ac72aB3CFCd9dF6E99552e14' }),
   monad: compoundExports2({ comptroller: '0x6D208789f0a978aF789A3C8Ba515749598940716', blacklistedMarkets: ['0xf8255935e62aa000c89de46a97d2f00bfff147e7'], cether: '0x2FB2861402A22244464435773dd1C6951735CdF7' }),
   // USDG / NVDA lending markets behind the isolated-margin product; margin collateral is pUSDG, so it is in the market cash.
