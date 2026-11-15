@@ -1967,6 +1967,29 @@ const configs = {
       ownTokens: ['0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73'],
     },
   },
+  'treasury/escapehub': {
+    solana: {
+      owners: [
+        '4grHVxs1ja1aRMZ7kvGKs5cPbkbLjJYr9eTE7uuJGyhf',
+        '73CzwRjyUiANeLFKWwTqwgGmQrafiW7DiaJDyy7cvf4T',
+        '3erpBQDik1HfHjcUFZvk1pwpeYEo3pspeAjkDXf7ZsKD',
+        '9JUq2gJ23qBsfDWJ4SuSHjQyy4iMejYnv5CUScDsKdiK',
+        '3RvCQ7CimppEa3Vh3eT8cWVTZ3wrcXxxzdYB2oSLLQEo',
+        'BFZmmrBpStJhd73f8eAK6kKHCENcRbrfeFXjudBjzG5z',
+        '3HXixFEArKq9bkT12eESU2Qvi2AYpFbu5hUbwN8VKNcv',
+        '8ZniFaHPUyAEGC2ca8E29sBzHCKZkNLEU1cx2PMWyRLX',
+      ],
+      tokens: [ADDRESSES.solana.SOL],
+    },
+    base: {
+      owners: ['0x1f4E1154f549a1CA1E6f4C7fd2908fC7BF4C76Cd'],
+      tokens: [nullAddress, ADDRESSES.base.WETH],
+    },
+    robinhood: {
+      owners: ['0x1f4E1154f549a1CA1E6f4C7fd2908fC7BF4C76Cd'],
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+    },
+  },
   'treasury/ether': {
     optimism: {
       tokens: [
