@@ -75,6 +75,7 @@ const ethereumBorrowed = async (api) => {
 }
 
 module.exports = {
+    doublecounted: true, // delegated restaking collateral sits in Symbiotic vaults and EigenLayer strategies, which count it too
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.). Bridged tokens on MegaETH are tracked via source chain (Ethereum) collateral only.',
     start: "2025-08-01",
     ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed },
