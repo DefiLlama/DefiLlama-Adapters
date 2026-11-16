@@ -21,7 +21,7 @@ async function borrowed(api) {
 module.exports = {
   timetravel: true,
   start: '2025-01-31',
-  methodology: `TVL is comprised of tokens deposited to the protocol as collateral and tokens deposited to the vault for lending. Borrowed tokens are not counted towards TVL.`,
+  methodology: `TVL is comprised of tokens deposited to the protocol as collateral (veNFTs, and the sAERO stakes they migrated into on Base) and tokens deposited to the vault for lending. Borrowed tokens are not counted towards TVL.`,
   base: { tvl: tvl, borrowed: borrowed },
   optimism: { tvl: tvl, borrowed: borrowed },
   avax : { tvl: tvl, borrowed: borrowed }

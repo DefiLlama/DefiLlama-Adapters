@@ -37,6 +37,14 @@ const veNftMapping = {
     blackhole: '0xEac562811cc6abDbB2c9EE88719eCA4eE79Ad763' //veBLACK
   }
 }
+// Since the 2026-10-22 Aerodrome -> Aero migration, veAERO locks are upgraded into permanent stakes
+// (sAERO NFTs) on the Aero VotingEscrow, minted to the same portfolio
+const stakeMapping = {
+  base: {
+    votingEscrow: '0xBF7977E1521e9a3032bf7243Ee4712f311f13915', // sAERO
+    token: '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee', // Aero AERO (new token)
+  },
+}
 const portfolioManager = "0x40ac2e40acb7bdd6ec83e468143262fe216529ec";
 const avaxPortfolioFactory = '0x52d43C377e498980135C8F2E858f120A18Ea96C2';
 const paraohVoterModule = "0x34F233F868CdB42446a18562710eE705d66f846b";
@@ -114,6 +122,18 @@ async function getPortfolioVeNftTvl(api) {
   const tokenIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.ownerToNFTokenIdList, calls: idCalls, target: veNft })
   const locked = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.locked, calls: tokenIds, target: veNft })
   locked.forEach(i => api.add(baseTokenMapping[chain], i.amount))
+
+  const stake = stakeMapping[chain]
+  if (!stake) return
+  // permitFailure: the VotingEscrow was deployed just before the migration, earlier blocks get empty calls below
+  const stakeCounts = await api.multiCall({ abi: 'erc20:balanceOf', calls: allPortfolios, target: stake.votingEscrow, permitFailure: true })
+  const stakeIdCalls = []
+  stakeCounts.forEach((count, i) => {
+    for (let j = 0; j < +(count ?? 0); j++) stakeIdCalls.push({ params: [allPortfolios[i], j] })
+  })
+  const stakeIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex, calls: stakeIdCalls, target: stake.votingEscrow })
+  const staked = await api.multiCall({ abi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', calls: stakeIds, target: stake.votingEscrow })
+  staked.forEach(i => api.add(stake.token, i.amount))
 }
 
 module.exports = {
