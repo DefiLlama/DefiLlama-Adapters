@@ -1383,14 +1383,15 @@ function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickU
   api.add(token1, amount1)
 }
 
-async function unwrapSolidlyVeNft({ api, baseToken, veNft, owner, hasTokensOfOwnerAbi = false, isAltAbi = false, lockedAbi, nftIdGetterAbi }) {
+async function unwrapSolidlyVeNft({ api, baseToken, veNft, owner, hasTokensOfOwnerAbi = false, isAltAbi = false, lockedAbi, nftIdGetterAbi, permitFailure = false }) {
   let tokenIds
   const _lockedAbi = lockedAbi || (hasTokensOfOwnerAbi || isAltAbi ? SOLIDLY_VE_NFT_ABI.lockedSimple : SOLIDLY_VE_NFT_ABI.locked)
   const _nftIdGetterAbi = nftIdGetterAbi || (isAltAbi ? SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex : SOLIDLY_VE_NFT_ABI.ownerToNFTokenIdList)
   if (hasTokensOfOwnerAbi) {
     tokenIds = await api.call({ abi: SOLIDLY_VE_NFT_ABI.tokensOfOwner, params: owner, target: veNft })
   } else {
-    const count = await api.call({ abi: 'erc20:balanceOf', target: veNft, params: owner })
+    // permitFailure: count nothing when the call fails, e.g. at blocks before the veNft was deployed
+    const count = await api.call({ abi: 'erc20:balanceOf', target: veNft, params: owner, permitFailure })
     tokenIds = await api.multiCall({ abi: _nftIdGetterAbi, calls: createIncrementArray(count).map(i => ({ params: [owner, i] })), target: veNft })
   }
   const bals = await api.multiCall({ abi: _lockedAbi, calls: tokenIds, target: veNft })

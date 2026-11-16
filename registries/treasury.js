@@ -15,6 +15,11 @@ const bitcoinAddressBook = require('../projects/helper/bitcoin-book/index.js')
 // Adapters using ohmStaking/ohmTreasury, sumChainTvls, mergeExports, isComplex
 // with extra custom code, or any logic beyond a single treasuryExports() call
 // stay as individual files in projects/treasury/.
+
+// Since the 2026-10-22 Aerodrome -> Aero migration, veAERO (and OP veVELO) locks live on as sAERO stakes
+// on the Aero VotingEscrow on Base, owned by the treasury's Base address
+const sAERO = { isAltAbi: true, baseToken: '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee', veNft: '0xBF7977E1521e9a3032bf7243Ee4712f311f13915', lockedAbi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', permitFailure: true }
+
 const gmxOwners = [
         '0x4bd1cdaab4254fc43ef6424653ca2375b4c94c0e',
         '0xc6378ddf536410c14666dc59bc92b5ebc0f2f79e',
@@ -2986,7 +2991,8 @@ const configs = {
         ADDRESSES.base.AERO, // AERO
       ],
       solidlyVeNfts: [
-        { baseToken: ADDRESSES.base.AERO, veNft: "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4" },// veVelo
+        { baseToken: ADDRESSES.base.AERO, veNft: "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4" },// veAERO
+        sAERO,
       ],
       owners: ['0x586CF50c2874f3e3997660c0FD0996B090FB9764'],
       ownTokens: [],
@@ -3344,6 +3350,7 @@ const configs = {
       ],
       solidlyVeNfts: [
         { baseToken: ADDRESSES.base.AERO, veNft: '0xebf418fe2512e7e6bd9b87a8f0f294acdc67e6b4' },
+        sAERO,
       ],
       owners: ['0xa79cd47655156b299762dfe92a67980805ce5a31'],
       ownTokens: ['0xdcefd8c8fcc492630b943abcab3429f12ea9fea2'],
