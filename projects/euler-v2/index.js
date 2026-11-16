@@ -117,7 +117,7 @@ Object.keys(config).forEach(chain => {
             // priced collateral these vaults hold is backed by unpriced collateral (bad debt)
             const pricedCollatUsd = ltvList.reduce((sum, cv) => sum + (collatUsd[cv.toLowerCase()] || 0), 0)
             const borrowUsd = toUsd(token, borrow)
-            if (!pricedCollatUsd) return
+            if (borrowUsd !== undefined && !pricedCollatUsd) return
             if (borrowUsd !== undefined && borrowUsd > pricedCollatUsd) {
               api.add(token, BigInt(Math.floor(Number(borrow) * pricedCollatUsd / borrowUsd)).toString())
               return
