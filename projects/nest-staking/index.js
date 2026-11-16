@@ -22,6 +22,7 @@ function evmTvl(chain) {
   return async function tvl(api) {
     const vaults = await getIncludedVaults();
     const addresses = vaults.filter(vault => vault.chain?.[chain]).map(vault => vault.vaultAddress);
+    await api.getBlock(); // supplies and nested balances must come from the same block
     const supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: addresses });
     // Nest vaults also hold shares of other Nest vaults, which are already counted in the inner vault's supply
     const owners = [...new Set(vaults.map(vault => vault.vaultAddress))];
