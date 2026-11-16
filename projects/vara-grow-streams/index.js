@@ -1,3 +1,4 @@
+// Official Website: https://growstreams.xyz | Official X: https://x.com/GrowwStreams
 const blake = require('blakejs')
 const { post } = require('../helper/http')
 
@@ -9,6 +10,9 @@ const TOKEN_VAULT_V2 = '0x20099b7637ae936670f54464c4109d1f028fbb63230e151ea4ef29
 const TOKEN_VAULT_V3 = '0x657cf9c4f929aeac97092037826c1117f9e6cd0e3c4edc44e49decc17b840aa9'
 const WVARA = '0xf5e9cb1d1e46b0cda6578dd1684b30f281a45dfaa390e4945b7bfc8ab3e27f3d'
 const GVARA = '0x04314af41b7dbac322e3e66920211d2f799719e1cdc3122a99752f72b6ae84ee'
+const GVARA_V3 = '0x086c7257f39302f9346ed8b7d2839ef1c728fc04997b6056581c0b3f396710ee'
+const SPOT_ORDERBOOK = '0x2c1dd07810480a34b7369fbf0ff0c97651c6db1f26ffc5eaff6490d6b20263cf'
+const PERPS_DESK = '0x8073da7aa8e51624ef4c1d41a8e22065cfe8b9ff9e6d5b7f969158397465da81'
 
 // twox128("System") ++ twox128("Account")
 const SYSTEM_ACCOUNT_PREFIX = '26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9'
@@ -56,13 +60,13 @@ async function getSpendableNative(addresses, at) {
 
 async function tvl(api) {
   const at = await rpc('chain_getFinalizedHead', [])
-  const balances = await getSpendableNative([TOKEN_VAULT_V2, TOKEN_VAULT_V3, WVARA, GVARA], at)
+  const balances = await getSpendableNative([TOKEN_VAULT_V2, TOKEN_VAULT_V3, WVARA, GVARA, GVARA_V3, SPOT_ORDERBOOK, PERPS_DESK], at)
   const total = balances.reduce((acc, b) => acc + b, 0n)
 
   api.addCGToken('vara-network', Number(total) / VARA_DECIMALS)
 }
 
 module.exports = {
-  methodology: 'GrowStreams deploys and owns the V2 and V3 token vaults and its wVARA and gVARA wrapper programs. TVL is the combined spendable native VARA held by all four: the vault balances plus the native VARA backing wVARA and gVARA tokens.',
+  methodology: 'GrowStreams deploys and owns the V2 and V3 token vaults, wVARA and gVARA wrappers, plus the Spot CLOB and RWA Perps custody contracts on Vara Network. TVL is the combined spendable native VARA held across all protocol vaults and custody programs.',
   vara: { tvl },
 }
