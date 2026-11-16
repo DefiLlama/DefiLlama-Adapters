@@ -95,30 +95,30 @@ const evmChains = ["bsc","ethereum","arbitrum","optimism","era","fantom","cronos
 const config = {
   tron: {
     owners: [
-      "TAa8e7U7seCy7NcZ52xYVQXXybFfwvsUxz",
-      "TBXEdr2pD1tszUNAkVX18K7nie1MptkZ1y",
-      "TBytnmJqL47n8bAP2NgPWfboXCwEUfEayv",
+      // "TAa8e7U7seCy7NcZ52xYVQXXybFfwvsUxz",
+      // "TBXEdr2pD1tszUNAkVX18K7nie1MptkZ1y",
+      // "TBytnmJqL47n8bAP2NgPWfboXCwEUfEayv",
       "TFrRVZFoHty7scd2a1q6BDxPU5fyqiB4iR",
-      "TGJagVsVg9QSePG5GreotgdefgaXPRo8SH",
-      "TGZ959FTLRk8droUqDNgLxML1X9mEVej8q",
-      "TYiQTHtgLo6KX6hYgbKLJsTbWK5hu9X5MG",
-      "TZHW3PJe6VoyV8NWAaeukqWNRe3bVU7u8n",
-      "TBM2FK4KBEEsMVYjm4WAW2Q8Es2NKdmUB8", //add on 12/01/2024
-      "TCvfZC9h6fFXnF7KbHPgY4jgfen93VkfVW", //add on 12/01/2024
-      "TGp7SNzjrctsWNwaFFN2PNTh3b1Kgxdtib", //add on 12/01/2024
+      // "TGJagVsVg9QSePG5GreotgdefgaXPRo8SH",
+      // "TGZ959FTLRk8droUqDNgLxML1X9mEVej8q",
+      // "TYiQTHtgLo6KX6hYgbKLJsTbWK5hu9X5MG",
+      // "TZHW3PJe6VoyV8NWAaeukqWNRe3bVU7u8n",
+      // "TBM2FK4KBEEsMVYjm4WAW2Q8Es2NKdmUB8", //add on 12/01/2024
+      // "TCvfZC9h6fFXnF7KbHPgY4jgfen93VkfVW", //add on 12/01/2024
+      // "TGp7SNzjrctsWNwaFFN2PNTh3b1Kgxdtib", //add on 12/01/2024
       "TBpo1Sh7vKCLrfxocZHd8CA5wc2R75kSJM", // add on 27/05/2024
       "TMauqkA78pfysSTn8jD1dvEUkjme2gEEdn", // add on 27/05/2024
       "TKPqvBMU2v23RyjjViKvp16kiHPx7FnrHQ", // add on 27/05/2024
-      "TVSdtELybCCa9DPDH15CMAPjeRcENAmDJZ", // add on 27/05/2024
+      // "TVSdtELybCCa9DPDH15CMAPjeRcENAmDJZ", // add on 27/05/2024
       "TYPUgo9ZtYk34XgBHbCHJCaoYZ5RejhhVD",
-      "TKurFA1LqaLU6cYa7QKbYqFceT3Xf22pNT",
-      "TN9DMsWq8CwE9GZV4akjxUzwG93PPceuiV",
-      "TYAdiDkvjsSPMQt8AvA8jWJrXKcjyKb5rs",
-      "TTky11V7Q3ng6hkYjLs3R3YkeDB8suQ7dC",
+      // "TKurFA1LqaLU6cYa7QKbYqFceT3Xf22pNT",
+      // "TN9DMsWq8CwE9GZV4akjxUzwG93PPceuiV",
+      // "TYAdiDkvjsSPMQt8AvA8jWJrXKcjyKb5rs",
+      // "TTky11V7Q3ng6hkYjLs3R3YkeDB8suQ7dC",
       "TJ8kFqncqv3GP15DTcbzufX5HFgFMCK3kC",
       "TEk5sAuuk6URqvT5tL7hrUB65NGEgq895X",
       "TJ7hhYhVhaxNx6BPyq7yFpqZrQULL3JSdb",
-      "TWpNmnuq6EFMRnxWQTGGf47gjkkbtYJdbm",
+      // "TWpNmnuq6EFMRnxWQTGGf47gjkkbtYJdbm",
       "TKfMrRSwhuLoTHcziSeNEAdSjaTe2677md",
       "TQQ29P8gw2Tp8XeYKC8vasQmJ7rvHGFhiG",
       "TUktrKwLLGGjks6DoN1zGta8muskbd9tnk",
