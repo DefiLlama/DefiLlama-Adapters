@@ -15,7 +15,6 @@ const ABIS = {
   token0: 'address:token0',
   token1: 'address:token1',
   reserves: 'function activeReserves() view returns (uint256 reserve0, uint256 reserve1)',
-  lpFees: 'function lpFeeLiabilities() view returns (uint256 liability0, uint256 liability1)',
   escrow: 'function totalEscrowed(address token) view returns (uint256)',
 }
 
@@ -49,20 +48,19 @@ async function tvl(api) {
   const pools = [...new Set(discovered.flat().map(address => address.toLowerCase()))]
 
   if (pools.length) {
-    const [token0s, token1s, initialized, reserves, lpFees] = await Promise.all([
+    const [token0s, token1s, initialized, reserves] = await Promise.all([
       api.multiCall({ abi: ABIS.token0, calls: pools }),
       api.multiCall({ abi: ABIS.token1, calls: pools }),
       api.multiCall({ abi: ABIS.initialized, calls: pools }),
       api.multiCall({ abi: ABIS.reserves, calls: pools }),
-      api.multiCall({ abi: ABIS.lpFees, calls: pools }),
     ])
 
     pools.forEach((_, i) => {
       if (!initialized[i]) return // Protected reservations are not yet funded liquidity.
-      // LP fees remain claimable to LPs and are held separately from active reserves.
-      // Protocol fee liabilities and surplus are not counted as TVL.
-      addAsset(api, token0s[i], BigInt(reserves[i][0]) + BigInt(lpFees[i][0]))
-      addAsset(api, token1s[i], BigInt(reserves[i][1]) + BigInt(lpFees[i][1]))
+      // Match CipherTools' pool-reserves-plus-order-input-escrow-v1 methodology:
+      // exclude separate claimable LP fees, protocol fees and surplus.
+      addAsset(api, token0s[i], reserves[i][0])
+      addAsset(api, token1s[i], reserves[i][1])
     })
   }
 
@@ -87,7 +85,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Counts on-chain active reserves plus unclaimed LP fees in initialized public Mode 0 and transparent private Mode 3 pools, and maker deposits still escrowed in the public matching order book. Excludes protocol fees, unbacked/surplus assets, native execution bounties, and confidential Mode 1/2 pools and private order-book balances.',
+  methodology: 'Counts on-chain active reserves in initialized public Mode 0 and transparent private Mode 3 pools, and maker deposits still escrowed in the public matching order book. Excludes protocol fees, unbacked/surplus assets, native execution bounties, and confidential Mode 1/2 pools and private order-book balances.',
   start: '2026-09-20',
   coti: { tvl },
 }
