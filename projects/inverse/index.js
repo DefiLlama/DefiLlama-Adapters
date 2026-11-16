@@ -13,6 +13,8 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 // Anchor
 const anchorStart = 11915867;
 const comptroller = "0x4dcf7407ae5c07f8681e1659f626e114a7667339";
+// INV staked in the xINV market is counted as staking in inverse-finance-firm
+const inv = "0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68";
 
 // Stabilizer
 const stabilizer = "0x7eC0D931AFFBa01b77711C2cD07c76B970795CDd";
@@ -41,7 +43,7 @@ async function stabilizerTVL(api) {
 }
 
 async function tvl(api) {
-  const compTvl = compoundExports2({ comptroller, cether: ['0x697b4acaa24430f254224eb794d2a85ba1fa1fb8', '0x8e103eb7a0d01ab2b2d29c91934a9ad17eb54b86'], blacklistedTokens: ['0x865377367054516e17014ccded1e7d814edc9ce4']}).tvl
+  const compTvl = compoundExports2({ comptroller, cether: ['0x697b4acaa24430f254224eb794d2a85ba1fa1fb8', '0x8e103eb7a0d01ab2b2d29c91934a9ad17eb54b86'], blacklistedTokens: ['0x865377367054516e17014ccded1e7d814edc9ce4', inv]}).tvl
 
   await Promise.all([
     compTvl(api),

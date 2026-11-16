@@ -154,6 +154,7 @@ async function tvl(api) {
 
   api.removeTokenBalance('0x865377367054516e17014ccded1e7d814edc9ce4') // remove DOLA - ownToken
   api.removeTokenBalance('0xb45ad160634c528Cc3D2926d9807104FA3157305') // remove sDOLA - ownToken
+  api.removeTokenBalance('0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68') // remove INV - ownToken, the INV market escrows stake it in xINV, counted as staking
 }
 
 module.exports = {
