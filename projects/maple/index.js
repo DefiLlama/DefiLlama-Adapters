@@ -93,6 +93,15 @@ async function getCollateralOwners() {
   return owners
 }
 
+async function getLabelledPrincipal(api, pools) {
+  const poolAssets = Object.fromEntries(pools.map(p => [p.id.toLowerCase(), p.asset.id]))
+  const labelled = await getLabelledLoans()
+  const assets = labelled.map(l => poolAssets[l.fundingPool.id.toLowerCase()])
+  if (assets.some(a => !a)) throw new Error('Maple: labelled loan from an unknown pool')
+  const principal = await api.multiCall({ abi: 'uint256:principal', calls: labelled.map(l => l.id) })
+  return { assets, principal }
+}
+
 async function addStrategyCash(api, pools) {
   // pool managers that predate strategies have no strategy list
   const lengths = await api.multiCall({ abi: 'uint256:strategyListLength', calls: pools.map(p => p.poolManager.id), permitFailure: true })
@@ -110,6 +119,9 @@ async function ethereumTvl(api) {
   const pools = await getPools()
   const { ethereum = [] } = await getCollateralOwners()
   await addStrategyCash(api, pools)
+  // pool cash deployed through labelled loans is still pool AUM
+  const { assets, principal } = await getLabelledPrincipal(api, pools)
+  api.addTokens(assets, principal)
   return api.sumTokens({ tokensAndOwners: [...pools.map(p => [p.asset.id, p.id]), ...ethereum] })
 }
 
@@ -126,11 +138,7 @@ async function borrowed(api) {
   const principal = await api.multiCall({ abi: 'uint256:principalOut', calls: Object.keys(loanManagers) })
   api.addTokens(Object.values(loanManagers), principal)
   // the loan managers' principalOut includes the labelled loans, take their principal back out
-  const poolAssets = Object.fromEntries(pools.map(p => [p.id.toLowerCase(), p.asset.id]))
-  const labelled = await getLabelledLoans()
-  const assets = labelled.map(l => poolAssets[l.fundingPool.id.toLowerCase()])
-  if (assets.some(a => !a)) throw new Error('Maple: labelled loan from an unknown pool')
-  const labelledPrincipal = await api.multiCall({ abi: 'uint256:principal', calls: labelled.map(l => l.id) })
+  const { assets, principal: labelledPrincipal } = await getLabelledPrincipal(api, pools)
   api.addTokens(assets, labelledPrincipal.map(v => -v))
 }
 
