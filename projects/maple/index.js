@@ -93,9 +93,9 @@ async function getCollateralOwners() {
   return owners
 }
 
-async function getLabelledPrincipal(api, pools) {
+async function getLabelledPrincipal(api, pools, excludeTypes = []) {
   const poolAssets = Object.fromEntries(pools.map(p => [p.id.toLowerCase(), p.asset.id]))
-  const labelled = await getLabelledLoans()
+  const labelled = (await getLabelledLoans()).filter(l => !excludeTypes.includes(l.loanMeta.type))
   const assets = labelled.map(l => poolAssets[l.fundingPool.id.toLowerCase()])
   if (assets.some(a => !a)) throw new Error('Maple: labelled loan from an unknown pool')
   const principal = await api.multiCall({ abi: 'uint256:principal', calls: labelled.map(l => l.id) })
@@ -119,8 +119,8 @@ async function ethereumTvl(api) {
   const pools = await getPools()
   const { ethereum = [] } = await getCollateralOwners()
   await addStrategyCash(api, pools)
-  // pool cash deployed through labelled loans is still pool AUM
-  const { assets, principal } = await getLabelledPrincipal(api, pools)
+  // pool cash deployed through labelled loans is still pool AUM, except intercompany loans which would double count
+  const { assets, principal } = await getLabelledPrincipal(api, pools, ['intercompany'])
   api.addTokens(assets, principal)
   return api.sumTokens({ tokensAndOwners: [...pools.map(p => [p.asset.id, p.id]), ...ethereum] })
 }
