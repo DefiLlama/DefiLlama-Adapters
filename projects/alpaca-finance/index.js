@@ -1,9 +1,7 @@
-const sdk = require('@defillama/sdk')
 const abi = {
   "xalpacaTotalSupply": "uint256:supply"
 };
 const { getConfig } = require('../helper/cache')
-const { calLyfTvl } = require("./lyf");
 const aExports = require('../alpaca-finance-lend');
 
 // ===== inlined from ./xalpaca =====
@@ -34,13 +32,13 @@ async function calxALPACAtvl(api) {
 
 module.exports = {
   start: '2020-10-07',
-  methodology: 'Assets held by the leveraged yield farming workers plus idle balances in the lending vaults. Vault debt is not counted on top, only what the workers actually hold.',
+  methodology: 'Base token balances held by the lending vaults. Vault debt is not counted.',
   bsc: {
-    tvl: sdk.util.sumChainTvls([calLyfTvl, aExports.bsc.tvl]),
+    tvl: aExports.bsc.tvl,
     staking: calxALPACAtvl,
   },
   fantom: {
-    tvl: sdk.util.sumChainTvls([calLyfTvl, aExports.fantom.tvl]),
+    tvl: aExports.fantom.tvl,
     staking: calxALPACAtvl,
   }
 };
