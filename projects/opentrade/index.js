@@ -30,12 +30,24 @@ const FACTORY = {
   ],
 }
 
+// Avax vaults deployed before the factory above, so they have no PoolCreated log. Both were in the
+// static list this adapter used before the switch to factory discovery (XTBT) or in fees/opentrade
+// (XEVT). At block 100468357: XTBT 567,071 USDC, XEVT 2,858,609 EURC, both with exchangeRate still
+// accruing. XRV1 (0xbb9360d57f68075e98d022784c12f2fda082316b) is left out: no token transfer since
+// 2025-02-20 and totalAssets() reverts at some blocks.
+const PRE_FACTORY_POOLS = {
+  avax: [
+    '0xad6605f4987031fd2d6d6816be53eb7c5b764bf7', // XTBT
+    '0xbfdef5e389bb403426337081ecd1d05bc5193203', // XEVT
+  ],
+}
+
 const poolCreatedAbi = 'event PoolCreated (address indexed addr)'
 
 async function tvl(api) {
   const factories = FACTORY[api.chain]
 
-  const poolSet = new Set()
+  const poolSet = new Set(PRE_FACTORY_POOLS[api.chain] ?? [])
   for (const { address, fromBlock } of factories) {
     const logs = await getLogs2({
       api,
