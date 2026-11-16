@@ -75,6 +75,7 @@ const config = {
     ],
   },
   tron: {
+    ownTokens: ['TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6'], // HTX (HTX DAO), successor of HT
     owners: [
       "TYh6mgoMNZTCsgpYHBz7gttEfrQmDMABub",
       "TKgD8Qnx9Zw3DNvG6o83PkufnMbtEXis4T",
