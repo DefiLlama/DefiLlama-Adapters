@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { lendingMarket } = require("./methodologies");
 const { sumTokens2 } = require('./unwrapLPs')
 
@@ -15,24 +16,29 @@ module.exports = {
     };
     Object.keys(config).forEach(chain => {
 
-      async function resolveMarkets() {
+      async function resolveMarkets(api) {
         const set = new Set((config[chain].markets ?? []).map(m => m.toLowerCase()))
         if (getMarkets) {
           const dynamic = await getMarkets()
           ;(dynamic?.[chain] ?? []).forEach(m => set.add(m.toLowerCase()))
         }
-        return [...set]
+        const block = await api.getBlock()
+        const provider = sdk.api.config.getProvider(chain)
+        const markets = [...set]
+        // The current market list can include deployments newer than the requested block.
+        const code = await Promise.all(markets.map(market => provider.getCode(market, block)))
+        return markets.filter((_, index) => code[index] !== '0x')
       }
 
       async function borrowed(api) {
-        const markets = await resolveMarkets()
+        const markets = await resolveMarkets(api)
         const tokens = await api.multiCall({ abi: 'address:baseToken', calls: markets })
         const bals = await api.multiCall({ abi: 'uint256:totalBorrow', calls: markets })
         api.add(tokens, bals)
       }
 
       async function tvl(api) {
-        const markets = await resolveMarkets()
+        const markets = await resolveMarkets(api)
         const toa = []
         for (const m of markets) {
           const items = await api.fetchList({ lengthAbi: abi.numAssets, itemAbi: abi.getAssetInfo, target: m })
