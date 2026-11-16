@@ -1,4 +1,5 @@
 // CipherDEX Protocol on COTI (chain 2632500).
+const { getLogs2 } = require('../helper/cache/getLogs')
 // Deployment identities and interfaces: https://app.ciphertrade.org
 const FACTORIES = [
   { address: '0x1909751000de0d15f81394b47eca1931184d51e0', fromBlock: 9441564 }, // Mode 0
@@ -68,13 +69,13 @@ async function tvl(api) {
   if (!api.block || api.block >= BOOK_FROM_BLOCK) {
     // Public orders may use tokens without any active AMM pool. Discover input
     // assets from the book's own creation history, not a protocol API total.
-    const created = await api.getLogs({
+    const created = await getLogs2({
+      api,
       target: PUBLIC_BOOK,
       fromBlock: BOOK_FROM_BLOCK,
       eventAbi: 'event OrderCreated(uint256 indexed orderId, address indexed maker, address indexed tokenIn, address tokenOut, address recipient, uint256 amountIn, uint256 minAmountOut, uint64 expiry, uint8 feeTierPolicy, bool allowPartialFills, uint256 minimumFillAmount, uint256 executionBounty, uint8 settlementMode, uint32 maxMatchingFeePpm)',
-      cacheInCloud: true,
     })
-    const tokens = [...new Set(created.map(log => (log.tokenIn || log.args?.tokenIn).toLowerCase()))]
+    const tokens = [...new Set(created.map(log => log.tokenIn.toLowerCase()))]
     if (tokens.length) {
       const balances = await api.multiCall({
         abi: ABIS.escrow,
@@ -87,6 +88,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Counts on-chain active reserves plus unclaimed LP fees in initialized public Mode 0 and transparent private Mode 3 pools, and maker deposits still escrowed in the public matching order book. Excludes protocol fees, unbacked/surplus assets, native execution bounties, and confidential Mode 1/2 pools and private order-book balances.',
-  start: '2026-09-21',
+  start: '2026-09-20',
   coti: { tvl },
 }
