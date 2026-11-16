@@ -57,6 +57,10 @@ const CHAIN_BLACKLISTS = {
   ethereum: [ADDRESSES.ethereum.sUSD_OLD],
 }
 
+const OWN_TOKENS = {
+  solana: ['BPxxfRCXkUVhig4HS1Lh7kZqV6SPJhzfEk4x6fVBjPCy'], // BP
+}
+
 // 0G native has no entry in coreAssets; tempo native is unpriced and skipped
 const NATIVE_TOKENS = {
   '0g': [ADDRESSES.null],
@@ -78,7 +82,7 @@ CHAINS.forEach((chain) => {
       let { owners, fungibleAssets } = entry
 
 
-      const options = { owners, tokens, chain, blacklistedTokens: CHAIN_BLACKLISTS[chain] }
+      const options = { owners, tokens, chain, blacklistedTokens: [...(CHAIN_BLACKLISTS[chain] || []), ...(OWN_TOKENS[chain] || [])] }
 
       switch (chain) {
         case 'solana':
@@ -97,6 +101,15 @@ CHAINS.forEach((chain) => {
           options.tokens = options.tokens.filter(t => t.startsWith('0x'))
       }
       return sumTokensExport(options)(api)
+    }
+  }
+
+  if (OWN_TOKENS[chain]) {
+    exportObj[chain].ownTokens = async (api) => {
+      const config = await _getConfig()
+      const entry = config[chain]
+      if (!entry) return {}
+      return sumTokensExport({ chain, owners: entry.owners, tokens: OWN_TOKENS[chain] })(api)
     }
   }
 })
