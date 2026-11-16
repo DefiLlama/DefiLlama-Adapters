@@ -1,73 +1,37 @@
 const { nibiru } = require('../helper/coreAssets');
-const { getBalance2 } = require('../helper/chain/cosmos')
+const { getBalance2 } = require('../helper/chain/cosmos');
 
-const contractAddrs = {
+const owners = {
   perp: 'nibi1ntmw2dfvd0qnw5fnwdu9pev2hsnqfdj9ny9n0nzh2a5u8v0scflq930mph',
   vaultUsdc: 'nibi193m2a00pmdsvkcvugrfewqzhtq6k0srkjzvxp2sk357vlpspx5vqxu8d7p',
-  vaultStnibi: 'nibi1mrplvu3scplnrgns96kg0j8pk3l2p9c7eaz0qdedx0kt3vmcujyqrjkfej',
+  saiEvm: '0x25589C8071fa10B7a8c62CdCA7035c539242A774',
+  // Bech32 encoding of the same 20-byte SaiEvm proxy address.
+  saiEvmBank: 'nibi1y4vfeqr3lggt02xx9nw2wq6u2wfy9fm5gllrzm',
 };
 
-// Wasm precompile address on Nibiru
-const WASM_PRECOMPILE_ADDRESS = '0x0000000000000000000000000000000000000802';
-
-// removed from coreAssets (unpriced), kept here so the adapter still tracks the balance
-const STNIBI = '0xcA0a9Fb5FBF692fa12fD13c0A900EC56Bb3f0a7b';
-
 async function tvl(api) {
-  // Query both vaults in parallel using multiCall
-  const vaultQueries = [
-    { contract: contractAddrs.vaultUsdc, asset: nibiru.USDC, name: 'USDC vault' },
-    { contract: contractAddrs.vaultStnibi, asset: STNIBI, name: 'stNIBI vault' }
-  ];
-
-  const queryMsg = { tvl: {} };
-  const queryBytes = vaultQueries.map(() =>
-    Buffer.from(JSON.stringify(queryMsg), 'utf8')
+  const denom = `erc20/${nibiru.SAI_USDC}`;
+  const key = denom.replaceAll('/', ':');
+  const bankBalances = await Promise.all(
+    [owners.perp, owners.vaultUsdc, owners.saiEvmBank].map(owner =>
+      getBalance2({ chain: api.chain, owner, tokens: [denom] })
+    )
   );
-
-  const calls = queryBytes.map((bytes, i) => ({
-    target: WASM_PRECOMPILE_ADDRESS,
-    params: [vaultQueries[i].contract, bytes]
-  }));
-
-  const results = await api.multiCall({
-    abi: 'function query(string contractAddr, bytes req) view returns (bytes)',
-    calls: calls,
-    permitFailure: true
+  const proxyErc20Balance = await api.call({
+    target: nibiru.SAI_USDC,
+    abi: 'erc20:balanceOf',
+    params: owners.saiEvm,
   });
 
-  // Process results
-  results.forEach((result, i) => {
-    const { asset } = vaultQueries[i];
-
-    if (result && result !== '0x' && result.length > 2) {
-      const hexBuffer = Buffer.from(result.slice(2), 'hex');
-      const tvlData = JSON.parse(hexBuffer.toString('utf8'));
-
-      if (tvlData) {
-        api.add(asset, tvlData);
-      }
-    }
-  });
-
-  // Perp Balances
-  const tokensToFetch = [
-    { key: "erc20/0x0829F361A05D993d5CEb035cA6DF3446b060970b", symbol: nibiru.USDC },
-    { key: "tf/nibi1udqqx30cw8nwjxtl4l28ym9hhrp933zlq8dqxfjzcdhvl8y24zcqpzmh8m/ampNIBI", symbol: STNIBI },
-  ];
-  const relevantTokens = tokensToFetch.map(t => t.key);
-  const balancesPerp = await getBalance2({
-    owner: contractAddrs.perp,
-    tokens: relevantTokens,
-    chain: api.chain,
-  });
-  tokensToFetch.forEach(({ key, symbol }) => {
-    const normalizedKey = key.replaceAll("/", ":");
-    api.add(symbol, balancesPerp[normalizedKey]);
-  })
-
+  // Preserve raw six-decimal units. Failed reads must not become zero TVL.
+  for (const amount of [...bankBalances.map(balances => balances[key] ?? '0'), proxyErc20Balance]) {
+    if (!/^\d+$/.test(String(amount))) throw new Error('Invalid Sai USDC balance');
+    api.add(nibiru.SAI_USDC, amount);
+  }
 }
 
 module.exports = {
+  timetravel: false, // Cosmos balance helpers read latest state, not historical heights.
+  methodology: 'Counts canonical Sai USDC held by the Perp contract, active USDC vault, and SaiEvm proxy. SaiEvm includes operator-funded conversion inventory. Bank coins and proxy-owned ERC20 balances are distinct custody; EVM module escrow backing Bank coins is excluded. Legacy USDC.e, retired stNIBI custody, gas reserves, and Base Hub backing are excluded.',
   nibiru: { tvl },
 };
