@@ -136,6 +136,7 @@ module.exports = {
         "0xbe9D156892E55e7154BcD3cB0FEA677F9D3103E1", // SPCXB
         "0x5b1910eAaD6450E50f816082Aa078C41F10C292f", // TSLAB
         "0xCA750eF65f295BBECd685Abf54e82CAf297BDB61", // SKHYB
+        "0x205812CdBed920aFf76C6580abD681a46D11efc7", // QQQB
       ], "permitFailure": true },
       "staking": { "owners": ["0x2AEab1a338bCB1758f71BD5aF40637cEE2085076", "0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13"], "tokens": ["0x4691937a7508860f876c9c0a2a617e7d9e945d4b"] }
     },
