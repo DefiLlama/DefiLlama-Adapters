@@ -93,13 +93,26 @@ module.exports.move = {
 
 /* LayerBank V3 */
 
-const v3Config = {
+const deprecatedV3Config = {
   plume_mainnet: [`0xF9642C3B35Cd4Ccd55D22Fb2B35fcc31c5E0B62E`],
   hemi: [`0x8D45801736F3504BEfA35ABEf8bc7a1C4d610651`],
   nibiru: [`0x7F5f9E5D4643B4333464c18d072167B452C20d28`],
   bob: { poolDatas: [`0xeb1Bea032d0DDCAFd29fb3b8c33A67BCAfCaFD8c`], isInsolvent: true, },
+};
+
+const v3Config = {
   rsk: ['0x47C1ef207d49cfC519F48b8251857CA6BE6c2caf'],
   robinhood: ['0x7ED03A856D52172f9501aB0176f184baD287e546'],
 };
 
-module.exports = mergeExports([module.exports, compoundExports, aaveV3Export(v3Config)]);
+// Deprecated deployments (V2, Move, older V3): the chains stay exported so their history is kept,
+// and return nothing from the cutoff onwards
+const DEPRECATED_TS = Date.parse('2026-11-16') / 1e3
+const gate = (fn) => async (api, ...args) => !api.timestamp || api.timestamp >= DEPRECATED_TS ? {} : fn(api, ...args)
+
+const deprecated = mergeExports([module.exports, compoundExports, aaveV3Export(deprecatedV3Config)])
+Object.values(deprecated).forEach(chainExport => {
+  Object.keys(chainExport).forEach(key => chainExport[key] = gate(chainExport[key]))
+})
+
+module.exports = mergeExports([deprecated, aaveV3Export(v3Config)]);
