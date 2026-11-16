@@ -6,8 +6,6 @@ const vno_contract_address = "0xdb7d0a1ec37de1de924f8e8adac6ed338d4404e9";
 const zkCRO_contract_address = "0x28Ff2E4dD1B58efEB0fC138602A28D5aE81e44e2";
 const ybETH_contract_address = "0x76bf2D1e6dFda645c0c17440B17Eccc181dfC351";
 const ybUSD_contract_address = "0xFA59075DfCE274E028b58BdDFcC3D709960F594a";
-const vETH_contract_address = "0x271602A97027ee1dd03b1E6e5dB153eB659A80b1";
-const vUSD_contract_address = "0x5b91e29Ae5A71d9052620Acb813d5aC25eC7a4A2";
 
 
 async function tvlCronos(api) {
@@ -41,15 +39,6 @@ async function tvlEthereum(api) {
   return api.getBalances();
 }
 
-async function tvlCronosZkEVM(api) {
-  const totalVEth = await api.call({ abi: "uint256:ybEthValue", target: vETH_contract_address });
-  api.addCGToken('ethereum', totalVEth / 1e18); 
-  const totalVUsd = await api.call({ abi: "uint256:ybUsdValue", target: vUSD_contract_address });
-  api.addCGToken('dai', totalVUsd / 1e18);
-
-  return api.getBalances();
-}
-
 module.exports = {
   methodology: "TVL counts tokens staked by the protocol.",
   cronos: {
@@ -65,7 +54,11 @@ module.exports = {
   ethereum: {
     tvl: tvlEthereum, 
   },
+  // vETH and vUSD on Cronos zkEVM (0x271602A9..., 0x5b91e29A...) only hold ybETH and ybUSD bridged
+  // from ethereum. The L1 tokens sit in the ZK Stack native token vault (0xbeD1EB54...), and the
+  // ethereum leg above already counts the ETH and USD behind every ybETH and ybUSD, so counting
+  // vETH/vUSD again on cronos_zkevm was the same assets twice
   cronos_zkevm: {
-    tvl: tvlCronosZkEVM, 
+    tvl: () => ({}),
   },
 };
