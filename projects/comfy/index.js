@@ -42,6 +42,6 @@ async function tvl(api) {
 
 module.exports = {
   start: 1790588777,
-  methodology: 'Counts liquidity reserves owned by the production Infinity pool manager, excluding uncollected protocol fees and separate Vault credits held by fee recipients or other accounts.',
+  methodology: 'Counts liquidity reserves owned by the production Infinity pool manager, including uncollected liquidity-provider fees, excluding uncollected protocol fees and separate Vault credits held by fee recipients or other accounts.',
   '0g': { tvl },
 };
