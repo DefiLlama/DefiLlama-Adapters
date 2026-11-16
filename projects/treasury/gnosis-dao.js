@@ -78,7 +78,7 @@ module.exports = treasuryExports({
       "0x9c39809dec7f95f5e0713634a4d0701329b3b4d2", // debt variableDebtWBTC
       "0xa13a9247ea42d743238089903570127dda72fe44",
     ],
-    owners: [treasury, treasury1, treasury2, treasury3, treasury4,],
+    owners: [treasury, treasury1, treasury2, treasury3, treasury4, treasurygnosis,], // GNO/SAFE/COW/HOPR moved here 2026-07-21
     ownTokens: [GNO],
     resolveUniV3: true,
   },
