@@ -16,5 +16,6 @@ module.exports = {
   doublecounted: true,
   methodology: "Sums the token balances held by every official BTR pool listed by the PoolFactory, plus the liquidity each pool's yield hook has deposited in external lending markets or vaults (currently Aave and Euler) on the pool's behalf, valued at the hook's reported NAV. That liquidity is also counted in those venues' TVL.",
   start: '2026-10-01',
+  hallmarks: [['2026-11-10', 'V1 halt']],
   monad: { tvl },
 }
