@@ -19651,7 +19651,7 @@ const configs = {
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.optimism.DAI,
-        ADDRESSES.arbitrum.aidoge,
+        '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b',
         "0x3082cc23568ea640225c2467653db90e9250aaa0",
         "0x088cd8f5ef3652623c22d48b1605dcfe860cd704",
         ADDRESSES.arbitrum.LPT,

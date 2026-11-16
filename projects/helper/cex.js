@@ -305,7 +305,7 @@ const defaultTokens = {
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
     ADDRESSES.arbitrum.DAI, // DAI
-    ADDRESSES.arbitrum.aidoge, //aidoge
+    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b', //aidoge
     // '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
     ADDRESSES.arbitrum.LPT, //lpt
     '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
