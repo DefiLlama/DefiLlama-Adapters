@@ -54,3 +54,15 @@ The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain c
 
 ## Adapter rules
 - Never add extra npm packages, if you need a chain-level package for your chain, ask us, and we'll consider it, but we can't accept any npm package that is project-specific
+
+## Formatting JavaScript
+
+To format an individual file, pass its path explicitly. The command below
+uses the repository configuration and opts out of the default
+`.prettierignore`, which excludes all files.
+
+```sh
+pnpm dlx prettier@3.10.1 --ignore-path .gitignore --write path/to/file.js
+```
+
+Use `--check` in place of `--write` to check formatting without changing the file.
