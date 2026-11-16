@@ -31,10 +31,14 @@ const vaultAssets = async (api) => {
     .map(v => "0x" + v.topics[2].slice(26))
     .filter(vault => !blacklist.includes(vault.toLowerCase()))
 
-  // meta vaults only hold shares of their sub-vaults, which are registry vaults and already counted
+  // meta vaults hold shares of their sub-vaults, which are registry vaults and already counted. What a meta vault holds itself
+  // is deposits not yet moved to its sub-vaults (withdrawableAssets) plus assets owed to stakers who already exited, which no
+  // vault's totalAssets counts
   const subVaultsRegistries = await api.multiCall({ calls: vaults, abi: 'address:subVaultsRegistry', permitFailure: true })
   const isMeta = (i) => subVaultsRegistries[i] && subVaultsRegistries[i] !== ADDRESSES.null
-  return api.multiCall({ calls: vaults.filter((_, i) => !isMeta(i)), abi: "uint256:totalAssets" })
+  const assets = await api.multiCall({ calls: vaults.filter((_, i) => !isMeta(i)), abi: "uint256:totalAssets" })
+  const idleAssets = await api.multiCall({ calls: vaults.filter((_, i) => isMeta(i)), abi: "uint256:withdrawableAssets" })
+  return assets.concat(idleAssets)
 }
 
 const ethTvl = async (api) => {
@@ -42,6 +46,7 @@ const ethTvl = async (api) => {
   // has exited the beacon chain, and each one's stake withdraws to the operator's own address
   // rather than to StakeWise, so none of it is held here.
   const { rETH2, sETH2 } = CONFIG[api.chain]
+  await api.getBlock() // read the v2 supply and the vaults at the same block
   const lsBals = await api.multiCall({ abi: 'erc20:totalSupply', calls: [rETH2, sETH2]})
   const assets = await vaultAssets(api)
 
@@ -50,13 +55,14 @@ const ethTvl = async (api) => {
 
 const xdaiTvl = async (api) => {
   const { GNO, rGNO, sGNO } = CONFIG[api.chain]
+  await api.getBlock() // read the v2 supply and the vaults at the same block
   const lsBals = await api.multiCall({ abi: 'erc20:totalSupply', calls: [rGNO, sGNO] })
   const assets = await vaultAssets(api)
   api.add(GNO, assets.concat(lsBals))
 }
 
 module.exports = {
-  methodology: 'Counts the ETH and GNO staked in StakeWise V3 vaults, plus the V2 rETH2/sETH2 and rGNO/sGNO supply. Meta vaults are skipped, since their assets sit in other vaults that are already counted.',
+  methodology: 'Counts the ETH and GNO staked in StakeWise V3 vaults, plus the V2 rETH2/sETH2 and rGNO/sGNO supply. Meta vaults only count the deposits they have not moved into their sub-vaults yet, since the rest sits in other vaults that are already counted.',
   ethereum: { tvl: ethTvl },
   xdai: { tvl: xdaiTvl }
 }
