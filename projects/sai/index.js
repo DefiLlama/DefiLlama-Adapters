@@ -1,73 +1,35 @@
-const { nibiru } = require('../helper/coreAssets');
-const { getBalance2 } = require('../helper/chain/cosmos')
+const { getBalance2 } = require('../helper/chain/cosmos');
 
-const contractAddrs = {
-  perp: 'nibi1ntmw2dfvd0qnw5fnwdu9pev2hsnqfdj9ny9n0nzh2a5u8v0scflq930mph',
-  vaultUsdc: 'nibi193m2a00pmdsvkcvugrfewqzhtq6k0srkjzvxp2sk357vlpspx5vqxu8d7p',
-  vaultStnibi: 'nibi1mrplvu3scplnrgns96kg0j8pk3l2p9c7eaz0qdedx0kt3vmcujyqrjkfej',
-};
+// Sai USDC: minted on Nibiru against USDC held in the Teller hub on Base
+const SAI_USDC = '0x357c97796aA8e2A6b5A64b1Fc19d5baB9668E190';
+const SAI_USDC_DENOM = `erc20/${SAI_USDC}`;
 
+const SAI_EVM = '0x25589C8071fa10B7a8c62CdCA7035c539242A774';
 // Wasm precompile address on Nibiru
 const WASM_PRECOMPILE_ADDRESS = '0x0000000000000000000000000000000000000802';
 
-// removed from coreAssets (unpriced), kept here so the adapter still tracks the balance
-const STNIBI = '0xcA0a9Fb5FBF692fa12fD13c0A900EC56Bb3f0a7b';
-
 async function tvl(api) {
-  // Query both vaults in parallel using multiCall
-  const vaultQueries = [
-    { contract: contractAddrs.vaultUsdc, asset: nibiru.USDC, name: 'USDC vault' },
-    { contract: contractAddrs.vaultStnibi, asset: STNIBI, name: 'stNIBI vault' }
-  ];
+  const perp = await api.call({
+    target: SAI_EVM,
+    abi: 'function perpContractAddress() view returns (string)',
+  });
 
-  const queryMsg = { tvl: {} };
-  const queryBytes = vaultQueries.map(() =>
-    Buffer.from(JSON.stringify(queryMsg), 'utf8')
-  );
-
-  const calls = queryBytes.map((bytes, i) => ({
+  // the reserves query is only used to discover the configured USDC vaults
+  const reservesBytes = await api.call({
     target: WASM_PRECOMPILE_ADDRESS,
-    params: [vaultQueries[i].contract, bytes]
-  }));
-
-  const results = await api.multiCall({
     abi: 'function query(string contractAddr, bytes req) view returns (bytes)',
-    calls: calls,
-    permitFailure: true
+    params: [perp, `0x${Buffer.from(JSON.stringify({ get_sai_reserves: {} })).toString('hex')}`],
   });
+  const { vaults } = JSON.parse(Buffer.from(reservesBytes.slice(2), 'hex').toString('utf8'));
 
-  // Process results
-  results.forEach((result, i) => {
-    const { asset } = vaultQueries[i];
-
-    if (result && result !== '0x' && result.length > 2) {
-      const hexBuffer = Buffer.from(result.slice(2), 'hex');
-      const tvlData = JSON.parse(hexBuffer.toString('utf8'));
-
-      if (tvlData) {
-        api.add(asset, tvlData);
-      }
-    }
-  });
-
-  // Perp Balances
-  const tokensToFetch = [
-    { key: "erc20/0x0829F361A05D993d5CEb035cA6DF3446b060970b", symbol: nibiru.USDC },
-    { key: "tf/nibi1udqqx30cw8nwjxtl4l28ym9hhrp933zlq8dqxfjzcdhvl8y24zcqpzmh8m/ampNIBI", symbol: STNIBI },
-  ];
-  const relevantTokens = tokensToFetch.map(t => t.key);
-  const balancesPerp = await getBalance2({
-    owner: contractAddrs.perp,
-    tokens: relevantTokens,
-    chain: api.chain,
-  });
-  tokensToFetch.forEach(({ key, symbol }) => {
-    const normalizedKey = key.replaceAll("/", ":");
-    api.add(symbol, balancesPerp[normalizedKey]);
-  })
-
+  const owners = [perp, ...vaults.map(vault => vault.slp_addr)];
+  for (const owner of owners) {
+    const balances = await getBalance2({ owner, tokens: [SAI_USDC_DENOM], chain: api.chain });
+    api.add(SAI_USDC, balances[SAI_USDC_DENOM.replaceAll('/', ':')] ?? 0);
+  }
 }
 
 module.exports = {
+  methodology: 'Counts the Sai USDC held by the Perp contract and its configured USDC vaults on Nibiru.',
   nibiru: { tvl },
 };
