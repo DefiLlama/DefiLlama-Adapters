@@ -25,7 +25,9 @@ const config = {
   arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872, useIndexerSql: true, blacklistedTokens: ['0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1', '0x3e4ffeb394b371aaaa0998488046ca19d870d9ba', 
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
   ] },
-  polygon: { factory: "0x67366782805870060151383f4bbff9dab53e5cd6", fromBlock: 66980384, useIndexerSql: true },
+  polygon: { factory: "0x67366782805870060151383f4bbff9dab53e5cd6", fromBlock: 66980384, useIndexerSql: true, blacklistedTokens: [
+    '0x0184316f58b9a44acdd3e683257259dc0cf2202a', // POLYGOLD mispriced
+  ] },
   blast: { factory: "0x1631559198a9e474033433b2958dabc135ab6446", fromBlock: 14377311, useIndexerSql: true },
   zora: { factory: "0x0575338e4c17006ae181b47900a84404247ca30f", fromBlock: 25434534 },
   wc: { factory: "0xb1860d529182ac3bc1f51fa2abd56662b7d13f33", fromBlock: 9111872 },
