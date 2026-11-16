@@ -318,7 +318,6 @@ async function tvl(api) {
       tokens = [
         TOKENS.KWEETH,
         TOKENS.KUSDE,
-        TOKENS.MSTETH,
         TOKENS.RSUSDE,
         TOKENS.RSTETH,
         TOKENS.RE7LRT,
