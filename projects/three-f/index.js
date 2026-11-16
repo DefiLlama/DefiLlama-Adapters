@@ -34,7 +34,8 @@ async function tvl(api) {
  
 
 module.exports = {
-    methodology: "Value of assets locked inside all wrapper tokens.",
+    methodology: "Value of assets locked inside all wrapper tokens. The wrappers are posted as collateral on Morpho Blue, which counts them too.",
+    doublecounted: true,
     start: "2026-04-08",
     ethereum: { tvl }
 };
