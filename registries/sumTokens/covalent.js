@@ -821,7 +821,8 @@ module.exports = {
     "ethereum": {
       "owners": [
         "0xeb9bf100225c214Efc3E7C651ebbaDcF85177607",
-        "0x88e529a6ccd302c948689cd5156c83d4614fae92"
+        "0x88e529a6ccd302c948689cd5156c83d4614fae92",
+        "0x67B4de6FfA66EF201Ea6099A89cA397D56622E31" // ETHLockbox (OP Stack Upgrade 16), OptimismPortal.ethLockbox()
       ],
       "fetchCoValentTokens": true
     },
@@ -934,7 +935,8 @@ module.exports = {
     "ethereum": {
       "owners": [
         "0x81014F44b0a345033bB2b3B21C7a1A308B35fEeA",
-        "0x0bd48f6B86a26D3a217d0Fa6FfE2B491B956A7a2"
+        "0x0bd48f6B86a26D3a217d0Fa6FfE2B491B956A7a2",
+        "0x08bA0023eD60C7Bd040716dD13C45fA0062df5C5" // ETHLockbox (OP Stack Upgrade 16), OptimismPortal.ethLockbox()
       ],
       "fetchCoValentTokens": true
     },
