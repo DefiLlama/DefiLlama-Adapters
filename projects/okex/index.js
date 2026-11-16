@@ -248,6 +248,32 @@ const config = {
       "0xcff6efc78928d873f9c30251decefaf2ad92fbed",
       "0x9c22a4039f269e72de6b029b273be059cdbb831c",
       "0xcf3061b9e65f1f84d0839bb54d79a471eed7b11a",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0x002cf36badd53a680feebefd17fbeb7fa72105d4",
+      "0x05d9617595e69ff577076355abc5e7c51ed0bdf3",
+      "0x18d516d87f12895ffb25aeda13ecc6bdc3a1fbbb",
+      "0x1b8de2a8144bd40166ba49fc404e94582d28ffcc",
+      "0x35cba33a679983debc9f0989af85467cf9d79bd5",
+      "0x4832517f832f63b983fd43cfb15150fad4ffc5f0",
+      "0x536c4921d1aafde6a5cda882fb5ca046f3601c65",
+      "0x55823001c8cd87a6e86716ca768bce51f2d89c9c",
+      "0x6a7801854f38616341b983092eb707600fdb5fbf",
+      "0x6cbb2add2a126e65cef029afca45576910a26b5f",
+      "0x7d328f5d5f4640f81b2f93d2903ec0a6c030eed6",
+      "0x9391466ad56f2705ce5fd12e763a65509aee4862",
+      "0x9c189d979b997818357afc9ded180532e007594d",
+      "0xae5dde433888a7456c3e0aecbb2e0a5748cbc1eb",
+      "0xaf6e08926da465fb3c59c2ad5dad47f6dca252ab",
+      "0xb4625df7d1bbce0547fe37a4c4e5bab22df529f4",
+      "0xbf90664017218ac7d9db5ae0c84873628e9ae1ae",
+      "0xc69c42cac383f86f37e4820e34791c0216999c6f",
+      "0xcf1ff3f452043a6c871720616f663c032ab3798d",
+      "0xd49522c289221697b416396e3d591aa3f98bc0a2",
+      "0xe839a3e9efb32c6a56ab7128e51056585275506c",
+      "0xee6ef8ba56a6f969eac852473c6bac522221893a",
+      "0xf0a31dcc3a2b799941e9d0ec35411228266b4ea6",
+      "0xf7b52be96b229dc63e6301bea175a1b5f756c274",
+      "0xff8a035ea6c80673f741c2265985ed976a40d390",
     ], //ETH DONE
   },
   tron: {
@@ -275,6 +301,25 @@ const config = {
       "TD9GNrgmrg46yistfTMJpRQZcDmDRx1Bmq",
       "TBNHZP2iAVyDhpTSZ8ee2Xjci1JExZTPE5",
       "THdXEcBCZ7nagnmfRrfSHoiLRTbSRueoVW",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "TAqkpXjGwu2s6o6hjxj4advFnUcCJCmLuZ",
+      "TAYmju2ZADQQxnnoJ7n5hGTgUBr896tDY7",
+      "TB8h4xAuzeb6SRqwjZbW5jkS9Yyi4oHkJA",
+      "TBZijVV1NXgQ5Nwbnbq9qYuZvmpwDm4Abn",
+      "TDte9ahHNpH4gixrzDFKNfWo4ezmNTHAbs",
+      "TEHPn1jYEePZz7v3Fp3VT9N5xDSKS8xTym",
+      "TFAXd82DvBpykbt9JyTpevDZWfkmqy2CnZ",
+      "THxEcFnr2fNXefzERQTVzU983dnUpLjCBn",
+      "TJVeQfDKsV2ZqrDzZKabgoE6De1vJhnP7h",
+      "TNkUL9Za9uBnSJ5MQMDaf2aSSFpuuoKw3k",
+      "TQQBRmmgRXJChVC66Vp5T5vpcnAq7ZXVL3",
+      "TRvDdpXnjWutnyhC6sUVuU8CbdHs9VEk94",
+      "TSAvg79MmExMFiwV5pkaXhKWvEuFdxZ1C6",
+      "TTFm9VabNHtUrfks9esDPNKgLCRxJsMZqX",
+      "TUZKXuaksVcDrfQfFcWrfkn3Jvqdp4H1Wx",
+      "TVvyKT63p66nqhQiNHX25izSUAvjcdER9X",
+      "TWAY47W8ci9XtfMgvs4r2A7Z2NFGUDJqpp",
+      "TZ7wp7mcM2Qq4kmDNW3pS7ZZ8Y8ztXUVji",
     ], //TRON DONE
   },
   arbitrum: {
@@ -291,6 +336,13 @@ const config = {
       "0x77a9b3fa8387652128ca5a9e4756e9e88dac3634",
       "0xafee421482faea92292ed3ffe29371742542ad72",
       "0xda225ad5d93bd96da9306d0f570ae0ed1013e7fc",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0xa0c9b4ce1785953abdceae569789aa158a01da4c",
+      "0xb0473ca01e91981623b65daf84ab7bc94a7e4000",
+      "0xb2746ef5c9021def18a7568a56380eef6041eca6",
+      "0xc706f61c9b7eba61fd7170f191fce16e79c7f314",
+      "0xd8a3ed83a59d3e10d82a4b845d64b24ba0572baf",
+      "0xe7c5e276b2434743f6c79365d967cbe4291477bc",
     ], //ARB DONE
   },
   avax: {
@@ -300,6 +352,11 @@ const config = {
       "0xc94bb9b883ab642c1c3ed07af4e36523e7daf1fe",
       "0x3d3490a4744de78c06fb761bc1e9d17f007a219c",
       "0xb2cf3660cef92c4b394c741a1ecc29d2bd135fc6",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0x3f03440b19d15ff2068daf68e57eb656bfd0a67e",
+      "0x5bc27f67cdfb4cf989455be1d2b3e33cd80efe53",
+      "0xde3c8d726e906b379a020cdb04bbe4b8f39a726f",
+      "0xef4b0d5e09fbba089671b08763e8aaec3512c365",
     ], //AVAX DONE
   },
   polygon: {
@@ -309,6 +366,11 @@ const config = {
       "0x06959153b974d0d5fdfd87d561db6d8d4fa0bb0b",
       "0xbe787d53e09822cc42bfb4abe1fb4492cae3d19d",
       "0x41205307b6618f03be2d95747a07311456bdb143",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0x343d752bb710c5575e417edb3f9fa06241a4749a",
+      "0x3b50287cf8f073ff443b84de57e2375d446b962b",
+      "0x4aadf8d70a9a72947079610ed0490df06464094f",
+      "0xba2987a1a6b8662b8fa04c8512f7fbec346af336",
     ], //POLYGON DONE
   },
   optimism: {
@@ -324,6 +386,9 @@ const config = {
       "0x63a34366eff680c1a01a0146feccbcedf72d95ff",
       "0xb5216cb558cb018583bed009ee25ca73eb27bb1d",
       "0xc66c72b175b1a26ef4107c68aef9740b244955c4",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0x76705493d53beefadffc253acb8aef72b7e7f6c6",
+      "0xb57198a6e5af11544936a520a54268bc6ababb0c",
     ], //OP DONE
   },
   era: {
@@ -393,6 +458,20 @@ const config = {
       "8PFD2CYF275p8YdRmhk4C1wcNoKeRVrouYdMbZV6HwHH",
       "3n7E2gZmCaDGpmvmHVHhHg13x7y1zG37tnEXvizxnKY1",
       "5njZuDSS2WTFkvWWsgv8Q4TfQBuCASKJAztc5yF2qLWZ",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "2egbJxkMXZ3LQz457NysWNFB99VJFUt5CXf5niYk3y2C",
+      "2YxQCXt9spMwoQZiwFLwdjHtscVvXi4nmxCkQCD6Rvgg",
+      "4UP7t9p3HEd9gfF9gFKkGa1ZvLXFS2naHgnxB4fwpLfS",
+      "8KBargHcP6pZFyWGXnn9YpL5mit4AgLkuXeMAYitjU9f",
+      "8wn2fZPKmUSMqNKLNsBfb3KkrVhChYYrL5Kzyfc2Dqox",
+      "8ZpnmeK7untiGBd47uB3isp95o2WzXmbhbdB983FuPKQ",
+      "9isrZBGb9CWU79466DCUxN25iH7krrLRei5niqvH5WxU",
+      "BN8rRoEifmfexngPpL4Rh8jpgi4VHizDXm15Qz81METK",
+      "EkeyuVghbRfGWPyEtm3vnjKZPbUXXrPqxdar8fsEMuXd",
+      "FrRqBZ3cxkfE4m7yG4BNVu8wwMhBqxt5hXDZY7Cbcf4P",
+      "FxmrpAFvRUYQwY67AstmZ4oDQWLZcTDzRst4mg3xi3BQ",
+      "GFg1X8GhgS1cid3KDHwP13FWmjCGm8BUEeaXJXjkapM2",
+      "Gk73RezntpEs1tjhL4hLzo7LpM7qo8oSxAhjxLVVcgyD",
     ],
   }, //SOL DONE
   ripple: {
@@ -413,6 +492,16 @@ const config = {
       "rwSY8Fwq6PKKDUtjScSi7ZVap3BJHi6oRs",
       "rUVtjZ5Kg4TJ4osZCJooq3hunjuACtNx4W",
       "rQfxZ8c12uByDtLVnT1a56aXkcBFdDMwhq",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "r2iJ8ur9zndH1g2Vb8mfC3hCXUNSErET2",
+      "r9obQ7QtcnEpT5MfZ4WTn8wXpBAcNDu8CM",
+      "r9TF48pGQSqRN198ZVr6qT9NT4GrG5xbH",
+      "r9xhMpXDsxzt4sY3W2R2nqGQfig9Cg47KP",
+      "rJ8hb4jMHgRNhEQ7BTGz6vt14kWn2z6H78",
+      "rK2NmBC22DRxCBXUzbAsL2Tv6x4iPGxNor",
+      "rMU4XXyDRzvvuMmdtE321s2rar8jd8hwDK",
+      "rnvVBA7Z7MUZqd6Yr2BqDXznsKAs8Mn5iR",
+      "rU3knThAMvYomiB9qw1R4bUhAqRrQQGPVf",
     ],
   }, //XRP DONE
   litecoin: {
@@ -586,6 +675,15 @@ const config = {
       "ltc1qupe6qcd9xlh7a8xe5jdpcl4w0qgxmnxxfz6z6h544zw37xntamcqkppkv6",
       "ltc1qcm29pexe8q9n6qzfquvga8xwj9nqq9txhejq0phuw445h8t0hwsq65njjm",
       "ltc1q7tm3qxw59zatfzw4993l6h30sp2jwa7dhem62z8v4tw0ty7vl2rsmf963x",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "ltc1q0a3nwmua3za9d7jxmu6hjj7fmrwu9esx85dxtnpum07n0z3009ysxlu4rt",
+      "ltc1qcfxz37cdmd235t0375f2ausfcltuw3q2mxutsmnu9p4px9w0t6fq7l95pa",
+      "ltc1qdnrtvkkynjjkgrjcp44jg77rknrkxu8tgdfu3479nvrfljljesjs2ekg02",
+      "ltc1qk6ah32yp7vt3kfrryduu0kp23k8457rk2jga05uqgtt980pr2e0s8njk39",
+      "ltc1qm3un22e8gzyrr2strwzs3x8c3qpcvm7g2snq40m3cezdu9m5czls5prvqe",
+      "ltc1qr4uuhzgw0wwk70twj82lcnfj3239xecysdehfj3fhdjjyypkjwaqxh4xh0",
+      "ltc1qu4xqx3usn6lvw5mjsdaunaplrwuka0r4f2dyu88q92uazgtkr5kqdh0rhw",
+      "ltc1qy560xhu03ggs5tyzfusfdclqn3j9kvmmrx4rytwx64myys6tsuwshmu5ew",
     ],
   }, //LTC DONE wallets with more than 750 LTc
   linea: {
@@ -607,6 +705,8 @@ const config = {
       "16UvKYsqojoivDsNXH3d5G48oXMfo1asxA4NtF2GxhoBjZHz",
       "1gn68eNGNGqV3QjVcRRDVfw22xFn1eFyUizHCENVn256LXh",
       "14n7KYKKjZohVapvNYnWdCVu7oCJMjyWHqehGcC11wE7dKWv",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "15yXD7x2Cy8uVuTdtujRjAtjdi2FHZc6wUyFrjCNqYiBjPUQ",
     ],
   }, //polkadot DONE
   aptos: {
@@ -617,6 +717,16 @@ const config = {
       "0x51c6abe562e755582d268340b2cf0e2d8895a155dc9b7a7fb5465000d62d770b",
       "0x3621fa917ffef3f0509f5d5953672a69791df329139644d89d0a1b0beb98c585",
       "0x4c1ef44079cb31851349fba50d385f708a10ec7ac612859fdbf28888d1f7b572",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0x2af5827f7017a7f6127184d73b2340f12e5dc248a48f48e2fe3fff08f6007beb",
+      "0x581bdd91ed2b08496cbab0d6b02674f8da3a2f128b086a3209d23ebafc5df553",
+      "0x612a398b1320b877cbc84fee033e88aa9e06cfa630b9d56d2b469ea7750bf157",
+      "0x6f64b49c6c9899abaab8b748aa37c5776105a4e243cc4ee0a62d7aea4fb13865",
+      "0x709b8e7b649b6de24552f8154c5c5edd4be950145d48f74829511e3cbef41b5a",
+      "0xabc1f0788277b325b8357068e7c75a4e6614ed2a42cb5e950cfac4ec3599bb04",
+      "0xd0c23b2613e9c14f4888ff6c4359f197424ca88cf2970bac9e862e5ee65d5fa8",
+      "0xd7eb876597276ad1c4159eb7a03dd4b694db9c142f28a9472a42510bc6a13a6e",
+      "0xffd7f0d7b24ba690657dd2aa7ccb754c4be938e4fb970c72eef966d664bd1a45",
     ],
   },
   starknet: {
@@ -630,6 +740,13 @@ const config = {
       "A1D5sbS86TMJxwGT5q2oTWkXXLfgJ5j8up",
       "ADNbM5fBujCRBW1vqezNeAWmnsLp19ki3n",
       "9vPesMs2Md65mu2JBEccp8RKBqccqaLMRL",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "9sjCMx1BiTNv3gw5rD31TCQpFyqBpsbjok",
+      "A65PRXy9qRzvwGcuLsBWR6Fp4yLAukZQfQ",
+      "A7zXZBP6SzR1yNaFxD3jKAT8YPkY8Uz9Ch",
+      "AA431oUHgBPpuEbGt6G1Z96bgkZhyE4KTx",
+      "AAoFDDavpFLGTu2mkDAsyjc48WfJGkqo7b",
+      "ABKETAr5U7DP4k1yE8x9z2eFAmM1LxbP62",
     ],
   },
   base: {
@@ -638,6 +755,8 @@ const config = {
       "0x10b7dfc30e290b77ded2550d66974c6a124dfa0d",
       "0xc8802feab2fafb48b7d1ade77e197002c210f391",
       "0x0db6ffb36e26958cfa53cbe6d767f3cc7ba595d7",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0x17fe9197970454875df742a74b74ed5f984b645a",
     ],
   },
   scroll: {
@@ -685,6 +804,10 @@ const config = {
       "UQAqc2WkItRXN4xB6n5tBzNxhT8pP-e3MtTlReU3UdIJVI-s",
       // "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
       "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "UQAHsamD0jg4uG0FtCCkKBP2JPLLT02RaU2Ous8PX0sCrbCt",
+      "UQB6lLuzS5bEDTrsFzdNmA5xcmaH5V20WfPd6A7cvdFAxbz8",
+      "UQDYa6Lp99YwuDrDmCsngxs5dKzL_P7epA4iP0T7dsoY1po4",
     ],
   },
   xlayer: {
@@ -714,6 +837,19 @@ const config = {
       "0x52a109504af4a587f773faf949e65987c6ae544a",
       "0xe64b0f1a50ba340426861f29327e9eaa7fb404ad",
       "0xcfb691fe064f1caef47eef90a3ddae45225f358c",
+      // OKX proof of reserves, 2026-11-01 snapshot
+      "0x3a664ab28cc1edffbe33cc8adb17ca0975fe3b68",
+      "0x45f329ff834a84fccea2319f91e1993540b22a2a",
+      "0x463f606c0e7c82ea21751a07cbf5ce17476fd911",
+      "0x611f7bf868a6212f871e89f7e44684045ddfb09d",
+      "0x9b5583975773a4f20364fb8c8e69ea5a91961624",
+      "0xa3b9656f9127e56ab026f1f5cbb4e48669b5cd6f",
+      "0xb52b53393680596b63b421a9d27a84e043160e53",
+      "0xc847f0480c3a1eefcf36c728fc2b85c3bbf83a5e",
+      "0xca2e105de6dc1f4f16d0fed5bdce72156a2f6390",
+      "0xddd5abcbae5e0a4e2cd31e04b984736f4b245f71",
+      "0xe5aeb8a1a60ed4900e3c36e8a4b9967f5cf1a8c9",
+      "0xec3b1a439cd39098a15bd3dba36bda472a247f37",
     ],
   },
   bitcoincash: {
