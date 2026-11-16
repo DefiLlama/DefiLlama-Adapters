@@ -53,8 +53,15 @@ async function tvl(api) {
   }
 }
 
+// Nearly all of the reserves are deposits in OpenTrade vaults, and every vault listed above is an
+// OpenTrade factory pool (PoolCreated from the factories in projects/opentrade), so the opentrade
+// adapter already counts the same USDC through totalAssets(). Measured at avax block 100456203 and
+// ethereum block 26425932: avax 6,460,382 in vaults vs 8,295 plain USDC, ethereum 22,543,838 vs
+// 50,176. Sierra holds all of xMorphoGPUSDC-Base (915,890) and xUSCLO (1,220,095) and 4,324,397
+// of the 5,731,436 in xTradeflowCEMP90.
 module.exports = {
-  methodology: 'TVL includes USDC held in the reserve wallets and assets staked in OpenTrade vaults backing SIERRA tokens, summed across all supported chains.',
+  doublecounted: true,
+  methodology: 'TVL includes USDC held in the reserve wallets and assets staked in OpenTrade vaults backing SIERRA tokens, summed across all supported chains. The OpenTrade vault deposits are also counted in OpenTrade TVL.',
 };
 
 Object.keys(openTradeVaultsByChain).forEach(chain => {
