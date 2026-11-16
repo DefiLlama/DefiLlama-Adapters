@@ -47,8 +47,13 @@ async function addHypercoreLendingBalances({ api, owners = [], blacklistedTokens
     const { tokenToState } = await post(API_URL, { type: 'borrowLendUserState', user })
     if (!Array.isArray(tokenToState))
       throw new Error(`Unexpected borrowLendUserState response for ${user}`)
-    for (const [token, { supply, borrow }] of tokenToState)
-      addToken(token, +supply.value - +borrow.value)
+    for (const [token, { supply, borrow }] of tokenToState) {
+      const supplied = Number(supply?.value)
+      const borrowed = Number(borrow?.value)
+      if (typeof supply?.value !== 'string' || typeof borrow?.value !== 'string' || !Number.isFinite(supplied) || !Number.isFinite(borrowed))
+        throw new Error(`Unexpected borrowLendUserState value for ${user}, token ${token}`)
+      addToken(token, supplied - borrowed)
+    }
   }
 }
 
