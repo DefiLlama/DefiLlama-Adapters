@@ -35,6 +35,7 @@ const DEFAULTS = {
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   TRON_WALLET_RPC: 'https://api.trongrid.io',
+  TRON_EVM_WHITELISTED_RPC: 'https://api.trongrid.io/jsonrpc,https://tron-rpc.publicnode.com/jsonrpc',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
