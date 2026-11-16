@@ -3460,6 +3460,10 @@ const configs = {
         ADDRESSES.base.USDC
       ]
     },
+    "robinhood": {
+      "owners": ["0x21bA39e9394657A6196f6948C2701D9fD9612289"],
+      "tokens": [ADDRESSES.robinhood.USDG]
+    },
   },
   "cantohm": {
     "misrepresentedTokens": true,
