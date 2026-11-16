@@ -521,7 +521,8 @@ module.exports = {
   "mantle": {
     "ethereum": {
       "owners": [
-        "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012"
+        "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012",
+        "0xc54cb22944F2bE476E02dECfCD7e3E7d3e15A8Fb" // OptimismPortal, holds bridged ETH and MNT since the Mantle v2 Tectonic upgrade (2024-03-15)
       ],
       "fetchCoValentTokens": true
     },
