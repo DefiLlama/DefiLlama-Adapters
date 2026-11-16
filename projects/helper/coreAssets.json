@@ -2738,6 +2738,13 @@
     "USDC": "0x28BEc7E30E6faee657a03e19Bf1128AaD7632A00",
     "WETH": "0x936ab8c674bcb567cd5deb85d8a216494704e9d8"
   },
+  "somnia_tokyo": {
+    "USDso": "0xcea80aeb6ed4ed526d71f34efed047904c0e387a",
+    "WETH": "0xd2f22d1d7e3689c79fd8892edaeb2bc1b5aacdd8",
+    "WBTC": "0xf844a072282e2e715f84c971a5acc4f8e40d8b91",
+    "USDC": "0xb8cea44875c3d3b84804d6b025faefbd2e8fe3ae",
+    "USDT": "0xfa58446f441f2feae71272b088f10543e350fd6e"
+  },
   "plasma": {
     "WXPL": "0x6100e367285b01f48d07953803a2d8dca5d19873",
     "USDT0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb"

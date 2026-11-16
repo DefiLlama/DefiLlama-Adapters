@@ -97,6 +97,9 @@ const DEFAULTS = {
   // mainnet.telos.net/evm now serves a 404 or an HTML page with HTTP 200, which the sdk treats as a successful call with a null result; rpc1.eu.telos.net hangs
   TELOS_RPC: 'https://rpc.telos.net,https://rpc1.us.telos.net/evm,https://telos.drpc.org,https://public.1rpc.io/telos/evm',
   TELOS_RPC_MULTICALL_V3: '0x4E06d6ec4a3A90790edee253C8BF098bbb4F51E5',
+  // Somnia Tokyo, chainId 50321 - separate mainnet chain from Somnia (5031), not in the SDK providers list
+  SOMNIA_TOKYO_RPC: 'https://api.tokyo.infra.mainnet.somnia.network',
+  SOMNIA_TOKYO_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
   KUSAMA_ASSETHUB_SUBSTRATE_RPC: 'https://kusama-asset-hub-rpc.polkadot.io,https://statemine.api.onfinality.io/public',
 }
 
