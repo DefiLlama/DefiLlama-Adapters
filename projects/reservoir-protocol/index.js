@@ -266,3 +266,6 @@ module.exports.solana = {
 module.exports.hallmarks = [
   ['2025-11-04', 'Stream finance XUSD depeg'],
 ]
+
+module.exports.doublecounted = true
+module.exports.methodology = 'Reserve assets backing rUSD. Most of them are deposited into other listed protocols (lending markets, Morpho vaults), which count them too.'
