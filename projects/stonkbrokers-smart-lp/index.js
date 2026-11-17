@@ -1,6 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
-const { liveAt } = require('../stonkbrokers/helpers')
+const { keepOnlyTokens, liveAt } = require('../stonkbrokers/helpers')
 
 // Smart LP (Volatility Farming): immutable concentrated-liquidity vaults on
 // canonical Uniswap V3 pools, enumerated from a chain-local registry.
@@ -9,10 +9,10 @@ const config = {
   arbitrum: { registry: '0xFB2eA53b16C07011d4390A2e449385180A54eD5e', nftAddress: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88', fromBlock: 505000000 },
 }
 
-// The protocol's own token is tracked under stonkbrokers staking, not TVL.
+// The protocol's own token is counted under staking, not TVL.
 const STONKBROKER = '0xe934e36A439C94017B64a3FecE66AF12099aBF50'
 
-async function tvl(api) {
+async function vaultBalances(api) {
   const { registry, nftAddress, fromBlock } = config[api.chain]
   if (!liveAt(api, fromBlock)) return
   // all() is the live listing; a delisted vault keeps its position NFT, so
@@ -30,13 +30,22 @@ async function tvl(api) {
     api.multiCall({ abi: 'address:token1', calls: vaults }),
   ])
   await sumTokens2({ api, ownerTokens: vaults.map((vault, i) => [[token0s[i], token1s[i]], vault]) })
+}
+
+async function tvl(api) {
+  await vaultBalances(api)
   if (api.chain === 'robinhood') api.removeTokenBalance(STONKBROKER)
+}
+
+async function staking(api) {
+  await vaultBalances(api)
+  keepOnlyTokens(api, [STONKBROKER])
 }
 
 module.exports = {
   methodology:
-    'TVL is the Smart LP (Volatility Farming) vaults on Robinhood Chain and Arbitrum One: every vault the registry has ever listed, each owning one Uniswap V3 position NFT (both legs counted) plus idle balances held between compounds. STONKBROKER is excluded from TVL and tracked under StonkBrokers staking.',
+    'TVL is the Smart LP (Volatility Farming) vaults on Robinhood Chain and Arbitrum One: every vault the registry has ever listed, each owning one Uniswap V3 position NFT (both legs counted) plus idle balances held between compounds. The STONKBROKER leg of the vaults is excluded from TVL and counted under staking.',
   doublecounted: true,
-  robinhood: { start: '2026-09-06', tvl },
+  robinhood: { start: '2026-09-06', tvl, staking },
   arbitrum: { start: '2026-09-15', tvl },
 }
