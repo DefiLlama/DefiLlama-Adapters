@@ -445,9 +445,21 @@ module.exports = {
     },
   },
   "immutable-zkevm": {
+    "methodology": "Counts ETH and ERC-20s escrowed on Ethereum in Immutable zkEVM's RootERC20BridgeFlowRate. IMX is Immutable's own token and is counted under staking.",
     "ethereum": {
-      "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
+        "blacklistedTokens": [
+          "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF" // IMX
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
+        "tokens": [
+          "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF"
+        ]
+      }
     },
   },
   "injective": {
@@ -491,12 +503,27 @@ module.exports = {
     },
   },
   "linea": {
+    "methodology": "Counts assets escrowed on Ethereum for Linea's canonical bridge: ETH in the LineaRollup and ERC-20s in the TokenBridge. LINEA is Linea's own token and is counted under staking.",
     "ethereum": {
-      "owners": [
-        "0xd19d4B5d358258f05D7B411E21A1460D11B0876F",
-        "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"
-      ],
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owners": [
+          "0xd19d4B5d358258f05D7B411E21A1460D11B0876F",
+          "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"
+        ],
+        "blacklistedTokens": [
+          "0x1789e0043623282D5DCc7F213d703C6D8BAfBB04" // LINEA
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owners": [
+          "0xd19d4B5d358258f05D7B411E21A1460D11B0876F",
+          "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"
+        ],
+        "tokens": [
+          "0x1789e0043623282D5DCc7F213d703C6D8BAfBB04"
+        ]
+      }
     },
   },
   "lisk-l2": {
@@ -555,9 +582,21 @@ module.exports = {
     },
   },
   "metis": {
+    "methodology": "Counts ETH and ERC-20s escrowed on Ethereum in Metis's L1StandardBridge. METIS is Metis's own token and is counted under staking.",
     "ethereum": {
-      "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
+        "blacklistedTokens": [
+          "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e" // METIS
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
+        "tokens": [
+          "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e"
+        ]
+      }
     },
   },
   "mint-chain": {
@@ -947,12 +986,27 @@ module.exports = {
     },
   },
   "taiko-bridge": {
+    "methodology": "Counts assets escrowed on Ethereum for Taiko's canonical bridge: ETH in the Bridge and ERC-20s in the ERC20Vault. TAIKO is Taiko's own token and is counted under staking.",
     "ethereum": {
-      "owners": [
-        "0xd60247c6848B7Ca29eDdF63AA924E53dB6Ddd8EC",
-        "0x996282cA11E5DEb6B5D122CC3B9A1FcAAD4415Ab"
-      ],
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owners": [
+          "0xd60247c6848B7Ca29eDdF63AA924E53dB6Ddd8EC",
+          "0x996282cA11E5DEb6B5D122CC3B9A1FcAAD4415Ab"
+        ],
+        "blacklistedTokens": [
+          "0x10dea67478c5F8C5E2D90e5E9B26dBe60c54d800" // TAIKO
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owners": [
+          "0xd60247c6848B7Ca29eDdF63AA924E53dB6Ddd8EC",
+          "0x996282cA11E5DEb6B5D122CC3B9A1FcAAD4415Ab"
+        ],
+        "tokens": [
+          "0x10dea67478c5F8C5E2D90e5E9B26dBe60c54d800"
+        ]
+      }
     },
   },
   "tzwrap": {
