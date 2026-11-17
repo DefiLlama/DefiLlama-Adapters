@@ -15,6 +15,12 @@ const COLLATERAL_STANDARDS = new Set([
 // xERC20 lockbox routes: collateralAddressOrDenom is the lockbox, which holds the underlying token
 const LOCKBOX_STANDARDS = new Set(['EvmHypXERC20Lockbox', 'EvmHypVSXERC20Lockbox'])
 
+// a lockbox backs every bridge on its xERC20, these are also live on CCIP and already counted by projects/ccip (getLockbox)
+const LOCKBOXES_COUNTED_BY_CCIP = new Set([
+  '0x6d265c7dd8d76f25155f1a7687c693fdc1220d12', // oUSDT, ethereum
+  '0x0797c6f55f5c9005996a55959a341018cf69a963', // oXAUT, ethereum
+])
+
 const NATIVE_STANDARDS = new Set(['EvmHypNative'])
 
 const CHAIN_MAP = {
@@ -71,7 +77,7 @@ function getTokensAndOwners(registry, chain) {
       if (COLLATERAL_STANDARDS.has(token.standard) && token.collateralAddressOrDenom) {
         tokensAndOwners.push([token.collateralAddressOrDenom, token.addressOrDenom])
       } else if (LOCKBOX_STANDARDS.has(token.standard) && token.collateralAddressOrDenom) {
-        lockboxes.push(token.collateralAddressOrDenom)
+        if (!LOCKBOXES_COUNTED_BY_CCIP.has(token.collateralAddressOrDenom.toLowerCase())) lockboxes.push(token.collateralAddressOrDenom)
       } else if (NATIVE_STANDARDS.has(token.standard)) {
         tokensAndOwners.push([ADDRESSES.null, token.addressOrDenom])
       }
