@@ -142,6 +142,7 @@ function buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens) {
   if (wrappedTokens && wrappedTokens.length) blacklistedTokens.push(...wrappedTokens)
 
   const options = { ...rest, tokensAndOwners, owners, tokens, chain, blacklistedTokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
+  if (chain === 'tron') Object.assign(options, { sumChunkSize: 40, sumChunkSleep: 0, permitFailure: false })
 
   if (binanceTokensOnChain && binanceTokensOnChain.length) {
     if (!options.tokens) options.tokens = []
