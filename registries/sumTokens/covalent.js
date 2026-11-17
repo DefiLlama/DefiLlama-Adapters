@@ -519,12 +519,27 @@ module.exports = {
     },
   },
   "mantle": {
+    "methodology": "Counts assets escrowed on Ethereum for Mantle's canonical bridge: ETH and MNT in the OptimismPortal and ERC-20s in the L1StandardBridge. MNT is Mantle's own token and is counted under staking.",
     "ethereum": {
-      "owners": [
-        "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012",
-        "0xc54cb22944F2bE476E02dECfCD7e3E7d3e15A8Fb" // OptimismPortal, holds bridged ETH and MNT since the Mantle v2 Tectonic upgrade (2024-03-15)
-      ],
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owners": [
+          "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012",
+          "0xc54cb22944F2bE476E02dECfCD7e3E7d3e15A8Fb" // OptimismPortal, holds bridged ETH and MNT since the Tectonic upgrade (2024-03-15)
+        ],
+        "blacklistedTokens": [
+          "0x3c3a81e81dc49A522A592e7622A7E711c06bf354" // MNT
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owners": [
+          "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012",
+          "0xc54cb22944F2bE476E02dECfCD7e3E7d3e15A8Fb"
+        ],
+        "tokens": [
+          "0x3c3a81e81dc49A522A592e7622A7E711c06bf354"
+        ]
+      }
     },
   },
   "megaeth-bridge": {
