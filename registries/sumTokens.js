@@ -28335,6 +28335,21 @@ const configs = {
       ]
     },
   },
+  "trestly": {
+    "methodology": "TVL is the USDT locked in the Trestly vault on Ethereum and BNB Chain, which backs kUSDT on Kaspa 1:1 (it includes bridge fees not yet withdrawn).",
+    "ethereum": {
+      "owner": "0xfa9869982542FB20baD929789B252b7b06EeE10e",
+      "tokens": [
+        ADDRESSES.ethereum.USDT
+      ]
+    },
+    "bsc": {
+      "owner": "0xfa9869982542FB20baD929789B252b7b06EeE10e",
+      "tokens": [
+        ADDRESSES.bsc.USDT
+      ]
+    },
+  },
   "tribe-run": {
     "solana": {
       "solOwners": [
