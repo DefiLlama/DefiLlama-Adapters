@@ -194,6 +194,9 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl }
 })
 
+const blastHaltedAt = Date.parse('2026-11-17') / 1e3
+module.exports.blast = { tvl: async (api) => !api.timestamp || api.timestamp >= blastHaltedAt ? {} : tvl(api) }
+
 Object.keys(vestingConfig).forEach(chain => {
   module.exports[chain] = { tvl: module.exports[chain]?.tvl ?? (() => ({})), vesting }
 })
