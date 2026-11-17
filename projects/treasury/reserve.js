@@ -21,7 +21,7 @@ module.exports = mergeExports([treasuryExports({
   base: {
     tvl: async (api) => {
       await unwrapSolidlyVeNft({ api, baseToken: AERO, veNft: aeroVotingEscrow, owner: reserveBaseTreasury })
-      await unwrapSolidlyVeNft({ api, baseToken: AERO_V2, veNft: sAeroVotingEscrow, owner: reserveBaseTreasury, isAltAbi: true, lockedAbi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', permitFailure: true })
+      await unwrapSolidlyVeNft({ api, baseToken: AERO_V2, veNft: sAeroVotingEscrow, owner: reserveBaseTreasury, isAltAbi: true, lockedAbi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', fromBlock: 52688150 })
     },
   },
 }])

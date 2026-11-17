@@ -18,7 +18,7 @@ const bitcoinAddressBook = require('../projects/helper/bitcoin-book/index.js')
 
 // Since the 2026-10-22 Aerodrome -> Aero migration, veAERO (and OP veVELO) locks live on as sAERO stakes
 // on the Aero VotingEscrow on Base, owned by the treasury's Base address
-const sAERO = { isAltAbi: true, baseToken: '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee', veNft: '0xBF7977E1521e9a3032bf7243Ee4712f311f13915', lockedAbi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', permitFailure: true }
+const sAERO = { isAltAbi: true, baseToken: '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee', veNft: '0xBF7977E1521e9a3032bf7243Ee4712f311f13915', lockedAbi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', fromBlock: 52688150 }
 
 const gmxOwners = [
         '0x4bd1cdaab4254fc43ef6424653ca2375b4c94c0e',
