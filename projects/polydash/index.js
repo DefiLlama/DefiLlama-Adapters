@@ -2,9 +2,9 @@
 // permissionless staking pools.
 //
 // TVL is ETH in launch contracts and commit vaults, plus ETH, WETH and
-// mandate-list tokens in fund vaults, plus non-POLYDASH tokens staked in
-// factory pools. Staked POLYDASH is reported under `staking`. Reward tokens
-// sitting in pools, virtual ETH on bonding curves, and Uniswap liquidity
+// mandate-list tokens in fund vaults, plus the stake-token balance of factory
+// pools. Pools that stake POLYDASH are reported under `staking`. Reward tokens
+// other than the stake token, virtual ETH on bonding curves, and Uniswap liquidity
 // after a launch graduates are excluded (graduated liquidity is already
 // tracked by the Uniswap adapters).
 const ADDRESSES = require('../helper/coreAssets.json')
@@ -53,9 +53,10 @@ async function getPools(api) {
   const pools = await fetchAll(api, stakingFactories, poolList)
   if (!pools.length) return []
   const tokens = await api.multiCall({ abi: 'address:stakeToken', calls: pools })
-  const staked = await api.multiCall({ abi: 'uint256:totalStaked', calls: pools })
-  return pools.map((p, i) => ({ token: tokens[i], staked: staked[i] }))
+  return pools.map((pool, i) => [tokens[i], pool])
 }
+
+const isPolydash = ([token]) => token.toLowerCase() === POLYDASH
 
 async function getFundVaults(api, factories) {
   const funds = await fetchAll(api, factories, fundList)
@@ -65,9 +66,7 @@ async function getFundVaults(api, factories) {
 
 async function tvl(api) {
   const pools = await getPools(api)
-  pools.forEach(({ token, staked }) => {
-    if (token.toLowerCase() !== POLYDASH) api.add(token, staked)
-  })
+  await api.sumTokens({ tokensAndOwners: pools.filter((pool) => !isPolydash(pool)) })
 
   const launches = await fetchAll(api, launchFactories, launchList)
   const vaultsEthOnly = await getFundVaults(api, fundFactoriesEthOnly)
@@ -97,12 +96,10 @@ async function tvl(api) {
 
 async function staking(api) {
   const pools = await getPools(api)
-  pools.forEach(({ token, staked }) => {
-    if (token.toLowerCase() === POLYDASH) api.add(token, staked)
-  })
+  return api.sumTokens({ tokensAndOwners: pools.filter(isPolydash) })
 }
 
 module.exports = {
-  methodology: 'TVL is ETH held by Polypad launch contracts and commit vaults, plus ETH, WETH and mandate-list tokens (except POLYDASH) held by Polydash tokenized fund vaults, plus non-POLYDASH tokens staked in pools from the v1 and v2 staking factories. Staked POLYDASH is counted as staking. Reward tokens held by pools, virtual ETH on bonding curves, and Uniswap liquidity after graduation are excluded.',
+  methodology: 'TVL is ETH held by Polypad launch contracts and commit vaults, plus ETH, WETH and mandate-list tokens (except POLYDASH) held by Polydash tokenized fund vaults, plus the stake-token balance of pools from the v1 and v2 staking factories, which includes rewards a pool holds in its own stake token. Pools that stake POLYDASH are counted as staking. Reward tokens other than the stake token, virtual ETH on bonding curves, and Uniswap liquidity after graduation are excluded.',
   robinhood: { tvl, staking },
 }
