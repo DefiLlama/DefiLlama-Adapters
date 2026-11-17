@@ -1,6 +1,4 @@
 // CipherTrade DEX on COTI (CipherDEX Protocol, chain 2632500).
-const { getLogs2 } = require('../helper/cache/getLogs')
-// Deployment identities and interfaces: https://app.ciphertrade.org
 const FACTORIES = [
   { address: '0x1909751000de0d15f81394b47eca1931184d51e0', fromBlock: 9437576 }, // Mode 0
   { address: '0x418df4557ffc1d8f568b3583936a6cfaec543a91', fromBlock: 9886358 }, // transparent Mode 3
@@ -18,85 +16,32 @@ const ABIS = {
   escrow: 'function totalEscrowed(address token) view returns (uint256)',
 }
 
-// Official Privacy Portal wrapped assets are redeemable 1:1 for their public
-// counterparts. Raw MPC token balances are deliberately NOT queried here.
-// https://privacy.coti.io/
-// Only known, exact-address wrappers are remapped; all other tokens are
-// reported at their own COTI addresses for DefiLlama to price independently.
-// Exact COTI mainnet addresses from the CipherTrade Registry default token catalog.
-// Map only assets with an explicit CoinGecko identity (plus reviewed gCOTI).
-const PRICE_REFERENCES = {
-  '0xd2f2692b83c3ecdf2eaa0f7c2632bbd46ae1cc91': { id: 'coti', decimals: 18 }, // p.COTI
-  '0xe180548963fc30329e15bc104d753f82a8c18865': { id: 'coti', decimals: 18 }, // WCOTI
-  '0x7637c7838ec4ec6b85080f28a678f8e234bb83d1': { id: 'coti-governance-token', decimals: 18 }, // gCOTI
-  '0xf1feebc4376c68b7003450ae66343ae59ab37d3c': { id: 'usd-coin', decimals: 6 }, // USDC.e
-  '0x63c9a1d05471fc8d47c83968725dcfdcb5410392': { id: 'usd-coin', decimals: 6 }, // p.USDC.e
-  '0xfa6f73446b17a97a56e464256da54ad43c2cbc3e': { id: 'tether', decimals: 6 }, // USDT
-  '0x42107250c3d385ddfabe69ab6de163702040feb0': { id: 'tether', decimals: 6 }, // p.USDT
-  '0x639acc80569c5fc83c6fbf2319a6cc38bbfe26d1': { id: 'ethereum', decimals: 18 }, // wETH
-  '0x4727fe8d8450cebcb142331fac034cd8d311f0e5': { id: 'ethereum', decimals: 18 }, // p.wETH
-  '0x8c39b1fd0e6260fdf20652fc436d25026832bfea': { id: 'bitcoin', decimals: 8 }, // wBTC
-  '0x65449561257ba5756631aa0d34f07f6457a319be': { id: 'bitcoin', decimals: 8 }, // p.wBTC
-  '0xe757ca19d2c237aa52ebb1d2e8e4368eea3eb331': { id: 'cardano', decimals: 6 }, // wADA
-  '0x3a8b49aac1dad86aa45a75231fbec5beb810e416': { id: 'cardano', decimals: 6 }, // p.wADA
-  '0xfc075bd3e22d337c19b7ca25635282ad8e24941a': { id: 'midnight-3', decimals: 6 }, // NIGHT
-  '0x394b3c4328160f000763ca391d07f902926edaac': { id: 'coti-governance-token', decimals: 18 }, // p.gCOTI
-}
-
-function addAsset(api, token, raw) {
-  // Balance reads remain on-chain; this mapping changes USD pricing only.
-  const value = BigInt(raw)
-  if (value <= 0n) return
-  const reference = PRICE_REFERENCES[token.toLowerCase()]
-  if (reference) {
-    api.add(`coingecko:${reference.id}`, Number(value) / (10 ** reference.decimals), { skipChain: true })
-  } else {
-    api.add(token, value.toString())
-  }
-}
-
 async function tvl(api) {
   const factories = FACTORIES.filter(({ fromBlock }) => !api.block || api.block >= fromBlock)
   const discovered = await Promise.all(factories.map(({ address }) => api.fetchList({
     target: address, lengthAbi: ABIS.allPoolsLength, itemAbi: ABIS.allPools,
   })))
   const pools = [...new Set(discovered.flat().map(address => address.toLowerCase()))]
+  if (!pools.length) return
 
-  if (pools.length) {
-    const [token0s, token1s, initialized, reserves] = await Promise.all([
-      api.multiCall({ abi: ABIS.token0, calls: pools }),
-      api.multiCall({ abi: ABIS.token1, calls: pools }),
-      api.multiCall({ abi: ABIS.initialized, calls: pools }),
-      api.multiCall({ abi: ABIS.reserves, calls: pools }),
-    ])
+  const [token0s, token1s, initialized, reserves] = await Promise.all([
+    api.multiCall({ abi: ABIS.token0, calls: pools }),
+    api.multiCall({ abi: ABIS.token1, calls: pools }),
+    api.multiCall({ abi: ABIS.initialized, calls: pools }),
+    api.multiCall({ abi: ABIS.reserves, calls: pools }),
+  ])
 
-    pools.forEach((_, i) => {
-      if (!initialized[i]) return // Protected reservations are not yet funded liquidity.
-      // Match CipherTools' pool-reserves-plus-order-input-escrow-v1 methodology:
-      // exclude separate claimable LP fees, protocol fees and surplus.
-      addAsset(api, token0s[i], reserves[i][0])
-      addAsset(api, token1s[i], reserves[i][1])
-    })
-  }
+  pools.forEach((_, i) => {
+    if (!initialized[i]) return // Protected reservations are not yet funded liquidity.
+    api.add(token0s[i], reserves[i][0])
+    api.add(token1s[i], reserves[i][1])
+  })
 
-  if (!api.block || api.block >= BOOK_FROM_BLOCK) {
-    // Public orders may use tokens without any active AMM pool. Discover input
-    // assets from the book's own creation history, not a protocol API total.
-    const created = await getLogs2({
-      api,
-      target: PUBLIC_BOOK,
-      fromBlock: BOOK_FROM_BLOCK,
-      eventAbi: 'event OrderCreated(uint256 indexed orderId, address indexed maker, address indexed tokenIn, address tokenOut, address recipient, uint256 amountIn, uint256 minAmountOut, uint64 expiry, uint8 feeTierPolicy, bool allowPartialFills, uint256 minimumFillAmount, uint256 executionBounty, uint8 settlementMode, uint32 maxMatchingFeePpm)',
-    })
-    const tokens = [...new Set(created.map(log => log.tokenIn.toLowerCase()))]
-    if (tokens.length) {
-      const balances = await api.multiCall({
-        abi: ABIS.escrow,
-        calls: tokens.map(token => ({ target: PUBLIC_BOOK, params: [token] })),
-      })
-      tokens.forEach((token, i) => addAsset(api, token, balances[i]))
-    }
-  }
+  if (api.block && api.block < BOOK_FROM_BLOCK) return
+  // Order-book input escrow, read for every token the factories list.
+  const tokens = [...new Set([...token0s, ...token1s])]
+  const escrowed = await api.multiCall({ target: PUBLIC_BOOK, abi: ABIS.escrow, calls: tokens })
+  api.add(tokens, escrowed)
 }
 
 module.exports = {
