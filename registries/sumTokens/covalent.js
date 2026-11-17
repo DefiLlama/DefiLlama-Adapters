@@ -700,23 +700,35 @@ module.exports = {
     },
   },
   "polygon": {
+    "methodology": "Counts assets escrowed on Ethereum for Polygon PoS: ERC-20s in the ERC20Predicate, ETH in the EtherPredicate and POL/MATIC in the plasma DepositManager. POL staked by validators and delegators in the StakeManager is reported under staking.",
     "start": "2020-05-30",
     "ethereum": {
-      owners: [
-        '0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf',
-        '0x8484Ef722627bf18ca5Ae6BcF031c23E6e922B30',
-        '0x401F6c983eA34274ec46f84D70b31C151321188b',
-        '0x5e3Ef299fDDf15eAa0432E6e66473ace8c13D908',
-      ],
-      tokens: [
-        ADDRESSES.null,
-        ADDRESSES.ethereum.MATIC,
-      ],
-      "blacklistedTokens": [
-        "0x99fe3b1391503a1bc1788051347a1324bff41452"
-      ],
-      fetchCoValentTokens: true,
-      permitFailure: true,
+      tvl: {
+        owners: [
+          '0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf',
+          '0x8484Ef722627bf18ca5Ae6BcF031c23E6e922B30',
+          '0x401F6c983eA34274ec46f84D70b31C151321188b',
+        ],
+        tokens: [
+          ADDRESSES.null,
+          ADDRESSES.ethereum.MATIC,
+          ADDRESSES.ethereum.POL,
+        ],
+        "blacklistedTokens": [
+          "0x99fe3b1391503a1bc1788051347a1324bff41452"
+        ],
+        fetchCoValentTokens: true,
+        permitFailure: true,
+      },
+      // StakeManager: validator and delegator stake, not bridge escrow
+      staking: {
+        owner: '0x5e3Ef299fDDf15eAa0432E6e66473ace8c13D908',
+        tokens: [
+          ADDRESSES.ethereum.MATIC,
+          ADDRESSES.ethereum.POL,
+        ],
+        permitFailure: true,
+      },
     },
   },
   "polygonZk": {
