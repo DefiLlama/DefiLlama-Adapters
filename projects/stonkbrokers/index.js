@@ -21,9 +21,24 @@ const STONK_ESCROW = '0x799AE26fA515ceF145e8bC8636F7fFF87B05Cf62'
 const STONKBROKER = '0xe934e36A439C94017B64a3FecE66AF12099aBF50'
 const ROBINHOOD_CBBTC = '0xCEC185eB182c47d1bA1EFc84e6959e18cd620Be4'
 const UP_TOKEN = '0x57C0E45cB534413D1C20A4240955d6bB250BB4F1' // up. DEX token, most of its liquidity sits outside the lockers
-// Only the quote side of locked positions counts: the other legs are launched
-// tokens whose only price source is the locked pool itself.
-const QUOTE_TOKENS = [ADDRESSES.null, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG, ROBINHOOD_CBBTC, UP_TOKEN]
+// Tokens with a market outside the lockers. Spam / dust tokens planted in the
+// lockers (fake USDG clones, FRONG, ...) are never priced into TVL.
+const TVL_TOKENS = [
+  ADDRESSES.null, ADDRESSES.robinhood.WETH, ADDRESSES.robinhood.USDG, ROBINHOOD_CBBTC, UP_TOKEN,
+  '0xe3fa12da7fa026b21817f16622e8ae48fa785166', // YARD
+  '0xb03058b8a39f3967df08d833682c1c99b29821b1', // WALL
+  '0xc72f232a6869e6cf34dc06129affd07f8a2a246a', // MANCER
+  '0xa5be0eeb82a013dc7867b9e020c36a69da666666', // CLOCKIN
+  '0xc76b6020a3d7f4bb5cee85d44f8b0da6a6ee7616', // TMF
+  '0x39dbed3a2bd333467115de45665cc57f813c4571', // PONS
+  '0x020bfc650a365f8bb26819deaabf3e21291018b4', // CASHCAT
+  '0xaf3d76f1834a1d425780943c99ea8a608f8a93f9', // AAPL
+  '0x1b0e319c6a659f002271b69db8a7df2f911c153e', // GME
+  '0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea', // SPCX
+  '0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3', // GOOGL
+  '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec', // NVDA
+  '0xa30fa36db767ad9ed3f7a60fc79526fb4d56d344', // USO
+]
 
 const abi = {
   v4Lock: 'function lockPositions(uint256) view returns (address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks, int24 tickLower, int24 tickUpper, uint128 initialLiquidity, uint128 withdrawnLiquidity, uint64 startUnlock, uint64 finishUnlock, uint8 feeMode, bool closed)',
@@ -63,22 +78,32 @@ async function upV2BoxTvl(api) {
   await sumTokens2({ api, resolveLP: true })
 }
 
-async function tvl(api) {
+async function lockerBalances(api) {
   await sumTokens2({ api, owner: V3_BOX_LOCKER, resolveUniV3: true, uniV3ExtraConfig: { nftAddress: UNI_V3_NFPM } })
   // Called directly: the slipstream resolver has no Robinhood default NFPM.
   await unwrapSlipstreamNFT({ api, owner: UP_CL_BOX_LOCKER, nftAddress: UP_SLIPSTREAM_NFPM })
   await v4BoxTvl(api)
   await upV2BoxTvl(api)
-  // Keep only the quote legs; this also drops STONKBROKER, tracked under staking.
-  keepOnlyTokens(api, QUOTE_TOKENS)
+}
+
+async function tvl(api) {
+  await lockerBalances(api)
+  // STONKBROKER legs are the protocol's own token and go to pool2.
+  keepOnlyTokens(api, TVL_TOKENS)
+}
+
+async function pool2(api) {
+  await lockerBalances(api)
+  keepOnlyTokens(api, [STONKBROKER])
 }
 
 module.exports = {
   methodology:
-    'TVL is the liquidity locked in the Safety Deposit Box lockers on Robinhood Chain: Uniswap V3 position NFTs in the V3 box, up. DEX (Slipstream) positions in the up. CL box (including every Stonklauncher / Safe Launch graduation pool, whose raise + LP tax reserve is locked forever at bond), Uniswap v4 PoolManager positions in the V4 box, and up. V2 LP in the up. V2 box. Only the quote side (ETH, WETH, USDG, cbBTC, UP) of each locked position is counted; launched-token legs stay unpriced and STONKBROKER is excluded from TVL. Staking tracks STONKBROKER tokens in the escrow contract.',
+    'TVL is the liquidity locked in the Safety Deposit Box lockers on Robinhood Chain: Uniswap V3 position NFTs in the V3 box, up. DEX (Slipstream) positions in the up. CL box (including every Stonklauncher / Safe Launch graduation pool, whose raise + LP tax reserve is locked forever at bond), Uniswap v4 PoolManager positions in the V4 box, and up. V2 LP in the up. V2 box. Only tokens with an outside market are counted (ETH, WETH, USDG, cbBTC, UP, ecosystem tokens such as YARD / WALL / MANCER, and Robinhood stock tokens); spam tokens planted in the lockers are ignored. STONKBROKER legs of locked positions are reported as pool2. Staking tracks STONKBROKER tokens in the escrow contract.',
   doublecounted: true,
   robinhood: {
     tvl,
+    pool2,
     staking: sumTokensExport({ owner: STONK_ESCROW, tokens: [STONKBROKER] }),
   },
 }
