@@ -46,6 +46,27 @@ async function poolCoverage(api, chain) {
   return { pools, trackers: new Set(trackers), tokens: addresses(tokens) }
 }
 
+async function sumPoolTokens(api, vaults, tokens) {
+  if (!tokens.length) return
+  const calls = vaults.flatMap(vault => tokens.map(token => ({ target: token, params: vault.address })))
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true })
+  const failed = calls.filter((_, index) => balances[index] === undefined)
+  if (failed.length) {
+    const retries = await api.multiCall({ abi: 'erc20:balanceOf', calls: failed, permitFailure: true })
+    let retry = 0
+    balances.forEach((balance, index) => {
+      if (balance !== undefined) return
+      balances[index] = retries[retry++]
+    })
+  }
+  const unreadable = new Set()
+  balances.forEach((balance, index) => {
+    if (balance === undefined) unreadable.add(calls[index].target.toLowerCase())
+    else add(api, calls[index].target, balance)
+  })
+  if (unreadable.size) api.log(`Panoptic V2: skipping unreadable pool-token balances for ${[...unreadable].join(', ')}`)
+}
+
 async function vaultAssets(api, chain, coverage) {
   const vaults = [...new Map(chain.vaults.filter(vault => vault.fromBlock <= api.block).map(vault => [vault.address.toLowerCase(), vault])).values()]
   if (!vaults.length) return
@@ -68,8 +89,11 @@ async function vaultAssets(api, chain, coverage) {
     }
   })
   const receiptTokens = new Set([...coverage.trackers, ...allocations.map(allocation => allocation.target.toLowerCase())])
-  const tokens = addresses([...coverage.tokens, ...underlyings, chain.wrappedNative, ZeroAddress]).filter(token => !receiptTokens.has(token))
-  await api.sumTokens({ tokensAndOwners: vaults.flatMap(vault => tokens.map(token => [token, vault.address])), permitFailure: false })
+  const strictTokens = addresses([...underlyings, chain.wrappedNative, ZeroAddress]).filter(token => !receiptTokens.has(token))
+  const strictTokenSet = new Set(strictTokens)
+  const poolTokens = coverage.tokens.filter(token => !receiptTokens.has(token) && !strictTokenSet.has(token))
+  await api.sumTokens({ tokensAndOwners: vaults.flatMap(vault => strictTokens.map(token => [token, vault.address])), permitFailure: false })
+  await sumPoolTokens(api, vaults, poolTokens)
   if (!allocations.length) return
   const [assets, shares] = await Promise.all([
     api.multiCall({ abi: 'address:asset', calls: allocations.map(allocation => allocation.target) }),

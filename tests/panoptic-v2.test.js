@@ -32,14 +32,16 @@ function tokenId(legs = [{}], pattern = 1n) {
   }, (10n << 48n) | pattern)
 }
 
-function fixture({ version = 'v3', block = 200, external = [], configuredHash, poolLogs, mints, liquidity = 10006n, idle = 20n, poolBalance = 50n, externalAsset = TOKEN0, reverse = false } = {}) {
+function fixture({ version = 'v3', block = 200, external = [], configuredHash, poolLogs, mints, liquidity = 10006n, idle = 20n, poolBalance = 50n, externalAsset = TOKEN0, poolToken0 = TOKEN0, failedPoolReads = 0, reverse = false } = {}) {
   const chain = {
     startBlock: 100, sfpmStartBlock: 100, factories: [{ target: FACTORY, version }],
     sfpms: [{ target: SFPM, version }], wrappedNative: TOKEN1, stateView: address(13),
     vaults: [{ address: VAULT, fromBlock: 150, erc4626s: external }],
   }
   const requests = []
+  const messages = []
   const balances = new Map()
+  let remainingPoolFailures = failedPoolReads
   const logs = {
     pools: poolLogs ?? [{ blockNumber: 100, args: { poolAddress: POOL, collateralTracker0: TRACKER0, collateralTracker1: TRACKER1 } }],
     mints: mints ?? [],
@@ -61,6 +63,7 @@ function fixture({ version = 'v3', block = 200, external = [], configuredHash, p
   const api = {
     chain: 'ethereum', block,
     async getBlock() { return block },
+    log(message) { messages.push(message) },
     add(token, amount) { token = token.toLowerCase(); balances.set(token, (balances.get(token) ?? 0n) + BigInt(amount)) },
     addGasToken(amount) { this.add(ZeroAddress, amount) },
     async sumTokens({ tokensAndOwners, permitFailure }) {
@@ -82,8 +85,14 @@ function fixture({ version = 'v3', block = 200, external = [], configuredHash, p
         if (options.abi.includes('accountant')) return ACCOUNTANT
         if (options.abi.includes('vaultHashes')) return configuredHash ?? keccak256(coder.encode(['address[]'], [external.filter(item => item.fromBlock <= block && (item.toBlock === undefined || block < item.toBlock)).map(item => item.address)]))
         if (options.abi.includes('totalAssets')) return target === TRACKER0 ? poolBalance.toString() : '0'
-        if (options.abi.includes('asset')) return target === EXTERNAL ? externalAsset : target === TRACKER0 ? TOKEN0 : TOKEN1
-        if (options.abi.includes('balanceOf')) return '30'
+        if (options.abi.includes('asset')) return target === EXTERNAL ? externalAsset : target === TRACKER0 ? poolToken0 : TOKEN1
+        if (options.abi.includes('balanceOf')) {
+          if (target === poolToken0 && options.permitFailure && remainingPoolFailures > 0) {
+            remainingPoolFailures--
+            return undefined
+          }
+          return '30'
+        }
         if (options.abi.includes('convertToAssets')) { assert.equal(call.params, '30'); return '30' }
         if (options.abi.includes('getUniswapV3PoolFromId')) return UNDERLYING
         if (options.abi.includes('getUniswapV4PoolKeyFromId')) return { currency0: ZeroAddress, currency1: TOKEN0, fee: 500, tickSpacing: 10, hooks: ZeroAddress }
@@ -95,7 +104,7 @@ function fixture({ version = 'v3', block = 200, external = [], configuredHash, p
       })
     },
   }
-  return { api, balances, requests, chain, run: () => module.exports.tvl(api) }
+  return { api, balances, messages, requests, chain, run: () => module.exports.tvl(api) }
 }
 
 const mint = (owner = USER, id = tokenId(), blockNumber = 160) => ({ blockNumber, args: { caller: owner, tokenId: id.toString() } })
@@ -147,6 +156,31 @@ test('duplicate pool deployments and vault entries do not duplicate balances', a
   f.chain.vaults.push({ ...f.chain.vaults[0] })
   await f.run()
   assert.equal(f.balances.get(TOKEN0), 70n)
+})
+
+test('permissionless pool tokens are isolated from strict vault balance reads', async () => {
+  const f = fixture({ poolToken0: USER, poolBalance: 0n })
+  await f.run()
+  assert.equal(f.balances.get(TOKEN0), 20n)
+  assert.equal(f.balances.get(USER), 30n)
+  const poolReads = f.requests.filter(request => request.abi.includes('balanceOf') && request.permitFailure)
+  assert.equal(poolReads.length, 1)
+  assert.equal(poolReads[0].calls.length, 1)
+  assert.equal(poolReads[0].calls[0].target, USER)
+  assert.equal(poolReads[0].calls[0].params, VAULT)
+})
+
+test('pool-token balance reads retry once and report persistent failures', async () => {
+  const transient = fixture({ poolToken0: USER, poolBalance: 0n, failedPoolReads: 1 })
+  await transient.run()
+  assert.equal(transient.balances.get(USER), 30n)
+  assert.equal(transient.requests.filter(request => request.abi.includes('balanceOf') && request.permitFailure).length, 2)
+  assert.deepEqual(transient.messages, [])
+
+  const persistent = fixture({ poolToken0: USER, poolBalance: 0n, failedPoolReads: 2 })
+  await persistent.run()
+  assert.equal(persistent.balances.has(USER), false)
+  assert.match(persistent.messages[0], /skipping unreadable pool-token balances/)
 })
 
 test('allocation end blocks remove expired entries before hash validation', async () => {
