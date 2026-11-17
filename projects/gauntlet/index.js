@@ -6,9 +6,6 @@ const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0x802148D518A6De2aF866f9A61ffB5e5C39156dB2',
-      ],
       morphoVaultOwners: [
         '0x256DaC8fad2788F4182A42cE8F26029F0DEd7cf9',
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
@@ -69,9 +66,6 @@ const configs = {
       ],
     },
     base: {
-      morpho: [
-        '0x8c1e205C408b90A0dDDbD53594049a379557c651',
-      ],
       morphoVaultOwners: [
         '0x256DaC8fad2788F4182A42cE8F26029F0DEd7cf9',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
