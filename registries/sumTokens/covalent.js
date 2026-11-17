@@ -92,7 +92,9 @@ module.exports = {
       "owners": [
         "0xa230285d5683C74935aD14c446e137c8c8828438",
         "0x98078db053902644191f93988341E31289E1C8FE",
-        "0x5F6AE08B8AeB7078cf2F96AFb089D7c9f51DA47d"
+        "0x5F6AE08B8AeB7078cf2F96AFb089D7c9f51DA47d",
+        "0x9D31771458B421C7EA8A06CB8D12663E91617869", // BlastExit, shutdown merkle claim contract funded by the Blast admin Safe on 2026-10-31
+        "0x23eA8c6ACEb5673BBd712137cE2Aa33db36CB513"  // BlastExit2, second claim contract funded by the same Safe on 2026-11-03
       ],
       "fetchCoValentTokens": true
     },
