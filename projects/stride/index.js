@@ -1,151 +1,68 @@
 const sdk = require("@defillama/sdk");
-const { get } = require("../helper/http");
+const { sumTokens } = require("../helper/chain/cosmos");
 
-const chains = {
-  cosmos: {
-    chainId: "cosmoshub-4",
-    denom: "uatom",
-    coinGeckoId: "cosmos",
-  },
+// stTokens were minted on these chains' host zones. The Stride chain halted on 2026-11-13, keys kept so tvl history stays
+const haltedChains = [
+  "stride", "cosmos", "stargaze", "juno", "terra2", "evmos", "injective", "umee",
+  "comdex", "sommelier", "dydx", "celestia", "dymension", "islm", "band",
+];
 
-  stargaze: {
-    chainId: "stargaze-1",
-    denom: "ustars",
-    coinGeckoId: "stargaze",
-  },
+// Stride admin multisig on Osmosis: admin of every stToken redemption pool and holder of their alloyed LP
+const OSMOSIS_VAULT = "osmo1k8c2m5cn322akk5wy8lpt87dd2f4yh9afcd7af";
+const MAX_POOL_CANDIDATES = 100;
 
-  juno: {
-    chainId: "juno-1",
-    denom: "ujuno",
-    coinGeckoId: "juno-network",
-  },
+// native tokens backing the pools, the stTokens already redeemed into them are not counted
+const NATIVE_DENOMS = [
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2", // ATOM
+  "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877", // TIA
+  "ibc/64BA6E31FE887D66C6F8F31C7B1A80C7CA179239677B4088BB55F5EA07DBE273", // INJ
+  "ibc/69110FF673D70B39904FF056CFDFD58A90BEC3194303F45C32CB91B8B0A738EA", // ISLM
+  "ibc/831F0B1BBB1D08A2B75311892876D71565478C532967545476DF4C2D7492E48C", // DYDX
+  "ibc/F867AE2112EFE646EC71A25CD2DFABB8927126AC1E19F1BBF0FF693A4ECA05DE", // BAND
+  "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED", // JUNO
+  "ibc/785AFEC6B3741100D15E7AF01374E3C4C36F24888E96479B1C33F5C71F364EF9", // LUNA
+  "ibc/9BBA9A1C257E971E38C1422780CE6F0B0686F0A3085E2D61118D904BFE0F5F5E", // SOMM
+  "ibc/094FB70C3006906F67F5D674073D2DAFAFB41537E7033098F5C752F211E7B6C2", // SAGA
+  "uosmo",
+];
 
-  osmosis: {
-    chainId: "osmosis-1",
-    denom: "uosmo",
-    coinGeckoId: "osmosis",
-  },
+// a pool is the factory creator of an alloyed LP denom in the vault, kept only while the vault holds most of that LP
+async function redemptionPools() {
+  const balances = await sdk.chains.cosmos.getBalances({ chain: "osmosis", owner: OSMOSIS_VAULT });
+  const candidates = balances.filter(({ denom }) => /^factory\/osmo1[a-z0-9]+\/alloyed\/st/.test(denom));
+  if (candidates.length > MAX_POOL_CANDIDATES)
+    throw new Error(`stride: ${candidates.length} alloyed denoms in the Osmosis vault, above ${MAX_POOL_CANDIDATES}`);
 
-  terra2: {
-    chainId: "phoenix-1",
-    denom: "uluna",
-    coinGeckoId: "terra-luna-2",
-  },
-
-  evmos: {
-    chainId: "evmos_9001-2",
-    denom: "aevmos",
-    coinGeckoId: "evmos",
-  },
-
-  injective: {
-    chainId: "injective-1",
-    denom: "inj",
-    coinGeckoId: "injective-protocol",
-  },
-
-  umee: {
-    chainId: "injective-1",
-    denom: "uumee",
-    coinGeckoId: "umee",
-  },
-
-  comdex: {
-    chainId: "comdex-1",
-    denom: "ucmdx",
-    coinGeckoId: "comdex",
-  },
-
-  sommelier: {
-    chainId: "sommelier-3",
-    denom: "usomm",
-    coinGeckoId: "sommelier",
-  },
-
-  dydx: {
-    chainId: "dydx-mainnet-1",
-    denom: "adydx",
-    coinGeckoId: "dydx-chain",
-  },
-
-  celestia: {
-    chainId: "celestia",
-    denom: "utia",
-    coinGeckoId: "celestia",
-  },
-
-  dymension: {
-    chainId: "dymension_1100-1",
-    denom: "adym",
-    coinGeckoId: "dymension",
-  },
-
-  islm: {
-    chainId: "haqq_11235-1",
-    denom: "aISLM",
-    coinGeckoId: "islamic-coin",
-  },
-
-  band: {
-    chainId: "laozi-mainnet",
-    denom: "uband",
-    coinGeckoId: "band-protocol",
+  const pools = [];
+  for (const { denom, amount } of candidates) {
+    const supply = BigInt(await sdk.chains.cosmos.totalSupply({ chain: "osmosis", denom }));
+    if (BigInt(amount) > supply) throw new Error(`stride: vault holds more ${denom} than its supply`);
+    if (BigInt(amount) * 2n > supply) pools.push(denom.split("/")[1]);
   }
-};
-
-// inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
-function getCoinDenimals(denom) {
-  return ["aevmos", "inj", "adydx", "adym", "aISLM"].includes(denom)
-    ? 1e18
-    : 1e6;
+  if (pools.length === 0) throw new Error("stride: no redemption pool owned by the Osmosis vault");
+  return pools;
 }
 
-function makeTvlFn(chain) {
-  return async () => {
-    // Define the URL for host_zone based on chainId
-    const hostZoneUrl = chain.chainId === "dymension_1100-1"
-        ? "https://stride-walk-214t-api.polkachu.com//Stride-Labs/stride/stakedym/host_zone"
-        : `https://stride-walk-214t-api.polkachu.com//Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
-
-    const [{ amount: assetBalances }, { host_zone: hostZone }] =
-      await Promise.all([
-        await get(
-          `https://stride-walk-214t-api.polkachu.com//cosmos/bank/v1beta1/supply/by_denom?denom=st${chain.denom}`
-        ),
-        await get(hostZoneUrl),
-      ]);
-
-    const assetBalance = assetBalances["amount"];
-
-    const coinDecimals = getCoinDenimals(chain.denom);
-
-    const amount = assetBalance / coinDecimals;
-
-    const balances = {};
-
-    sdk.util.sumSingleBalance(
-      balances,
-      chain.coinGeckoId,
-      amount * hostZone.redemption_rate
-    );
-
-    return balances;
-  };
+async function osmosisTvl(api) {
+  const owners = await redemptionPools();
+  return sumTokens({ api, owners, tokens: NATIVE_DENOMS });
 }
 
 module.exports = {
   timetravel: false,
-  methodology: "Sum of all the tokens that are liquid staked on Stride",
+  methodology:
+    "Until the Stride chain halted on 2026-11-13, counted each stToken's supply times its redemption rate. Since the halt, counts the native tokens backing stToken redemptions in the Osmosis transmuter pools owned by Stride's multisig, without the stTokens already redeemed into them. On Berachain, counts the receipt tokens staked in Stride's manager contract.",
   hallmarks: [
     ['2026-09-29', 'Stride chain shutdown proposed (funding shortfall); redemptions until Oct 12, moving to Osmosis ~Nov 20'],
+    ['2026-11-13', 'Stride chain halted, stToken backing moved to Osmosis redemption pools'],
   ],
-  stride: {
-    tvl: async () => ({}), // kept so tvl history doesnt disappear
+  osmosis: {
+    tvl: osmosisTvl,
   },
 }; // node test.js projects/stride/index.js
 
-for (const chainName of Object.keys(chains)) {
-  module.exports[chainName] = { tvl: makeTvlFn(chains[chainName]) };
+for (const chain of haltedChains) {
+  module.exports[chain] = { tvl: () => ({}) };
 }
 
 // ############### Berachain TVL ###############
