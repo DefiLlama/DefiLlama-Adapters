@@ -591,7 +591,9 @@ function cexExports(config) {
           console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
           tokens = [...(options.tokens ?? []), ...binanceTokensOnChain]
         }
-        const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
+        // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
+        // not on tron: its rpc rejects whole batches (cpu timeout / rate limit) and permitFailure would turn that into zero balances
+        const runtimeOptions = { ...options, owners, tokens, permitFailure: chain !== 'tron' }
         if (chain === 'solana') runtimeOptions.solOwners = owners
         // hyperliquid owners hold funds both on HyperEVM (summed above) and on HyperCore
         // (spot + perp margin), which no on-chain lookup sees
@@ -606,7 +608,7 @@ function cexExports(config) {
       exportObj[chain].ownTokens = async (api) => {
         let owners = typeof options.owners === 'function' ? await options.owners(api) : options.owners
         if (!owners) owners = [...new Set(tokensAndOwners.map(([, owner]) => owner))]
-        return sumTokensExport({ chain, owners, tokens: ownTokens, permitFailure: true })(api)
+        return sumTokensExport({ chain, owners, tokens: ownTokens, permitFailure: chain !== 'tron' })(api)
       }
     }
   })
