@@ -54,7 +54,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "DOLA curve metapool replaced by DOLA",
+  methodology: "Counts the underlying cash in the Frontier (Anchor) markets, the DAI in the stabilizer and the underlying of the legacy vaults. DOLA and INV are excluded, INV in the xINV market is reported as staking under Inverse Finance FiRM.",
   hallmarks: [
     // ['2022-04-01', "INV price hack"],
     ['2022-06-16', "Inverse Frontier Deprecated"]
