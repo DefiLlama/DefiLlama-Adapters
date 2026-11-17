@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { lendingMarket } = require("./methodologies");
 const { sumTokens2 } = require('./unwrapLPs')
 
@@ -22,12 +21,11 @@ module.exports = {
           const dynamic = await getMarkets()
           ;(dynamic?.[chain] ?? []).forEach(m => set.add(m.toLowerCase()))
         }
-        const block = await api.getBlock()
-        const provider = sdk.api.config.getProvider(chain)
         const markets = [...set]
-        // The current market list can include deployments newer than the requested block.
-        const code = await Promise.all(markets.map(market => provider.getCode(market, block)))
-        return markets.filter((_, index) => code[index] !== '0x')
+        const block = await api.getBlock()
+        // baseToken() returns empty data from a market deployed after the requested block
+        const res = await Promise.all(markets.map(to => api.provider.call({ to, data: '0xc55dae63', blockTag: block })))
+        return markets.filter((_, i) => res[i] !== '0x')
       }
 
       async function borrowed(api) {
