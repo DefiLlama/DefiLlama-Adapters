@@ -1,6 +1,7 @@
 const { PublicKey } = require('@solana/web3.js')
 const { Program, AnchorProvider, BN } = require("@coral-xyz/anchor");
-const { getConnection, } = require('../helper/solana');
+const { getConnection, getMultipleAccounts } = require('../helper/solana')
+const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 const loopscaleIdl = {
   "address": "1oopBoJG58DgkUVKkEzKgyG9dvRmpgeEm1AVjoHkF78",
   "metadata": {"name": "loopscale", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
@@ -178,28 +179,54 @@ const loopscaleIdl = {
   ]
 }
 
-const endpoint = 'https://loopscale-pricing-adapters-109615290061.europe-west2.run.app/v1/decompile_mints'
+const WHIRLPOOL_PROGRAM = new PublicKey('whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc')
+const WHIRLPOOL_POSITION_SIZE = 216
+const WHIRLPOOL_SIZE = 653
 
-function parseBigIntStringMap(input) {
-  const out = Object.create(null);
-
-  for (const [k, v] of Object.entries(input)) {
-    const s = v.trim();
-
-    out[k] = BigInt(s);
-  }
-
-  return out;
+function whirlpoolAccountData(account, size, key) {
+  if (account.data.length !== size) throw new Error(`loopscale: whirlpool account ${key} is ${account.data.length} bytes, expected ${size}`)
+  return account.data
 }
 
-function stringifyBigIntMap(input) {
-  const out = Object.create(null);
+// Orca position NFTs posted as collateral are valued from their liquidity at the pool's current tick
+async function addWhirlpoolPositions(api, balances) {
+  const nftMints = Object.keys(balances).filter(mint => balances[mint] === 1n)
+  const positionKeys = nftMints.map(mint => PublicKey.findProgramAddressSync([Buffer.from('position'), new PublicKey(mint).toBuffer()], WHIRLPOOL_PROGRAM)[0])
+  const positionAccounts = await getMultipleAccounts(positionKeys)
+  if (positionAccounts.length !== nftMints.length) throw new Error('loopscale: position account count mismatch')
 
-  for (const [k, v] of Object.entries(input)) {
-    out[k] = v.toString(10);
+  const positions = []
+  positionAccounts.forEach((account, i) => {
+    if (!account || !account.owner.equals(WHIRLPOOL_PROGRAM)) return
+    const data = whirlpoolAccountData(account, WHIRLPOOL_POSITION_SIZE, positionKeys[i].toString())
+    if (new PublicKey(data.subarray(40, 72)).toString() !== nftMints[i]) throw new Error(`loopscale: position ${positionKeys[i]} does not belong to mint ${nftMints[i]}`)
+    positions.push({
+      mint: nftMints[i],
+      whirlpool: new PublicKey(data.subarray(8, 40)).toString(),
+      liquidity: data.readBigUInt64LE(72) + (data.readBigUInt64LE(80) << 64n),
+      tickLower: data.readInt32LE(88),
+      tickUpper: data.readInt32LE(92),
+    })
+  })
+
+  const whirlpoolKeys = [...new Set(positions.map(p => p.whirlpool))]
+  const whirlpoolAccounts = await getMultipleAccounts(whirlpoolKeys)
+  const whirlpools = {}
+  whirlpoolAccounts.forEach((account, i) => {
+    if (!account || !account.owner.equals(WHIRLPOOL_PROGRAM)) throw new Error(`loopscale: whirlpool ${whirlpoolKeys[i]} not found`)
+    const data = whirlpoolAccountData(account, WHIRLPOOL_SIZE, whirlpoolKeys[i])
+    whirlpools[whirlpoolKeys[i]] = {
+      tick: data.readInt32LE(81),
+      tokenA: new PublicKey(data.subarray(101, 133)).toString(),
+      tokenB: new PublicKey(data.subarray(181, 213)).toString(),
+    }
+  })
+
+  for (const p of positions) {
+    const w = whirlpools[p.whirlpool]
+    addUniV3LikePosition({ api, token0: w.tokenA, token1: w.tokenB, liquidity: Number(p.liquidity), tickLower: p.tickLower, tickUpper: p.tickUpper, tick: w.tick })
   }
-
-  return out;
+  return positions.map(p => p.mint)
 }
 
 const creditbookProgram = (connection) => {
@@ -295,7 +322,7 @@ async function getDeposits(connection) {
     const strats = await getStrategies(connection);
     const idleCapitalBalances = getIdleCapital(strats);
 
-    let rawDeposits = {};
+    const rawDeposits = {};
 
     for (const obj of [collateralBalances, idleCapitalBalances]) {
       for (const [key, value] of Object.entries(obj)) {
@@ -303,56 +330,14 @@ async function getDeposits(connection) {
       }
     }
 
-    rawDeposits = stringifyBigIntMap(Object.fromEntries(
-        Object.entries(rawDeposits).filter(([key, value]) => value !== 0n)
-    ));
-    
-    return decompileMints(rawDeposits);
-}
-
-// the endpoint fails the whole request if a single mint can't be decompiled, so the mints it
-// names in the error are dropped from the request and reported as-is (raw mint, undecompiled)
-async function decompileMints(rawBalances) {
-    const pending = { ...rawBalances };
-    const passthrough = {};
-
-    for (let attempt = 0; attempt < 5; attempt++) {
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                rawBalances: pending
-            })
-        });
-        const data = await response.json();
-
-        if (response.ok && !data.error) {
-            const parsed = parseBigIntStringMap(data);
-            for (const [mint, balance] of Object.entries(passthrough))
-                parsed[mint] = (parsed[mint] || 0n) + BigInt(balance);
-            return parsed;
-        }
-
-        const failedMints = [...String(data.error).matchAll(/ratio\(([1-9A-HJ-NP-Za-km-z]+)\)/g)]
-            .map(m => m[1]).filter(mint => mint in pending);
-        if (!failedMints.length) throw new Error(`loopscale decompile_mints failed: ${data.error}`);
-
-        for (const mint of failedMints) {
-            passthrough[mint] = pending[mint];
-            delete pending[mint];
-        }
-    }
-
-    throw new Error('loopscale decompile_mints: still failing after dropping unpriceable mints');
+    return rawDeposits;
 }
 
 async function tvl(api) {
-  const connection = getConnection();
-  const balances = await getDeposits(connection);
-  const data = Object.entries(balances).map(([mint, balance]) => ({ mint, balance }));
-  api.addTokens(data.map(d => d.mint), data.map(d => d.balance));
+  const balances = await getDeposits(getConnection())
+  for (const mint of await addWhirlpoolPositions(api, balances)) delete balances[mint]
+  const mints = Object.keys(balances).filter(mint => balances[mint] !== 0n)
+  api.addTokens(mints, mints.map(mint => balances[mint]))
 }
 
 async function borrowed(api) {
@@ -367,6 +352,6 @@ module.exports = {
 	doublecounted: false,
 	timetravel: false,
 	methodology:
-		'TVL is calculated by summing up lending deposits and supplied collateral.',
+		'TVL sums idle lender capital in strategies and collateral supplied to loans, read on-chain. Orca position NFTs are valued from their pool liquidity. Collateral with no on-chain value, such as DAWN private-credit deal NFTs, is not counted.',
 	solana: { tvl, borrowed, },
 }
