@@ -93,8 +93,8 @@ const configs = {
       ],
     },
     xlayer: {
-      morpho: [
-        '0x4802f950Ec247bcc9126ADF8e10ea025dEC3BB92', // Gauntlet USDC Earn
+      morphoVaultOwners: [
+        '0xf3b8d49d4c0f6d4c882a1f529504b455f76ea66d',
       ],
     },
     polygon: {
