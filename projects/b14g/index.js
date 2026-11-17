@@ -6,6 +6,8 @@ const {PromisePool} = require("@supercharge/promise-pool");
 const CORE_ASSETS = require("../helper/coreAssets.json");
 
 module.exports = {
+    // Babylon co-staking BTC is also counted by babylon-protocol, see #11992
+    doublecounted: true,
     babylon: {
         tvl: async function tvl(api) {
             const marketplace_contract = "bbn1ts0rxh55zha7gwh6a8q0yd224g0lfjlqsm53zrc85knx602k8fvs0y3mlg"
