@@ -530,6 +530,16 @@ module.exports = {
     "somnia": {
       "tvl": { "tokensAndOwners": [[ADDRESSES.somnia.USDC,"0x47fD2f18426f67106DBaC82F6d21D446c5F2120b"],[ADDRESSES.somnia.USDC,"0xD53E3F3b73513F2147377ef8f573f649cF60100c"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd"],[ADDRESSES.somnia.WETH,"0xa936da11B57b50A344e1293AAaE5232885ea2bDE"],[ADDRESSES.somnia.WETH,"0x9653a7355849B7691802A6AA49fDe18eF5ba633d"]], "owners": ["0x035De7403eac6872787779CCA7CCF1b4CDb61379","0x68c8f6fb1EA19A28F25358Ff00b8Ed8E1216df30","0x47fD2f18426f67106DBaC82F6d21D446c5F2120b","0xD53E3F3b73513F2147377ef8f573f649cF60100c","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd","0xa936da11B57b50A344e1293AAaE5232885ea2bDE","0x9653a7355849B7691802A6AA49fDe18eF5ba633d"], "tokens": ["0x00000022dA000002656c64D9eA6011ea952D008A",ADDRESSES.null] },
     },
+    // Somnia Tokyo (chainId 50321): spot SpotPools + their SpotStopOrderRegistries. Tokens are the Hyperlane synthetics of the Somnia mainnet assets
+    "somnia_tokyo": {
+      "tvl": { "owners": ["0xe2bee2309eec9c67754c306b5e070a158c99773a","0x936c3b93765ac6a930e1057f58eab091ef128238","0x7ff6542baf5afd01aeab8d5eed0f1598ebc33677","0x96466705350c01f4703b8215d4f0cfddbe0902c1","0xdbe4760c5bb086ae15d2bf8cc9b0caf3a22f7902","0xae926350d7759f4c432077bd0bcdba4a6eda8769","0xc517171260d7968ae9e8fec54f71372a7bfb65c6","0x726d757829ea537b777f5a805d9ccf02a1f9451e","0x84e2e5d6d55bd327bc9835441621d657c29826b4","0x9538c6a87328a5388dc5d4a83efac242d0454884"], "tokens": [ADDRESSES.somnia_tokyo.USDso,ADDRESSES.somnia_tokyo.WETH,ADDRESSES.somnia_tokyo.WBTC,ADDRESSES.somnia_tokyo.USDC,ADDRESSES.somnia_tokyo.USDT,ADDRESSES.null] },
+    },
+  },
+  "dreamdex-perps": {
+    "methodology": "dreamDEX perpetuals on Somnia Tokyo. TVL is the USDso collateral held by the shared MarginBank (trader margin for every perp market) and by the insurance fund.",
+    "somnia_tokyo": {
+      "tvl": { "owners": ["0xde96cbc9b72fb7317f8c4f1005fbb41fe8df582a","0x5ea6b16aba789d870c3f282a4998deb72a063400"], "tokens": [ADDRESSES.somnia_tokyo.USDso] },
+    },
   },
   "instrumental": {
     "methodology": "Instrumental can be LP'ed and LP can be staked or locked (pool2s). Plus STRM itself can be locked against veSTRM (staking). Vaults coming soon.",
