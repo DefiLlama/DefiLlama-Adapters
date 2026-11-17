@@ -21,10 +21,11 @@ async function getDeployedContractAddress(chainId) {
 }
 
 // ezETH xERC20 lockbox on L1, counted only while Connext can still mint/burn xezETH. Its limits were set to 0 on
-// 2025-01-13, since then the lockbox is bridged over Hyperlane (projects/hyperlane). bridges() is a mapping getter, so the
-// call only fails at blocks before xezETH was deployed, when the lockbox did not exist either.
+// 2025-01-13, since then the lockbox is bridged over Hyperlane (projects/hyperlane). xezETH has no code before
+// XEZETH_DEPLOY_BLOCK, so the lockbox did not exist either; after it, a failed limits read must throw.
 const EZETH_LOCKBOX = "0xC8140dA31E6bCa19b287cC35531c2212763C2059"
 const XEZETH = "0x2416092f143378750bb29b79eD961ab195CcEea5"
+const XEZETH_DEPLOY_BLOCK = 19327270
 const CONNEXT_DIAMOND = "0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6"
 const bridgesAbi = 'function bridges(address) view returns ((uint256 timestamp, uint256 ratePerSecond, uint256 maxLimit, uint256 currentLimit) minterParams, (uint256 timestamp, uint256 ratePerSecond, uint256 maxLimit, uint256 currentLimit) burnerParams)'
 
@@ -48,9 +49,9 @@ async function getAssetIds(chainId) {
 async function tvl(api) {
   const chainId = api.chainId
   const owners = await getDeployedContractAddress(chainId)
-  if (chainId === 1) {
-    const limits = await api.call({ target: XEZETH, abi: bridgesAbi, params: [CONNEXT_DIAMOND], permitFailure: true })
-    if (limits && (+limits.minterParams.maxLimit > 0 || +limits.burnerParams.maxLimit > 0)) owners.push(EZETH_LOCKBOX)
+  if (chainId === 1 && (api.block === undefined || api.block >= XEZETH_DEPLOY_BLOCK)) {
+    const limits = await api.call({ target: XEZETH, abi: bridgesAbi, params: [CONNEXT_DIAMOND] })
+    if (+limits.minterParams.maxLimit > 0 || +limits.burnerParams.maxLimit > 0) owners.push(EZETH_LOCKBOX)
   }
   if (!owners.length)
     return {}
