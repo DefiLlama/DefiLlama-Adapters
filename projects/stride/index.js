@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/chain/cosmos");
 
 // stTokens were minted on these chains' host zones. The Stride chain halted on 2026-11-13, keys kept so tvl history stays
@@ -7,9 +6,40 @@ const haltedChains = [
   "comdex", "sommelier", "dydx", "celestia", "dymension", "islm", "band",
 ];
 
-// Stride admin multisig on Osmosis: admin of every stToken redemption pool and holder of their alloyed LP
-const OSMOSIS_VAULT = "osmo1k8c2m5cn322akk5wy8lpt87dd2f4yh9afcd7af";
-const MAX_POOL_CANDIDATES = 100;
+// stToken redemption pools (transmuter v3.2.0, code id 996) funded and administered by Stride's vault osmo1k8c2m5cn322akk5wy8lpt87dd2f4yh9afcd7af
+const REDEMPTION_POOLS = [
+  "osmo1k49dzwmaq3r99v5gam23vn62akl67n8aye4f34lmw799tlm3l9yqctyf9p", // stATOM
+  "osmo18tcy9q5mdp05khs0sgyldtjthrlpsdecsxr9w2aqppsuvyaggkxsxawh04", // stATOM.agoric
+  "osmo1kfw8err6zl8mcf77t5lkgrh2yk0u6nkhaeegyalx4a6xr5f4vv8sk85884", // stATOM.cosmoshub
+  "osmo1f8ca03ah9yfmsxhj3waxsh8qs7cdj4nnh4lqa0hrk223srmtlheqd938ef", // stATOM.injective
+  "osmo1t5ulc4wz63sq3fmcfuk92czvd9q0pypsp6232m929aptx7t8kwys04ha3r", // stATOM.neutron
+  "osmo14aedxwpxefa0vw4uc35nzc58hrjgq94xpvzwlghkunch9asmmfcs7rrswc", // stATOM.secret
+  "osmo1frf5wzs8fl2vj3p39vn4walkzkwkara440qfk64jf4ckrzuweg4s2u6sgn", // stATOM.terra
+  "osmo1zhpuj7cc9vxdjwp8wy3d4pugp35hnkysf2l0feudhkv5chr8qehs36ar38", // stBAND
+  "osmo14h0emmfz7rpfxfd5dj86f24x2fllevmwg57wel8xs0h27cqxfgcshs740n", // stBAND.cosmoshub
+  "osmo19rjdcr48qrx4megltm6d2w4wv5xqmdlyjypl7m23u5n7h0yx9csqvu3vlq", // stDYDX
+  "osmo1x99p42xnv78utnkg7sxsnfxfzgfu089gvglprnug8wljkquqzkgqz0d5n7", // stDYDX.cosmoshub
+  "osmo1apslth04ntm77ywzfzg990ustchweqtjdnnfrcafx4zrjke75d8sd9xuy0", // stINJ
+  "osmo183v2x64xksqt9szpzkrqwedjt3tl0a9ufaqh9kj9k56nehemdcqq008a5c", // stINJ.cosmoshub
+  "osmo1tjrrh046kdrk8s6zqfap7wa4tvczw44d7pdf7wcgfrqh6ujxperqpww8ca", // stINJ.injective
+  "osmo1mg7wgzux33lxgwn5c6hkn95c7s3qs8373hg54chg7erdmlafvknsrq7uqj", // stINJ.secret
+  "osmo1sj5z3zd3s28nfh8y06ctag8a5h6sn8na7dpl7cqvauyyv6xpg26qyrjp89", // stISLM
+  "osmo19u4re0amqzz9guukgwf48vkq08tjf0ws0lfk3mqlazhydrq3278qe020cl", // stISLM.haqq
+  "osmo175cxam9qmqk9qc8rtefmpmcyydle8hfhu2w7rgcec53u3f3xw5cqsnqsda", // stJUNO
+  "osmo1frx7zjyutdpd0sdzzuz2xhlfg5ywd7e5rcpvjw72unr2ldql3u2q6u4nnu", // stLUNA
+  "osmo1clll7pq9syppk6dm9a96r72rnnchvhgpylvkpr5zuca8t64nlexsw9xdxv", // stLUNA.terra
+  "osmo1zlrlj9ejwe9eqsy6rsuwk489vt2trfr3p0486f3y7064wg3d0zrsaughew", // stOSMO
+  "osmo1xwj3ru737vcp2rrsy8yc39z8ayu8m8mdy9wc0q39l4nwzc8w4l2qayd38c", // stOSMO.cosmoshub
+  "osmo1lvndmypu0npfvygnsktuegtke6z80x4r7z0xj5v908p8mpg4js9qzwefqe", // stOSMO.secret
+  "osmo1224vqh0h99cuu32xm2w88zd2lha06y6dukfyngsu9w32zja0ykxqqtuehk", // stSAGA
+  "osmo15kjrvxz9h59hdv08tpy0u5cgaq3jdc9kd63sqr7eplm83y9h86nq3q4q9t", // stSOMM
+  "osmo1ru4ncmqln6xyt6rs63y0l4spdc7zm5x5hqma9ew2g6kx8z3seu4qk5da2l", // stTIA
+  "osmo169qt0zcxcxa0xr5qqanyt2zhd6j9laj2k52n2uc3ljgcd3qm80nq0mad9z", // stTIA.agoric
+  "osmo10y67eepyunrnm8g5ujtd9csg03ue2mdvexxzfeu9lzlewszqzz5sz4zc7w", // stTIA.celestia
+  "osmo1fe75mvghgtz4ly0qdtegt4m3wqs2kszqqup60g67nfyuw8tt9zhq654fxc", // stTIA.cosmoshub
+  "osmo1wefhqc0yywyc36kxas6mjyj3fn540hmzcs2aa30z7rwu095se03s64rs3a", // stTIA.dymension
+  "osmo1em4u6ryfp6axd7dkdj3gezj7sc6fqd6rs6jqm85rg0tse2ddxg3q3hkjcx", // stTIA.neutron
+];
 
 // native tokens backing the pools, the stTokens already redeemed into them are not counted
 const NATIVE_DENOMS = [
@@ -26,26 +56,8 @@ const NATIVE_DENOMS = [
   "uosmo",
 ];
 
-// a pool is the factory creator of an alloyed LP denom in the vault, kept only while the vault holds most of that LP
-async function redemptionPools() {
-  const balances = await sdk.chains.cosmos.getBalances({ chain: "osmosis", owner: OSMOSIS_VAULT });
-  const candidates = balances.filter(({ denom }) => /^factory\/osmo1[a-z0-9]+\/alloyed\/st/.test(denom));
-  if (candidates.length > MAX_POOL_CANDIDATES)
-    throw new Error(`stride: ${candidates.length} alloyed denoms in the Osmosis vault, above ${MAX_POOL_CANDIDATES}`);
-
-  const pools = [];
-  for (const { denom, amount } of candidates) {
-    const supply = BigInt(await sdk.chains.cosmos.totalSupply({ chain: "osmosis", denom }));
-    if (BigInt(amount) > supply) throw new Error(`stride: vault holds more ${denom} than its supply`);
-    if (BigInt(amount) * 2n > supply) pools.push(denom.split("/")[1]);
-  }
-  if (pools.length === 0) throw new Error("stride: no redemption pool owned by the Osmosis vault");
-  return pools;
-}
-
 async function osmosisTvl(api) {
-  const owners = await redemptionPools();
-  return sumTokens({ api, owners, tokens: NATIVE_DENOMS });
+  return sumTokens({ api, owners: REDEMPTION_POOLS, tokens: NATIVE_DENOMS });
 }
 
 module.exports = {
