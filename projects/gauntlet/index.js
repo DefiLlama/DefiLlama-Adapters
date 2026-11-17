@@ -165,13 +165,13 @@ const configs = {
       ],
     },
     morph: {
-      morpho: [
-        '0x9131eb40bd0bdce73c72755f1bb2cf39a9453341', // Gauntlet USDC Morpho vault
+      morphoVaultOwners: [
+        '0x178fcfe43feeaf3c194f1360d57804040809e88e',
       ],
     },
     arc: {
-      morpho: [
-        '0xdECcd53BE5453215821184824B519E04C7e00bC7', // Gauntlet USDC Prime (Morpho V2)
+      morphoVaultOwners: [
+        '0x592db4fdaac9d4a0c358aef06f05d918d0415b89',
       ],
     },
   }
