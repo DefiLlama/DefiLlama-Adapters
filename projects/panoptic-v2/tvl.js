@@ -50,18 +50,18 @@ async function sumPoolTokens(api, vaults, tokens) {
   if (!tokens.length) return
   const calls = vaults.flatMap(vault => tokens.map(token => ({ target: token, params: vault.address })))
   const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true })
-  const failed = calls.filter((_, index) => balances[index] === undefined)
+  const failed = calls.filter((_, index) => balances[index] === null || balances[index] === undefined)
   if (failed.length) {
     const retries = await api.multiCall({ abi: 'erc20:balanceOf', calls: failed, permitFailure: true })
     let retry = 0
     balances.forEach((balance, index) => {
-      if (balance !== undefined) return
+      if (balance !== null && balance !== undefined) return
       balances[index] = retries[retry++]
     })
   }
   const unreadable = new Set()
   balances.forEach((balance, index) => {
-    if (balance === undefined) unreadable.add(calls[index].target.toLowerCase())
+    if (balance === null || balance === undefined) unreadable.add(calls[index].target.toLowerCase())
     else add(api, calls[index].target, balance)
   })
   if (unreadable.size) api.log(`Panoptic V2: skipping unreadable pool-token balances for ${[...unreadable].join(', ')}`)

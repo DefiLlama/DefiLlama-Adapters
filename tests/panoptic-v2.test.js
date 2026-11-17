@@ -89,7 +89,7 @@ function fixture({ version = 'v3', block = 200, external = [], configuredHash, p
         if (options.abi.includes('balanceOf')) {
           if (target === poolToken0 && options.permitFailure && remainingPoolFailures > 0) {
             remainingPoolFailures--
-            return undefined
+            return null
           }
           return '30'
         }
