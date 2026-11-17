@@ -1,5 +1,4 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
-const axios = require('axios');
 // const aeraV3 = require('../aera-v3')  // excluded till we find a way to exclude deposits from aera-v3 into other gauntlet curated vaults
 const coreAssets = require('../helper/coreAssets.json')
 
@@ -289,21 +288,9 @@ async function tvl(api) {
   await kaminoLendVaultTvl(api, { adminAddress: GAUNTLET_ADMIN })
 }
 
-async function megavaultTvl(api) {
-  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
-  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
-  const pnlArr = data.megavaultPnl;
-  if (!pnlArr || !pnlArr.length) return;
-  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
-
-  // Report as USD Coin using coingecko identifier
-  api.add(ADDRESSES.ethereum.USDC, (currentTvl * 1e6).toFixed(0));
-}
-
 async function combinedEthereumTvl(api) {
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.ethereum?.tvl) await curatorExport.ethereum.tvl(api);
-  await megavaultTvl(api);
   // await aeraV3.ethereum.tvl(api);
   
   // remove bad debt from Resolv hack
