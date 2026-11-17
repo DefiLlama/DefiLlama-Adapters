@@ -9,7 +9,11 @@ const COLLATERAL_STANDARDS = new Set([
   'EvmHypCollateralFiat',
   'EvmHypOwnerCollateral',
   'EvmHypRebaseCollateral',
+  'EvmHypCrossCollateralRouter',
 ])
+
+// xERC20 lockbox routes: collateralAddressOrDenom is the lockbox, which holds the underlying token
+const LOCKBOX_STANDARDS = new Set(['EvmHypXERC20Lockbox', 'EvmHypVSXERC20Lockbox'])
 
 const NATIVE_STANDARDS = new Set(['EvmHypNative'])
 
@@ -58,6 +62,7 @@ async function fetchRegistry() {
 
 function getTokensAndOwners(registry, chain) {
   const tokensAndOwners = []
+  const lockboxes = []
   for (const route of Object.values(registry)) {
     for (const token of route.tokens || []) {
       const registryChain = CHAIN_MAP[token.chainName] || token.chainName
@@ -65,17 +70,22 @@ function getTokensAndOwners(registry, chain) {
 
       if (COLLATERAL_STANDARDS.has(token.standard) && token.collateralAddressOrDenom) {
         tokensAndOwners.push([token.collateralAddressOrDenom, token.addressOrDenom])
+      } else if (LOCKBOX_STANDARDS.has(token.standard) && token.collateralAddressOrDenom) {
+        lockboxes.push(token.collateralAddressOrDenom)
       } else if (NATIVE_STANDARDS.has(token.standard)) {
         tokensAndOwners.push([ADDRESSES.null, token.addressOrDenom])
       }
     }
   }
-  return tokensAndOwners
+  return { tokensAndOwners, lockboxes }
 }
 
 async function tvl(api) {
   const registry = await fetchRegistry()
-  const tokensAndOwners = getTokensAndOwners(registry, api.chain)
+  const { tokensAndOwners, lockboxes: allLockboxes } = getTokensAndOwners(registry, api.chain)
+  const lockboxes = [...new Set(allLockboxes)]
+  const lockboxTokens = await api.multiCall({ abi: 'address:ERC20', calls: lockboxes })
+  lockboxTokens.forEach((token, i) => tokensAndOwners.push([token, lockboxes[i]]))
   return sumTokens2({ api, tokensAndOwners })
 }
 
@@ -91,7 +101,7 @@ const chains = [
 const deadChains = ['mint']
 
 module.exports = {
-  methodology: 'TVL counts the tokens locked in Hyperlane Warp Route collateral contracts, fetched dynamically from the Hyperlane registry.',
+  methodology: 'TVL counts the tokens locked in Hyperlane Warp Route collateral contracts and xERC20 lockboxes, fetched dynamically from the Hyperlane registry.',
 }
 
 chains.forEach(chain => {
