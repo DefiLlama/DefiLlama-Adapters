@@ -18,19 +18,26 @@ const SINGLETON_POOLS = [
   "0x2906e07881acceff9e4ae4d9dacbcd4239217e5114001844529176e1f0982ec", // Alterscope Cornerstone Pool
   "0x3de03fafe6120a3d21dc77e101de62e165b2cdfe84d12540853bd962b970f99", // Re7 rUSDC Pool
 ];
-// V2 pools are deployed by the pool factory, which emits AddAsset(pool, asset) for every asset it lists in a pool
+// V2 pools are deployed by the pool factory, which emits CreatePool(pool) when it deploys a pool and AddAsset(pool, asset)
+// for every asset it lists in a pool
 // https://github.com/vesuxyz/vesu-v2/blob/main/deployment.json
 const V2_POOL_FACTORY = { target: "0x3760f903a37948f97302736f89ce30290e45f441559325026842b7a6fb388c0", fromBlock: 2367000 };
+const CREATE_POOL = getSelectorFromName("CreatePool");
 const ADD_ASSET = getSelectorFromName("AddAsset");
 
+// factory add_asset accepts any contract whose curator() is the caller, so only pools the factory deployed are kept
 // each (pool, asset) pair is kept once
 async function getV2PoolAssets() {
-  const logs = await getLogs({ ...V2_POOL_FACTORY, topics: [ADD_ASSET] });
+  const [createLogs, addLogs] = await Promise.all([
+    getLogs({ ...V2_POOL_FACTORY, topics: [CREATE_POOL] }),
+    getLogs({ ...V2_POOL_FACTORY, topics: [ADD_ASSET] }),
+  ]);
+  const pools = new Set(createLogs.map(({ keys }) => parseAddress(keys[1])));
   const pairs = new Map();
-  logs.forEach(({ keys }) => {
+  addLogs.forEach(({ keys }) => {
     const pool = parseAddress(keys[1]);
     const asset = parseAddress(keys[2]);
-    pairs.set(`${pool}-${asset}`, { pool, asset });
+    if (pools.has(pool)) pairs.set(`${pool}-${asset}`, { pool, asset });
   });
   return [...pairs.values()];
 }
