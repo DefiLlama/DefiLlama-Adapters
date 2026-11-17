@@ -6,7 +6,11 @@ const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
   blockchains: {
     ethereum: {
+      morpho: [
+        '0x802148D518A6De2aF866f9A61ffB5e5C39156dB2',
+      ],
       morphoVaultOwners: [
+        '0x256DaC8fad2788F4182A42cE8F26029F0DEd7cf9',
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
         '0xd79766D2FeC43886e995EA415a2Bf406280B2e2C',
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
@@ -65,7 +69,11 @@ const configs = {
       ],
     },
     base: {
+      morpho: [
+        '0x8c1e205C408b90A0dDDbD53594049a379557c651',
+      ],
       morphoVaultOwners: [
+        '0x256DaC8fad2788F4182A42cE8F26029F0DEd7cf9',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
         '0xFd144f7A189DBf3c8009F18821028D1CF3EF2428',
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
@@ -88,6 +96,11 @@ const configs = {
         '0xdb223128a4524ce733c575421267dc56992c796d',
         '0x70f6fd99a43fce03648b20d44b9f0cd2b14eea68',
         '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
+      ],
+    },
+    xlayer: {
+      morpho: [
+        '0x4802f950Ec247bcc9126ADF8e10ea025dEC3BB92', // Gauntlet USDC Earn
       ],
     },
     polygon: {
