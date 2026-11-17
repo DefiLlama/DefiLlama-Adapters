@@ -698,6 +698,7 @@ module.exports = {
     },
   },
   "polygon": {
+    "methodology": "Counts assets escrowed on Ethereum for Polygon PoS: ERC-20s in the ERC20Predicate, ETH in the EtherPredicate and POL/MATIC in the plasma DepositManager. POL staked by validators and delegators in the StakeManager is reported under staking.",
     "start": "2020-05-30",
     "ethereum": {
       tvl: {
