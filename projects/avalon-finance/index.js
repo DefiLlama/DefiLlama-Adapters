@@ -129,4 +129,3 @@ module.exports = mergeExports(
 )
 module.exports.methodology = methodologies.lendingMarket
 module.exports.merlin.borrowed = async () => ({}) // is insolvent
-module.exports.merlin.pharos = async () => ({}) // is insolvent
