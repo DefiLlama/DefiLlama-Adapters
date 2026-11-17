@@ -171,21 +171,29 @@ async function tvlApi(api) {
   let hasMore = true
   let page = 1
   const pageSize = 1000
+  const smallPools = []
   do {
     const { data: { data } } = await get(`https://api-v3.raydium.io/pools/info/list?poolType=all&poolSortField=liquidity&sortType=desc&pageSize=${pageSize}&page=${page}`)
     const lastItem = data[data.length - 1]
     hasMore = data.length === pageSize && lastItem.tvl > 1000
     api.log('lastItem', lastItem.tvl, page)
     data.forEach(({ mintA, mintB, mintAmountA, mintAmountB, tvl, }) => {
+      const token0Bal = mintAmountA * (10 ** mintA.decimals)
+      const token1Bal = mintAmountB * (10 ** mintB.decimals)
+      // Raydium's tvl values a token at the price of its own pool, so for the long tail
+      // (mostly migrated memecoins next to ~20 SOL) count the core side instead of that usd figure
       if (tvl < 20_000) {
-        api.addUSDValue(tvl)
+        smallPools.push({ token0: mintA.address, token0Bal, token1: mintB.address, token1Bal })
         return;
       }
-      api.add(mintA.address, mintAmountA * (10 ** mintA.decimals))
-      api.add(mintB.address, mintAmountB * (10 ** mintB.decimals))
+      api.add(mintA.address, token0Bal)
+      api.add(mintB.address, token1Bal)
     })
     page++
   } while (hasMore)
+
+  // core side doubled when the other side is not a core asset; pools with no core asset are skipped
+  api.addBalances(transformDexBalances({ chain: api.chain, data: smallPools, skipUnknownTokens: true }))
 
   api.removeTokenBalance('DS4QiZfkp39PsHXYCRV3NkyDUKV9SpTczp2qnAUg6Nt6') // ZMB
   api.removeTokenBalance('HDa3zJc12ahykSsBRvgiWzr6WLEByf36yzKKbVvy4gnF') // SOS
