@@ -522,7 +522,9 @@ module.exports = {
         ],
         "tokens": [
           "0x1789e0043623282D5DCc7F213d703C6D8BAfBB04"
-        ]
+        ],
+        // LINEA was deployed at block 23033087 (2025-07-30), after the listing start: earlier reads count 0 instead of throwing
+        "permitFailure": true
       }
     },
   },
