@@ -1,4 +1,5 @@
 const { getLogs, getLogs2 } = require('../helper/cache/getLogs')
+const { getHookPools, addUniV4PoolReserves } = require('../helper/uniswapV4')
 
 const abi = {
   "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
@@ -6,47 +7,35 @@ const abi = {
 }
 
 module.exports = {
-  methodology: "Vault deposits and fee-excluded core liquidity in Aegis-hooked Uniswap v4 and Calamari v4 pools on Ink. Pools are discovered from Aegis DynamicFeeManager PoolInitialized events and their matching PoolManager Initialize events, with reserves read on-chain. Uniswap v4 pool liquidity also appears in Uniswap v4 TVL.",
+  methodology: "Vault deposits, plus the liquidity in Uniswap v4 and Calamari v4 pools on Ink that use the Aegis dynamic-fee hook. Pools are found from each PoolManager's Initialize events filtered by the hook, and their reserves are rebuilt on-chain from tick liquidity and the current price, so uncollected fees are not counted. The same pool liquidity is also counted by the Uniswap v4 and Calamari listings.",
   misrepresentedTokens: true,
   doublecounted: true,
 } // node test.js projects/thedeep/index.js
 
-const reservesLens = '0x0000001b173C3bbF3984D417d8614E3eed34865B'
-const poolInitializedAbi = 'event PoolInitialized(bytes32 indexed poolId)'
 const initializeAbi = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'
-const INITIALIZE_TOPIC = '0xdd466e674ea557f56295e2d0218a125ea4b4f0f6f3307b95f85e6110838d6438'
-const inkAegisDeployments = [
-  { dynamicFeeManager: '0xc307E55749941e6B0Fc0D7B487fF01198cA48bE1', poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', fromBlock: 55988139 },
-  { dynamicFeeManager: '0xbcf84976a9ae569dd82f2078aa4778702d6f566d', poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc', fromBlock: 59523618 },
-]
+
+// Aegis hook pools on Ink. poolManager + fromBlock match the uniswap-v4 and calamari adapters, so the Initialize log cache is shared with them
+const inkAegisUniswap = { poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', fromBlock: 4580556, hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', stateView: '0x76fd297e2d437cd7f76d50f01afe6160f86e9990' }
+const inkAegisCalamari = { poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', fromBlock: 54652108, hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc' }
+// Calamari has no StateView, so its pools are read through ReservesLens, which walks the same tick liquidity inside one call
+const reservesLens = '0x0000001b173C3bbF3984D417d8614E3eed34865B'
 
 async function addInkAegisPools(api) {
-  const block = await api.getBlock()
-  for (const { dynamicFeeManager, poolManager, hook, fromBlock } of inkAegisDeployments) {
-    if (block < fromBlock) continue
-    const registered = await getLogs2({ api, target: dynamicFeeManager, eventAbi: poolInitializedAbi, fromBlock, onlyArgs: false })
-    for (const log of registered) {
-      const poolId = log.args.poolId
-      const poolBlock = Number(log.blockNumber)
-      const [pool] = await getLogs2({
-        api,
-        target: poolManager,
-        eventAbi: initializeAbi,
-        topics: [INITIALIZE_TOPIC, poolId],
-        fromBlock: poolBlock,
-        toBlock: poolBlock + 1,
-        skipCache: true,
-      })
-      if (!pool || pool.hooks.toLowerCase() !== hook) throw new Error(`Missing Aegis pool initialization for ${poolId}`)
-      const reserves = await api.call({
-        target: reservesLens,
-        abi: abi.getPoolTVL,
-        params: [poolManager, [pool.currency0, pool.currency1, pool.fee, pool.tickSpacing, pool.hooks]],
-      })
-      api.add(pool.currency0, reserves.coreAmount0)
-      api.add(pool.currency1, reserves.coreAmount1)
-    }
-  }
+  const uniPools = await getHookPools({ api, ...inkAegisUniswap })
+  await addUniV4PoolReserves({ api, pools: uniPools, stateView: inkAegisUniswap.stateView })
+
+  const { poolManager, fromBlock, hook } = inkAegisCalamari
+  const logs = await getLogs2({ api, target: poolManager, eventAbi: initializeAbi, fromBlock })
+  const pools = logs.filter((log) => log.hooks.toLowerCase() === hook)
+  const reserves = await api.multiCall({
+    target: reservesLens,
+    abi: abi.getPoolTVL,
+    calls: pools.map((p) => ({ params: [poolManager, [p.currency0, p.currency1, p.fee, p.tickSpacing, p.hooks]] })),
+  })
+  reserves.forEach((r, i) => {
+    api.add(pools[i].currency0, r.coreAmount0)
+    api.add(pools[i].currency1, r.coreAmount1)
+  })
 }
 
 const eventAbi = 'event ICHIVaultCreated (address indexed sender, address ichiVault, address tokenA, bool allowTokenA, address tokenB, bool allowTokenB, uint24 fee, uint256 count)'
