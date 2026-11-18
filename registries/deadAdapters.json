@@ -1328,14 +1328,6 @@
     },
     "deadFrom": "2025-03-31"
   },
-  "cabinet": {
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "kadena": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
   "cakedao": {
     "avax": {
       "tvl": "_f",
@@ -1488,15 +1480,6 @@
       "borrowed": "_f"
     },
     "deadFrom": "2023-12-12"
-  },
-  "chips": {
-    "timetravel": false,
-    "misrepresentedTokens": false,
-    "methodology": "TVL tracks the KDA-equivalent value of all locked cTokens and kWATT tokens using on-chain DEX pricing. The contract returns a single 'coin' value in KDA, excluding USD-only fields.",
-    "kadena": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
   },
   "chocodoge": {
     "misrepresentedTokens": true,
@@ -3310,15 +3293,6 @@
       "staking": "_f"
     }
   },
-  "kaddex": {
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "kadena": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
   "kafefinance": {
     "misrepresentedTokens": true,
     "timetravel": false,
@@ -3387,24 +3361,6 @@
       "tvl": "_f",
       "staking": "_f"
     }
-  },
-  "kdlaunch": {
-    "misrepresentedTokens": true,
-    "timetravel": false,
-    "kadena": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "kdswap": {
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "methodology": "TVL accounts for the liquidity on all KDSWAP AMM pools, with all values calculated in terms of KDA price.",
-    "kadena": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
   },
   "keeper-dao": {
     "start": "2021-01-30",
