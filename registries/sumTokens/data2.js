@@ -137,7 +137,7 @@ module.exports = {
         "0x5b1910eAaD6450E50f816082Aa078C41F10C292f", // TSLAB
         "0xCA750eF65f295BBECd685Abf54e82CAf297BDB61", // SKHYB
         "0x205812CdBed920aFf76C6580abD681a46D11efc7", // QQQB
-      ], "permitFailure": true },
+      ] },
       "staking": { "owners": ["0x2AEab1a338bCB1758f71BD5aF40637cEE2085076", "0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13"], "tokens": ["0x4691937a7508860f876c9c0a2a617e7d9e945d4b"] }
     },
     "avax": {
@@ -182,10 +182,10 @@ module.exports = {
       "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.berachain.WBERA, ADDRESSES.berachain.WBTC, ADDRESSES.berachain.WETH, ADDRESSES.berachain.USDC] }
     },
     "hyperliquid": {
-      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.hyperliquid.WHYPE, "0xBe6727B535545C67d5cAa73dEa54865B92CF7907", "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463", ADDRESSES.hyperliquid.USDT0, ADDRESSES.hyperliquid.USDC], "permitFailure": true }
+      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.hyperliquid.WHYPE, "0xBe6727B535545C67d5cAa73dEa54865B92CF7907", "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463", ADDRESSES.hyperliquid.USDT0, ADDRESSES.hyperliquid.USDC] }
     },
     "monad": {
-      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.monad.WMON, ADDRESSES.monad.WETH, ADDRESSES.monad.USDC, ADDRESSES.monad.WBTC, "0xd18B7EC58Cdf4876f6AFebd3Ed1730e4Ce10414b"], "permitFailure": true }
+      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.monad.WMON, ADDRESSES.monad.WETH, ADDRESSES.monad.USDC, ADDRESSES.monad.WBTC, "0xd18B7EC58Cdf4876f6AFebd3Ed1730e4Ce10414b"] }
     }
   },
   "everclear": {
