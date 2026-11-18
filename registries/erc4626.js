@@ -560,6 +560,15 @@ const configs = {
     methodology: 'Counts the USDC value of RWI Vault shares via totalAssets(), which accrues at the on-chain fixed yield rate. Deposits are deployed by the Vault Operator into tokenised onchain and offchain insurance opportunities. Assets are held as Pendle PT-reUSDe, so the same capital is also counted in Re and Pendle TVL.',
     ethereum: ['0xcAFeAA466736ac01e0AC9Ca72644beF348694731'],
     },
+  'enmonetic': {
+    methodology: 'TVL is the totalAssets of the Enmonetic vaults, which allocate deposits to lending markets such as Aave, Compound, Fluid and Morpho.',
+    start: '2026-09-14', // USDC vault deploy
+    doublecounted: true,
+    ethereum: [
+      '0x585b8e4160607339ff425baf75b22506c1779fc2', // USDC vault (fUSDC)
+      '0x91134a0450628846b3853e93444a7cd20a02f4ba', // USDT vault (fUSDT)
+    ],
+  },
   // --- custom-abi vaults (migrated 2026-10-22) ---
   'deq': {
     ethereum: { vaults: ['0x3742f3Fcc56B2d46c7B8CA77c23be60Cd43Ca80a'], tokenAbi: 'avail', balanceAbi: 'assets' },
