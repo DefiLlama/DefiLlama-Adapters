@@ -27,7 +27,6 @@ module.exports = {
   polygon: { fromBlock: 30715517, v2FromBlock: 31637453, factories: [v3, v4], },
   avax: { fromBlock: 18393367, v2FromBlock: 18350097, factories: [v3, v4], },
   fantom: { fromBlock: 69441842, v2FromBlock: 46365810, factories: [v3, v4], },
-  mantle: { fromBlock: 18080827, factories: [v3, v4], },
   pulse: { fromBlock: 15141503, factories: [v3, '0xf44c89b6846c8a9bc068899513fbf27ac1c23a96'], },
   kava: { fromBlock: 1982214, v2FromBlock: 1912675, factories: ['0xd5d3d09997e005a05477a52b2eaf98d9276655a7', v4], },
   flare: {
