@@ -1158,35 +1158,6 @@ module.exports = {
       "tokens": [ADDRESSES.base.WETH, ADDRESSES.base.cbBTC, ADDRESSES.base.USDC]
     }
   },
-  "tacit": {
-    "methodology": "TVL is the assets held by Tacit's contracts: the ETH, USDC, USDT and wstETH wrapped into the ConfidentialPool on Ethereum, the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain, and the wstETH escrowed in the CollateralEngine that backs Bitcoin locks. Balances are read from the contracts; Tacit's own token (TAC) is not counted.",
-    "start": "2026-09-17",
-    "ethereum": {
-      "owners": [
-        "0x000000000Ed1eabD231Be41d93b719056F7febFC",
-        "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
-        "0x000000003f608BDdF0ca45934003ffb9DbDF70DB"
-      ],
-      "tokens": [
-        ADDRESSES.null,
-        ADDRESSES.ethereum.WSTETH,
-        ADDRESSES.ethereum.USDC,
-        ADDRESSES.ethereum.USDT
-      ]
-    },
-    "base": {
-      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
-      "tokens": [
-        ADDRESSES.null
-      ]
-    },
-    "robinhood": {
-      "owner": "0x000000c2A20657CE25f2Ba99737933D031AFBEE9",
-      "tokens": [
-        ADDRESSES.null
-      ]
-    },
-  },
   "wager-predict": {
     "methodology": "USDW held by the Wager Predict market contracts on BSC: trader collateral in SpotEngine, LP deposits in the Vault and resolution bonds in the ResolutionModule.",
     "start": "2026-10-05",
