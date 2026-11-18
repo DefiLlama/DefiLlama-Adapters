@@ -416,6 +416,7 @@ const configs = {
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
             '0x40DdCcAC38E4F6f2cB802c09F0a08f39d3dCb48F', // Morpho V2 Noon Ecosystem Vault: owner at creation
+            '0xf9AC70A7D10F92e6Cc6d98837e0D9656C1eC459F', // Morpho V2 Solana and Tokenized Stocks vaults: owner at creation
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
@@ -479,6 +480,12 @@ const configs = {
         arbitrum: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0xf9AC70A7D10F92e6Cc6d98837e0D9656C1eC459F', // Morpho V2 Core USDG: owner at creation
+          ],
+        },
+        arc: {
+          morpho: [
+            '0xd45C268Ef9850a00D51d7c05C0aF17fdAd309060', // Morpho V2 Clearstar Core USDC
           ],
         },
         hemi: {
