@@ -5,8 +5,7 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 // Pool liquidity itself sits in the Uniswap V4 PoolManager and is already counted by the
 // uniswap-v4 adapter, so only the protocol's own contracts are counted here.
 const CONTROLLER = '0x1d05Da4495E57C764229Ec355FCEC1298C6A4AeD' // creates memes (TokenCreated)
-const VAULT = '0x1fd8082AC782444EcD013803A18BAD383BFAc0F8' // staked memes, fees, reward assets
-const REFERRALS = '0x0b7dc45AD9c32ed83e4224d12C3a8A7917E0aC86' // referral payouts, held in USDG
+const VAULT = '0x1fd8082AC782444EcD013803A18BAD383BFAc0F8' // staked memes, USDG fees, reward assets
 const FROM_BLOCK = 104517510 // Controller deployment
 
 async function tvl(api) {
@@ -20,15 +19,13 @@ async function tvl(api) {
 
   return sumTokens2({
     api,
-    tokensAndOwners: [
-      ...[...memes, usdg, ...rewardAssets].map(t => [t, VAULT]),
-      [usdg, REFERRALS],
-    ],
+    owner: VAULT,
+    tokens: [...memes, usdg, ...rewardAssets],
   })
 }
 
 module.exports = {
-  methodology: 'Counts assets held by the Gemoon protocol contracts: the Vault (meme tokens staked by users, USDG swap fees pending distribution, converted reward assets) and the Referrals contract (USDG referral payouts). Liquidity in the Uniswap V4 pools of the memes is held by the PoolManager and is counted by the Uniswap V4 adapter, not here.',
+  methodology: 'Counts assets held by the Gemoon protocol contracts: the Vault (meme tokens staked by users, USDG swap fees pending distribution, converted reward assets). The Referrals contract is not counted. Liquidity in the Uniswap V4 pools of the memes is held by the PoolManager and is counted by the Uniswap V4 adapter, not here.',
   start: '2026-11-03',
   robinhood: { tvl },
 }
