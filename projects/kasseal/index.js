@@ -51,20 +51,49 @@ async function feeIn(address) {
   return feeAccruedOf(redeemScript)
 }
 
-async function tvl(api) {
+// Live curve cells by token (one per token).
+async function liveCurves() {
   const { cells } = await get(CELLS)
-  const addresses = [...new Set(cells.filter((c) => c.kind === 'curve').map((c) => c.address))]
-  if (!addresses.length) return // every curve has graduated: nothing locked in curves
+  return new Map(cells.filter((c) => c.kind === 'curve').map((c) => [c.tokenId, c.address]))
+}
+
+// KAS locked in each address, after its unswept fees; 0 for an address that holds nothing.
+async function lockedAt(addresses) {
   const balances = await sdk.chains.utxo.getBalances({ chain: 'kaspa', addresses })
   const { results, errors } = await PromisePool.withConcurrency(5).for(addresses).process(async (address) => {
     const amount = BigInt(String(balances[address] ?? 0))
-    // A cell spent between the listing and the balance read holds nothing at its old address: it counts 0.
-    if (amount === 0n) return 0n
+    if (amount === 0n) return [address, 0n]
     const fee = await feeIn(address)
-    return amount > fee ? amount - fee : 0n
+    return [address, amount > fee ? amount - fee : 0n]
   })
   if (errors.length) throw errors[0]
-  const sompi = results.reduce((a, b) => a + b, 0n)
+  return new Map(results)
+}
+
+// A trade moves a curve to a new address (its state is in its script). A curve that reads empty was traded between
+// the listing and the read: list again and read its new address, a few times at most. Each token counts once.
+const ATTEMPTS = 3
+
+async function tvl(api) {
+  let curves = await liveCurves()
+  if (!curves.size) return // every curve has graduated: nothing locked in curves
+  const locked = new Map() // tokenId -> sompi
+  let pending = [...curves.keys()]
+  for (let attempt = 1; pending.length; attempt++) {
+    const read = await lockedAt([...new Set(pending.map((t) => curves.get(t)))])
+    const empty = []
+    for (const t of pending) {
+      const v = read.get(curves.get(t))
+      if (v > 0n) locked.set(t, v)
+      else empty.push(t)
+    }
+    if (!empty.length || attempt === ATTEMPTS) break
+    const before = curves
+    curves = await liveCurves()
+    // Read again only the tokens still live whose curve moved; a token no longer listed has graduated.
+    pending = empty.filter((t) => curves.has(t) && curves.get(t) !== before.get(t))
+  }
+  const sompi = [...locked.values()].reduce((a, b) => a + b, 0n)
   api.addCGToken('kaspa', Number(sompi) / 1e8)
 }
 
