@@ -6,6 +6,7 @@ const MARKET_LIST_URL = 'https://api.lista.org/api/moolah/borrow/marketList?page
 const config = {
   bsc: { vault: '0x8F73b65B4caAf64FBA2aF91cC5D4a2A1318E5D8C' },
   ethereum: { vault: '0xf820fB4680712CD7263a0D3D024D5b5aEA82Fd70', start: 1758872495 }, // vault deployed at block 23445769 (2025-09-26)
+  robinhood: { vault: '0xE4153Eb04417bE05b8d6B2222E4Cdd8AE674ee76', start: 1793763789 }, // first markets created at block 105594769 (2026-11-04)
 }
 
 // Curator vaults counted under their own listing; their pro-rata market share is removed here to avoid double counting.
