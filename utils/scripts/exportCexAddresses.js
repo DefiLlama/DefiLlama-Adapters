@@ -34,9 +34,6 @@ async function run() {
   const list = [...rows.values()]
   console.log(`${list.length} addresses from ${new Set(list.map((row) => row.exchange)).size} exchanges`)
   if (dry) return console.log(`--dry: not written to ${STORE_KEY}`)
-  const stored = await sdk.cache.readCache(STORE_KEY, { readFromR2Cache: true, private: true }).catch(() => null)
-  if (JSON.stringify(stored) === JSON.stringify(list)) return console.log(`${STORE_KEY} unchanged`)
-  // writeCache returns nothing on its own errors, and when its local copy already matches though R2 differs.
   const written = await sdk.cache.writeCache(STORE_KEY, list, { private: true })
   if (!written) throw new Error(`${STORE_KEY} not written`)
   console.log(`wrote ${written.length}B to ${STORE_KEY}`)
