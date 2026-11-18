@@ -335,6 +335,14 @@ const MorphoConfigs = {
       }
     ]
   },
+  xlayer: {
+    vaultFactoriesV2: [
+      {
+        address: '0x63d6eac0d16d57dd131d9023adb060277d3237d7',
+        fromBlock: 73110352,
+      },
+    ],
+  },
   flare: {
     vaultFactoriesV2: [
       {
