@@ -89,18 +89,49 @@ async function grvtL1Tvl(api) {
   await grvtCompartmentTvl(api)
 }
 
+const ZERO_ASSET_ID = '0x' + '0'.repeat(64)
+
+// chainBalance for specific tokens, including the post-upgrade L1AssetTracker when the vault has one.
+// A zero asset id means the token is not registered, so the read is skipped instead of adding a bogus balance.
+async function txBridgeTokenBalances(api, { chainId, target = _targetV2, tokens }) {
+  const assetIds = await api.multiCall({ abi: 'function assetId(address) view returns (bytes32)', calls: tokens, target, permitFailure: true })
+  const tokensWithIds = []
+  const ids = []
+  tokens.forEach((token, i) => {
+    const id = assetIds[i]
+    if (id && id !== ZERO_ASSET_ID) {
+      tokensWithIds.push(token)
+      ids.push(id)
+    }
+  })
+  if (!ids.length) return
+  const chainBalanceAbi = 'function chainBalance(uint256 chainId, bytes32 assetId) view returns (uint256 balance)'
+  const calls = ids.map(id => ({ params: [chainId, id] }))
+  const balances = (await api.multiCall({ target, calls, abi: chainBalanceAbi, permitFailure: true })).map(i => i ?? 0)
+  api.add(tokensWithIds, balances)
+  const assetTracker = await api.call({ abi: 'address:l1AssetTracker', target, permitFailure: true })
+  if (assetTracker && assetTracker !== gasAddress) {
+    const trackerBalances = (await api.multiCall({ target: assetTracker, calls, abi: chainBalanceAbi, permitFailure: true })).map(i => i ?? 0)
+    api.add(tokensWithIds, trackerBalances)
+  }
+}
+
 // zkSync-stack (Elastic Chain) forks whose L1 TVL is custodied in the txBridge shared bridge.
 function txBridgeExportFn(chainConfigs) {
   const result = {}
   Object.entries(chainConfigs).forEach(([chain, config]) => {
-    const { chainId, target, additionalBridges, extraTokens, extraTvl, blacklistedTokens = [] } = config
+    const { chainId, target, additionalBridges, extraTokens, extraTvl, blacklistedTokens = [], stakingTokens = [] } = config
+    const tvlBlacklist = blacklistedTokens.concat(stakingTokens)
     result[chain] = {
       tvl: async (api) => {
         await txBridgeTvlV2(api, { chainId, target, additionalBridges, extraTokens })
         if (extraTvl) await extraTvl(api)
-        blacklistedTokens.forEach(token => api.removeTokenBalance(token))
+        tvlBlacklist.forEach(token => api.removeTokenBalance(token))
         return api.getBalances()
       },
+    }
+    if (stakingTokens.length) {
+      result[chain].staking = (api) => txBridgeTokenBalances(api, { chainId, target, tokens: stakingTokens })
     }
   })
   return result
@@ -116,7 +147,14 @@ const configs = {
   'lens': { ethereum: { chainId: 232 } },
   'openzk': { ethereum: { chainId: 1345 } },
   'treasure': { ethereum: { chainId: 61166 } },
-  'adi-bridge': { ethereum: { chainId: 36900, target: '0x0a0f8912162ff83a036883dbada42eff647a3065' } },
+  'adi-bridge': {
+    methodology: "Counts assets the shared bridge assigns to ADI chain 36900. ADI is ADI Chain's own gas token, locked in the L1NativeTokenVault, and is counted under staking.",
+    ethereum: {
+      chainId: 36900,
+      target: '0x0a0f8912162ff83a036883dbada42eff647a3065',
+      stakingTokens: ['0x8b1484d57abbe239bb280661377363b03c89caea'], // ADI
+    },
+  },
   'zero_network': { ethereum: { chainId: 543210 } },
   'sophon': {
     ethereum: {
