@@ -6,35 +6,38 @@ const abi = {
 }
 
 module.exports = {
-  methodology: "Vault deposits and fee-excluded core liquidity in Aegis-hooked Uniswap v4 and Calamari v4 pools on Ink. Pools are discovered from on-chain PoolManager and Aegis Engine initialization events, with reserves read on-chain. Uniswap v4 pool liquidity also appears in Uniswap v4 TVL.",
+  methodology: "Vault deposits and fee-excluded core liquidity in Aegis-hooked Uniswap v4 and Calamari v4 pools on Ink. Pools are discovered from Aegis DynamicFeeManager PoolInitialized events and their matching PoolManager Initialize events, with reserves read on-chain. Uniswap v4 pool liquidity also appears in Uniswap v4 TVL.",
   misrepresentedTokens: true,
   doublecounted: true,
 } // node test.js projects/thedeep/index.js
 
 const reservesLens = '0x0000001b173C3bbF3984D417d8614E3eed34865B'
-const poolInitializedAbi = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'
-const marketInitializedAbi = 'event MarketInitialized(bytes32 indexed poolId, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks)'
+const poolInitializedAbi = 'event PoolInitialized(bytes32 indexed poolId)'
+const initializeAbi = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'
+const INITIALIZE_TOPIC = '0xdd466e674ea557f56295e2d0218a125ea4b4f0f6f3307b95f85e6110838d6438'
 const inkAegisDeployments = [
-  { aegisEngine: '0x1a22457422B9308AB0C0dC6cef8629e061716009', poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', fromBlock: 55988139 },
-  { aegisEngine: '0x2fC2f4D1EEf9C5F63cdfC13BE3b842cBda8eF946', poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc', fromBlock: 59523618 },
+  { dynamicFeeManager: '0xc307E55749941e6B0Fc0D7B487fF01198cA48bE1', poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', fromBlock: 55988139 },
+  { dynamicFeeManager: '0xbcf84976a9ae569dd82f2078aa4778702d6f566d', poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc', fromBlock: 59523618 },
 ]
 
 async function addInkAegisPools(api) {
   const block = await api.getBlock()
-  for (const { aegisEngine, poolManager, hook, fromBlock } of inkAegisDeployments) {
+  for (const { dynamicFeeManager, poolManager, hook, fromBlock } of inkAegisDeployments) {
     if (block < fromBlock) continue
-    const [poolLogs, marketLogs] = await Promise.all([
-      getLogs2({ api, factory: poolManager, eventAbi: poolInitializedAbi, fromBlock }),
-      getLogs2({ api, factory: aegisEngine, eventAbi: marketInitializedAbi, fromBlock }),
-    ])
-    const pools = new Map()
-    for (const log of poolLogs) {
-      if (log.hooks.toLowerCase() === hook) pools.set(log.id.toLowerCase(), log)
-    }
-    for (const log of marketLogs) {
-      if (log.hooks.toLowerCase() === hook) pools.set(log.poolId.toLowerCase(), log)
-    }
-    for (const pool of pools.values()) {
+    const registered = await getLogs2({ api, target: dynamicFeeManager, eventAbi: poolInitializedAbi, fromBlock, onlyArgs: false })
+    for (const log of registered) {
+      const poolId = log.args.poolId
+      const poolBlock = Number(log.blockNumber)
+      const [pool] = await getLogs2({
+        api,
+        target: poolManager,
+        eventAbi: initializeAbi,
+        topics: [INITIALIZE_TOPIC, poolId],
+        fromBlock: poolBlock,
+        toBlock: poolBlock + 1,
+        skipCache: true,
+      })
+      if (!pool || pool.hooks.toLowerCase() !== hook) throw new Error(`Missing Aegis pool initialization for ${poolId}`)
       const reserves = await api.call({
         target: reservesLens,
         abi: abi.getPoolTVL,
