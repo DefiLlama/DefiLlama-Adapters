@@ -38,7 +38,6 @@ module.exports = {
   },
   klaytn: { fromBlock: 170539718, factories: ['0x6dd27f2b82f78dd8a802a9228f340518280359f1'], },
   era: { fromBlock: 13265113, factories: ['0xb5ded5774bb01b22a06e58a06917ef1f10b2f61a', '0x2d45b63e04b1fb612e3df1ccd66b81ee10c6a5d5'], },
-  lukso: { fromBlock: 4796196, factories: [v4], },
   berachain: { fromBlock: 4083978, factories: [v4], },
   unichain: { fromBlock: 17091208, factories: [v4], },
   monad: { fromBlock: 100676245, factories: ['0x00c6b2512eefea1f56c60f7e504437ad698162de'], },
