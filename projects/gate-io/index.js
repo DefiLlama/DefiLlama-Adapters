@@ -10,6 +10,12 @@ const { addThetaBalances } = require("../helper/chain/theta.js");
 
 const config = {
   "ethereum": {
+    tokens: [
+      ...defaultTokens.ethereum,
+      '0xb98d4c97425d9908e66e53a6fdf673acca0be986', // ABT
+      '0xe7c6bf469e97eeb0bfb74c8dbff5bd47d4c1c98a', // HSK
+      '0xa29c9a740de8194e4016747e9a04a84946ada0a5', // NUMI
+    ],
     ownTokens: ['0xE66747a101bFF2dBA3697199DCcE5b743b454759'], // GT
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -86,6 +92,10 @@ const config = {
     ]
   },
   "arbitrum": {
+    tokens: [
+      ...defaultTokens.arbitrum,
+      '0xd3ea09206d4a76361e369e16b4ff37a89838623d', // FXNW
+    ],
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
@@ -101,6 +111,11 @@ const config = {
     ]
   },
   "polygon": {
+    tokens: [
+      ...defaultTokens.polygon,
+      '0x98965474ecbec2f532f1f780ee37b0b05f77ca55', // SUT
+      '0xd60deba014459f07bbcc077a5b817f31dafd5229', // VATRENI
+    ],
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
@@ -144,6 +159,21 @@ const config = {
     ]
   },
   "bsc": {
+    tokens: [
+      ...defaultTokens.bsc,
+      '0x5d3a12c42e5372b2cc3264ab3cdcf660a1555238', // ARIA
+      '0xb208063997db51de3f0988f8a87b0aff83a6213f', // BBT
+      '0xa4b68d48d7bc6f04420e8077e6f74bdef809dea3', // BGSC
+      '0xfed13d0c40790220fbde712987079eda1ed75c51', // BTR
+      '0xaa036928c9c0df07d525b55ea8ee690bb5a628c1', // EVAA
+      '0xd55c9fb62e176a8eb6968f32958fefdd0962727e', // FHE
+      '0x6261963ebe9ff014aad10ecc3b0238d4d04e8353', // HANA
+      '0xd5eaaac47bd1993d661bc087e15dfb079a7f3c19', // KOMA
+      '0x8dedf84656fa932157e27c060d8613824e7979e3', // STBL
+      '0x9123400446a56176eb1b6be9ee5cf703e409f492', // TRADOOR
+      '0xe3225e11cab122f1a126a28997788e5230838ab9', // XNY
+      '0xc51a9250795c0186a6fb4a7d20a90330651e4444', // 我踏马来了
+    ],
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
@@ -257,6 +287,10 @@ const config = {
     ]
   },
   "base": {
+    tokens: [
+      ...defaultTokens.base,
+      '0x29cc30f9d113b356ce408667aa6433589cecbdca', // ELSA
+    ],
     "owners": [
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
