@@ -1,14 +1,39 @@
 const { getLogs } = require('../helper/cache/getLogs')
+const { getHookPools } = require('../helper/uniswapV4')
 
 const abi = {
   "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+  "getPoolTVL": "function getPoolTVL(address manager, (address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) key) view returns ((uint256 coreAmount0, uint256 coreAmount1, uint256 hookReserves0, uint256 hookReserves1, uint256 hookEffective0, uint256 hookEffective1, uint160 sqrtPriceX96, int24 tick, uint128 activeLiquidity, uint256 blockNumber, address statsProvider, uint16 hookPermissions, bool hasCustomAccounting, uint8 statsStatus) result)",
 }
 
 module.exports = {
-  methodology: "Vault deposits",
+  methodology: "Vault deposits and fee-excluded core liquidity in Aegis-hooked Uniswap v4 and Calamari v4 pools on Ink. Uniswap v4 pool liquidity also appears in Uniswap v4 TVL.",
   misrepresentedTokens: true,
   doublecounted: true,
 } // node test.js projects/thedeep/index.js
+
+const reservesLens = '0x0000001b173C3bbF3984D417d8614E3eed34865B'
+const inkAegisDeployments = [
+  { poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', fromBlock: 55988139 },
+  { poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc', fromBlock: 59523618 },
+]
+
+async function addInkAegisPools(api) {
+  const block = await api.getBlock()
+  for (const { poolManager, hook, fromBlock } of inkAegisDeployments) {
+    if (block < fromBlock) continue
+    const pools = await getHookPools({ api, hook, poolManager, fromBlock })
+    for (const pool of pools) {
+      const reserves = await api.call({
+        target: reservesLens,
+        abi: abi.getPoolTVL,
+        params: [poolManager, [pool.token0, pool.token1, pool.fee, pool.spacing, hook]],
+      })
+      api.add(pool.token0, reserves.coreAmount0)
+      api.add(pool.token1, reserves.coreAmount1)
+    }
+  }
+}
 
 const eventAbi = 'event ICHIVaultCreated (address indexed sender, address ichiVault, address tokenA, bool allowTokenA, address tokenB, bool allowTokenB, uint24 fee, uint256 count)'
 const topic = '0xde147f43b6837f282eee187234c866cf001806167325f3ea883e36bed0c16a20'
@@ -95,6 +120,8 @@ Object.keys(config).forEach(chain => {
           if (!blacklistedTokens.includes(tokenB.toLowerCase())) api.add(tokenB, b.total1)
         })
       }
+
+      if (chain === 'ink') await addInkAegisPools(api)
 
       return api.getBalances()
     }

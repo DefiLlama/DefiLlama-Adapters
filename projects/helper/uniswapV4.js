@@ -88,7 +88,7 @@ async function getHookPools({ api, hook, poolManager, fromBlock }) {
   const logs = await getLogs2({ api, factory: poolManager, eventAbi: initializeAbi, fromBlock })
   return logs
     .filter((log) => log.hooks.toLowerCase() === hook.toLowerCase())
-    .map((log) => ({ id: log.id, token0: log.currency0, token1: log.currency1, spacing: Number(log.tickSpacing) }))
+    .map((log) => ({ id: log.id, token0: log.currency0, token1: log.currency1, fee: Number(log.fee), spacing: Number(log.tickSpacing) }))
 }
 
 // adds the reserves of the given v4 pools ([{ id, token0, token1, spacing }]) to api, reconstructed from
