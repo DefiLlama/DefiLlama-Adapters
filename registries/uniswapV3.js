@@ -1988,6 +1988,10 @@ const uniV3Configs = {
     methodology: 'TVL is the tokens held in StockiumSwap pools, the Uniswap V3 pools created by the StockiumSwap factory on Elysium (found from its PoolCreated events).',
     elysium: { factory: '0x4F66184A9FFabB7f7071D590C2c48DEDf41676f4', fromBlock: 42214 },
   },
+  'owlswap': {
+    methodology: 'Counts the tokens held by every OwlSwap V3 pool on BSC, discovered from the factory PoolCreated events.',
+    bsc: { factory: '0x8d33DA172e5A27C9661286Ef1c9740de87Aa2F7B', fromBlock: 130483251 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
