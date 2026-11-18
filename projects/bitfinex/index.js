@@ -136,3 +136,4 @@ module.exports = mergeExports([
   cexExports(config),
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
 ])
+Object.defineProperty(module.exports, '_rawConfig', { value: config, enumerable: false })

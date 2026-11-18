@@ -355,3 +355,4 @@ module.exports = mergeExports([
     },
   },
 ]);
+Object.defineProperty(module.exports, '_rawConfig', { value: config, enumerable: false })
