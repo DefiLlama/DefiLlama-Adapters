@@ -2333,3 +2333,4 @@ module.exports = mergeExports([
   cexExports(config),
   gateEarnTvl,
 ]);
+Object.defineProperty(module.exports, '_rawConfig', { value: config, enumerable: false })

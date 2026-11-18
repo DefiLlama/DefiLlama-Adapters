@@ -11,6 +11,7 @@
     "use-token-labels": "node utils/scripts/useTokenLabels.js",
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
     "check-registries-duplicates": "node utils/scripts/checkRegistriesDups.js",
+    "export-cex-addresses": "node utils/scripts/exportCexAddresses.js",
     "check-core-assets-refs": "node utils/scripts/checkCoreAssetsRefs.js",
     "string-timestamp": "node utils/scripts/stringTimestamp.js",
     "migrate-dead": "node scripts/migrateDeadProjects.js",

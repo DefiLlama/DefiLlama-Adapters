@@ -379,3 +379,4 @@ module.exports = mergeExports([
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
   { avax: { tvl: avaxX.sumTokensExport({ owners: avaxXChainOwners }) } },
 ])
+Object.defineProperty(module.exports, '_rawConfig', { value: { ...config, avax: { ...config.avax, owners: [...config.avax.owners, ...avaxXChainOwners] } }, enumerable: false })

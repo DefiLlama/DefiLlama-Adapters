@@ -235,3 +235,11 @@ module.exports.bitcoin = { tvl: bitcoinTvl }
 async function bitcoinTvl(api) {
   return sumTokens({ api, owners: await bitcoinAddressBook.binanceFetcher() })
 }
+
+Object.defineProperty(module.exports, '_rawConfig', {
+  value: {
+    ...Object.fromEntries([...chains].map((chain) => [chain, { owners: async () => (await getOwners({ chain })).owners }])),
+    bitcoin: { owners: bitcoinAddressBook.binanceFetcher },
+  },
+  enumerable: false,
+})
