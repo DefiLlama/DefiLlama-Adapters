@@ -168,7 +168,6 @@ const config = {
       '0xfed13d0c40790220fbde712987079eda1ed75c51', // BTR
       '0xaa036928c9c0df07d525b55ea8ee690bb5a628c1', // EVAA
       '0xd55c9fb62e176a8eb6968f32958fefdd0962727e', // FHE
-      '0x6261963ebe9ff014aad10ecc3b0238d4d04e8353', // HANA
       '0xd5eaaac47bd1993d661bc087e15dfb079a7f3c19', // KOMA
       '0x8dedf84656fa932157e27c060d8613824e7979e3', // STBL
       '0x9123400446a56176eb1b6be9ee5cf703e409f492', // TRADOOR
