@@ -12,6 +12,7 @@ const config = {
   "ethereum": {
     tokens: [
       ...defaultTokens.ethereum,
+      ADDRESSES.ethereum.sUSDe, // sUSDe (staked USDe)
       '0xb98d4c97425d9908e66e53a6fdf673acca0be986', // ABT
       '0xe7c6bf469e97eeb0bfb74c8dbff5bd47d4c1c98a', // HSK
       '0xa29c9a740de8194e4016747e9a04a84946ada0a5', // NUMI
