@@ -1,29 +1,51 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { getHookPools } = require('../helper/uniswapV4')
+const { AbiCoder, keccak256 } = require('ethers')
 
 const abi = {
   "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
   "getPoolTVL": "function getPoolTVL(address manager, (address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) key) view returns ((uint256 coreAmount0, uint256 coreAmount1, uint256 hookReserves0, uint256 hookReserves1, uint256 hookEffective0, uint256 hookEffective1, uint160 sqrtPriceX96, int24 tick, uint128 activeLiquidity, uint256 blockNumber, address statsProvider, uint16 hookPermissions, bool hasCustomAccounting, uint8 statsStatus) result)",
+  "getSlot0": "function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)",
 }
 
 module.exports = {
-  methodology: "Vault deposits and fee-excluded core liquidity in Aegis-hooked Uniswap v4 and Calamari v4 pools on Ink. Uniswap v4 pool liquidity also appears in Uniswap v4 TVL.",
+  methodology: "Vault deposits and fee-excluded core liquidity in Aegis-hooked Uniswap v4 and Calamari v4 pools on Ink. Pools are discovered from on-chain events and TheDeep's catalogue; reserves are read on-chain. Uniswap v4 pool liquidity also appears in Uniswap v4 TVL.",
   misrepresentedTokens: true,
   doublecounted: true,
 } // node test.js projects/thedeep/index.js
 
 const reservesLens = '0x0000001b173C3bbF3984D417d8614E3eed34865B'
 const inkAegisDeployments = [
-  { poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', fromBlock: 55988139 },
-  { poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc', fromBlock: 59523618 },
+  { poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', stateView: '0x76fd297e2d437cd7f76d50f01afe6160f86e9990', hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', fromBlock: 55988139 },
+  { poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', stateView: '0x9bf3f07e41e05d658248467760c745e278ef6211', hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc', fromBlock: 59523618 },
 ]
 
 async function addInkAegisPools(api) {
   const block = await api.getBlock()
-  for (const { poolManager, hook, fromBlock } of inkAegisDeployments) {
+  if (block < inkAegisDeployments[0].fromBlock) return
+  const response = await fetch('https://app.thedeep.ink/api/v4-markets?chainId=57073', { signal: AbortSignal.timeout(15000) })
+  if (!response.ok) throw new Error(`TheDeep pool catalogue returned ${response.status}`)
+  const catalogue = await response.json()
+  if (!Array.isArray(catalogue)) throw new Error('TheDeep pool catalogue returned an invalid response')
+  const coder = AbiCoder.defaultAbiCoder()
+
+  for (const { poolManager, stateView, hook, fromBlock } of inkAegisDeployments) {
     if (block < fromBlock) continue
     const pools = await getHookPools({ api, hook, poolManager, fromBlock })
-    for (const pool of pools) {
+    const poolById = new Map(pools.map(pool => [pool.id.toLowerCase(), pool]))
+
+    for (const market of catalogue) {
+      if (market.chainId !== 57073 || market.poolKey?.hooks?.toLowerCase() !== hook) continue
+      const key = market.poolKey
+      const poolId = keccak256(coder.encode(['address', 'address', 'uint24', 'int24', 'address'], [key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks]))
+      if (poolId.toLowerCase() !== market.poolId.toLowerCase()) throw new Error(`Invalid pool key for ${market.poolId}`)
+      if (poolById.has(poolId.toLowerCase())) continue
+      const slot0 = await api.call({ target: stateView, abi: abi.getSlot0, params: [poolId] })
+      if (BigInt(slot0.sqrtPriceX96) === 0n) continue
+      poolById.set(poolId.toLowerCase(), { token0: key.currency0, token1: key.currency1, fee: key.fee, spacing: key.tickSpacing })
+    }
+
+    for (const pool of poolById.values()) {
       const reserves = await api.call({
         target: reservesLens,
         abi: abi.getPoolTVL,
