@@ -26,6 +26,7 @@ const helpers = {
   "bitcoincash": require("./chain/bitcoincash"),
   "dash": require("./chain/dash"),
   "kaspa": require("./chain/kaspa"),
+  "kadena": require("./chain/kadena"),
   "bsv": require("./chain/bsv"),
   "arweave": require("./chain/arweave"),
   "pi": require("./chain/pi"),

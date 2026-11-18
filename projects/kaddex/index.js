@@ -1,5 +1,7 @@
 const { fetchLocal, mkMeta } = require("../helper/pact");
+const { get } = require("../helper/http");
 
+const STATS_API = "https://dexapi.kadena.fun";
 const chainId = "2";
 const network = `https://api.chainweb-community.org/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
 const GAS_PRICE = 0.00000001;
@@ -44,16 +46,40 @@ const getPairList = async () => {
   return pairList;
 };
 
-async function tvl() {
-  const pairList = await getPairList();
-  const kdaInPools = pairList.reduce((total, pair) => total + pair.kdaReserve, 0);
+// The node can only be read at the current block. For a past date the KDA held by each pool comes
+// from the daily history of the stats api the Mercatus app uses (https://www.mercatus.works/analytics).
+const isHistorical = (api) => !!api?.timestamp && api.timestamp < Math.floor(Date.now() / 1000 / 86400) * 86400;
+
+const getHistoricalKdaInPools = async (timestamp) => {
+  const day = new Date(timestamp * 1000).toISOString().slice(0, 10);
+  const days = await get(`${STATS_API}/tvl/daily?dateStart=${day}&dateEnd=${day}`);
+  const pools = Array.isArray(days) ? days.find((item) => item._id === day)?.tvl : undefined;
+  if (!Array.isArray(pools) || !pools.length) throw new Error(`No Kaddex TVL history for ${day}`);
+
+  let kdaInPools = 0;
+  for (const pool of pools) {
+    const kdaReserve = pool.tokenFrom === KDA ? pool.tokenFromTVL : pool.tokenTo === KDA ? pool.tokenToTVL : undefined;
+    if (kdaReserve === undefined) continue; // only KDA pairs can be valued
+    if (typeof kdaReserve !== "number" || !Number.isFinite(kdaReserve) || kdaReserve < 0)
+      throw new Error(`Bad Kaddex TVL history for ${pool.tokenFrom}:${pool.tokenTo} on ${day}`);
+    kdaInPools += kdaReserve;
+  }
+  return kdaInPools;
+};
+
+async function tvl(api) {
+  const kdaInPools = isHistorical(api)
+    ? await getHistoricalKdaInPools(api.timestamp)
+    : (await getPairList()).reduce((total, pair) => total + pair.kdaReserve, 0);
   // value of each pool taken to be twice the value of its KDA
   return {
     kadena: 2 * kdaInPools,
   };
 }
 
-async function staking() {
+async function staking(api) {
+  // the staking pool has no history source: past dates report no staking, so a tvl refill is not blocked by it
+  if (isHistorical(api)) return {};
   const stakedData = await fetchLocal(
     {
       pactCode: `(kaddex.staking.get-pool-state)`,
@@ -72,7 +98,8 @@ async function staking() {
 }
 
 module.exports = {
-  timetravel: false,
+  timetravel: true, // tvl only, from the stats api history
+  start: '2022-08-01',
   misrepresentedTokens: true,
   methodology: "TVL accounts for the liquidity on all Kaddex (Mercatus) AMM pools paired with KDA, each valued at twice its KDA side. Staking is the KDX staked in the Kaddex staking pool, priced from the KDA/KDX pool.",
   kadena: {
