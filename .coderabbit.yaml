@@ -116,12 +116,19 @@ reviews:
         for LP tokens that pair the own token). A `tvl` of 0 is expected and fine for a
         staking-only listing. Only flag it when you can tell which token is the protocol's own.
 
-        2. One listing, one place. If the PR adds a registry entry and leaves a
-        projects/<same key>/ folder in place, ask for the folder to be removed.
+        2. One listing, one place. If the PR adds a registry entry while a projects/<same key>/
+        folder or a projects/<same key>.js file still exists, ask for it to be removed when the
+        PR is migrating that listing, and for a different key otherwise. A key must also be
+        unique across all registry files: a later file silently overwrites an earlier one. If
+        the key already exists in another registry file, ask for the old entry to be removed
+        (when the listing is being moved) or for a different key.
 
         3. Keep existing chains and entries. If the PR removes an existing entry, or a chain key
-        from an existing entry, ask for it to stay so its history is kept in the API; a dead
-        chain is kept with an empty config rather than deleted.
+        from an existing entry, ask for it to stay so its history is kept in the API. A dead
+        chain keeps its key with the empty form that registry file already uses for other dead
+        chains, for example `<chain>: null` in registries/uniswapV2.js and
+        `<chain>: { tvl: () => ({}) }` in registries/uniswapV3.js. Do not suggest `{}` unless
+        the file already uses it.
 
     - path: "package.json"
       instructions: |
@@ -129,10 +136,10 @@ reviews:
         pnpm-workspace.yaml. If the PR author is not a maintainer, ask for these changes to be
         reverted.
 
-    - path: "pnpm-lock.yaml"
+    - path: "pnpm-workspace.yaml"
       instructions: |
-        Adapter PRs must not edit the lockfile. If the PR author is not a maintainer, ask for
-        this change to be reverted. Do not review the contents.
+        Adapter PRs must not edit pnpm-workspace.yaml. If the PR author is not a maintainer, ask
+        for this change to be reverted.
 
 chat:
   auto_reply: true
