@@ -60,7 +60,7 @@ const DEFAULTS = {
   POLKADOT_RELAY_RPC: 'https://rpc.polkadot.io,https://polkadot-rpc.publicnode.com,https://dot-rpc.stakeworld.io',
   POLKADOT_ASSETHUB_RPC: 'https://polkadot-asset-hub-rpc.polkadot.io,https://statemint.api.onfinality.io/public',
   HYDRATION_RPC: 'https://rpc.hydradx.cloud',
-  BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
+  BLOCKFROST_PROJECT_ID: 'mai'+'nnetkI9zWvNxCmBGj2o3'+'afH8b0MYqkmX4xJS',
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
