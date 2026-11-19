@@ -121,6 +121,11 @@ const configs = {
   'yyex': {
     btr: '0x16Aa605Ca2cBE921AAC6C4838c1109b3cf9d444F',
   },
+  'zeustrade': {
+    methodology: 'TVL is the value of the tokens held by the ZEUS Vault on Base, the single pool behind ZLP that backs every crypto and US stock perp market: liquidity provider deposits, trader collateral and fees not yet distributed. ZLP and staked ZLP are claims on the same tokens and are not counted again.',
+    start: '2026-04-27',
+    base: '0xEAC80C1722E8990AAFeB2Ea3bcF040D29f722bd9',
+  },
 
   // === gmxExports (v1) with staking ===
   'amped': {
