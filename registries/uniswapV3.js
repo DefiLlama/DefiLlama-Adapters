@@ -1989,8 +1989,12 @@ const uniV3Configs = {
     elysium: { factory: '0x4F66184A9FFabB7f7071D590C2c48DEDf41676f4', fromBlock: 42214 },
   },
   'owlswap': {
-    methodology: 'Counts the tokens held by every OwlSwap V3 pool on BSC, discovered from the factory PoolCreated events.',
+    methodology: 'Counts the tokens held by every OwlSwap V3 pool on BSC, Optimism, Polygon, Avalanche and Robinhood, discovered from the factory PoolCreated events.',
     bsc: { factory: '0x8d33DA172e5A27C9661286Ef1c9740de87Aa2F7B', fromBlock: 130483251 },
+    optimism: { factory: '0xe243794F0B40C9C98713be5a07F2eEbA61964fCc', fromBlock: 159700584 },
+    polygon: { factory: '0xe243794F0B40C9C98713be5a07F2eEbA61964fCc', fromBlock: 97534340 },
+    avax: { factory: '0xa03242Dd1e91f54A2104fC6F7D6e6745A9553503', fromBlock: 100681552 },
+    robinhood: { factory: '0x67CCfaCA25248cd5cC9efe4c40cDc4AB8a6a49CD', fromBlock: 118454762 },
   },
 }
 
