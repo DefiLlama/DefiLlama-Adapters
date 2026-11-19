@@ -16,6 +16,7 @@ const DLMM_EXTRA_BIN_SIZE = 112
 const CACHE_PROJECT = 'hawksight'
 const CACHE_KEY = 'solana-dlmm-empty-owners'
 const EMPTY_OWNER_RECHECK_SECONDS = 7 * 24 * 3600
+const CHECKPOINT_EVERY = 500
 
 const readU128 = (data, offset) => data.readBigUInt64LE(offset) + (data.readBigUInt64LE(offset + 8) << 64n)
 
@@ -41,25 +42,30 @@ async function getPositionAccounts(connection) {
     else toCheck.push(owner)
   }
 
+  // One owner at a time: parallel scans get rate-limited (429) by the RPC.
+  // With a cold cache this is ~25k calls and will not finish in one run, so the empties found so far are saved
+  // every CHECKPOINT_EVERY owners: a run that is killed still leaves the next one less to check, until one completes.
   const positionAccounts = []
-  await sdk.util.runInPromisePool({
-    concurrency: 10,
-    items: toCheck,
-    processor: async (owner) => {
-      // no dataSize filter: resized positions are larger than the base PositionV2 account
-      const rows = await connection.getProgramAccounts(DLMM_PROGRAM, {
-        filters: [
-          { memcmp: { offset: 0, bytes: bs58.encode(POSITION_V2_DISCRIMINATOR) } },
-          { memcmp: { offset: 40, bytes: owner } },
-        ],
-      })
-      rows.forEach(({ account }) => positionAccounts.push(account))
-      if (rows.length) return
+  let checked = 0
+  for (const owner of toCheck) {
+    // no dataSize filter: resized positions are larger than the base PositionV2 account
+    const rows = await connection.getProgramAccounts(DLMM_PROGRAM, {
+      filters: [
+        { memcmp: { offset: 0, bytes: bs58.encode(POSITION_V2_DISCRIMINATOR) } },
+        { memcmp: { offset: 40, bytes: owner } },
+      ],
+    })
+    for (const { account } of rows) positionAccounts.push(account)
+    if (!rows.length) {
       // first-time empties get a random age so the weekly re-checks are spread across runs instead of landing on one
       const firstSeen = emptyOwners[owner] === undefined
       stillEmpty[owner] = firstSeen ? now - Math.floor(Math.random() * EMPTY_OWNER_RECHECK_SECONDS) : now
-    },
-  })
+    }
+    if (++checked % CHECKPOINT_EVERY === 0) {
+      sdk.log(`hawksight: checked ${checked}/${toCheck.length} owners, ${positionAccounts.length} positions so far`)
+      await setCache(CACHE_PROJECT, CACHE_KEY, { emptyOwners: stillEmpty })
+    }
+  }
 
   await setCache(CACHE_PROJECT, CACHE_KEY, { emptyOwners: stillEmpty })
   return positionAccounts
