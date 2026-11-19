@@ -15,6 +15,7 @@ const WETH = ADDRESSES.robinhood.WETH
 const stakingFactories = [
   '0x0aAEa47d2e7303EC5a809062eafa59e7F011D857', // v1
   '0x904b8F5d95B593b5F4a6Dbb116b58e1d5CBe93f0', // v2
+  '0x4C87aff7009DE1c58E052FEe202349a10b28Be9c', // v3 (Nov 2026)
 ]
 
 const launchFactories = [
@@ -100,6 +101,6 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is ETH held by Polypad launch contracts and commit vaults, plus ETH, WETH and mandate-list tokens (except POLYDASH) held by Polydash tokenized fund vaults, plus the stake-token balance of pools from the v1 and v2 staking factories, which includes rewards a pool holds in its own stake token. Pools that stake POLYDASH are counted as staking. Reward tokens other than the stake token, virtual ETH on bonding curves, and Uniswap liquidity after graduation are excluded.',
+  methodology: 'TVL is ETH held by Polypad launch contracts and commit vaults, plus ETH, WETH and mandate-list tokens (except POLYDASH) held by Polydash tokenized fund vaults, plus the stake-token balance of pools from the staking factories, which includes rewards a pool holds in its own stake token. Pools that stake POLYDASH are counted as staking. Reward tokens other than the stake token, virtual ETH on bonding curves, and Uniswap liquidity after graduation are excluded.',
   robinhood: { tvl, staking },
 }
