@@ -101,6 +101,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
+  doublecounted: true, // LP collateral sits in Uniswap V3/V4 pools
   methodology:
     'TVL is the USDG held by the Paboxo earn vault and by the lending markets it supplies, plus the stock tokens and WETH that borrowers hold as collateral in their Position contracts (found through PositionCreated events), plus the tokens inside the Uniswap v3/v4 LP NFTs held as collateral by the LP market Positions. Borrowed is the outstanding USDG debt of every market.',
   start: '2026-10-12',
