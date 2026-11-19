@@ -3,9 +3,12 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 
-// Gloam's shielded pool (ShieldPoolPayments), the same address on every chain except Elysium.
+// Gloam's shielded pool (ShieldPoolPayments): one address on Robinhood Chain, Tempo, Base and Ethereum,
+// and another, shared by Elysium and BNB Chain.
 const POOL = '0x39e28cde55cab798874746ac52cb4b5cc99a0194'
 const ELYSIUM_POOL = '0x89d3042390204f57b8b4f8949d3c2203e4002164'
+const BNB_POOL = ELYSIUM_POOL
+const BDX_BSC = '0x6ad12e761b438bea3ea09f6c6266556bb24c2181'
 const GLOAM = '0xDcD885F5c60b3aD49F6D58718696417314e8724d'
 const OUSD = '0x20c0000000000000000000006a37da5c996874be'
 const KNTQ = '0xe45a355d9e9cad2ad85f2d03e3ee3102a036acf0'
@@ -19,7 +22,7 @@ async function poolAssets(api, fromBlock) {
 const fromLogs = (fromBlock) => async (api) => api.sumTokens({ owner: POOL, tokens: await poolAssets(api, fromBlock) })
 
 module.exports = {
-  methodology: 'TVL is the tokens held by the Gloam shielded pool on Robinhood Chain, Tempo, Base, Ethereum and Elysium. On Robinhood Chain, Base and Ethereum the accepted assets are discovered from the pool\'s DepositLimitSet events. $GLOAM held in the pool is the protocol\'s own token and is counted under staking.',
+  methodology: 'TVL is the tokens held by the Gloam shielded pool on Robinhood Chain, Tempo, Base, Ethereum, Elysium and BNB Chain. On Robinhood Chain, Base and Ethereum the accepted assets are discovered from the pool\'s DepositLimitSet events. $GLOAM held in the pool is the protocol\'s own token and is counted under staking.',
   start: '2026-10-21',
   robinhood: {
     tvl: fromLogs(94194599),
@@ -34,5 +37,9 @@ module.exports = {
   elysium: {
     // the Elysium pool also holds native HYPE (address 0)
     tvl: sumTokensExport({ owner: ELYSIUM_POOL, tokens: [ADDRESSES.null, ADDRESSES.elysium.USDC, KNTQ] }),
+  },
+  bsc: {
+    // the BNB Chain pool also holds native BNB (address 0); USDT and USDC have 18 decimals here
+    tvl: sumTokensExport({ owner: BNB_POOL, tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, BDX_BSC] }),
   },
 }
