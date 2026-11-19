@@ -6788,6 +6788,13 @@ const configs = {
       owners: ["0x5be4fb908a43d61b1c8086fe62e39ae8ec483926"],
     },
   },
+  'treasury/quotrons': {
+    ink: {
+      // Buyback Safe and Growth Sink; the Growth Sink's LP vault shares are counted in the protocol's TVL
+      owners: ['0x79aF491d1B533A3fcD1c9ab009931aC95701F6ff', '0x73F5111EE91672c114923793C03B5c868d9C5E03'],
+      tokens: [nullAddress, ADDRESSES.ink.WETH, ADDRESSES.ink.USDT0, ADDRESSES.ink.USDC, '0xe343167631d89B6Ffc58B88d6b7fB0228795491D'], // + USDG
+    },
+  },
 }
 
 const protocols = {}
