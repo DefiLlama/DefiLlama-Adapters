@@ -1238,6 +1238,16 @@ module.exports = {
       ]
     },
   },
+  "biribi": {
+    methodology: "TVL counts the USDC and DAI held by the Biribi bankroll vaults on Arbitrum, including locked wagers and reserves. BRB held in the BRB bankroll vault is reported as staking.",
+    "arbitrum": {
+      "tvl": { "tokensAndOwners": [
+        [ADDRESSES.arbitrum.USDC_CIRCLE, "0x46206b1c1fc631fd6fcf2aa2503f9cb022da96ba"],
+        [ADDRESSES.arbitrum.DAI, "0x137dd55e422b1881ad1566ce21e2e4f393bb37b2"],
+      ] },
+      "staking": { "tokensAndOwners": [["0x58871cf545f8f0df790443492a80edc414df4504", "0x5f9332b04b2590850c7681850ca445ddf7f64aa9"]] }, // BRB
+    },
+  },
   "bb84": {
     "methodology": "TVL is the USDC, EURC and ETH escrowed in the bb84 rollup's OptimismPortal on Ethereum, which locks the L1 side of every deposit until it is withdrawn from the L2.",
     "start": "2026-09-30",
