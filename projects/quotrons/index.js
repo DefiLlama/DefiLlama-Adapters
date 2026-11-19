@@ -33,6 +33,7 @@ function addV4PositionAmounts(api, { currency0, currency1, liquidity, tickLower,
 }
 
 async function tvl(api) {
+  await api.getBlock()
   const [poolManager, usdg, stockCount] = await Promise.all([
     api.call({ abi: 'address:poolManager', target: FACTORY }),
     api.call({ abi: 'address:usdg', target: FACTORY }),
