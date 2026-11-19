@@ -2,7 +2,10 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { post } = require('../helper/http')
 
-const ERC20_MANAGER = '0x53654aEC4171A888d131B5aCab06881cb8f04B9D';
+const ERC20_MANAGERS = [
+    '0x16fCff97822fcf3345Fa76D29c229b11C49EaE12', // used until the Verifier hack (Oct 2026)
+    '0x53654aEC4171A888d131B5aCab06881cb8f04B9D',
+]
 
 const VARA_RPC = 'https://rpc.vara.network'
 const WVARA_VFT = '0x29c42c668012b1ce20720e4615229215023281ef4676fdc77bf047d7fbcb9d17'
@@ -17,7 +20,7 @@ const ROUTE = Buffer.concat([scaleStr('Vft'), scaleStr('BalanceOf')])
 async function tvl(api) {
     await sumTokens2({
         api,
-        owners: [ERC20_MANAGER],
+        owners: ERC20_MANAGERS,
         tokens: [
             ADDRESSES.ethereum.USDC,
             ADDRESSES.ethereum.USDT,
