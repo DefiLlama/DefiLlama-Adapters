@@ -10,32 +10,50 @@ const uniswapConfig = {
 const algebraConfig = {
   eventAbi: 'event Pool (address indexed token0, address indexed token1, address pool)',
   topics: ['0x91ccaa7a278130b65168c3a0c8d3bcae84cf5e43704342bd3ec0b59e59c036db'],
+  // Integral 1.1 to 1.2.2 emit only this for custom-deployer pools, 1.2.3+ emit it next to Pool
+  customPoolEventAbi: 'event CustomPool(address indexed deployer, address indexed token0, address indexed token1, address pool)',
 }
 
 function uniV3Export(config) {
   const exports = {}
 
   Object.keys(config).forEach(chain => {
-    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, blacklistedTokens = [], permitFailure, sumChunkSize, filterFn, } = config[chain]
+    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, customPools, blacklistedTokens = [], blacklistedOwners = [], permitFailure, sumChunkSize, filterFn, sumChunkSleep, onlyUseExistingCache, extraKey, } = config[chain]
     if (!topics) topics = isAlgebra ? algebraConfig.topics : uniswapConfig.topics
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
-
+    
     exports[chain] = {
       tvl: async (api) => {
-        const logs = await getLogs({
+        let logs = await getLogs({
           api,
           target,
           topics,
           fromBlock,
           eventAbi,
+          onlyUseExistingCache,
           onlyArgs: true,
+          extraKey,
         })
+
+        if (customPools) {
+          const customLogs = await getLogs({
+            api,
+            target,
+            fromBlock,
+            eventAbi: algebraConfig.customPoolEventAbi,
+            onlyUseExistingCache,
+            onlyArgs: true,
+            extraKey: extraKey ? `${extraKey}-custom-pool` : 'custom-pool',
+          })
+          const seen = new Set(logs.map(i => i.pool.toLowerCase()))
+          logs = logs.concat(customLogs.filter(i => !seen.has(i.pool.toLowerCase())))
+        }
 
         if (filterFn) 
           blacklistedTokens.push(... await filterFn(api, logs))
         
 
-        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, permitFailure: permitFailure || logs.length > 2000, sumChunkSize, })
+        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, blacklistedOwners, permitFailure: permitFailure ?? logs.length > 2000, sumChunkSize, sumChunkSleep, })
       }
     }
   })
@@ -44,8 +62,9 @@ function uniV3Export(config) {
   return exports
 }
 
-function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0,}) {
+function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0, poolName = 'pools'}) {
   return async (api) => {
+    if (!name) throw new Error('name is required for uniV3GraphExport')
     const size = 1000
     // let lastId = ''
     // let pools
@@ -63,7 +82,7 @@ function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 
   `
     const graphQueryPagedWithoutBlock = `
     query poolQuery($lastId: String) {
-      pools(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
+      ${poolName}(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
         id
         token0 { id }
         token1 { id }

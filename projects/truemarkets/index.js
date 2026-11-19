@@ -3,17 +3,28 @@ const { pool2 } = require('../helper/pool2')
 const { sumTokensExport } = require('../helper/unknownTokens')
 
 const config = {
-  base: { factory: '0x61a98bef11867c69489b91f340fe545eefc695d7', fromBlock: 21180486 },
+  base: {
+    factory: '0x61a98bef11867c69489b91f340fe545eefc695d7',
+    fromBlock: 21180486,
+    vaults: ['0xb13CF163d916917d9cD6E836905cA5f12a1dEF4B']
+  },
 }
 
 Object.keys(config).forEach(chain => {
-  const { factory, fromBlock } = config[chain]
+  const { factory, fromBlock, vaults } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const logs = await getLogs2({ api, factory, eventAbi: 'event MarketCreatedWithDescription (address marketAddress, string marketQuestion, string marketSource, string additionalInfo, uint256 endOfTrading, uint256 yesNoTokenCap, address marketOwner)', fromBlock, })
       const markets = logs.map(log => log.marketAddress)
       const tokens = await api.multiCall({ abi: 'address:paymentToken', calls: markets })
-      return api.sumTokens({ tokensAndOwners2: [tokens, markets] })
+      await api.sumTokens({ tokensAndOwners2: [tokens, markets] })
+
+      // Add TYD Vault(s) TVL
+      if (vaults && vaults.length > 0) {
+        const underlyingTokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+        const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
+        api.addTokens(underlyingTokens, totalAssets)
+      }
     }
   }
 })

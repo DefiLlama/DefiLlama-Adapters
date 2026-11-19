@@ -90,16 +90,16 @@ const LockerV33 = {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: [],
   },
-  heco: defaultConfig,
+  // heco: defaultConfig,
   smartbch: defaultConfig,
   milkomeda: {
-    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
-    lpStorage: ["0x6E573D464416a81A9F82207F1dFD6a42e4b21066"],
+    // tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
+    // lpStorage: ["0x6E573D464416a81A9F82207F1dFD6a42e4b21066"],
   },
-  bitgert: {
-    tokenStorage: ["0x5AB541B972Acab91f0E5E7d30fCB4fe8e81b9Fa7"],
-    lpStorage: ["0x16AAF57c5b3170a143A6A2DDfe897e8a2bDd8FD1"],
-  },
+  // bitgert: {
+  //   tokenStorage: ["0x5AB541B972Acab91f0E5E7d30fCB4fe8e81b9Fa7"],
+  //   lpStorage: ["0x16AAF57c5b3170a143A6A2DDfe897e8a2bDd8FD1"],
+  // },
   dexit: defaultConfig2,
   core: defaultConfig2,
   dogechain: defaultConfig2,

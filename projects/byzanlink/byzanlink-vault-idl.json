@@ -1,0 +1,328 @@
+{
+  "version": "0.1.0",
+  "name": "byzanlink_vault",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "VaultState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vaultAdminAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "baseVaultAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "baseVaultAuthorityBump",
+            "type": "u64"
+          },
+          {
+            "name": "tokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenMintDecimals",
+            "type": "u64"
+          },
+          {
+            "name": "tokenVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenProgram",
+            "type": "publicKey"
+          },
+          {
+            "name": "sharesMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "sharesMintDecimals",
+            "type": "u64"
+          },
+          {
+            "name": "tokenAvailable",
+            "type": "u64"
+          },
+          {
+            "name": "sharesIssued",
+            "type": "u64"
+          },
+          {
+            "name": "reservedCrankFunds",
+            "docs": [
+              "Reserved (formerly `available_crank_funds`, dead since the first",
+              "PayFi-only pass; no longer dead now that permissionless `invest()`",
+              "exists again, but repurposing this specific field isn't necessary —",
+              "left as reserved padding)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "performanceFeeBps",
+            "type": "u64"
+          },
+          {
+            "name": "managementFeeBps",
+            "type": "u64"
+          },
+          {
+            "name": "lastFeeChargeTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "prevAumSf",
+            "type": {
+              "array": ["u64", 2]
+            }
+          },
+          {
+            "name": "pendingFeesSf",
+            "type": {
+              "array": ["u64", 2]
+            }
+          },
+          {
+            "name": "minDepositAmount",
+            "type": "u64"
+          },
+          {
+            "name": "minWithdrawAmount",
+            "type": "u64"
+          },
+          {
+            "name": "pendingAdmin",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeAuthority",
+            "docs": [
+              "Recipient of `withdraw_pending_fees` transfers. Distinct from",
+              "`vault_admin_authority`, which continues to sign the withdrawal but no",
+              "longer receives the funds. Set/rotated via `update_vault_config`."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "cumulativeEarnedInterestSf",
+            "type": {
+              "array": ["u64", 2]
+            }
+          },
+          {
+            "name": "cumulativeMgmtFeesSf",
+            "type": {
+              "array": ["u64", 2]
+            }
+          },
+          {
+            "name": "cumulativePerfFeesSf",
+            "type": {
+              "array": ["u64", 2]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": ["u8", 40]
+            }
+          },
+          {
+            "name": "creationTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawalPenaltyLamports",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawalPenaltyBps",
+            "type": "u64"
+          },
+          {
+            "name": "depositCap",
+            "type": "u64"
+          },
+          {
+            "name": "perUserDepositCap",
+            "docs": [
+              "Max net-deposited principal (see `UserPosition::net_deposited`) any single",
+              "depositor may hold. 0 = uncapped."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "unallocatedWeight",
+            "docs": [
+              "Weight for the \"keep unallocated/idle\" bucket in target-allocation math."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "unallocatedTokensCap",
+            "docs": ["Cap on how much can sit unallocated. 0 = uncapped."],
+            "type": "u64"
+          },
+          {
+            "name": "allocationAdmin",
+            "docs": [
+              "Secondary admin allowed to update the weight/caps of *existing*",
+              "allocation slots (creating a new slot still requires",
+              "`vault_admin_authority`)."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "allowAllocationsInWhitelistedPoolsOnly",
+            "docs": [
+              "When non-zero, allocation slots can only be created/increased",
+              "targeting a whitelisted pool."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "allowInvestInWhitelistedPoolsOnly",
+            "docs": [
+              "When non-zero, `invest()` can only deposit into a whitelisted pool."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "allocationFlagsPadding",
+            "type": {
+              "array": ["u8", 6]
+            }
+          },
+          {
+            "name": "vaultAllocationStrategy",
+            "docs": [
+              "Up to `MAX_ALLOCATIONS` `payfi-vault` pools this vault can spread",
+              "liquidity across. Empty slots have `pool == Pubkey::default()`."
+            ],
+            "type": {
+              "array": [
+                {
+                  "defined": "VaultAllocation"
+                },
+                1
+              ]
+            }
+          },
+          {
+            "name": "allocator",
+            "docs": [
+              "The only role (besides `vault_admin_authority`, which always retains",
+              "an override) allowed to call `invest()`/`deallocate()` — i.e. actually",
+              "move funds into or out of the payfi-vault pool. Distinct from",
+              "`allocation_admin`, which only configures weight/caps. Carved from",
+              "the tail end of what was `padding_end` — placed *after*",
+              "`vault_allocation_strategy` deliberately, so this field's offset",
+              "doesn't shift any already-live account's existing data on upgrade."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "paddingEnd",
+            "type": {
+              "array": ["u64", 28]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "VaultAllocation",
+      "docs": [
+        "One allocation slot targeting a `payfi-vault` `Pool` (this program's",
+        "generic stand-in for what used to be a klend `Reserve`). `shares_vault`",
+        "holds the shares this vault's `invest()` calls have accumulated from that",
+        "pool — the receipt-token analogue of klend's cTokens."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "sharesVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "targetAllocationWeight",
+            "type": "u64"
+          },
+          {
+            "name": "tokenAllocationCap",
+            "docs": [
+              "Max underlying-token amount this pool may hold on this vault's behalf."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "sharesVaultBump",
+            "type": "u64"
+          },
+          {
+            "name": "sharesAllocationCap",
+            "docs": [
+              "Raw `SharesCap` value — 0 or `u64::MAX` both mean uncapped."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "configPadding",
+            "type": {
+              "array": ["u64", 126]
+            }
+          },
+          {
+            "name": "sharesAllocation",
+            "docs": ["Current shares balance this vault holds against `pool`."],
+            "type": "u64"
+          },
+          {
+            "name": "lastInvestSlot",
+            "type": "u64"
+          },
+          {
+            "name": "tokenTargetAllocationSf",
+            "docs": [
+              "Scaled-fraction (`Fraction`) target token amount, recomputed each",
+              "`refresh_target_allocations` call — see the 128-bit-field comment at",
+              "the top of `vault_state.rs` for why this is `[u64; 2]`, not `u128`."
+            ],
+            "type": {
+              "array": ["u64", 2]
+            }
+          },
+          {
+            "name": "cachedRealValue",
+            "docs": [
+              "Last-known underlying-token value of `shares_allocation`, refreshed",
+              "only when `invest()` reads the pool live. `compute_aum()` sums this",
+              "across slots rather than reading every allocated pool's account on",
+              "every deposit/withdraw/fee-charge — same caching philosophy as the",
+              "old operator-reported PayFi NAV: fresh as of the last time something",
+              "actually touched this pool, not live on every call."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "statePadding",
+            "type": {
+              "array": ["u64", 127]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

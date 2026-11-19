@@ -18,11 +18,11 @@ const config = {
         staking: null, // No platform token staking on APE chain
         tvlTokens: [
             {
-                token: "0x0000000000000000000000000000000000000000", // Native APE token
+                token: ADDRESSES.null, // Native APE token
                 contract: "0x7F66d16A488Eae9e2B61BfB186fD94bBA3611416" // APE contract
             },
             {
-                token: "0xa2235d059f80e176d931ef76b6c51953eb3fbef4", // ApeUSD stablecoin
+                token: ADDRESSES.apechain.sDAI, // ApeUSD stablecoin
                 contract: "0x812D9ed73aC36626CA893D99847E9978905b33C6" // ApeUSD contract
             }
         ]

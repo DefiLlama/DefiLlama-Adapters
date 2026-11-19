@@ -10,7 +10,7 @@ const DPX = '0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55'
 const plsDPX = '0xF236ea74B515eF96a9898F5a4ed4Aa591f253Ce1'
 const SPA = '0x5575552988a3a80504bbaeb1311674fcfd40ad4b'
 const plsSpa = "0x0D111e482146fE9aC9cA3A65D92E65610BBC1Ba6";
-const GRAIL = "0x3d9907f9a368ad0a51be60f7da3b97cf940982d8"
+const GRAIL = ADDRESSES.arbitrum.GRAIL
 const plsGrail = "0x9e6B748d25Ed2600Aa0ce7Cbb42267adCF21Fd9B";
 const plsRdntv2 = "0x6dbf2155b0636cb3fd5359fccefb8a2c02b6cb51";
 

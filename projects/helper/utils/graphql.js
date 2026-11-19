@@ -1,7 +1,7 @@
-const axios = require("axios");
+const { post } = require("../http");
 
 async function request(endpoint, query, { variables, withMetadata = false, headers } = {}) {
-  const { data: result } = await axios.post(endpoint, { query, variables }, { headers })
+  const result = await post(endpoint, { query, variables }, { headers })
   if (result.errors) throw new Error(result.errors[0].message)
   return withMetadata ? result : result.data
 }

@@ -1,8 +1,0 @@
-{
-  "locked": "function locked(uint256) view returns (int128 amount, uint256 end)",
-  "totalBalances": "function totalBalances(address) view returns (uint256)",
-  "allPairsLength": "uint256:allPairsLength",
-  "allPairs": "function allPairs(uint256) view returns (address)",
-  "token0": "address:token0",
-  "token1": "address:token1"
-}

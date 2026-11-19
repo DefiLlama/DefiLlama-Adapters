@@ -1,9 +1,3 @@
-const { getUniTVL } = require('../helper/unknownTokens.js')
+const indexExports = require('./api')
 
-module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
-  tron: {
-    tvl: getUniTVL({ factory: 'TKWJdrQkqHisa1X8HUdHEfREvTzw4pMAaY', useDefaultCoreAssets: true, queryBatched: 11 }),
-  }
-}
+module.exports = indexExports

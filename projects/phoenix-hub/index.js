@@ -3,11 +3,14 @@ const {toUSDTBalances} = require("../helper/balances");
 
 async function tvl() {
     // Fetch all tickers
-    const tickers = await utils.fetchURL("https://api-phoenix-v2.decentrio.ventures/tickers");
-
-    // Sum up the tvl
-    const totalTVL = tickers.data.reduce((acc, t) => acc + (t.liquidity_in_usd > 0 ? t.liquidity_in_usd : 0), 0);
-    return toUSDTBalances(totalTVL);
+    const response = await utils.fetchURL("https://stats.phoenix-hub.io/api/tvl");
+    const data = response.data;
+    
+    if (data.success && data.data && typeof data.data.total_tvl_usd === 'number') {
+      return toUSDTBalances(data.data.total_tvl_usd);
+    } else {
+      throw new Error("Invalid data format");
+    }
 }
 
 module.exports = {

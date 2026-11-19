@@ -26,6 +26,7 @@ Object.keys(config).forEach(chain => {
         eventAbi: "event PoolDeployed(address indexed base, address indexed quote, address oracleAdapter, uint256 strike, uint256 maturity, bool isCallPool, address poolAddress)",
         onlyArgs: true,
         fromBlock: poolFromBlock,
+        onlyUseExistingCache: true,
       })
       const ownerTokens = logs.map(log => [[log.base, log.quote], log.poolAddress])
       if (vaultGraph) {

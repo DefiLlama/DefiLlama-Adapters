@@ -4,13 +4,13 @@ const { getEnv } = require('../helper/env')
 const { sumUnknownTokens } = require('../helper/unknownTokens')
 
 async function fetcher() {
-  const { data: { yield }} = await get('https://api.blacksail.finance/stats', {
+  const { data} = await get('https://api.blacksail.finance/stats', {
     headers: {
       'x-api-key': getEnv('BLACKSAIL_API_KEY'),
       'Content-Type': 'application/json'
     }
   });
-  return Object.values(yield).map((i) => i.strat_address).filter(i => i)
+  return Object.values(data.yield).map((i) => i.strat_address).filter(i => i)
 }
 
 async function tvl(api) {

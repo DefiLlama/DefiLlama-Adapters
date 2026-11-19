@@ -1,6 +1,6 @@
-const { getExports } = require('../helper/heroku-api')
+const { staking } = require('../helper/acala/lcdot')
 
 module.exports = {
   timetravel: false,
-  ...getExports("acala-lcdot", ['acala']),
+  acala: { tvl: () => staking('acala') },
 }

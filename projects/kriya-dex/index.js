@@ -1,10 +1,9 @@
 const sui = require('../helper/chain/sui')
 
-const EVENT_FILTER = "0xa0eba10b173538c8fecca1dff298e488402cc9ff374f8a12ca7758eebe830b66::spot_dex::PoolCreatedEvent";
+const POOL_TYPE = "0xa0eba10b173538c8fecca1dff298e488402cc9ff374f8a12ca7758eebe830b66::spot_dex::Pool";
 
 async function kriyaTVL(api) {
-  const poolIds = await sui.queryEvents({ eventType: EVENT_FILTER, transform: i => i.pool_id});
-  const pools = await sui.getObjects(poolIds)
+  const pools = await sui.getObjectsByType(POOL_TYPE)
   pools.forEach(i => {
     const [token0, token1] = i.type.split('<')[1].replace('>', '').split(', ')
     api.add(token0, i.fields.token_x)

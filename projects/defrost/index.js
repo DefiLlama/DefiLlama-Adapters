@@ -64,7 +64,7 @@ module.exports = {
     tvl,
     staking
   },
-  hallmarks: [
-    ['2022-12-24', 'Both v1 & v2 exploited'],
-  ],
+  // hallmarks: [
+  //   ['2022-12-24', 'Both v1 & v2 exploited'],
+  // ],
 };

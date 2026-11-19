@@ -16,10 +16,10 @@ async function tvl(api) {
     api, tokens: [
       "0xB6E1705BfAFcf1efEE83C135C0F0210653bAB8F0",
       "0xc924da29d37f3b8C62c4c3e4e6958bF2b5ebF677",
-      "0x97749c9B61F878a880DfE312d2594AE07AEd7656",
+      ADDRESSES.cronos.MMF,
       "0x50c0C5bda591bc7e89A342A3eD672FB59b3C46a7",
       ADDRESSES.cronos.WCRO_1,
-      "0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03",
+      ADDRESSES.cronos.VVS,
     ], owner: '0x3827CAa33557304e1CA5D89c2f85919Da171C44D', resolveLP: true
   })
   api.removeTokenBalance(ADDRESSES.cronos.SVN)

@@ -9,6 +9,7 @@ const factory2 = 'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.univ2-registry_v1_0_
 const stableFactory = 'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.curve-registry_v1_1_0'
 
 module.exports = {
+  isHeavyProtocol: true,
   stacks: { tvl }
 }
 
@@ -16,6 +17,10 @@ async function tvl(api) {
   await uniTvl(api, stableFactory, { isStable: true })
   await uniTvl(api, factory)
   await uniTvl(api, factory2, { isVersion2: true })
+
+  // add pool not part of any registry
+  await sumTokens({ owner: 'SP20X3DC5R091J8B6YPQT638J8NR1W83KN6TN5BJY.curve-pool-v1_0_0_ststx-0001', balances: api.getBalances() })
+
   return api.getBalances()
 }
 
@@ -27,7 +32,7 @@ async function uniTvl(api, factory, { isStable = false, isVersion2 = false } = {
     let res
     if (isVersion2) {
       const pairData = res = await call({ target: factory, abi: 'get-pool', inputArgs: [{ type: 'uint', value: i }] })
-      res = await call({ target: pairData.value.contract.value, abi: 'do-get-pool'})
+      res = await call({ target: pairData.value.contract.value, abi: 'do-get-pool' })
     } else {
       res = await call({ target: factory, abi: 'do-get-pool', inputArgs: [{ type: 'uint', value: i }] })
     }
@@ -44,7 +49,7 @@ async function uniTvl(api, factory, { isStable = false, isVersion2 = false } = {
         token1Bal: reserve1?.value,
       })
     sdk.log(`velar-amm: ${i}/${pairCount}`)
-    await sleep(3100)
+    // await sleep(3100)
   }
   return transformDexBalances({ chain: 'stacks', data, balances: api.getBalances() })
 }

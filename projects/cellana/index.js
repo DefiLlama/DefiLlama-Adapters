@@ -1,53 +1,55 @@
-const { getResources, function_view } = require("../helper/chain/aptos");
-let resourcesCache;
-let poolsCache;
-async function _getResources() {
-  if (!resourcesCache) resourcesCache = getResources("0x3b38735644d0be8ac37ebd84a1e42fa5c2487495ef8782f6c694b1a147f82426")
-  return resourcesCache
-}
-async function _getPools() {
-  if (!poolsCache) poolsCache = function_view({ functionStr: "0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1::liquidity_pool::all_pool_addresses", type_arguments: [], args: [] })
-  return poolsCache
-}
-const extractCoinAddress = (str) => str.slice(str.indexOf("<") + 1, str.lastIndexOf(">"));
-const reserveContrainerFilter = (i) => i.type.includes("0x1::coin::CoinStore")
+const { GraphQLClient } = require("graphql-request");
+const { function_view } = require("../helper/chain/aptos");
+const { sliceIntoChunks } = require("../helper/utils");
+const cellanaAddress = "0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1"
 
-async function getfungibleAssetBalances(api) {
-  const poolsAddresses = await _getPools('0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1')
-  for (const pool of poolsAddresses) {
-    const fungibleAssetPoolStore = (await getResources(pool.inner)).find(i => i.type.includes('liquidity_pool::LiquidityPool'))?.data
-    const fungibleAssetAddressToken1 = fungibleAssetPoolStore?.token_store_1?.inner
-    const fungibleAssetAddressToken2 = fungibleAssetPoolStore?.token_store_2?.inner
+const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql");
+const FA_BALANCES_QUERY = `query CellanaPoolBalances($addresses: [String!]!, $limit: Int!, $offset: Int!) {
+  current_fungible_asset_balances(where: { owner_address: { _in: $addresses } }, order_by: { storage_id: asc }, limit: $limit, offset: $offset) {
+    amount
+    asset_type
+  }
+}`
+const FA_CREATORS_QUERY = `query CellanaAssetCreators($assets: [String!]!) {
+  fungible_asset_metadata(where: { asset_type: { _in: $assets } }) {
+    asset_type
+    creator_address
+  }
+}`
 
-    const fungibleAssetTokenStore_1 = (await getResources(fungibleAssetAddressToken1)).find(i => i.type.includes('fungible_asset::FungibleStore'))?.data
-    const fungibleAssetTokenStore_2 = (await getResources(fungibleAssetAddressToken2)).find(i => i.type.includes('fungible_asset::FungibleStore'))?.data
-    const token_1_address = fungibleAssetTokenStore_1?.metadata?.inner
-    const token_2_address = fungibleAssetTokenStore_2?.metadata?.inner
-    api.add(token_2_address, fungibleAssetTokenStore_2?.balance || 0);
-    api.add(token_1_address, fungibleAssetTokenStore_1?.balance || 0);
+async function tvl(api) {
+  const pools = await function_view({ functionStr: `${cellanaAddress}::liquidity_pool::all_pool_addresses`, type_arguments: [], args: [] })
+  // pool reserves sit in fungible stores owned by the pool objects; one indexer query per 50 pools
+  // instead of two rate-limited view calls per pool
+  const balances = {}
+  // the indexer silently truncates large responses (4 stores per pool), so page through each chunk
+  const limit = 100
+  for (const chunk of sliceIntoChunks(pools.map(p => p.inner), 50)) {
+    for (let offset = 0; ; offset += limit) {
+      const { current_fungible_asset_balances: rows } = await graphQLClient.request(FA_BALANCES_QUERY, { addresses: chunk, limit, offset })
+      rows.forEach(({ amount, asset_type }) => {
+        if (+amount > 0) balances[asset_type] = (balances[asset_type] ?? 0n) + BigInt(amount)
+      })
+      if (rows.length < limit) break
+    }
+  }
+  // legacy coins are held as cellana coin_wrapper FAs; get_original maps them back to the priceable coin type.
+  // only FAs created by the wrapper account need the lookup
+  const wrapperAddress = await function_view({ functionStr: `${cellanaAddress}::coin_wrapper::wrapper_address` })
+  const { fungible_asset_metadata: metadata } = await graphQLClient.request(FA_CREATORS_QUERY, { assets: Object.keys(balances) })
+  const wrapped = new Set(metadata.filter(m => m.creator_address === wrapperAddress).map(m => m.asset_type))
+  for (const [asset, amount] of Object.entries(balances)) {
+    const token = wrapped.has(asset) ? await function_view({ functionStr: `${cellanaAddress}::coin_wrapper::get_original`, args: [asset] }) : asset
+    api.add(token, amount.toString())
   }
 }
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   methodology:
-    "Counts the lamports in each coin container in the Cellena contract account.",
+    "Counts the tokens held in every Cellana liquidity pool.",
   aptos: {
-
-    tvl: async (api) => {
-
-      const data = await _getResources()
-      const coinContainers = data.filter(reserveContrainerFilter)
-        .map((i) => ({
-          lamports: i.data.coin.value,
-          tokenAddress: extractCoinAddress(i.type),
-        }));
-
-      coinContainers.forEach(({ lamports, tokenAddress }) => {
-        api.add(tokenAddress, lamports);
-      });
-      //get funible asset balance
-      await getfungibleAssetBalances(api)
-    }
+    tvl,
   }
 }

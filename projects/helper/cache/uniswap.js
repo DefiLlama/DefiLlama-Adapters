@@ -19,16 +19,33 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   hasStablePools = false,
   stablePoolSymbol = 'sAMM',
   permitFailure = false,
+  skipUnknownTokens = false,
+  memoryOptimization = false, // for factories with 100k+ pairs: sums core-asset reserves per batch at the latest block, needs queryBatched and timetravel: false on the adapter
+  blacklistedPools = [],
 }) {
+  const blacklistedPoolsSet = new Set(blacklistedPools.map(i => i.toLowerCase()))
 
   let updateCache = false
 
   const abi = { ...uniswapAbi, ...abis }
 
-  return async (api) => {
+  const factoryTvlFunction = (factory) => async (api) => {
     let chain = api?.chain
     if (!chain)
       chain = _chain
+
+    if (memoryOptimization) {
+      if (!queryBatched)
+        throw new Error("memoryOptimization requires queryBatched: reserves are summed per batch instead of being kept in memory")
+      const sixHoursAgo = (Date.now() / 1e3) - 6 * 3600
+      if (api.timestamp < sixHoursAgo)
+        throw new Error("memoryOptimization mode only supports current TVL, historical refills are not supported (set timetravel: false on the adapter)")
+      // always read the latest block: the sdk calls getBlock before every call once the timestamp is over 2h old,
+      // and this run can take longer than that, so instead of resolving a block the timestamp is moved to now
+      api.block = undefined
+      api.getBlock = async () => { api.timestamp = Math.floor(Date.now() / 1e3) }
+    }
+
     // console.log(await api.call({ target: factory, abi: 'address:factory' }))
     factory = normalizeAddress(factory, chain)
     blacklist = (blacklistedTokens || blacklist).map(i => normalizeAddress(i, chain))
@@ -36,8 +53,9 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
     if (!coreAssets && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
+    const coreAssetsSet = new Set(coreAssets?.map(i => normalizeAddress(i, chain)))
 
-    let cache = await _getCache(cacheFolder, key, api)
+    let cache = await _getCache(cacheFolder, key, api, factory)
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await api.call({ abi: abi.allPairsLength, target: factory, })
@@ -48,23 +66,62 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     for (let i = _oldPairInfoLength; i < length; i++)
       pairCalls.push(i)
 
-    const calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
-
-    const [
-      token0s, token1s
-    ] = await Promise.all([
-      api.multiCall({ abi: abi.token0, calls }),
-      api.multiCall({ abi: abi.token1, calls }),
-    ])
-    let symbols
-    if (hasStablePools) {
-      symbols = await api.multiCall({ abi: 'erc20:symbol', calls, })
-      cache.symbols.push(...symbols)
+    let calls
+    if (queryBatched && pairCalls.length > queryBatched) {
+      calls = []
+      const batchedPairCalls = sliceIntoChunks(pairCalls, queryBatched)
+      for (const batch of batchedPairCalls) {
+        const res = await api.multiCall({ abi: abi.allPairs, calls: batch, target: factory })
+        calls.push(...res)
+        sdk.log(`fetched pairs ${calls.length}/${pairCalls.length}  ${((calls.length / pairCalls.length) * 100).toFixed(2)}%`)
+        if (waitBetweenCalls) await sleep(waitBetweenCalls)
+      }
+    } else {
+      calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
     }
 
-    cache.pairs.push(...calls)
-    cache.token0s.push(...token0s)
-    cache.token1s.push(...token1s)
+    let token0s, token1s
+    if (queryBatched && calls.length > queryBatched) {
+      token0s = []
+      token1s = []
+      const batchedCalls = sliceIntoChunks(calls, queryBatched)
+      let done = 0
+      for (const batch of batchedCalls) {
+        const [t0, t1] = await Promise.all([
+          api.multiCall({ abi: abi.token0, calls: batch }),
+          api.multiCall({ abi: abi.token1, calls: batch }),
+        ])
+        token0s.push(...t0)
+        token1s.push(...t1)
+        done += batch.length
+        sdk.log(`fetched token info ${done}/${calls.length}  ${((done / calls.length) * 100).toFixed(2)}%`)
+        if (waitBetweenCalls) await sleep(waitBetweenCalls)
+      }
+    } else {
+      ;[token0s, token1s] = await Promise.all([
+        api.multiCall({ abi: abi.token0, calls }),
+        api.multiCall({ abi: abi.token1, calls }),
+      ])
+    }
+
+    let symbols
+    if (hasStablePools) {
+      if (queryBatched && calls.length > queryBatched) {
+        symbols = []
+        const batchedCalls = sliceIntoChunks(calls, queryBatched)
+        for (const batch of batchedCalls) {
+          symbols.push(...await api.multiCall({ abi: 'erc20:symbol', calls: batch }))
+          if (waitBetweenCalls) await sleep(waitBetweenCalls)
+        }
+      } else {
+        symbols = await api.multiCall({ abi: 'erc20:symbol', calls, })
+      }
+      cache.symbols = cache.symbols.concat(symbols)
+    }
+
+    cache.pairs = cache.pairs.concat(calls)
+    cache.token0s = cache.token0s.concat(token0s)
+    cache.token1s = cache.token1s.concat(token1s)
 
     updateCache = updateCache || cache.pairs.length > _oldPairInfoLength
 
@@ -77,8 +134,25 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     let reserves = []
     if (queryBatched) {
       const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
+      let batchIdx = 0
       for (const calls of batchedCalls) {
-        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls, permitFailure, }))
+        const res = await api.multiCall({ abi: abi.getReserves, calls, permitFailure, })
+        if (memoryOptimization) {
+          res.forEach((dat, i) => {
+            if (!dat) return;
+            const { _reserve0, _reserve1 } = dat
+            const tokenIndex = batchIdx * queryBatched + i
+            const token0 = cache.token0s[tokenIndex]
+            const token1 = cache.token1s[tokenIndex]
+            if (coreAssetsSet.has(token0.toLowerCase()))
+              api.add(token0, [_reserve0, _reserve0])
+            if (coreAssetsSet.has(token1.toLowerCase()))
+              api.add(token1, [_reserve1, _reserve1])
+          })
+        } else
+          reserves = reserves.concat(res)
+        batchIdx++
+        sdk.log(`fetched reserves batch ${batchIdx}/${batchedCalls.length} ${((batchIdx / batchedCalls.length) * 100).toFixed(2)}%`)
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
       }
     } else if (fetchBalances) {
@@ -95,11 +169,20 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     } else
       reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs, permitFailure })
 
+    if (memoryOptimization)
+      return api.getBalances()
 
     const balances = {}
     if (coreAssets) {
       const data = []
       reserves.forEach((dat, i) => {
+
+        const pool = cache.pairs[i].toLowerCase()
+
+        if (blacklistedPoolsSet.has(pool)) {
+          return
+        }
+
         if (!dat) return;
         const { _reserve0, _reserve1 } = dat
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
@@ -115,7 +198,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
           })
         }
       })
-      return transformDexBalances({ balances, chain, data, coreAssets, blacklistedTokens: blacklist })
+      return transformDexBalances({ balances, chain, data, coreAssets, blacklistedTokens: blacklist, skipUnknownTokens, })
     }
 
     const blacklistedSet = new Set(blacklist)
@@ -127,7 +210,20 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     return transformBalances(chain, balances)
   }
 
-  async function _getCache(cacheFolder, key, api) {
+  if (Array.isArray(factory)) {
+    return async (api) => {
+      for (const f of factory) {
+        const balances = await factoryTvlFunction(f)(api)
+        // memoryOptimization writes straight into api and returns api.getBalances(), so adding it again would double count
+        if (!memoryOptimization) api.addBalances(balances)
+      }
+      return api.getBalances()
+    }
+  }
+
+  return factoryTvlFunction(factory)
+
+  async function _getCache(cacheFolder, key, api, factory) {
     let cache = await getCache(cacheFolder, key)
     if (cache.pairs) {
       for (let i = 0; i < cache.pairs.length; i++) {

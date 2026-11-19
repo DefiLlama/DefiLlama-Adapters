@@ -3,11 +3,11 @@ const ADDRESSES = require('./helper/coreAssets.json')
 const bitcoinAddressBook = require('./helper/bitcoin-book/index.js')
 const sdk = require('@defillama/sdk');
 
-// WALLETS FROM HERE https://wbtc.network/dashboard/audit
-const owners = bitcoinAddressBook.wbtc
+// WALLETS FROM HERE https://wbtc.network/transparency
 
 async function tvl(api){
   if(api.timestamp > Date.now()/1e3 - 3600){
+    const owners = await bitcoinAddressBook.wbtc()
     return sumTokens({ owners, api })
   } else {
     // get WBTC supply on Ethereum blockchain

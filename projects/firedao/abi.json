@@ -1,6 +1,0 @@
-{
-  "want": "address:want",
-  "balanceOf": "uint256:balanceOf",
-  "vaults": "function vaults(address) view returns (address)",
-  "balance": "uint256:balance"
-}

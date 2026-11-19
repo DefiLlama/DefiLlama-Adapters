@@ -10,9 +10,8 @@ const lps = [
   "0x40d85d01f8b8E4A8cEa6F552e47Cf8F88A42db54"
 ];
 
-async function tvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  return balances;
+async function tvl() {
+  return {}
 }
 module.exports = {
   cronos: {

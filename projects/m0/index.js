@@ -13,6 +13,7 @@ const tvl = async (api) => {
 }
 
 module.exports = {
+  misrepresentedTokens: true,  // the project doesnt actually hold USDC
   methodology: "TVL corresponds to the value minted by an institution by depositing short-term T-bills",
   ethereum: { tvl }
 }

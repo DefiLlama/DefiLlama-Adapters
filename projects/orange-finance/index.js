@@ -33,9 +33,9 @@ module.exports = {
     tvl: beraTvl
   },
   hallmarks: [
-    [1682680200, "Orange Alpha Vault Launch"], //2023 Apr 28
-    [1688385600, "Camelot Vault Launch"], //2023 Jul 3
-    [1703462400, "Strategy Vault Launch"], //2023 Dec 25
-    [1709204400, "LPDfi Vault Launch"], //2024 Feb 29
+    ['2023-04-28', "Orange Alpha Vault Launch"], //2023 Apr 28
+    ['2023-07-03', "Camelot Vault Launch"], //2023 Jul 3
+    ['2023-12-25', "Strategy Vault Launch"], //2023 Dec 25
+    ['2024-02-29', "LPDfi Vault Launch"], //2024 Feb 29
   ],
 };

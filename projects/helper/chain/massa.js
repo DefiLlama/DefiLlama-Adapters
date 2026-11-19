@@ -1,8 +1,9 @@
 const axios = require("axios");
+const { DEFAULT_TIMEOUT } = require("../http");
 
 // https://github.com/massalabs/massa-web3/blob/main/packages/massa-web3/src/web3/PublicApiClient.ts
 const RPC_ENDPOINT = "https://mainnet.massa.net/api/v2";
-const client = axios.create({ baseURL: RPC_ENDPOINT });
+const client = axios.create({ baseURL: RPC_ENDPOINT, timeout: DEFAULT_TIMEOUT });
 
 async function request(method, params) {
   params.forEach((param) => {
@@ -37,6 +38,10 @@ function strToBytes(str) {
     return new Uint8Array(0);
   }
   return new Uint8Array(Buffer.from(str, 'utf-8'));
+}
+
+function bytesToStr(bytes) {
+  return u8ArrayToString(bytes).replace(/\0/g, '');
 }
 
 
@@ -99,8 +104,34 @@ async function getTokenBalances(tokenAddresses, ownerAddresses) {
   return res.map((entry) => bytesToBigInt(entry.candidate_value).toString());
 }
 
+function convertUnit8ArrayToNumberArray(unit8Array) {
+  return Array.from(unit8Array, (byte) => byte)
+}
+
+
+async function getAddresssDataStoreKeys(address, prefix, is_final) {
+  const res = await request('get_addresses_datastore_keys', [{
+    address: address,
+    prefix: convertUnit8ArrayToNumberArray(prefix),
+    is_final: is_final,
+  }]);
+
+  return res[0].keys;
+
+}
+
+// native MAS balances (final_balance is already in whole coins)
+async function sumTokens({ api, owners = [] }) {
+  const res = await request('get_addresses', owners)
+  for (const { final_balance } of res) api.addCGToken('massa', parseFloat(final_balance))
+}
+
 module.exports = {
+  sumTokens,
   queryKey,
   u8ArrayToString,
   getTokenBalances,
+  getAddresssDataStoreKeys,
+  bytesToStr,
+  bytesToBigInt,
 };

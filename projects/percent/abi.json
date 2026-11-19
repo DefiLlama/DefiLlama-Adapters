@@ -1,4 +1,0 @@
-{
-  "getCurrentTokens": "address[]:getCurrentTokens",
-  "totalSupply": "uint256:totalSupply"
-}

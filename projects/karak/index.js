@@ -13,6 +13,12 @@ const config = {
 
 const eventAbi = 'event DeployedVault(address operator, address vault, address asset)'
 
+const SUM_CHUNK_BY_CHAIN = {
+  karak: { sumChunkSize: 20 },
+}
+
+const getSumTokens = (api) => SUM_CHUNK_BY_CHAIN[api.chain] ?? {}
+
 const karak_v1_tvl = async (api, { factory }) => {
   const vaults = await api.call({ abi: 'address[]:getVaults', target: factory })
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
@@ -20,10 +26,10 @@ const karak_v1_tvl = async (api, { factory }) => {
 }
 
 const karak_v2_tvl = async (api, { factory, block }) => {
-  const logs = await getLogs2({ api, target: factory, fromBlock: block, eventAbi })
+  const logs = await getLogs2({ api, target: factory, fromBlock: block, eventAbi, onlyUseExistingCache: api.chain === 'mantle'  })
   const vaults = logs.map(log => log[1])
   const tokens = logs.map(log => log[2])
-  return sumTokens2({ api, tokensAndOwners2: [tokens, vaults] })
+  return sumTokens2({ api, tokensAndOwners2: [tokens, vaults], ...getSumTokens(api) })
 }
 
 const tvl = async (api, factories) => {
@@ -36,3 +42,5 @@ Object.keys(config).forEach(chain => {
   const factories = config[chain]
   module.exports[chain] = { tvl: (api) => tvl(api, factories) }
 })
+
+module.exports.karak.tvl = () => ({}) // the chain is killed?

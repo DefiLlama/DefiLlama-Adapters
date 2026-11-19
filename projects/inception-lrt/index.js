@@ -34,7 +34,7 @@ const eventAbis = {
 const tvl = async (api) => {
   for (const vault of symbioticVaults) {
     const depositedLogs = await getLogs({ api, extraKey: `deposited-${vault}`, fromBlock: 20126194, target: vault, eventAbi: eventAbis.deposit, onlyArgs: true })
-    const withdrawLogs = await getLogs({ api, extrakey: `withdraw-${vault}`, fromBlock: 20126194, target: vault, eventAbi: eventAbis.withdraw, onlyArgs: true })
+    const withdrawLogs = await getLogs({ api, extraKey: `withdraw-${vault}`, fromBlock: 20126194, target: vault, eventAbi: eventAbis.withdraw, onlyArgs: true })
     
     depositedLogs.forEach(e => api.add(wstETH, e[2]));
     withdrawLogs.forEach(e => api.add(wstETH, -e[3]));
@@ -48,7 +48,7 @@ module.exports = {
   ethereum: { tvl },
   doublecounted: true,
   hallmarks: [
-    [1714953600, "Genesis Merges with InceptionLRT"],
-    [1734530420, "Amphor Labs Merges with InceptionLRT"]
+    ['2024-05-06', "Genesis Merges with InceptionLRT"],
+    ['2024-12-18', "Amphor Labs Merges with InceptionLRT"]
   ],
 }

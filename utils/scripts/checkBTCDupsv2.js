@@ -1,17 +1,18 @@
 const sdk = require('@defillama/sdk')
 const addressBook = require('../../projects/helper/bitcoin-book/index');
+const { getEnv } = require('../../projects/helper/env');
 const Bucket = "tvl-adapter-cache";
 
-console.log('project count: ', Object.keys(addressBook).length);
-const addressProjectMap = {}
+const projectKeys = Object.keys(addressBook).filter(project => project !== 'getBTCExport');
 
-const storeInR2 = !!process.env.STORE_IN_R2
+console.log('project count: ', projectKeys.length);
+const addressProjectMap = {}
 
 const projectData = {}
 
 async function run() {
 
-  await Promise.all(Object.keys(addressBook).map(async project => {
+  await Promise.all(projectKeys.map(async project => {
 
     try {
 
@@ -20,7 +21,7 @@ async function run() {
       if (!Array.isArray(addresses)) addresses = await addresses()
 
 
-      if (storeInR2) {
+      if (getEnv('STORE_IN_R2')) {
         projectData[project] = addresses
         return;
       }
@@ -28,7 +29,8 @@ async function run() {
 
       for (let address of addresses) {
         if (addressProjectMap[address]) {
-          addressProjectMap[address].push(project);
+          if (!addressProjectMap[address].includes(project))
+            addressProjectMap[address].push(project);
         } else {
           addressProjectMap[address] = [project];
         }
@@ -43,7 +45,7 @@ async function run() {
 
 
 
-  if (storeInR2) {
+  if (getEnv('STORE_IN_R2')) {
     try {
       await sdk.cache.writeCache(`${Bucket}/bitcoin-addresses.json`, projectData)
       console.log('data written to s3 bucket');

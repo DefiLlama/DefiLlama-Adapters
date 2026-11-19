@@ -1,0 +1,122 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
+const axios = require('axios')
+const sdk = require('@defillama/sdk')
+const { getConfig } = require('../projects/helper/cache')
+const { address: tonAddress } = require('../projects/helper/utils/ton')
+
+// We pull the owner set from Bybit's monthly PoR CSV, one row per "<COIN>-<Chain>":
+// Coin,Height,Amount,Address  (the Address column is space-separated: <Address1> <Address2> ...)
+const BASE = 'https://api2.bybit.com/common-static/por'
+
+// Bybit PoR chain suffix -> chain slug
+const CHAIN_MAP = {
+  Ethereum: 'ethereum', BSC: 'bsc', Arbitrum: 'arbitrum', ARBINOVA: 'arbitrum_nova',
+  AVAXC: 'avax', Optimism: 'optimism', Polygon: 'polygon', Mantle: 'mantle', BASE: 'base', 
+  Solana: 'solana', Aptos: 'aptos', SUI: 'sui', TON: 'ton', ZKSync: 'era', ZKSyncEra: 'era',
+  TRX: 'tron', Tron: 'tron', XRP: 'ripple', Scroll: 'scroll', TAIKO: 'taiko', LINEA: 'linea',
+  Manta: 'manta', Litecoin: 'litecoin', Dogecoin: 'doge', Cosmos: 'cosmos', Celo: 'celo',
+  Polkadot: 'polkadot', KLAY: 'klaytn', KAIA: 'klaytn', KAVAEVM: 'kava', EOS: 'eos', Dydx: 'dydx', Sonic: 'sonic',
+  HyperEVM: 'hyperliquid', PLASMA: 'plasma', MONAD: 'monad', Cardano: 'cardano', Starknet: 'starknet',
+  SEIEVM: 'sei', HBAR: 'hedera', STABLE: 'stable', Bera: 'berachain',
+}
+
+async function fetchLatestCsv() {
+  const now = new Date()
+  for (let i = 0; i < 3; i++) {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1))
+    const ym = `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}`
+    try {
+      const { data } = await axios.get(`${BASE}/bybit_por_${ym}.csv`)
+      // Require the header so a 200 that isn't the PoR CSV (error/HTML page)
+      // fetches the previous month instead of using an empty owner set
+      if (typeof data === 'string' && data.startsWith('Coin,')) { sdk.log(`bybit: using PoR ${ym}`); return data }
+    } catch (e) { /* may not be published yet, try previous month */ }
+  }
+  throw new Error('bybit: no PoR CSV found in the last 3 months')
+}
+
+// Bybit's CSV occasionally contains invalid addresses, e.g. odd length hex or a truncated TON address
+// (one bad TON address makes toncenter reject the whole batched accountStates request with a 422)
+function isValidAddress(a, slug) {
+  if (slug === 'ton') {
+    try { tonAddress(a); return true } catch (e) { return false }
+  }
+  if (!a.startsWith('0x')) return true
+  const hex = a.slice(2)
+  return hex.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(hex)
+}
+
+// the CSV lists some TON wallets in both bounceable (EQ..) and non-bounceable (UQ..) form, normalize so they dedupe
+function normalizeAddress(a, slug) {
+  if (slug === 'ton') return tonAddress(a).toString()
+  return a
+}
+
+function parseOwnersByChain(csv) {
+  const byChain = {}
+  const unmapped = new Set()
+  const invalid = []
+  const lines = csv.trim().split(/\r?\n/)
+  for (let i = 1; i < lines.length; i++) { // skip header
+    const parts = lines[i].split(',')
+    if (parts.length < 4) continue
+    const coin = parts[0]
+    if (coin.includes('(ALL)')) continue // aggregate rows have no address
+    const addrs = parts.slice(3).join(',').trim() // addresses are space-separated within one column
+    if (!addrs) continue
+    const slug = CHAIN_MAP[coin.split('-').pop()] // chain is the suffix after the last '-'
+    if (!slug) { unmapped.add(coin.split('-').pop()); continue }
+    const set = byChain[slug] || (byChain[slug] = new Set())
+    for (const a of addrs.split(/\s+/)) {
+      if (!a) continue
+      if (!isValidAddress(a, slug)) { invalid.push(`${coin}: ${a}`); continue }
+      set.add(normalizeAddress(a, slug))
+    }
+  }
+  if (unmapped.size) sdk.log('bybit: skipped unmapped PoR chains:', [...unmapped].join(', '))
+  if (invalid.length) sdk.log('bybit: skipped invalid PoR addresses:', invalid.join(', '))
+  return Object.fromEntries(Object.entries(byChain).map(([slug, set]) => [slug, [...set]]))
+}
+
+const getOwners = () => getConfig('bybit-por', undefined, { fetcher: async () => parseOwnersByChain(await fetchLatestCsv()) })
+
+// wallets missing from (or on chains absent from) Bybit's PoR CSV; merged with the CSV owners per chain
+const STATIC_OWNERS = {
+  cardano: ['addr1v8mn6dmk7tf9u26kr09a05lmvc9j4k9d940a88ta3hdczqgyt7whl'],
+  fantom: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40'],
+  starknet: ['0x076601136372fcdbbd914eea797082f7504f828e122288ad45748b0c8b0c9696'],
+}
+
+// union of the CSV and static owners for a chain, deduped after the same normalization the CSV gets
+// (TON bounceable/non-bounceable forms collapse, hex addresses compare case-insensitively)
+function mergeOwners(slug, ...lists) {
+  const seen = new Set()
+  const out = []
+  for (const a of lists.flat()) {
+    const normalized = normalizeAddress(a, slug)
+    const key = normalized.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(normalized)
+  }
+  return out
+}
+
+// Chains whose PoR balance sits in a token that has no default list in helper/cex.js
+const EXTRA_TOKENS = {
+  berachain: [ADDRESSES.null, ADDRESSES.xlayer.USDT0], // BERA, USDT0
+}
+
+// MNT, reported under ownTokens instead of tvl
+const OWN_TOKENS = {
+  ethereum: ['0x3c3a81e81dc49A522A592e7622A7E711c06bf354'],
+  mantle: [ADDRESSES.null],
+}
+
+module.exports = { bitcoin: 'bybit' }
+for (const slug of new Set([...Object.values(CHAIN_MAP), ...Object.keys(STATIC_OWNERS)]))
+  module.exports[slug] = { owners: async () => mergeOwners(slug, (await getOwners())[slug] || [], STATIC_OWNERS[slug] || []) }
+for (const [slug, tokens] of Object.entries(EXTRA_TOKENS))
+  module.exports[slug].tokens = tokens
+for (const [slug, tokens] of Object.entries(OWN_TOKENS))
+  module.exports[slug].ownTokens = tokens

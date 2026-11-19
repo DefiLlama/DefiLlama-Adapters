@@ -17,7 +17,7 @@ const PADSWAP_MOONBEAM_FACTORY_ADDRESS =
 
 module.exports = {
   hallmarks: [
-    [1659312000,"Nomad Bridge Exploit"],
+    ['2022-08-01',"Nomad Bridge Exploit"],
   ],
   methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/ and https://movr-info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
   misrepresentedTokens: true,

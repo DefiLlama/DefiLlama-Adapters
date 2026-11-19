@@ -1,6 +1,6 @@
-const abi = require("./abi.json")
-
-const { stakings } = require("../helper/staking")
+const abi = {
+    "borrows": "uint256:borrows"
+  };const { stakings } = require("../helper/staking")
 const { getLogs } = require("../helper/cache/getLogs")
 const { sumTokens2 } = require("../helper/unwrapLPs")
 

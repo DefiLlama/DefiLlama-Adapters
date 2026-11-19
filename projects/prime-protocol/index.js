@@ -129,5 +129,5 @@ module.exports = {
 };
 
 Object.keys(PRIME_SATELLITE_NETWORKS).forEach(primeSatelliteNetwork => {
-  module.exports[primeSatelliteNetwork] = { tvl, borrowed, }
+  module.exports[primeSatelliteNetwork] = { tvl, borrowed: () => ({}), }
 })

@@ -32,7 +32,7 @@ const vault_config = {
     ],
     timestampDeployed: [1731626531, 1735548563],
     base: [
-      '0x657e8c867d8b37dcc18fa4caead9c45eb088c642', // EBTC
+      ADDRESSES.ethereum.EBTC, // EBTC
       ADDRESSES.ethereum.WBTC,
     ],
     decimals: 8,
@@ -90,7 +90,7 @@ async function updateVaultTvl(api, config) {
     let wbtc = 0;
     if (timestamp < 1746507563) {
       wbtc = await api.call({
-        target: '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642',
+        target: ADDRESSES.ethereum.EBTC,
         abi: 'uint256:totalSupply',
       });
     } else {
@@ -100,6 +100,7 @@ async function updateVaultTvl(api, config) {
         params: ['liquid-vault-wbtc'],
       });
     }
+    wbtc = Math.min(Number(wbtc), amount); // oracle can exceed NAV, never book more than held
     amount -= wbtc;
     api.add(ADDRESSES.ethereum.WBTC, wbtc);
   }
@@ -112,6 +113,7 @@ async function updateVaultTvl(api, config) {
       abi: 'function categoryTVL(string _category) view returns (uint256)',
       params: [category],
     });
+    weth = Math.min(Number(weth), amount);
     amount -= weth;
     api.add(ADDRESSES.ethereum.WETH, weth);
   }

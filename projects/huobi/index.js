@@ -1,13 +1,13 @@
 const { cexExports } = require("../helper/cex");
-const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
-
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   bitcoin: {
     owners: bitcoinAddressBook.huobi,
   },
   ethereum: {
+    ownTokens: ['0x6f259637dcd74c767781e37bc6133cd6a68aa161'], // HT
     owners: [
       "0xa929022c9107643515f5c777ce9a910f0d1e490c",
       "0x18709e89bd403f470088abdacebe86cc60dda12e",
@@ -75,6 +75,7 @@ const config = {
     ],
   },
   tron: {
+    ownTokens: ['TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6'], // HTX (HTX DAO), successor of HT
     owners: [
       "TYh6mgoMNZTCsgpYHBz7gttEfrQmDMABub",
       "TKgD8Qnx9Zw3DNvG6o83PkufnMbtEXis4T",
@@ -170,7 +171,7 @@ const config = {
   },
   sui: {
     owners: [
-      "0d9948b61478ec1609b4c00cd0162131109e7fd60d7d2ebb539cb414f3ec7b9d",
+      "0x0d9948b61478ec1609b4c00cd0162131109e7fd60d7d2ebb539cb414f3ec7b9d",
       "0x1f7b27844f2c4a0262b2c481f7ab956d10ace524c5a7b06c3742cfb8701db714",
     ],
   },
@@ -186,8 +187,9 @@ const config = {
 
 module.exports = mergeExports([
   cexExports(config),
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x08DeB6278D671E2a1aDc7b00839b402B9cF3375d', skipValidators: 3800 }) } },  // this address is no longer used?
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x08deb6278d671e2a1adc7b00839b402b9cf3375d', '0x39fd78fe6a72faae2ab5f1f053c253b2e3685c15'], size: 200, proxy: true, sleepTime: 20_000 }) } },
 ]);
-module.exports.methodology =
-  "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
-module.exports.hallmarks = [[1723066836, "remove usdd collateral"]];
+
+module.exports.methodology = "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
+module.exports.hallmarks = [['2024-08-07', "remove usdd collateral"]];
+Object.defineProperty(module.exports, '_rawConfig', { value: config, enumerable: false })

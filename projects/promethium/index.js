@@ -27,5 +27,5 @@ module.exports = {
     "TVL displays the total amount of assets stored in the Promethium contracts, excluding not claimed fees.",
   start: '2023-10-01',
   arbitrum: { tvl },
-  hallmarks: [[1696164866, "Profitable pools deployment"]],
+  hallmarks: [['2023-10-01', "Profitable pools deployment"]],
 };

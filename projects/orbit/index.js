@@ -19,6 +19,7 @@ async function tvlFromGraph() {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   polygon: {
     tvl: tvlFromGraph,
   },

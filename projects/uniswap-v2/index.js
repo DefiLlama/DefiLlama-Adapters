@@ -1,17 +1,14 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const { get } = require('../helper/http');
 const { getUniTVL } = require('../helper/unknownTokens');
 
 const v2graph = getChainTvl({
-  ethereum: 'A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum'
+  ethereum: 'GmSczqdCDZ3hJeYY9JphwsADn5rePUzUKm8EZcVuhRAm',
+  base: 'DbcUmZwXBYbNZvLuDEvcmFa4uAWwwjrdX8dVFg1AUVKa',
 })
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
-  ethereum: {
-    tvl: v2graph('ethereum'),
-  },
+  methodology: `Counts the tokens locked on AMM pools. Ethereum and Base use the Uniswap V2 subgraphs, other chains read pool reserves on-chain`,
 }
 
 const config = {
@@ -25,30 +22,27 @@ const config = {
   celo: '0x79a530c8e2fA8748B7B40dd3629C0520c2cCf03f',
   zora: '0x0F797dC7efaEA995bB916f268D919d0a1950eE3C',
   unichain: '0x1F98400000000000000000000000000000000002',
+  monad: '0x182a927119d56008d921126764bf884221b10f59',
+  xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95',
+  tempo: '0xf9ec577a4e45b5278bb7cf60fcbc20c3acaef68f',
+  robinhood: '0x8bcEaA40B9AcdfAedF85AdF4FF01F5Ad6517937f',
+  ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
+  arc: '0x89e5db8b5aa49aa85ac63f691524311aeb649eba',
+  wc: '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f',
+  elysium: '0xBbBcC62853a5fA27b93d6Bab3E6F7ce841E25Df2',
 }
 
 Object.keys(config).forEach(chain => {
   const factory = config[chain]
   module.exports[chain] = {
-    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, })
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, permitFailure: true })
   }
 })
 
 module.exports.isHeavyProtocol = true
 
-const graphChains = ['base']
-graphChains.forEach(chain => {
-  module.exports[chain] = { tvl: tvlViaGraph }
-})
+const graphChains = ['ethereum', 'base']
 
-async function tvlViaGraph(api) {
-  const endpoint = `https://interface.gateway.uniswap.org/v2/uniswap.explore.v1.ExploreStatsService/ProtocolStats?connect=v1&encoding=json&message=%7B%22chainId%22%3A%22${api.chainId}%22%7D`
-  const res = await get(endpoint, {
-    headers: {
-      'origin': 'https://app.uniswap.org',
-    } 
-  })
-  const v2 = res.dailyProtocolTvl.v2
-  const tvl = v2[v2.length - 1].value
-  api.addUSDValue(tvl)
-}
+graphChains.forEach(chain => {
+  module.exports[chain] = { tvl: v2graph(chain) }
+})

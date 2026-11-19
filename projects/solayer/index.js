@@ -21,7 +21,7 @@ async function tvl(api) {
 
   // add SUSD Backing
   tokensAndOwners.push(
-    ['4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'],
+    ['BnANu5CtUogLqcvBNByJuwaRvRxNtVuDcAytwjsUUtqs', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'],
     [ADDRESSES.solana.USDC, 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'],
   )
 

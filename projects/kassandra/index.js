@@ -1,7 +1,13 @@
 const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const abi = require('../aura-finance/abi.json')
+const abi = {
+  "poolLength": "uint256:poolLength",
+  "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+  "getPoolId": "function getPoolId() view returns (bytes32)",
+  "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)",
+  "getTokenInfo": "function getTokenInfo() view returns (address[] tokens, (uint8 tokenType, address rateProvider, bool paysYieldFees)[] tokenInfo, uint256[] balancesRaw, uint256[] lastBalancesLiveScaled18)"
+};
 const { stripTokenHeader } = require('../helper/tokenMapping')
 
 const config = {
@@ -30,11 +36,11 @@ Object.keys(config).forEach(chain => {
       if (chain === 'avax') {
         const balances = api.getBalances()
         const allTokens = tokens.flat().map(i => i.toLowerCase()).filter(i => i !== '0xd0f41b1c9338eb9d374c83cc76b684ba3bb71557')
-        const symbols = await api.multiCall({  abi: 'string:symbol', calls: allTokens, })
+        const symbols = await api.multiCall({ abi: 'string:symbol', calls: allTokens, })
         const yrtTokens = allTokens.filter((token, i) => symbols[i] === 'YRT')
-        const depositTokens = await api.multiCall({  abi: 'address:depositToken', calls: yrtTokens})
-        const deposits = await api.multiCall({  abi: 'uint256:totalDeposits', calls: yrtTokens})
-        const supply = await api.multiCall({  abi: 'uint256:totalSupply', calls: yrtTokens})
+        const depositTokens = await api.multiCall({ abi: 'address:depositToken', calls: yrtTokens })
+        const deposits = await api.multiCall({ abi: 'uint256:totalDeposits', calls: yrtTokens })
+        const supply = await api.multiCall({ abi: 'uint256:totalSupply', calls: yrtTokens })
         Object.entries(balances).forEach(([token, balance]) => {
           const t = stripTokenHeader(token)
           yrtTokens.forEach((yToken, i) => {
@@ -54,8 +60,8 @@ Object.keys(configBalancer).forEach(chain => {
   const { factory, fromBlock } = configBalancer[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const managedPoolFactory = await api.call({ target: factory, abi: 'address:managedPoolFactory'})
-      const vault = await api.call({ target: managedPoolFactory, abi: 'address:getVault'})
+      const managedPoolFactory = await api.call({ target: factory, abi: 'address:managedPoolFactory' })
+      const vault = await api.call({ target: managedPoolFactory, abi: 'address:getVault' })
       const logs = await getLogs({
         api,
         target: factory,
@@ -65,8 +71,8 @@ Object.keys(configBalancer).forEach(chain => {
         fromBlock,
       })
       const poolIds = logs.map(log => log.vaultPoolId)
-      const data = await api.multiCall({  abi: abi.getPoolTokens, calls: poolIds, target: vault})
-      data.forEach(({ tokens, balances}) => api.addTokens(tokens.slice(1), balances.slice(1)))
+      const data = await api.multiCall({ abi: abi.getPoolTokens, calls: poolIds, target: vault })
+      data.forEach(({ tokens, balances }) => api.addTokens(tokens.slice(1), balances.slice(1)))
       return api.getBalances()
     }
   }

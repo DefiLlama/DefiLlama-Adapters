@@ -1,55 +1,144 @@
-const { erc4626Abi, fortyAcresAbi } = require('./abi');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
+const SOLIDLY_VE_NFT_ABI = require('../helper/abis/solidlyVeNft.json');
 
 const vaultMapping = {
-  optimism: '0x08dCDBf7baDe91Ccd42CB2a4EA8e5D199d285957',
-  base: '0xB99B6dF96d4d5448cC0a5B3e0ef7896df9507Cf5'
+  optimism: ['0x08dCDBf7baDe91Ccd42CB2a4EA8e5D199d285957'],
+  base: ['0xB99B6dF96d4d5448cC0a5B3e0ef7896df9507Cf5'],
+  avax: [
+    '0x124D00b1ce4453Ffc5a5F65cE83aF13A7709baC7', //PHARAOH
+    '0xC0485C4bafB594Ae1457820fb6e5B67e8A04BCFD'  //BLACKHOLE
+  ]
 }
 
 const fortyAcresMapping = {
-    optimism: '0xf132bD888897254521D13e2c401e109caABa06A7',
-    base: '0x87f18b377e625b62c708D5f6EA96EC193558EFD0'
+  optimism: ['0xf132bD888897254521D13e2c401e109caABa06A7'],
+  base: ['0x87f18b377e625b62c708D5f6EA96EC193558EFD0'],
+  avax: [
+    '0xf6A044c3b2a3373eF2909E2474f3229f23279B5F', //PHARAOH
+    '0x5122f5154DF20E5F29df53E633cE1ac5b6623558' //BLACKHOLE
+  ]
 }
 
 const baseTokenMapping = {
-    optimism: '0x3c8B650257cFb5f272f799F5e2b4e65093a11a05', // VELO
-    base: '0x940181a94A35A4569E4529A3CDfB74e38FD98631', // AERO
+  optimism: ADDRESSES.optimism.VELO, // VELO
+  base: ADDRESSES.base.AERO, // AERO
+  avax: {
+    pharaoh: '0x13a466998ce03db73abc2d4df3bbd845ed1f28e7', // PHAR
+    blackhole: ADDRESSES.avax.BLACK //BLACK
+  }
 }
 
 const veNftMapping = {
-    optimism: '0xFAf8FD17D9840595845582fCB047DF13f006787d', // veVELO
-    base: '0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4', // veAERO
+  optimism: '0xFAf8FD17D9840595845582fCB047DF13f006787d', // veVELO
+  base: '0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4', // veAERO
+  avax: {
+    pharaoh: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', // vePHAR
+    blackhole: '0xEac562811cc6abDbB2c9EE88719eCA4eE79Ad763' //veBLACK
+  }
 }
+// Since the 2026-10-22 Aerodrome -> Aero migration, veAERO locks are upgraded into permanent stakes
+// (sAERO NFTs) on the Aero VotingEscrow, minted to the same portfolio
+const stakeMapping = {
+  base: {
+    votingEscrow: '0xBF7977E1521e9a3032bf7243Ee4712f311f13915', // sAERO
+    token: '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee', // Aero AERO (new token)
+  },
+}
+const portfolioManager = "0x40ac2e40acb7bdd6ec83e468143262fe216529ec";
+const avaxPortfolioFactory = '0x52d43C377e498980135C8F2E858f120A18Ea96C2';
+const paraohVoterModule = "0x34F233F868CdB42446a18562710eE705d66f846b";
 
-// get the underlying asset of each erc4626 vault
-const get4626VaultToken = async (api, addresses) => {
-  return api.multiCall({ calls: addresses, abi: erc4626Abi.asset, });
-}
+const assetAbi = 'address:asset';
+const activeAssetsAbi = 'uint256:activeAssets';
+const portfolioAbi = 'address[]:getAllPortfolios';
+const allFactoriesAbi = 'address[]:getAllFactories';
 
 async function getVaultBalance(api) {
-    const vaultToken = await api.call({ target: vaultMapping[api.chain], abi: erc4626Abi.asset, });
-    const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: vaultToken, params: [vaultMapping[api.chain]] })
-    api.addTokens([vaultToken], [vaultBalance])
-    return
+  const vaultToken = await api.multiCall({ calls: vaultMapping[api.chain], abi: assetAbi, });
+  const vaultBalance = await api.multiCall({
+    abi: 'erc20:balanceOf', calls:
+      vaultToken.map((token, i) =>
+      ({
+        target: token,
+        params: [vaultMapping[api.chain][i]]
+      })
+      )
+  })
+  for (const [i, token] of vaultToken.entries())
+    api.addTokens([token], [vaultBalance[i]])
+  return
 }
 
 
 async function getBorrowed(api) {
-  const borrowed =  await api.call({
-    abi: fortyAcresAbi.activeAssets,
-    target: fortyAcresMapping[api.chain],
+  const borrowed = await api.multiCall({
+    abi: activeAssetsAbi,
+    calls: fortyAcresMapping[api.chain],
   });
 
-  const vaultToken = await api.call({ target: vaultMapping[api.chain], abi: erc4626Abi.asset, });
-  api.addTokens([vaultToken],  [borrowed])
+  const vaultToken = await api.multiCall({ calls: vaultMapping[api.chain], abi: assetAbi, });
+
+  for(const [i,borrows] of borrowed.entries())
+      api.addTokens([vaultToken[i]], [borrows])
   return
 }
 
+async function getAvaxTvl(api) {
+  const chain = 'avax'
+  const portfolioList = await api.call({
+    target: avaxPortfolioFactory,
+    abi: portfolioAbi,
+  });
+
+  const portfolioBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: portfolioList.map(portfolio => {
+      return {
+        target: paraohVoterModule,
+        params: portfolio
+      }
+    })
+  });
+
+  portfolioBalances.forEach(balance => api.add(baseTokenMapping[chain]['pharaoh'], balance));
+
+    await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[chain]['blackhole'], veNft: veNftMapping[chain]['blackhole'], owner:fortyAcresMapping[chain][1],isAltAbi:true});
+}
+
+// same as unwrapSolidlyVeNft but batched across all portfolios: 3 multicalls total instead of 3 calls per portfolio
+async function getPortfolioVeNftTvl(api) {
+  const chain = api.chain;
+  const veNft = veNftMapping[chain]
+  const factories = await api.call({ target: portfolioManager, abi: allFactoriesAbi })
+  const portfolios = await api.multiCall({ calls: factories.map(f => ({target: f})), abi: portfolioAbi});
+  const allPortfolios = [...new Set(portfolios.flat().map(a => a.toLowerCase()))]
+
+  const counts = await api.multiCall({ abi: 'erc20:balanceOf', calls: allPortfolios, target: veNft })
+  const idCalls = []
+  counts.forEach((count, i) => {
+    for (let j = 0; j < +count; j++) idCalls.push({ params: [allPortfolios[i], j] })
+  })
+  const tokenIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.ownerToNFTokenIdList, calls: idCalls, target: veNft })
+  const locked = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.locked, calls: tokenIds, target: veNft })
+  locked.forEach(i => api.add(baseTokenMapping[chain], i.amount))
+
+  const stake = stakeMapping[chain]
+  if (!stake) return
+  // permitFailure: the VotingEscrow was deployed just before the migration, earlier blocks get empty calls below
+  const stakeCounts = await api.multiCall({ abi: 'erc20:balanceOf', calls: allPortfolios, target: stake.votingEscrow, permitFailure: true })
+  const stakeIdCalls = []
+  stakeCounts.forEach((count, i) => {
+    for (let j = 0; j < +(count ?? 0); j++) stakeIdCalls.push({ params: [allPortfolios[i], j] })
+  })
+  const stakeIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex, calls: stakeIdCalls, target: stake.votingEscrow })
+  const staked = await api.multiCall({ abi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', calls: stakeIds, target: stake.votingEscrow })
+  staked.forEach(i => api.add(stake.token, i.amount))
+}
+
 module.exports = {
-    get4626VaultToken,
-    getVaultBalance,
-    fortyAcresMapping,
-    baseTokenMapping,
-    vaultMapping,
-    veNftMapping,
-    getBorrowed
+  getVaultBalance,
+  getBorrowed,
+  getAvaxTvl,
+  getPortfolioVeNftTvl,
 }

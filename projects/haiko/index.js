@@ -24,4 +24,7 @@ module.exports = {
   starknet: {
     tvl,
   },
+  hallmarks: [
+    ['2025-05-13', 'Project sunset announcement'],
+  ],
 };

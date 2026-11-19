@@ -1,7 +1,10 @@
 const sdk = require('@defillama/sdk')
 const { cexExports } = require("../helper/cex")
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
+
+const cexExportsObject = {}
 
 const config = {
   ripple: {
@@ -24,11 +27,12 @@ const config = {
 
 const chains = [
   'bitcoin', 'litecoin', 'ripple',
-  'ethereum', 'avax', 'solana', 'sui',  'xdc', 'near', 'cardano', 'algorand',
+  'ethereum', 'avax', 'solana', 'sui',  'xdc', 'near', 'cardano',
+  // 'algorand',
 ]
 
 chains.forEach(chain => {
-  module.exports[chain] = {
+  cexExportsObject[chain] = {
     tvl: async (...args) => {
       const data = await getAllData()
       const tvlFunc = cexExports({ [chain]: data[chain] })[chain].tvl
@@ -49,14 +53,24 @@ function getAllData() {
     return getConfig('bitstamp', undefined, {
       fetcher: async () => {
         let page = 1
-        let hasMorePages = true
-        let lastItem
+        let emptyRetries = 0
         const walletChainMapping = {}
-        do {
+        // Bitstamp caps per_page at 100; larger values return HTTP 400
+        const PER_PAGE = 100
+        while (true) {
           sdk.log('fetching page', page)
-          const data = await get('https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=1000&page=' + page)
-          const allWallets = Object.values(data.wallets).flat()
-          const currentLastItem = allWallets[allWallets.length - 1]
+          const data = await get(`https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=${PER_PAGE}&page=${page}`, { timeout: 30000 })
+          const allWallets = Object.values(data.wallets ?? {}).flat()
+          // wallet list is appended to over time, so a page can transiently come
+          // back empty mid-list; retry a few times before accepting it as the end
+          if (!allWallets.length) {
+            if (++emptyRetries < 3) {
+              await new Promise(resolve => setTimeout(resolve, 3000))
+              continue
+            }
+            break // several consecutive empty pages => no more wallets
+          }
+          emptyRetries = 0
 
           allWallets.forEach(({ address, network }) => {
             if (!walletChainMapping[network])
@@ -65,9 +79,7 @@ function getAllData() {
           })
 
           page++
-          hasMorePages = !lastItem || currentLastItem.address !== lastItem.address
-          lastItem = currentLastItem
-        } while (hasMorePages)
+        }
 
         Object.entries(walletChainMapping).forEach(([chain, wallets]) => {
           walletChainMapping[chain] = { owners: Object.keys(wallets) }
@@ -75,10 +87,31 @@ function getAllData() {
 
         walletChainMapping.avax = walletChainMapping['avalanche-c-chain']
         walletChainMapping.xdc = walletChainMapping['xdc-network']
-        walletChainMapping.ripple = config.ripple
+        walletChainMapping.ripple = {
+          owners: [...new Set([
+            ...config.ripple.owners,
+            ...(walletChainMapping.xrpl?.owners ?? []).map(address => address.split('?')[0]),
+          ])],
+        }
         return walletChainMapping
       }
     })
   }
 }
 
+const withdrawalAddresses = [
+  '0x3262f13a39efaca789ae58390441c9ed76bc658a',
+  '0xf666814c2ae92ca0e06667f80dac1eb8a97e48ae',
+  '0x5c95a672e34b3252482ed9a215f2926d2887845d',
+  '0x88a4df73aac310484c60c4c0ac4904cab938c20b',
+]
+
+module.exports = mergeExports([
+  cexExportsObject,
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])
+
+Object.defineProperty(module.exports, '_rawConfig', {
+  value: Object.fromEntries(chains.map((chain) => [chain, { owners: async () => (await getAllData())[chain]?.owners ?? [] }])),
+  enumerable: false,
+})

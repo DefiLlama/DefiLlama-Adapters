@@ -1,20 +1,13 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { getLiquityTvl } = require('../helper/liquity')
 const sdk = require('@defillama/sdk');
-const { sumTokens } = require('../helper/unwrapLPs');
 
-async function fantomCurveLps(timestamp, ethBlock, chainBlocks) {
-  const balances = {}
-  await sumTokens(balances, [
-    ["0x6ef78ad4a40e9a6c81b9229de3ecc33ce591bc34", "0xce42b2ee38f3434be68d1d6258a4d8959a6716ab"], //usd
-    ["0x8b63f036f5a34226065bc0a7b0ae5bb5eba1ff3d", "0x59f58431d4cba2b7e9e8d78f064a8fa24c5134bf"], //ftm
-  ], chainBlocks.fantom, "fantom", addr => {
-    return "fantom:" + {
-      "0x6ef78ad4a40e9a6c81b9229de3ecc33ce591bc34": ADDRESSES.fantom.MIM,
-      "0x8b63f036f5a34226065bc0a7b0ae5bb5eba1ff3d": ADDRESSES.fantom.WFTM,
-    }[addr.toLowerCase()]
+async function fantomCurveLps(api) {
+  return api.sumTokens({
+    tokensAndOwners: [
+      ["0x6ef78ad4a40e9a6c81b9229de3ecc33ce591bc34", "0xce42b2ee38f3434be68d1d6258a4d8959a6716ab"], //usd
+      ["0x8b63f036f5a34226065bc0a7b0ae5bb5eba1ff3d", "0x59f58431d4cba2b7e9e8d78f064a8fa24c5134bf"], //ftm
+    ]
   })
-  return balances
 }
 
 const options = { nonNativeCollateralToken: true}

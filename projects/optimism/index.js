@@ -31,7 +31,10 @@ Object.keys(chains).map((chain) => {
       ].filter((o) => o);
 
       if (chain == "ethereum")
-        owners.push("0xbEb5Fc579115071764c7423A4f12eDde41f106Ed");
+        owners.push(
+          "0xbEb5Fc579115071764c7423A4f12eDde41f106Ed", // OptimismPortal
+          "0x322b47Ff1FA8D5611F761e3E275C45B71b294D43", // ETHLockbox (OP Stack Upgrade 16), OptimismPortal.ethLockbox()
+        );
       return sumTokens2({
         api,
         tokens,

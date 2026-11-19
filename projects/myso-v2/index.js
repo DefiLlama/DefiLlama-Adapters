@@ -1,158 +1,110 @@
-const zlib = require("zlib");
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getCache, setCache } = require("../helper/cache");
 const { get } = require("../helper/http");
+const { getCache, setCache } = require("../helper/cache");
 
-const brotliDecode = (stream) => {
-  return new Promise((resolve, reject) => {
-    let responseBuffer = [];
+const CoveredCallStrategiesAbi = "function strategies(uint256) view returns (address underlying, uint128 maxDeposits, uint128 minDeposits, uint128 startTime, uint128 tenor, uint128 minStrike, uint128 subscribeEndTime, uint256 totalDeposits, uint128 tokenRewardsPerDeposit)";
+const whaleMatchTotalSubscriptionsAbi = "function totalSubscriptions(address) view returns (uint256)";
+const NewVaultCreatedAbi = "event NewVaultCreated(address indexed newLenderVaultAddr, address vaultOwner, uint256 numRegisteredVaults)";
+const LoanProposalCreatedAbi = "event LoanProposalCreated(address indexed loanProposalAddr, address indexed fundingPool, address indexed sender, address collToken, uint256 arrangerFee, uint256 unsubscribeGracePeriod, uint256 numLoanProposals)"
 
-    stream.on("data", function handleStreamData(chunk) {
-      responseBuffer.push(chunk);
-    });
-
-    stream.on("error", function handleStreamError(err) {
-      reject(err);
-    });
-
-    stream.on("end", function handleStreamEnd() {
-      let responseData = Buffer.concat(responseBuffer);
-
-      responseData = responseData.toString("utf8");
-
-      resolve(JSON.parse(responseData));
-    });
-  });
+const CONFIG = {
+  mantle:   { fromBlock: 3471026 },
+  ethereum: { fromBlock: 18213104 },
+  arbitrum: { fromBlock: 143181867 },
+  base:     { fromBlock: 6239916 },
+  evmos:    { fromBlock: 18112793 },
+  neon_evm: { fromBlock: 237206849 },
+  telos:    { fromBlock: 324711636 },
+  linea:    { fromBlock: 2118418 },
+  sei:      { fromBlock: 79773668 },
 };
 
-const getContracts = async (chainId) => {
-  const response = await get(
-    `https://api.myso.finance/chainIds/${chainId}/contracts`,
-    {
-      responseType: "stream",
-      decompress: false,
-      transformResponse: (data) => {
-        return data.pipe(zlib.createBrotliDecompress());
-      },
-    }
-  );
 
-  const data = await brotliDecode(response);
+async function loadContracts(api) {
+  const url = `https://api.myso.finance/chainIds/${api.chainId}/contracts`;
 
-  return data.contracts;
-};
+  const data = await get(url, { responseType: "json", decompress: true, validateStatus: () => true });
+  
+  if (data && data.contracts && data.contracts.length) {
+    await setCache("myso-v2", api.chain, data.contracts);
+    return data.contracts;
+  }
 
-const CoveredCallStrategiesAbi =
-  "function strategies(uint256) view returns (address underlying, uint128 maxDeposits, uint128 minDeposits, uint128 startTime, uint128 tenor, uint128 minStrike, uint128 subscribeEndTime, uint256 totalDeposits, uint128 tokenRewardsPerDeposit)";
+  const cached = await getCache("myso-v2", api.chain);
+  return (cached && cached.length) ? cached : [];
+}
 
-const whaleMatchTotalSubscriptionsAbi =
-  "function totalSubscriptions(address) view returns (uint256)";
+async function getBlitzMatchBalances(api, contracts, fromBlock) {
+  if (!contracts.length) return;
 
-const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
-  const vaultFactory = contracts?.find(
-    (contract) => contract.type === "vault_factory"
-  )?.contractAddr;
+  const vaultFactory = contracts.find((c) => c && c.type === "vault_factory")?.contractAddr;
+  if (!vaultFactory) return;
 
-  if (!vaultFactory);
-
-  const logs = await getLogs({
-    api,
-    target: vaultFactory,
-    eventAbi:
-      "event NewVaultCreated(address indexed newLenderVaultAddr, address vaultOwner, uint256 numRegisteredVaults)",
-    onlyArgs: true,
-    fromBlock,
-  });
-
+  const logs = await getLogs({ api,target: vaultFactory, eventAbi: NewVaultCreatedAbi, onlyArgs: true, fromBlock });
   if (!logs.length) return;
 
-  let ownerTokens = logs.map((i) => {
-    return [
-      contracts
-        .filter((contract) => contract.type === "token")
-        .map((contract) => contract.contractAddr),
-      i.newLenderVaultAddr,
-    ];
-  });
+  const tokenAddresses = contracts
+    .filter((c) => c && c.type === "token" && c.contractAddr)
+    .map((c) => c.contractAddr);
+  if (!tokenAddresses.length) return;
+
+  const ownerTokens = logs
+    .filter((i) => i && i.newLenderVaultAddr)
+    .map((i) => [tokenAddresses, i.newLenderVaultAddr]);
+  if (!ownerTokens.length) return;
 
   return sumTokens2({ api, ownerTokens });
-};
+}
 
-const getCoveredCallOfTheWeekBalances = async (api, contracts) => {
-  const coveredCallOfTheWeeks = contracts?.filter(
-    (contract) => contract.type === "p2p"
-  );
 
-  if (!coveredCallOfTheWeeks) return;
+async function getCoveredCallOfTheWeekBalances(api, contracts) {
+  const covered = contracts.filter((c) => c && c.type === "p2p" && c.contractAddr && c.poolData?.strategyId != null);
+  if (!covered.length) return;
 
-  const coveredCallOfTheWeekStrategies = await api.multiCall({
-    calls: coveredCallOfTheWeeks.map((contract) => ({
-      target: contract?.contractAddr,
-      params: [contract.poolData.strategyId],
-    })),
-    abi: CoveredCallStrategiesAbi,
+  const strategies = await api.multiCall({ calls: covered.map((c) => ({ target: c.contractAddr, params: [c.poolData.strategyId] })), abi: CoveredCallStrategiesAbi });
+  if (!strategies.length) return;
+
+  strategies.forEach((s) => {
+    if (s && s.underlying && s.totalDeposits != null) api.add(s.underlying, s.totalDeposits);
   });
+}
 
-  if (!coveredCallOfTheWeekStrategies.length) return;
+async function getWhaleMatchBalances(api, contracts, fromBlock) {
+  if (!contracts.length) return;
 
-  coveredCallOfTheWeekStrategies.forEach((strategy) =>
-    api.add(strategy.underlying, strategy.totalDeposits)
-  );
-};
-
-const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
-  const fundingPoolFactory = contracts.find(
-    (contract) => contract.type === "funding_pool_factory"
-  )?.contractAddr;
-
-  const fundingPools =
-    contracts.filter((contract) => contract.type === "funding_pool") || [];
-
+  const fundingPoolFactory = contracts.find((c) => c && c.type === "funding_pool_factory")?.contractAddr;
+  const fundingPools = contracts.filter((c) => c && c.type === "funding_pool");
   if (!(fundingPoolFactory && fundingPools.length)) return;
 
-  const logs = await getLogs({
-    api,
-    target: fundingPoolFactory,
-    eventAbi:
-      "event LoanProposalCreated(address indexed loanProposalAddr, address indexed fundingPool, address indexed sender, address collToken, uint256 arrangerFee, uint256 unsubscribeGracePeriod, uint256 numLoanProposals)",
-    onlyArgs: true,
-    fromBlock,
-  });
+  const logs = await getLogs({ api, target: fundingPoolFactory, eventAbi: LoanProposalCreatedAbi, onlyArgs: true, fromBlock });
 
   if (logs.length) {
     const loanProposalBalances = await api.multiCall({
-      calls: logs.map((log) => ({
-        target: log?.fundingPool,
-        params: [log.loanProposalAddr],
-      })),
+      calls: logs
+        .filter((l) => l && l.fundingPool && l.loanProposalAddr)
+        .map((l) => ({ target: l.fundingPool, params: [l.loanProposalAddr] })),
       abi: whaleMatchTotalSubscriptionsAbi,
     });
-    const tokens = await api.multiCall({
-      abi: "address:depositToken",
-      calls: logs.map((log) => log.fundingPool),
-    });
-    api.add(tokens, loanProposalBalances);
+
+    const tokens = await api.multiCall({ abi: "address:depositToken", calls: logs.filter((l) => l && l.fundingPool).map((l) => l.fundingPool) });
+
+    if (tokens.length === loanProposalBalances.length) api.add(tokens, loanProposalBalances);
   }
 
-  let tokensAndOwners = fundingPools.map((fundingPool) => {
-    return [fundingPool.loanCcyToken, fundingPool.contractAddr];
-  });
+  const tokensAndOwners = fundingPools
+    .filter((fp) => fp && fp.loanCcyToken && fp.contractAddr)
+    .map((fp) => [fp.loanCcyToken, fp.contractAddr]);
+  if (!tokensAndOwners.length) return;
 
   return sumTokens2({ api, tokensAndOwners });
-};
+}
 
 async function tvl(api) {
-  const { fromBlock } = config[api.chain];
+  const fromBlock = CONFIG[api.chain].fromBlock;
 
-  let contracts;
-
-  try {
-    contracts = await getContracts(api.chainId);
-    await setCache("myso-v2", api.chain, contracts);
-  } catch (e) {
-    contracts = await getCache("myso-v2", api.chain);
-  }
+  const contracts = await loadContracts(api);
+  if (!contracts.length) return;
 
   await getBlitzMatchBalances(api, contracts, fromBlock);
   await getCoveredCallOfTheWeekBalances(api, contracts);
@@ -160,36 +112,8 @@ async function tvl(api) {
   return getWhaleMatchBalances(api, contracts, fromBlock);
 }
 
-const config = {
-  mantle: {
-    fromBlock: 3471026,
-  },
-  ethereum: {
-    fromBlock: 18213104,
-  },
-  arbitrum: {
-    fromBlock: 143181867,
-  },
-  base: {
-    fromBlock: 6239916,
-  },
-  evmos: {
-    fromBlock: 18112793,
-  },
-  neon_evm: {
-    fromBlock: 237206849,
-  },
-  telos: {
-    fromBlock: 324711636,
-  },
-  linea: {
-    fromBlock: 2118418,
-  },
-  sei: {
-    fromBlock: 79773668,
-  },
-};
-
-Object.keys(config).forEach((chain) => {
+Object.keys(CONFIG).forEach((chain) => {
+  if (chain === "neon_evm" || chain === 'sei') return { tvl: () => ({}) };
   module.exports[chain] = { tvl };
 });
+

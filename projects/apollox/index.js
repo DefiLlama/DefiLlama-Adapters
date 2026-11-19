@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
-const { sumTokens, sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
 
 const stakingContract = "0x7eb5af418f199ea47494023c3a8b83a210f8846f";
 const stakingContract_APX = "0x6bE863e01E17A226c945e3629D0D9Cb6E52Ce90E";
@@ -16,7 +16,7 @@ const ALPContract = "0x1b6F2d3844C6ae7D56ceb3C3643b9060ba28FEb0";
 const TOKEN_APX = "0x78f5d389f5cdccfc41594abab4b0ed02f31398b3";
 const TOKEN_BSC_USD = ADDRESSES.bsc.USDT;
 const TOKEN_BUSD = ADDRESSES.bsc.BUSD;
-const TOKEN_CAKE = "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82";
+const TOKEN_CAKE = ADDRESSES.bsc.CAKE;
 const TOKEN_BABY = "0x53e562b9b7e5e94b81f10e96ee70ad06df3d2657";
 const TOKEN_LEOS = "0x2c8368f8f474ed9af49b87eac77061beb986c2f1";
 const TOKEN_USDC = ADDRESSES.bsc.USDC;
@@ -55,13 +55,13 @@ const ALPTokens = [
   TOKEN_CAKE,
 ]
 
-async function bscTVL(timestamp, _block, { bsc: block }) {
+async function bscTVL(api) {
   const toa = [
     ...TreasureTokens.map((t) => [t, treasureContract]),
     ...TreasureTokens.map((t) => [t, treasureContractV2]),
     ...ALPTokens.map((t) => [t, ALPContract]),
   ]
-  return sumTokens({}, toa, block, "bsc");
+  return api.sumTokens({ tokensAndOwners: toa });
 }
 
 module.exports = {

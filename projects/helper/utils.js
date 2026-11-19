@@ -3,14 +3,15 @@ const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
-const erc20 = require('./abis/erc20.json')
+const erc20 = require('./abis/erc20.json');
+const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
-  return axios.get(url)
+  return axios.get(url, { timeout: http.DEFAULT_TIMEOUT })
 }
 
 async function postURL(url, data) {
-  return axios.post(url, data)
+  return axios.post(url, data, { timeout: http.DEFAULT_TIMEOUT })
 }
 
 function createIncrementArray(length) {
@@ -34,6 +35,7 @@ const blacklisted_LPS = new Set([
   '0x93669cfce302c9971169f8106c850181a217b72b',
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
   '0x524cab2ec69124574082676e6f654a18df49a048',
+  '0x98b540fa89690969D111D045afCa575C91519B1A',
 ].map(i => i.toLowerCase()))
 
 function isICHIVaultToken(symbol, token, chain) {
@@ -56,9 +58,10 @@ function isLP(symbol, token, chain) {
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
   if (chain === 'oasis' && ['LPT', 'GLP'].includes(symbol)) return true
   if (chain === 'iotex' && ['MIMO-LP'].includes(symbol)) return true
-  if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
+  if (chain === 'base' && ['RCKT-V2', 'RUBI-AMM'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
+  if (chain === 'fuse' && ['VLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP', 'GLP', 'WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['DLP'].includes(symbol)) return false
   if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
@@ -66,6 +69,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
   if (chain === 'core' && ['GLP'].includes(symbol)) return true
+  if (chain === 'astar' && ['NLP'].includes(symbol)) return true
   if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
@@ -86,9 +90,11 @@ function isLP(symbol, token, chain) {
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
+  if (chain === 'etica' && symbol === 'ETICA-V2') return true // EticaSwap LP
   if (chain === 'shibarium' && ['SSLP', 'ChewyLP'].includes(symbol)) return true
   if (chain === 'omax' && ['OSWAP-V2'].includes(symbol)) return true
   if (chain === 'sonic' && symbol.endsWith(' spLP')) return true
+  if (chain === 'xdc' && ['XSP2'].includes(symbol)) return true // xspswap LP
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
@@ -320,44 +326,86 @@ function once(func) {
   return wrapped
 }
 
-
-function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
   return async (api) => {
-    let fetchedValidators = skipValidators;
-    let size = 200;
-    api.sumTokens({ owner: withdrawalAddress, tokens: [nullAddress] })
-    do {
-      const validators = (
-        await http.get(
-          `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
-        )
-      ).data.map((i) => i.publickey);
-      fetchedValidators += validators.length;
-      api.log("Fetching balances for validators", validators.length);
-      await addValidatorBalance(validators);
-      await sleep(10000);
-    } while (fetchedValidators % size === 0);
 
+    if (!withdrawalAddress && !withdrawalAddresses?.length)
+      throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
+
+    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    api.addGasToken(await beacon.balance(addresses))
     return api.getBalances()
+  };
+}
 
-
-    async function addValidatorBalance(validators) {
-      if (validators.length > 100) {
-        const chunks = sliceIntoChunks(validators, 100);
-        for (const chunk of chunks) await addValidatorBalance(chunk);
-        return;
+function permitChainFailures(exports, chains) {
+  Object.keys(exports).forEach(chain => {
+    if (!chains.includes(chain)) return;
+    const chainObj = exports[chain]
+    Object.keys(chainObj).forEach(key => {
+      const fn = chainObj[key]
+      chainObj[key] = async (api, ...params) => {
+        try {
+          return await fn(api, ...params)
+        } catch (e) {
+          sdk.log(`Permitting failure for ${chain} ${key}: ${e.message}`)
+          return {}
+        }
       }
+    })
+  })
+}
 
-      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
-        indicesOrPubkey: validators.join(","),
-      });
+function getCustomScriptTvl(chain, project) {
+  return async () => {
+    const cachedLog = await sdk.elastic.search({
+      index: 'custom-scripts*',
+      body: {
+        query: {
+          bool: {
+            must: [
+              { match: { project } },
+              { match: { chain} },
+              { match: { 'metadata.type': 'tvl', } },
+              {
+                range: {
+                  timestamp: {
+                    // last 24 hours; log timestamps are epoch milliseconds (sdk.elastic.writeLog default).
+                    // comparing against a seconds threshold accepted any log, however old - metadao served April balances for months
+                    gte: Date.now() - 24 * 60 * 60 * 1000,
+                  },
+                },
+              },
+            ],
+          },
+        },
+        sort: [{ timestamp: { order: 'desc' } }],
+        size: 1,
+      },
+    })
 
-
-      data.forEach((i) => api.addGasToken(i.balance * 1e9));
+    if (cachedLog?.hits?.hits?.length > 0) {
+      const { balances, timestamp } = cachedLog.hits.hits[0]._source
+      // belt and braces: a script that stamps seconds would slip past the range filter above
+      if (timestamp < Date.now() - 24 * 60 * 60 * 1000)
+        throw new Error(`Latest custom script log for ${project}/${chain} is stale (timestamp ${timestamp})`)
+      return balances
     }
+    throw new Error("No recent cached TVL found, run the custom script to populate the cache")
   }
 }
 
+function customScriptTvlExports(config) {
+  const exports = {
+    timetravel: false,
+  }
+  Object.entries(config).forEach(([chain, projectName]) => {
+    exports[chain] = {
+      tvl: getCustomScriptTvl(chain, projectName)
+    }
+  })
+  return exports
+}
 
 module.exports = {
   log,
@@ -379,4 +427,7 @@ module.exports = {
   once,
   isICHIVaultToken,
   getStakedEthTVL,
+  permitChainFailures,
+  getCustomScriptTvl,
+  customScriptTvlExports,
 }

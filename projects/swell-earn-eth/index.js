@@ -13,7 +13,7 @@ const ethTokens = [
   "0x9Ba021B0a9b958B5E75cE9f6dff97C7eE52cb3E6", // apxETH
   "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6", // pxETH
   ADDRESSES.ethereum.WEETH, // weETH
-  "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110", // ezETH
+  ADDRESSES.linea.rzETH, // ezETH
   "0xC329400492c6ff2438472D4651Ad17389fCb843a", // sym_wstETH
   "0x38B86004842D3FA4596f0b7A0b53DE90745Ab654", // sym_swETH
   "0xB26ff591F44b04E78de18f43B46f8b70C6676984", // sym_cbETH
@@ -56,6 +56,7 @@ const swellchainVeloPoolsStaked = [{
 }]
 
 const swellchainTokens = [
+  ADDRESSES.swellchain.WETH,
   ADDRESSES.swellchain.rswETH, // rswETH
   ADDRESSES.swellchain.swETH, // swETH
   '0xC3d33a0Ea1582410075567c589af895fcaF1127c', // tempest weeth/eth

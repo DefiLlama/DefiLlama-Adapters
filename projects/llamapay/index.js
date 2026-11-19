@@ -1,4 +1,10 @@
-const abi = require("./abi.json");
+const abi = {
+    "getLlamaPayContractCount": "uint256:getLlamaPayContractCount",
+    "getLlamaPayContractByIndex": "function getLlamaPayContractByIndex(uint256) view returns (address)",
+    "token": "address:token",
+    "escrows_length": "uint256:escrows_length",
+    "escrows": "function escrows(uint256 arg0) view returns (address)"
+  };
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const { getSymbols } = require('../helper/utils')
 const { isWhitelistedToken, } = require('../helper/streamingHelper')

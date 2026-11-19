@@ -70,28 +70,45 @@ async function tvl(api) {
 
   await api.sumTokens({ ownerTokens })
 
-  const chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  const block = api.block ?? 0
+  let chunks = []
+  try {
+    chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks@${block}`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  } catch (e) {
+    api.log(`Panoptic: subgraph unavailable on ${chain}, skipping SFPM positions`)
+  }
+  if (!Array.isArray(chunks)) chunks = []
   chunks.forEach(chunk => {
     const { token0, token1, tick, } = poolData[chunk.pool.id.toLowerCase()] ?? {}
     if (!tick) return;
-    addUniV3LikePosition({ api, token0, token1, tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
+    addUniV3LikePosition({ api, token0, token1, tick: Number(tick), liquidity: Number(chunk.netLiquidity), tickUpper: Number(chunk.tickUpper), tickLower: Number(chunk.tickLower), })
   })
+
+  const usdValue = await api.getUSDValue()
+  if (usdValue < 0) {
+    api.log(`Panoptic: skipping negative USD value: $${usdValue}`)
+    return {}
+  }
 }
 
 module.exports = {
+  deadFrom: "2026-11-01", // migrated to v2
   ethereum: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1734049991,
+    start: '2024-12-13',
   },
   base: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1745348687,
+    start: '2025-04-22',
   },
   unichain: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1739411364,
+    start: '2025-02-13',
   },
+  hallmarks: [
+    ["2025-08-27", "Whitehack by team"]
+  ]
 }

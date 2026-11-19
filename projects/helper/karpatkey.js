@@ -1,5 +1,5 @@
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil")
 const { fetchURL } = require("./utils")
+const sdk = require('@defillama/sdk')
 
 const MONTH = 30 * 24 * 3600e3
 
@@ -25,7 +25,7 @@ async function karpatKeyTvl(api, daoName, tokenToExclude) {
     if (tokenToExclude !== bal.token_symbol && bal.value) {
       const chain = chainMapping[bal.blockchain] ?? bal.blockchain.toLowerCase()
       // api.log(`Adding ${bal.token_symbol} on ${chain} with address ${bal.token_address} and value ${bal.value}`)
-      sumSingleBalance(balances, chain + ':' + bal.token_address, bal.value)
+      sdk.util.sumSingleBalance(balances, chain + ':' + bal.token_address, bal.value)
     } else {
       api.log(`Skipping ${bal.token_symbol}`)
     }

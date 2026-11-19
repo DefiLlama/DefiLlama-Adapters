@@ -1,0 +1,145 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+
+reviews:
+  profile: "quiet"
+  high_level_summary: true
+  collapse_walkthrough: true
+  sequence_diagrams: false
+  estimate_code_review_effort: false
+  assess_linked_issues: false
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
+  suggested_reviewers: false
+  in_progress_fortune: false
+  poem: false
+
+  pre_merge_checks:
+    title:
+      mode: "off"
+    description:
+      mode: "off"
+    issue_assessment:
+      mode: "off"
+
+  path_instructions:
+    - path: "projects/**"
+      instructions: |
+        Adapters in this repo are reviewed by maintainers against on-chain data. Only ask for
+        changes in the cases listed below, plus real bugs that would make the adapter throw or
+        report a wrong number. Do not comment on style, naming, formatting, comments, missing
+        tests, missing docs, error handling or refactors. If none of the cases apply, leave no
+        review comments.
+
+        1. Helper-only adapters belong in a registry.
+        Applies to adapter files added in this PR, not to edits of existing ones. If the file
+        only requires a helper and exports the result of calling it with static config
+        (addresses, tokens, factories, start blocks), optionally with metadata keys such as
+        methodology, start, hallmarks, doublecounted or misrepresentedTokens, ask the author to
+        delete the projects/ file and add an entry under the same key in the matching registry:
+        - sumTokensExport / sumTokens2 on fixed owners and tokens, optionally with staking() or
+          pool2() buckets -> registries/sumTokens.js
+        - only staking() and/or pool2(), with an empty tvl -> registries/stakingOnly.js
+        - getUniTVL -> registries/uniswapV2.js
+        - uniV3Export -> registries/uniswapV3.js
+        - uniV3GraphExport -> registries/uniswapV3Graph.js
+        - aaveV3Export -> registries/aaveV3.js
+        - aaveExports / aaveV2Export -> registries/aave.js
+        - compoundExports2 -> registries/compound.js
+        - sumERC4626VaultsExport2 -> registries/erc4626.js
+        - masterchefExports / masterChefExports -> registries/masterchef.js
+        - getLiquityTvl / getLiquityV2Tvl -> registries/liquity.js
+        - onChainTvl / v3Tvl / v1Tvl from helper/balancer -> registries/balancer.js
+        - gmxExports / gmxExportsV2 -> registries/gmx.js
+        - joeV2Export -> registries/traderJoeV2.js
+        - getCuratorExport -> registries/curators.js
+        - getBTCExport -> registries/bitcoin.js
+        - treasuryExports (projects/treasury/<name>.js) -> registries/treasury.js
+        Point to a nearby entry in that registry file as the format to copy. Do not ask for this
+        when the adapter has logic a registry entry cannot express: its own tvl function, calls
+        to discover contracts, API fetches, or arithmetic on balances.
+
+        2. The protocol's own token is not TVL.
+        If the adapter adds the protocol's own governance or native token to `tvl` (the token is
+        named after the protocol, or matches the "Token address and ticker" field of the PR
+        description), ask for it to be exported under `staking` instead, and under `pool2` for LP
+        tokens that pair the own token. This applies whatever the mechanism is: staking contracts,
+        vaults, lockers, bonding curves or launchpads quoted in the own token. A `tvl` of 0 is
+        expected and fine for a staking-only listing. See
+        https://docs.llama.fi/list-your-project/what-to-include-as-tvl#tvl-filters
+        Do not flag pools or markets found through a DEX or lending helper (getUniTVL,
+        uniV3Export, aaveV3Export, compoundExports2 and similar) just because the own token is
+        one of the assets in them. Only flag it when you can tell which token is the protocol's
+        own; do not guess.
+
+        3. Keep existing chains and adapters.
+        If the PR removes a chain key from an existing adapter's exports, ask for it to stay as
+        `<chain>: { tvl: () => ({}) }` so the chain's history is kept in the API. If the PR
+        deletes or renames an existing adapter file or folder, ask for it to be kept: listings
+        point at the file path, and name changes are handled through metadata@defillama.com.
+        Deleting a projects/ file is fine when the same PR adds the same key to a registry.
+
+        4. Adapters do not price tokens.
+        An adapter reports token amounts at addresses; prices come from DefiLlama's coins
+        service. Ask for the token balance to be reported as is when the adapter:
+        - calls coins.llama.fi or any other price API,
+        - multiplies a balance by a price or rate from the protocol's own oracle, a pool, or a
+          hardcoded number, and books the result as USD or as another token,
+        - converts a wrapper it holds into its underlying (convertToAssets, getRate,
+          exchangeRate and similar) instead of adding the wrapper token itself,
+        - falls back to a converted value when a token has no price.
+        A token without a price shows as 0 until it is priced, which is acceptable; pricing
+        requests are handled on the coins side, not in the adapter.
+
+        5. TVL comes from chain data, not from the project's API.
+        Applies to adapter files added in this PR, and to existing on-chain adapters the PR
+        switches to an API. If balances or a TVL figure are read from the project's own API or
+        backend, ask for them to be read on-chain instead. Using an API only to get a list of
+        contracts, vaults or pools whose balances are then read on-chain is fine; in that case
+        suggest getConfig from projects/helper/cache.js instead of a bare http get.
+
+        6. Keep the PR to the adapter.
+        Ask for these to be removed from the PR: unit test files (*.test.js, *.spec.js),
+        formatting-only changes to lines the PR does not otherwise need to touch, and changes to
+        files under projects/helper/ that only reformat code.
+
+    - path: "registries/**"
+      instructions: |
+        Registry entries are static config reviewed by maintainers against on-chain data. Only
+        comment on the cases below, plus errors that would break the registry file (syntax, a
+        duplicate key, an entry placed outside the config object). Do not comment on style,
+        ordering, formatting, or the value of `start` / `fromBlock`.
+
+        1. The protocol's own token is not TVL. If an entry lists the protocol's own governance
+        or native token in the `tvl` tokens, ask for it to move to the `staking` bucket (`pool2`
+        for LP tokens that pair the own token). A `tvl` of 0 is expected and fine for a
+        staking-only listing. Only flag it when you can tell which token is the protocol's own.
+
+        2. One listing, one place. If the PR adds a registry entry while a projects/<same key>/
+        folder or a projects/<same key>.js file still exists, ask for it to be removed when the
+        PR is migrating that listing, and for a different key otherwise. A key must also be
+        unique across all registry files: a later file silently overwrites an earlier one. If
+        the key already exists in another registry file, ask for the old entry to be removed
+        (when the listing is being moved) or for a different key.
+
+        3. Keep existing chains and entries. If the PR removes an existing entry, or a chain key
+        from an existing entry, ask for it to stay so its history is kept in the API. A dead
+        chain keeps its key with the empty form that registry file already uses for other dead
+        chains, for example `<chain>: null` in registries/uniswapV2.js and
+        `<chain>: { tvl: () => ({}) }` in registries/uniswapV3.js. Do not suggest `{}` unless
+        the file already uses it.
+
+    - path: "package.json"
+      instructions: |
+        Adapter PRs must not add npm dependencies or edit package.json, pnpm-lock.yaml or
+        pnpm-workspace.yaml. If the PR author is not a maintainer, ask for these changes to be
+        reverted.
+
+    - path: "pnpm-workspace.yaml"
+      instructions: |
+        Adapter PRs must not edit pnpm-workspace.yaml. If the PR author is not a maintainer, ask
+        for this change to be reverted.
+
+chat:
+  auto_reply: true

@@ -1,26 +1,44 @@
-
-const { compoundExports2 } = require("../helper/compound");
-const { lendingMarket } = require("../helper/methodologies");
+const { addCreditPoolTvl, addCreditPoolBorrowed } = require("./helper");
 
 module.exports = {
-  methodology: lendingMarket
+  methodology: "Gets all the assets deposited by LPs in Native Credit Pool for PMMs to facilitate trades for Native Swap.",
 };
 
 const config = {
-  arbitrum: "0x795E5cCdd008637EB98c64958d3b8Ba3e6DE2d2B",
-  zklink: "0x4AC97E2727B0e92AE32F5796b97b7f98dc47F059",
-  bsc: "0x3ba16AC2A67D126BF1DBa0a81E6C75073EFd95d9",
-  mantle:"0x48A6FE0Fa8DfF6D290Bd21aB6BCC1DDAeb9f2D0e",
-  ethereum:"0x3ba16AC2A67D126BF1DBa0a81E6C75073EFd95d9",
-  zeta:"0x3ba16AC2A67D126BF1DBa0a81E6C75073EFd95d9"
+  ethereum: {
+    vault: "0xe3D41d19564922C9952f692C5Dd0563030f5f2EF",
+    vaultFromBlock: 22173196,
+  },
+  bsc: {
+    vault: "0xBA8dB0CAf781cAc69b6acf6C848aC148264Cc05d",
+    vaultFromBlock: 47980948,
+  },
+  base: {
+    vault: "0x74a4Cd023e5AfB88369E3f22b02440F2614a1367",
+    vaultFromBlock: 32578350,
+  },
+  arbitrum: {
+    vault: "0xbA1cf8A63227b46575AF823BEB4d83D1025eff09",
+    vaultFromBlock: 355397381,
+  },
+  xlayer: {
+    vault: "0x4Df7557734B382EB542BEa6c74786D398DF4CC19",
+    vaultFromBlock: 59885325,
+  },
+  morph: {
+    vault: "0x4Df7557734B382EB542BEa6c74786D398DF4CC19",
+    vaultFromBlock: 23245775,
+  },
+  robinhood: {
+    vault: "0x57B8f68ef57Af2dB70BC9aAc891836661CA4cB51",
+    vaultFromBlock: 60423, 
+  },
 };
 
 Object.keys(config).forEach((chain) => {
-  const comptroller = config[chain];
-  module.exports[chain] = compoundExports2({ comptroller })
-  module.exports[chain].tvl = async (api) => {
-    const markets = await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })
-    const tokens = await api.multiCall({  abi: 'address:underlying', calls: markets})
-    return api.sumTokens({ owner: comptroller, tokens })
-  }
-})
+  const { vault, vaultFromBlock } = config[chain];
+  module.exports[chain] = {
+    tvl: async (api) => await addCreditPoolTvl(api, vault, vaultFromBlock),
+    borrowed: async (api) => await addCreditPoolBorrowed(api, vault, vaultFromBlock),
+  };
+});

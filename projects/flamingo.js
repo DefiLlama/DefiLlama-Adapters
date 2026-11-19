@@ -1,52 +1,52 @@
-// adapter.js
-const { get } = require('./helper/http');
+const { post } = require('./helper/http')
 
-async function tvl() {
-  const data = await get(
-    'https://flamingo-us-1.b-cdn.net/flamingo/analytics/daily-latest/tvl_data'
-  );
-  const { pool_usd, flund_usd, lend_usd } = data.tvl_data;
+const RPC = 'https://n3seed1.ngd.network:10332'
+const FACTORY = '0xca2d20610d7982ebe0bed124ee7e9b2d580a6efc' // FlamingoSwapFactory (N3)
 
-  // Parse strings to floats and sum them
-  const totalUsd =
-    parseFloat(pool_usd) +
-    parseFloat(flund_usd) +
-    parseFloat(lend_usd);
+// pool tokens the coins api can price; bNEO is NeoBurger's 1:1 wrapped NEO
+const PRICED = {
+  '0xd2a4cff31913016155e38e474a2c06d08be276cf': null, // GAS
+  '0x68b938cc42b6a2d54fb9040f5facf4290ebb8c5f': null,
+  '0xd3a41b53888a733b549f5d4146e7a98d3285fa21': null,
+  '0x4548a3bcb3c2b5ce42bf0559b1cf2f1ec97a51d0': null,
+  '0x48c40d4666f93408be1bef038b6722404d9a4c2a': { cg: 'neo', decimals: 8 }, // bNEO
+}
 
-  return { tether: totalUsd };
+// script hashes come back base64 encoded, little endian
+const toHash = b64 => '0x' + Buffer.from(b64, 'base64').reverse().toString('hex')
+
+async function invoke(contract, method) {
+  const { result } = await post(RPC, { jsonrpc: '2.0', id: 1, method: 'invokefunction', params: [contract, method, []] })
+  if (result.state !== 'HALT') throw new Error(`${contract}.${method} failed: ${result.exception}`)
+  return result.stack[0]
+}
+
+function add(api, token, amount) {
+  const mapped = PRICED[token]
+  if (mapped) api.addCGToken(mapped.cg, Number(amount) / 10 ** mapped.decimals)
+  else api.add(token, amount)
+}
+
+async function tvl(api) {
+  const pairs = (await invoke(FACTORY, 'getAllExchangePair')).value.map(s => s.value.map(v => toHash(v.value)))
+  for (const [token0, token1, pair] of pairs) {
+    const [r0, r1] = (await invoke(pair, 'getReserves')).value.map(v => BigInt(v.value))
+    const p0 = token0 in PRICED, p1 = token1 in PRICED
+    // a side without a price is valued as equal to the priced side
+    if (p0) add(api, token0, p1 ? r0 : r0 * 2n)
+    if (p1) add(api, token1, p0 ? r1 : r1 * 2n)
+  }
 }
 
 module.exports = {
   hallmarks: [
-    [1638525600, "N3 migration start"],
-    [1641117600, "100% minting on N3"],
-    [1641808800, "First IDO"],
-    [1648116000, "First reverse pool"],
-    [1650276000, "Binance N3 support"],
-    [1651140000, "FLUND single stake"],
-    [1654085699, "Advanced Trade launched"],
-    [1656410400, "Mobile App"],
-    [1656677699, "Fiat Onramper launched"],
-    [1660047299, "First limit order trades on OrderBook+"],
-    [1668428099, "Wave 1 of new liquidity pools"],
-    [1671192899, "Wave 2 of new liquidity pools"],
-    [1673352899, "USD Stablecoin FUSD & Flamingo Lend"],
-    [1676463299, "FUSD Pool Bonus released"],
-    [1682424899, "New landing and Get Started pages"],
-    [1685621699, "Flamingo Ambassador Program launched"],
-    [1687263299, "Expands to 14 EVM chains"],
-    [1695644099, "Flamingo Finance 3.0"],
-    [1705580099, "New roadmap announced"],
-    [1712232899, "Dashboard-athon"],
-    [1727093699, "Wave 3 of new liquidity pools"],
-    [1734524099, "OrderBook+ 2.0 live on Testnet"],
-    [1741263299, "OrderBook+ 2.0 live on Mainnet"],
-    [1742904899, "FLOCKS released"]
+    ['2021-12-03', "N3 migration start"],
+    ['2022-01-02', "100% minting on N3"],
+    ['2022-01-10', "First IDO"],
+    ['2024-09-23', "Wave 3 of new liquidity pools"],
   ],
-  methodology: `TVL is obtained by making calls to the Flamingo Finance API "https://flamingo-us-1.b-cdn.net/flamingo/analytics/daily-latest/tvl_data".`,
+  methodology: 'Reserves of every Flamingo swap pair, read on-chain from the FlamingoSwapFactory on Neo N3. Pairs with one unpriced token are valued at twice the priced side; pairs with no priced token are excluded.',
   misrepresentedTokens: true,
   timetravel: false,
-  neo: {
-    tvl
-  }
-};
+  neo: { tvl },
+}

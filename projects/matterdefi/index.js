@@ -1,143 +1,61 @@
-const BigNumber = require("bignumber.js");
-const { RPC_ENDPOINT } = require('../helper/chain/tezos');
-const { PromisePool } = require('@supercharge/promise-pool');
-const { get } = require('../helper/http')
+const sdk = require('@defillama/sdk')
+const { getTokenBalances, getStorage, getBigMapById } = require('../helper/chain/tezos')
 
-const SPICY_URL = 'https://spicya.sdaotools.xyz/api/rest';
-const MATTER_CORE = 'KT1K4jn23GonEmZot3pMGth7unnzZ6EaMVjY';
-const MATTER_LIVE = 'KT1FYct7DUK1mUkk9BPJEg7AeH7Fq3hQ9ah3';
-
-async function fetchTokenBalances(account) {
-  return (await get(`${RPC_ENDPOINT}/v1/tokens/balances?account=${account}&limit=100&select=balance,token.id%20as%20id,token.contract%20as%20contract,token.standard%20as%20standard,token.tokenId%20as%20token_id`));
-}
-
-async function fetchSupply (contract, id) {
-  const req = id ? `/v1/tokens/?contract=${contract}&tokenId=${id}` : `/v1/tokens/?contract=${contract}`;
-  const supply = (await get(`${RPC_ENDPOINT}${req}`));
-
-  return new BigNumber(supply[0].totalSupply);
-}
-
-let _spicePools, _spiceTokens
-
-async function fetchSpicyPools() {
-  if (!_spicePools) _spicePools = get(`${SPICY_URL}/PoolListAll/`)
-  const spicyPools = (await _spicePools).pair_info;
-
-  return spicyPools.map(token => ({ contract: token.contract, reservextz: token.reservextz }));
-}
-
-async function fetchSpicyTokens() {
-  if (!_spiceTokens) _spiceTokens = get(`${SPICY_URL}/TokenList`)
-  return (await _spiceTokens).tokens;
-}
-
-async function lpToTez(farm) {
-  if(!farm.totalBalance) {
-    return farm.reserveXtz.multipliedBy(farm.balance);
-  } else {
-    const tezPerLp = farm.reserveXtz.dividedBy(farm.totalBalance.shiftedBy(-18));
-
-    return tezPerLp.multipliedBy(farm.balance.shiftedBy(-18));
-  }
-}
-
-async function matchToMatter (token, pools, tokens) {
-  const match = pools.find(pool => pool.contract == token.contract.address)
-
-  if(match) {
-    token.totalBalance = await fetchSupply(token.contract.address);
-    token.reserveXtz =  new BigNumber(match.reservextz);
-    token.balance = new BigNumber(token.balance);
-    
-    return token;
-  } else {
-    const tokenData = tokens.find(t => t.tag == `${token.contract.address}:${token.token_id}`);
-
-    if(tokenData) {
-      token.reserveXtz = new BigNumber(tokenData.derivedxtz);
-      token.balance = new BigNumber(token.balance).shiftedBy(-tokenData.decimals);
-
-      return token;
-    }
-  }
-}
-
-async function fetchSpicyPoolsAndMatch (spicyPools, spicyTokens, match) {
-  const { results, errors } = await PromisePool.withConcurrency(10)
-    .for(match)
-    .process(async (token) => matchToMatter(token, spicyPools, spicyTokens))
-
-  if (errors && errors.length) {
-    throw errors[0];
-  }
-
-  return results.filter(result => result);
-}
-
-async function fetchCoreFarmsTvl(farms) {
-  const { results, errors } = await PromisePool.withConcurrency(10)
-    .for(farms)
-    .process(async (farm) => lpToTez(farm))
-
-  if (errors && errors.length) {
-    throw errors[0]
-  }
-
-  return results.reduce((previous, current) => previous.plus(current))
-}
+const tezos = sdk.chains.tezos
 
 const MATTER_TOKEN = 'KT1K4jn23GonEmZot3pMGth7unnzZ6EaMVjY'
+const MATTER_CORE = 'KT1K4jn23GonEmZot3pMGth7unnzZ6EaMVjY'
+const MATTER_LIVE = 'KT1FYct7DUK1mUkk9BPJEg7AeH7Fq3hQ9ah3'
+const SPICY_FACTORY = 'KT1PwoZxyv4XkPEGnTqWYvjA1UYiPTgAGyqL'
 
-async function tvl() {
-  //fetch initial matter data
-  const spicyPools = await fetchSpicyPools();
-  const spicyTokens = await fetchSpicyTokens();
-  const matterCoreBalances = await fetchTokenBalances(MATTER_CORE);
-  const matterLiveBalances = await fetchTokenBalances(MATTER_LIVE);
+const getSpicyToken = ({ token_id, fa2_address }) => fa2_address + (token_id && token_id !== '0' ? `-${token_id}` : '')
 
-  //fetch farm info
-  const coreToMatter = await fetchSpicyPoolsAndMatch(spicyPools, spicyTokens, matterCoreBalances.filter(i => i.contract.address !== MATTER_TOKEN));
-  const liveToMatter = await fetchSpicyPoolsAndMatch(spicyPools, spicyTokens, matterLiveBalances.filter(i => i.contract.address !== MATTER_TOKEN));
+let _data
+async function getData() {
+  if (!_data) _data = _getData()
+  return _data
 
-  //calculate TVL
-  const coreFarmsTvl = await fetchCoreFarmsTvl(coreToMatter);
-  const liveFarmsTvl = await fetchCoreFarmsTvl(liveToMatter);
-  
-  return {
-      tezos: coreFarmsTvl.plus(liveFarmsTvl).toFixed(0)
-  };
-}
+  async function _getData() {
+    // spicyswap pairs are FA2 contracts that are also their own LP token
+    const { pairs } = await getStorage(SPICY_FACTORY)
+    const spicyPairs = new Set(Object.values(await getBigMapById(pairs)).map(i => i.contract))
+    const holdings = {}
+    for (const owner of [MATTER_CORE, MATTER_LIVE]) {
+      const bals = await getTokenBalances(owner, false, { transformAddress: i => i })
+      Object.entries(bals).forEach(([token, bal]) => holdings[token] = (holdings[token] ?? 0) + +bal)
+    }
+    const res = { tvl: {}, pool2: {}, staking: {} }
+    const add = (bucket, token, bal) => sdk.util.sumSingleBalance(res[bucket], 'tezos:' + token, bal)
 
-async function staking() {
-  //fetch initial matter data
-  const spicyPools = await fetchSpicyPools();
-  const spicyTokens = await fetchSpicyTokens();
-  const matterCoreBalances = await fetchTokenBalances(MATTER_CORE);
-  const matterLiveBalances = await fetchTokenBalances(MATTER_LIVE);
-
-  //fetch farm info
-  const coreToMatter = await fetchSpicyPoolsAndMatch(spicyPools, spicyTokens, matterCoreBalances.filter(i => i.contract.address === MATTER_TOKEN));
-  const liveToMatter = await fetchSpicyPoolsAndMatch(spicyPools, spicyTokens, matterLiveBalances.filter(i => i.contract.address === MATTER_TOKEN));
-
-  //calculate TVL
-  const coreFarmsTvl = await fetchCoreFarmsTvl(coreToMatter);
-  const liveFarmsTvl = await fetchCoreFarmsTvl(liveToMatter);
-  
-  return {
-      tezos: coreFarmsTvl.plus(liveFarmsTvl).toFixed(0)
-  };
+    for (const [token, bal] of Object.entries(holdings)) {
+      if (token === MATTER_TOKEN) {
+        add('staking', token, bal)
+        continue
+      }
+      if (!spicyPairs.has(token)) {
+        add('tvl', token, bal)
+        continue
+      }
+      const { token0, token1, reserve0, reserve1 } = await getStorage(token)
+      const supply = await tezos.getTokenTotalSupply({ contract: token, tokenId: 0 })
+      if (!+supply) continue
+      const ratio = bal / supply
+      const t0 = getSpicyToken(token0)
+      const t1 = getSpicyToken(token1)
+      const bucket = [t0, t1].includes(MATTER_TOKEN) ? 'pool2' : 'tvl'
+      add(bucket, t0, reserve0 * ratio)
+      add(bucket, t1, reserve1 * ratio)
+    }
+    return res
+  }
 }
 
 module.exports = {
-    misrepresentedTokens: true,
-    timetravel: false,
-    methodology: `
-    TVL counts the liquidity of both Matter Core & Matter Live farms.
-    Tokens held in Matter's contract are pulled from TZKT API & relevant pool data is retrieved using SpicySwap API: ${SPICY_URL}. 
-    `,
-    tezos: {
-      tvl,
-      staking,
-    }
+  timetravel: false,
+  methodology: 'TVL counts the tokens staked in Matter Core & Matter Live farms, with SpicySwap LP tokens resolved to their underlying reserves on chain. LPs containing MTTR are counted as pool2, staked MTTR as staking.',
+  tezos: {
+    tvl: async () => (await getData()).tvl,
+    pool2: async () => (await getData()).pool2,
+    staking: async () => (await getData()).staking,
+  }
 }

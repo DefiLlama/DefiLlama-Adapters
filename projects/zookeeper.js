@@ -11,7 +11,6 @@ async function tvl(api) {
   await addMasterchef(masterchef, api)
 }
 
-
 async function wanTvl(api) {
   const masterchef = '0x4E4Cb1b0b4953EA657EAF29198eD79C22d1a74A2'
   await addMasterchef(masterchef, api)
@@ -29,7 +28,6 @@ async function addMasterchef(masterchef, api) {
 module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
-  timetravel: false,
   avax: {
     tvl: () => ({}),
     pool2: tvl,

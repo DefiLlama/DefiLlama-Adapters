@@ -1,9 +1,9 @@
-const { get } = require('../helper/http')
+const sdk = require('@defillama/sdk')
+
+const tezos = sdk.chains.tezos
 
 async function tvl(api) {
   const tsString = new Date(api.timestamp * 1000).toISOString()
-  const addBal = bal => api.add('coingecko:tezos', bal * 2/ 1e6, { skipChain: true })
-  const getBal = async (address) =>  get(`https://api.tzkt.io/v1/accounts/${address}/balance_history/${tsString}`)
 
   const owners = [
     'KT1Puc9St8wdNoGtLiD2WXaHbWU7styaxYhD',
@@ -18,8 +18,11 @@ async function tvl(api) {
   if (api.timestamp < 1613861579 && api.timestamp > 1612738379)
     owners.push('KT1Xf2Cwwwh67Ycu7E9yd3UhsABQC4YZPkab')
 
-
-  await Promise.all(owners.map(i => getBal(i).then(addBal)))
+  // pools are XTZ/token 50:50, so the XTZ side is doubled
+  for (const owner of owners) {
+    const bal = await tezos.tzkt({ path: `/v1/accounts/${owner}/balance_history/${tsString}` })
+    api.add('coingecko:tezos', bal * 2 / 1e6, { skipChain: true })
+  }
   return api.getBalances()
 }
 

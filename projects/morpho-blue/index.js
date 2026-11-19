@@ -1,168 +1,280 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
+const ethers = require("ethers")
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getMorphoVaults } = require("../helper/curators");
+const { config, retiredChains } = require("./config");
+const { getExcludedMarketIds, getExcludedAssets, getExcludedVaults } = require("./exclusions");
 
-module.exports = {
-  methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
-};
+const eventAbis = {
+  createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)',
+  supplyCollateral: 'event SupplyCollateral(bytes32 indexed id, address indexed caller, address indexed onBehalf, uint256 assets)',
+}
+const supplyCollateralTopic = ethers.id('SupplyCollateral(bytes32,address,address,uint256)')
 
-const config = {
+const nullAddress = ADDRESSES.null
+
+const chainsWithTroublePullingLogs = new Set(['tac', 'sei'])
+
+// on chains whose rpcs struggle with log ranges, fall back to the existing cache rather than fail
+const getMorphoLogs = async (api, params) => {
+  const { morphoBlue, fromBlock, onlyUseExistingCache, } = config[api.chain]
+  const useIndexer = api.chain === 'monad' ? true : false
+  const options = { api, target: morphoBlue, fromBlock, onlyArgs: true, onlyUseExistingCache, useIndexer, ...params }
+  if (!chainsWithTroublePullingLogs.has(api.chain)) return getLogs(options)
+  try {
+    return await getLogs(options)
+  } catch (e) {
+    return getLogs({ ...options, onlyUseExistingCache: true })
+  }
+}
+
+const getMarket = async (api) => {
+  const { morphoBlue, blacklistedMarketIds = [] } = config[api.chain]
+  const logs = await getMorphoLogs(api, { eventAbi: eventAbis.createMarket, extraKey: 'reset-v2' })
+
+  if (api.chain === 'sei') {
+    const existingIds = new Set(logs.map(i => i.id.toLowerCase()))
+    logs.push(...[
+      '0x583da8629bb612169bb4d5753d94d66bffa4390b4f16833a210b75944172f811',
+      '0xbb3ef4b802087585438dc6ee178e295f404d133996880db5e23405d1d73f1d27',
+      '0xe3c959829d236e3838558318340129a737ae0fffa128d891d1d22728d081e419',
+      '0xc56578519e8fb30628d3b8d459193017e776ce8477c0bbf0f2c8de82bd8dccc9',
+      '0xd2fa0b94b6f04615c9472bb25bcb755f5ad5a8f4c17fc04837a31046f0ba5c60',
+      '0x7d754479f40d06180fa1ee66ce1bf0cd97fc156c8f8458e27a18a95b9d1ad46a',
+      '0xd8a344e69e7a2adfb31f5e148f99f231e7738019125aef993a760f680f38795b',
+      '0xcb30b5e1cf1cec7419554e5aa7ed07c75716d3fbdd0f605b014056b0d99c6079',
+      '0xe55fc8aadc1fefe9a2323ab3307bc969779d0acf4e512d8142f392415d4e6162',
+      '0xf0a664c8c553278fccbb9bf7a0b6ff79984e1a3fbd28e6e13870c96ceb9befbf',
+    ].filter(i => !existingIds.has(i)).map(id => ({ id })))
+
+  }
+  // blacklistedMarketIds is empty in config now; morpho's feed is the source, kept as a manual override
+  const excluded = new Set([...blacklistedMarketIds.map(i => i.toLowerCase()), ...await getExcludedMarketIds(api)])
+  const all = logs.map((i) => i.id.toLowerCase())
+
+  // asset_usage is 'all', so a market with an excluded asset on either leg is excluded too - same rule
+  // the fees adapter applies. Without this a market excluded only by its collateral keeps its loan
+  // balance in tvl, even though borrowed already drops it.
+  const excludedAssets = new Set(await getExcludedAssets(api))
+  if (excludedAssets.size) {
+    const candidates = all.filter((id) => !excluded.has(id))
+    const infos = await api.multiCall({ target: morphoBlue, calls: candidates, abi: abi.morphoBlueFunctions.idToMarketParams })
+    infos.forEach((info, i) => {
+      if (excludedAssets.has(info.loanToken.toLowerCase()) || excludedAssets.has(info.collateralToken.toLowerCase()))
+        excluded.add(candidates[i])
+    })
+  }
+  return { markets: all.filter((id) => !excluded.has(id)), excludedMarkets: all.filter((id) => excluded.has(id)) }
+}
+
+// morpho keeps no per-market collateral total, so sum position(id, user).collateral over every account
+// that ever supplied collateral to the market. position, not the logs' net: liquidations seize collateral
+// without emitting WithdrawCollateral. One query per market, keyed by that id alone: a key covering the
+// whole set changes whenever the set does, which rescans every market from the deployment block, and a
+// scan that fails there silently stops subtracting. Scoped this way each cache stays warm and a newly
+// excluded market only scans itself. Single-value topic1 also survives the indexer, which flattens arrays.
+const getMarketsCollateral = async (api, ids) => {
+  const { morphoBlue } = config[api.chain]
+  const collateralById = new Map(ids.map((id) => [id, 0n]))
+  if (!ids.length) return collateralById
+  // full-history scans: the indexer serves them in seconds (rpc fallback on chains it lacks)
+  const logsByMarket = []
+  for (const id of ids)
+    logsByMarket.push(await getMorphoLogs(api,
+      { eventAbi: eventAbis.supplyCollateral, topics: [supplyCollateralTopic, id], extraKey: `collateral-${id}`, useIndexer: true }))
+  const calls = []
+  logsByMarket.forEach((logs, i) => {
+    // id comes from the market we queried for, not the log: a provider that widens the topic filter then
+    // costs extra calls that return zero collateral, instead of attributing them to an unknown market
+    new Set(logs.map((log) => log.onBehalf.toLowerCase())).forEach((user) => calls.push({ params: [ids[i], user] }))
+  })
+  const positions = await api.multiCall({ target: morphoBlue, calls, abi: abi.morphoBlueFunctions.position, permitFailure: true })
+  // a partial read understates the collateral and so overstates tvl by a plausible-looking amount;
+  // throw instead and let the caller keep the previous behaviour, which at least is a known one
+  const failed = positions.filter((i) => i === null).length
+  if (failed) throw new Error(`${failed}/${calls.length} position calls failed`)
+  positions.forEach((position, i) => {
+    const id = calls[i].params[0]
+    collateralById.set(id, (collateralById.get(id) ?? 0n) + BigInt(position.collateral))
+  })
+  return collateralById
+}
+
+// tvl sums the whole balance the shared morpho contract holds of each token, so dropping an excluded
+// market from the id list does nothing while a valid market uses the same token. Subtract what the
+// excluded market still physically holds: supply minus borrowed (borrowed assets have left the
+// contract), plus its collateral. Collateral is only scanned for markets whose collateral token is
+// counted, i.e. shared with a valid market - e.g. ~$64M of BGBTC in an excluded morph market.
+const subtractExcludedMarkets = async (api, excludedMarkets, morphoHeld) => {
+  if (!excludedMarkets.length) return
+  const { morphoBlue } = config[api.chain]
+  const [marketInfos, marketDatas] = await Promise.all([
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.idToMarketParams }),
+    api.multiCall({ target: morphoBlue, calls: excludedMarkets, abi: abi.morphoBlueFunctions.market }),
+  ])
+
+  const heldByMarkets = new Map()
+  const addHeld = (token, amount) => {
+    if (amount > 0n) heldByMarkets.set(token, (heldByMarkets.get(token) ?? 0n) + amount)
+  }
+
+  marketDatas.forEach((data, i) => {
+    addHeld(marketInfos[i].loanToken.toLowerCase(), BigInt(data.totalSupplyAssets || 0) - BigInt(data.totalBorrowAssets || 0))
+  })
+
+  const collateralTokenById = new Map(excludedMarkets.map((id, i) => [id, marketInfos[i].collateralToken.toLowerCase()]))
+  const sharedCollateralMarkets = excludedMarkets.filter((id) => morphoHeld.has(collateralTokenById.get(id)))
+  // the scan needs a full log history; if the rpc or indexer can't serve it, keep the previous behaviour
+  // (collateral stays counted) rather than fail the chain's tvl
+  let collateralById = new Map()
+  try {
+    collateralById = await getMarketsCollateral(api, sharedCollateralMarkets)
+  } catch (e) {
+    sdk.log(`morpho-blue: excluded collateral scan failed on ${api.chain}, not subtracting it`, e.message)
+  }
+  collateralById.forEach((collateral, id) => addHeld(collateralTokenById.get(id), collateral))
+
+  heldByMarkets.forEach((amount, token) => {
+    const held = morphoHeld.get(token)
+    if (!held) return
+    // clamp: a market's accounting can exceed what the contract holds, with phantom interest on the supply
+    // side, or collateral still booked on positions after it left the contract
+    api.add(held.token, (-(amount > held.amount ? held.amount : amount)).toString())
+  })
+}
+
+// what the shared morpho contract itself contributed, as the delta across its own sumTokens2 call.
+// api balances also carry vault-held assets, and a loan token can be present only because a valid vault
+// holds it unallocated - debiting that merged figure would remove assets the excluded market never held.
+const measureMorphoHeld = async (api, sumMorphoBalances) => {
+  const before = { ...api.getBalances() }
+  await sumMorphoBalances()
+  const held = new Map()
+  Object.entries(api.getBalances()).forEach(([key, value]) => {
+    const amount = BigInt(value) - BigInt(before[key] ?? 0)
+    if (amount > 0n) held.set(key.split(':')[1].toLowerCase(), { token: key.split(':')[1], amount })
+  })
+  return held
+}
+
+// exclude ethena deposits into markets where collateral is USDe
+const ethenaBlacklist = {
   ethereum: {
-    morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: [
-      "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
-      "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-    ],
-    fromBlock: 18883124,
-    blacklistedMarketIds: [
-      "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
+    wallets: ['0x2Bf5d9a2326Ad3C5Ef8208F91Af79C3ca1F0F67c'],
+    vaults: [
+      '0xBeEFC1CDAfc5b4a649b54D07AFc6bF0f75C6F4E2',   // USDtB vault
     ],
   },
-  base: {
-    morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd'],
-    fromBlock: 13977148,
+  robinhood: {
+    wallets: ['0x2Bf5d9a2326Ad3C5Ef8208F91Af79C3ca1F0F67c'],
+    vaults: [
+      '0xbEeFF0fb1Dc19344A87b8479dAb60A2e16160737',   // USDG vault
+    ],
   },
-  arbitrum: {
-    morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
-    fromBlock: 296446593,
-  },
-  fraxtal: {
-    morphoBlue: "0xa6030627d724bA78a59aCf43Be7550b4C5a0653b",
-    fromBlock: 15317931,
-  },
-  ink: {
-    morphoBlue: "0x857f3EefE8cbda3Bc49367C996cd664A880d3042",
-    fromBlock: 4078776,
-  },
-  optimism: {
-    morphoBlue: "0xce95AfbB8EA029495c66020883F87aaE8864AF92",
-    fromBlock: 130770075,
-  },
-  polygon: {
-    morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
-    fromBlock: 66931042,
-  },
-  scroll: {
-    morphoBlue: "0x2d012EdbAdc37eDc2BC62791B666f9193FDF5a55",
-    fromBlock: 12842868,
-  },
-  wc: {
-    morphoBlue: "0xE741BC7c34758b4caE05062794E8Ae24978AF432",
-    fromBlock: 9025669,
-  },
-  mode: {
-    morphoBlue: "0xd85cE6BD68487E0AaFb0858FDE1Cd18c76840564",
-    fromBlock: 19983370,
-  },
-  corn: {
-    morphoBlue: "0xc2B1E031540e3F3271C5F3819F0cC7479a8DdD90",
-    fromBlock: 251401,
-  },
-  hemi: {
-    morphoBlue: "0xa4Ca2c2e25b97DA19879201bA49422bc6f181f42",
-    fromBlock: 1188872,
-  },
-  sonic: {
-    morphoBlue: "0xd6c916eB7542D0Ad3f18AEd0FCBD50C582cfa95f",
-    fromBlock: 9100931,
-  },
-  unichain: {
-    morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
-    fromBlock: 9139027,
-  },
-  flame:{
-    morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
-    fromBlock: 5991116,
-  },
-  /*
-  tacchain_2390_1:{
-    morphoBlue: "0xF0453e7368Ea01d6d6d6a222C26B5a06F1d816e9",
-    fromBlock: 3669141,
-  },
-  */
-  basecamp:{
-    morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
-    fromBlock: 4804080,
-    blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
-  },
-  hyperliquid:{
-    morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
-    fromBlock: 1988429,
-  },
-  plume_mainnet: {
-    morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
-    fromBlock: 765994,
-  },
-};
+}
+
+const tvl = async (api) => {
+  const { morphoBlue, blackList = [] } = config[api.chain]
+
+  // sometimes the tokens left in the vault and not allocated to any market yet, we need to query them separately
+  const morphoVaults = await getMorphoVaults(api, undefined, {
+    getAllVaults: true,
+    onlyUseExistingCache: api.chain === 'sei'
+  })
+  const vaultAssets = await api.multiCall({ abi: 'address:asset', calls: morphoVaults, permitFailure: true })
+
+  // vault share tokens (MetaMorpho / Vault V2) are already counted via their underlying assets, exclude them everywhere
+  const vaultSet = new Set(morphoVaults.map(v => v.toLowerCase()))
+  const blacklistedTokens = [...blackList, ...morphoVaults, ...await getExcludedAssets(api)]
+
+  // excluded vaults stay blacklisted as tokens above, but their unallocated assets are not counted
+  const excludedVaults = new Set(await getExcludedVaults(api))
+  const vaultTaO = vaultAssets
+    .map((asset, i) => asset && !excludedVaults.has(morphoVaults[i].toLowerCase()) ? [asset, morphoVaults[i]] : null)
+    .filter(Boolean)
+  await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens, permitFailure: true })
+
+
+  const { markets, excludedMarkets } = await getMarket(api)
+  const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
+  const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress && !vaultSet.has(addr)))];
+  const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
+  const collateralWQLMap = new Map(collCalls.map((addr, i) => [addr, withdrawQueueLengths[i]]));
+  const isVaultToken = (addr) => {
+    addr = addr.toLowerCase()
+    if (vaultSet.has(addr)) return true
+    const wql = collateralWQLMap.get(addr)
+    return wql != null && wql >= 0 && wql <= 30
+  }
+  const tokens = [...new Set(marketInfos.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken]).filter(t => !isVaultToken(t)))]
+
+  if (ethenaBlacklist[api.chain]) {
+    const { wallets = [], vaults = [] } = ethenaBlacklist[api.chain]
+    const balanceCalls = wallets.map((wallet) => vaults.map((vault) => ({ target: vault, params: wallet }))).flat()
+    const balances = await api.multiCall({ calls: balanceCalls, abi: 'erc20:balanceOf', permitFailure: true })
+    const assets = await api.multiCall({ calls: balanceCalls.map(c => c.target), abi: 'address:asset', permitFailure: true })
+    const assetBalances = await api.multiCall({ calls: balanceCalls.map((c, i) => ({ ...c, params: balances[i] })), abi: 'function convertToAssets(uint256) view returns (uint256)' })
+    assetBalances.forEach((balance, i) => {
+      const token = assets[i]
+      console.log(`Ethena blacklist - subtracting ${balance / 1e18} of ${token} from TVL`)
+      api.add(token, balance * -1)
+    })
+  }
+
+  const morphoHeld = await measureMorphoHeld(api, () => sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens, permitFailure: true }))
+  await subtractExcludedMarkets(api, excludedMarkets, morphoHeld)
+  return api.getBalances()
+}
+
+const borrowed = async (api) => {
+  const { morphoBlue, blackList = [] } = config[api.chain]
+  const { markets } = await getMarket(api)
+  const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
+  const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
+  const blackListLower = blackList.map(b => b.toLowerCase())
+  const excludedAssets = new Set(await getExcludedAssets(api)) // asset_usage is 'all', so loan or collateral side
+
+  const priceByAddr = await fetchPriceMap(api, marketInfos.flatMap(m => [m.collateralToken, m.loanToken]))
+  const chainHasPrices = Object.keys(priceByAddr).length > 0
+
+  marketDatas.forEach((data, idx) => {
+    const { collateralToken, loanToken } = marketInfos[idx];
+    if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
+    if (blackListLower.includes(loanToken.toLowerCase())) return;
+    if (excludedAssets.has(loanToken.toLowerCase()) || excludedAssets.has(collateralToken.toLowerCase())) return;
+
+    if (chainHasPrices && collateralToken && collateralToken.toLowerCase() !== nullAddress) {
+      if (!priceByAddr[collateralToken.toLowerCase()]) return;
+    }
+
+    let amount = BigInt(data.totalBorrowAssets || 0)
+    const supply = BigInt(data.totalSupplyAssets || 0)
+    if (amount > supply) amount = supply
+    api.add(loanToken, amount.toString());
+  });
+}
+
+async function fetchPriceMap(api, addresses) {
+  const tokens = [...new Set(addresses.filter(a => a && a.toLowerCase() !== nullAddress).map(a => a.toLowerCase()))]
+  if (!tokens.length) return {}
+  const keys = tokens.map(t => `${api.chain}:${t}`)
+  const prices = await sdk.coins.getPrices(keys, 'now')
+  const out = {}
+  Object.entries(prices).forEach(([k, v]) => {
+    if (!v || !v.price) return
+    const addr = k.split(':')[1]
+    if (addr) out[addr.toLowerCase()] = v
+  })
+  return out
+}
 
 Object.keys(config).forEach((chain) => {
-  const {
-    morphoBlue,
-    fromBlock,
-    blackList = [],
-    blacklistedMarketIds = [],
-  } = config[chain];
-  module.exports[chain] = {
-    tvl: async (api) => {
-      let marketIds = await getMarkets(api);
-      if (blacklistedMarketIds.length > 0) {
-        const lowerCaseBlacklist = blacklistedMarketIds.map(id => id.toLowerCase());
-        marketIds = marketIds.filter(id => !lowerCaseBlacklist.includes(id.toLowerCase()));
-      }
-      const tokens = (
-        await api.multiCall({
-          target: morphoBlue,
-          calls: marketIds,
-          abi: abi.morphoBlueFunctions.idToMarketParams,
-        })
-      )
-        .map((i) => [i.collateralToken, i.loanToken])
-        .flat();
+  module.exports[chain] = { tvl, borrowed }
+})
 
-      return sumTokens2({
-        api,
-        owner: morphoBlue,
-        tokens,
-        blacklistedTokens: blackList,
-      });
-    },
-    borrowed: async (api) => {
-      let marketIds = await getMarkets(api);
-      if (blacklistedMarketIds.length > 0) {
-        const lowerCaseBlacklist = blacklistedMarketIds.map(id => id.toLowerCase());
-        marketIds = marketIds.filter(id => !lowerCaseBlacklist.includes(id.toLowerCase()));
-      }
-      const marketInfo = await api.multiCall({
-        target: morphoBlue,
-        calls: marketIds,
-        abi: abi.morphoBlueFunctions.idToMarketParams,
-      });
-      const marketData = await api.multiCall({
-        target: morphoBlue,
-        calls: marketIds,
-        abi: abi.morphoBlueFunctions.market,
-      });
-      marketData.forEach((i, idx) => {
-        if (marketInfo[idx].collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd'.toLowerCase()) return;
-        api.add(marketInfo[idx].loanToken, i.totalBorrowAssets);
-      });
-      return api.getBalances();
-    },
-  };
-
-  async function getMarkets(api) {
-    const logs = await getLogs({
-      api,
-      target: morphoBlue,
-      eventAbi:
-        "event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)",
-      onlyArgs: true,
-      fromBlock,
-      topics: [
-        "0xac4b2400f169220b0c0afdde7a0b32e775ba727ea1cb30b35f935cdaab8683ac",
-      ],
-    });
-    return logs.map((i) => i.id);
-  }
+retiredChains.forEach((chain) => {
+  module.exports[chain] = { tvl: () => ({}), borrowed: () => ({}) }
 })

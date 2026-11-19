@@ -10,7 +10,7 @@ module.exports = {
   methodology:
     "TVL includes the total token value inside the protocol's liquidity pools.",
   solana: {
-    tvl: exportDexTVL(DEX_ID_V2),
+    tvl: exportDexTVL(DEX_ID_V2, undefined, undefined, { coreTokens: new Set() }),
     staking: sumTokensExport({ owners: ['9VAPorNsoCbCpSYNDxQsQaBJDvRVFc9VqaUczW2YYynQ'], tokens: ['SarosY6Vscao718M4A778z4CGtvcwcGef5M9MEH1LGL'] })
   },
 }

@@ -1,7 +1,11 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
+const sdk = require('@defillama/sdk')
 
 module.exports = {
-  methodology: `TVL is supply balance minus borrows the euler contract.`,
+  methodology: `TVL is supply balance minus borrows the euler contract. Borrowed excludes vaults whose underlying has no price in coins.llama.fi, and caps each vault's borrows at the value held in its priced collateral vaults (collateral with no price is treated as worthless/insolvent).`,
+  hallmarks: [
+    ['2025-11-04', "Stream finance rug"],
+  ],
 }
 
 const config = {
@@ -14,12 +18,43 @@ const config = {
   berachain: { factory: '0x5C13fb43ae9BAe8470f646ea647784534E9543AF', },
   avax: { factory: '0xaf4B4c18B17F6a2B32F6c398a3910bdCD7f26181', },
   bsc: { factory: '0x7F53E2755eB3c43824E162F7F6F087832B9C9Df6', },
+  arbitrum: { factory: '0x78Df1CF5bf06a7f27f2ACc580B934238C1b80D50', },
+  tac: { factory: '0x2b21621b8Ef1406699a99071ce04ec14cCd50677', },
+  linea: { factory: '0x84711986Fd3BF0bFe4a8e6d7f4E22E67f7f27F04', },
+  plasma: { factory: '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3', },
+  mantle: { factory: '0x47Aaf2f062aa1D55AFa602f5C9597588f71E2d76', },
+  monad: { factory: '0xba4Dd672062dE8FeeDb665DD4410658864483f1E', },
+  hyperliquid: { factory: '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A', },
+}
+
+async function fetchPriceMap(api, addresses) {
+  const tokens = [...new Set(addresses.filter(Boolean).map(a => a.toLowerCase()))]
+  if (!tokens.length) return {}
+  const keys = tokens.map(t => `${api.chain}:${t}`)
+  const prices = await sdk.coins.getPrices(keys, 'now')
+  const out = {}
+  Object.entries(prices).forEach(([k, v]) => {
+    if (!v || !v.price) return
+    const addr = k.split(':')[1]
+    if (addr) out[addr.toLowerCase()] = v
+  })
+  return out
 }
 
 Object.keys(config).forEach(chain => {
   const { factory, } = config[chain]
 
-  async function getVaults(api) {
+  const vaultCache = {}
+
+  // tvl and borrowed need the same vault list, fetch it once per run
+  function getVaults(api) {
+    if (!api.block && !api.timestamp) return _getVaults(api)
+    const key = `${api.block}-${api.timestamp}`
+    if (!vaultCache[key]) vaultCache[key] = _getVaults(api).catch(e => { delete vaultCache[key]; throw e })
+    return vaultCache[key]
+  }
+
+  async function _getVaults(api) {
     const vaults = await api.fetchList({ lengthAbi: 'getProxyListLength', itemAbi: 'proxyList', target: factory })
     const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
     return { vaults, tokens }
@@ -33,7 +68,64 @@ Object.keys(config).forEach(chain => {
     borrowed: async (api) => {
       const { vaults, tokens } = await getVaults(api)
       const borrows = await api.multiCall({ abi: 'uint256:totalBorrows', calls: vaults })
-      api.add(tokens, borrows)
+      const ltvLists = await api.multiCall({ abi: 'address[]:LTVList', calls: vaults, permitFailure: true })
+
+      const collatVaults = [...new Set(ltvLists.flat().filter(Boolean))]
+      const collatAssets = collatVaults.length
+        ? await api.multiCall({ abi: 'address:asset', calls: collatVaults, permitFailure: true })
+        : []
+      const collatTotalAssets = collatVaults.length
+        ? await api.multiCall({ abi: 'uint256:totalAssets', calls: collatVaults, permitFailure: true })
+        : []
+      const collatVaultToAsset = {}
+      collatVaults.forEach((v, i) => { if (collatAssets[i]) collatVaultToAsset[v.toLowerCase()] = collatAssets[i] })
+
+      const priceTargets = [...tokens, ...Object.values(collatVaultToAsset)]
+      const priceByAddr = await fetchPriceMap(api, priceTargets)
+      const chainHasPrices = Object.keys(priceByAddr).length > 0
+      const decimalTargets = [...new Set(priceTargets.map(a => a.toLowerCase()))]
+      const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: decimalTargets, permitFailure: true })
+      const decimalsByAddr = {}
+      decimalTargets.forEach((a, i) => { if (decimals[i] != null) decimalsByAddr[a] = Number(decimals[i]) })
+      // usd value, or undefined when the price, decimals or amount could not be read
+      const toUsd = (token, amount) => {
+        const price = priceByAddr[token.toLowerCase()]
+        const dec = decimalsByAddr[token.toLowerCase()]
+        if (!price || dec === undefined || amount == null) return
+        return Number(amount) / 10 ** dec * price.price
+      }
+
+      // usd value deposited in each collateral vault: 0 when its underlying has no price,
+      // Infinity (no cap) when it is priced but a read failed
+      const collatUsd = {}
+      collatVaults.forEach((v, i) => {
+        const u = collatVaultToAsset[v.toLowerCase()]
+        const priced = u && priceByAddr[u.toLowerCase()]
+        collatUsd[v.toLowerCase()] = priced ? (toUsd(u, collatTotalAssets[i]) ?? Infinity) : 0
+      })
+
+      vaults.forEach((_, i) => {
+        const token = tokens[i]
+        const borrow = borrows[i]
+        if (!token || !borrow || BigInt(borrow) === 0n) return
+
+        if (chainHasPrices) {
+          if (!priceByAddr[token.toLowerCase()]) return
+          const ltvList = ltvLists[i] || []
+          if (ltvList.length) {
+            // a healthy debt can't exceed the collateral behind it, so anything above the
+            // priced collateral these vaults hold is backed by unpriced collateral (bad debt)
+            const pricedCollatUsd = ltvList.reduce((sum, cv) => sum + (collatUsd[cv.toLowerCase()] || 0), 0)
+            const borrowUsd = toUsd(token, borrow)
+            if (borrowUsd !== undefined && !pricedCollatUsd) return
+            if (borrowUsd !== undefined && borrowUsd > pricedCollatUsd) {
+              api.add(token, BigInt(Math.floor(Number(borrow) * pricedCollatUsd / borrowUsd)).toString())
+              return
+            }
+          }
+        }
+        api.add(token, borrow)
+      })
     },
   }
 })

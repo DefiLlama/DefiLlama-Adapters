@@ -166,8 +166,9 @@ const idl =  {
             }
           },
           {
+            // was a bool; newer offers store 2 here (pool kind), which the bool decoder rejects
             "name": "pool",
-            "type": "bool"
+            "type": "u8"
           }
         ]
       }

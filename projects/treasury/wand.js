@@ -1,18 +1,28 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const styTreasury = '0x54c56e149f6d655aa784678057d1f96612b0cf1a'
-const styProtocol = '0x555ad3261c0eD6119Ab291b8dC383111d83C67c7'
-
+const styTreasury = '0x462bd2d3c020f6986c98160bc4e189954f49634b'
 async function styTvl(api) {
-  // Simply add all tokens in the treasury
-  const tokens = await api.call({ abi: 'address[]:assetTokens', target: styProtocol })
-  
-  // Create array of tokensAndOwners
-  const tokensAndOwners = tokens.map(token => [token, styTreasury])
-  
-  // Get all balances directly
-  return api.sumTokens({ tokensAndOwners })
+  // Token addresses
+  const vIP = "0x5267F7eE069CEB3D8F1c760c215569b79d0685aD"
+  const AIDaUSDC = "0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42"
+  const stAPL = "0xb5461c1FD0312Cd4bF037058F8a391e6A42F9639"
+
+  // Get balances directly
+  const [vipBal, aidaUsdcBal, stAPLBal] = await Promise.all([
+    api.call({ abi: 'erc20:balanceOf', target: vIP, params: [styTreasury] }),
+    api.call({ abi: 'erc20:balanceOf', target: AIDaUSDC, params: [styTreasury] }),
+    api.call({ abi: 'erc20:balanceOf', target: stAPL, params: [styTreasury] }),
+  ])
+
+  // Add vIP balance
+  api.add(vIP, vipBal)
+  // Add AIDaUSDC balance
+  api.add(AIDaUSDC, aidaUsdcBal)
+  // Add stAPL balance
+  api.add(stAPL, stAPLBal)
+
+  return api.getBalances()
 }
 
 module.exports = {

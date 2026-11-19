@@ -1,6 +1,73 @@
 const { PublicKey } = require("@solana/web3.js");
 const { Program } = require("@project-serum/anchor");
-const PsyAmericanIdl = require("./idl.json");
+const PsyAmericanIdl = {
+    "version": "0.0.0",
+    "name": "psy_american",
+    "instructions": [],
+    "accounts": [
+      {
+        "name": "OptionMarket",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "optionMint",
+              "type": "publicKey"
+            },
+            {
+              "name": "writerTokenMint",
+              "type": "publicKey"
+            },
+            {
+              "name": "underlyingAssetMint",
+              "type": "publicKey"
+            },
+            {
+              "name": "quoteAssetMint",
+              "type": "publicKey"
+            },
+            {
+              "name": "underlyingAmountPerContract",
+              "type": "u64"
+            },
+            {
+              "name": "quoteAmountPerContract",
+              "type": "u64"
+            },
+            {
+              "name": "expirationUnixTimestamp",
+              "type": "i64"
+            },
+            {
+              "name": "underlyingAssetPool",
+              "type": "publicKey"
+            },
+            {
+              "name": "quoteAssetPool",
+              "type": "publicKey"
+            },
+            {
+              "name": "mintFeeAccount",
+              "type": "publicKey"
+            },
+            {
+              "name": "exerciseFeeAccount",
+              "type": "publicKey"
+            },
+            {
+              "name": "expired",
+              "type": "bool"
+            },
+            {
+              "name": "bumpSeed",
+              "type": "u8"
+            }
+          ]
+        }
+      }
+    ],
+    "errors": []
+  };
 const PsyFiV2Idl = require("./psyfiV2Idl.json");
 const PsyFiMmIdl = require("./psyFiMmIdl.json");
 const PsyLendIdl = require("./psyLendIdl.json");
@@ -128,7 +195,7 @@ async function tvl() {
 module.exports = {
   misrepresentedTokens: true,
   hallmarks: [
-    [1717977600,"Withdrawal Only Mode Announced"]
+    ['2024-06-10',"Withdrawal Only Mode Announced"]
   ],
   timetravel: false,
   solana: {

@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const Bucket = "tvl-adapter-cache";
-const axios = require('axios')
+const http = require('./http')
 const graphql = require('./utils/graphql')
 
 function getKey(project, chain) {
@@ -11,36 +11,27 @@ function getFileKey(project, chain) {
   return `${Bucket}/${getKey(project, chain)}`
 }
 
-function getLink(project, chain) {
-  return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
-}
-
-async function getCache(project, chain, { _ } = {}) {
+async function getCache(project, chain, { skipCompression } = {}) {
   const Key = getKey(project, chain)
   const fileKey = getFileKey(project, chain)
 
   try {
-    const json = await sdk.cache.readCache(fileKey)
+    const json = await sdk.cache.readCache(fileKey, { skipCompression, readFromR2Cache: true })
     if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
   } catch (e) {
-    try {
-      const { data: json } = await axios.get(getLink(project, chain))
-      await sdk.cache.writeCache(fileKey, json)
-      return json
-    } catch (e) {
-      sdk.log('failed to fetch data from s3 bucket:', Key)
-      // sdk.log(e)
-      return {}
-    }
+    // sdk.log(e)
+    return {}
   }
 }
 
-async function setCache(project, chain, cache) {
+async function setCache(project, chain, cache, { skipCompression } = {}) {
   const Key = getKey(project, chain)
 
   try {
-    await sdk.cache.writeCache(getFileKey(project, chain), cache)
+    await sdk.cache.writeCache(getFileKey(project, chain), cache, {
+      skipCompression,
+    })
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
     sdk.log(e)
@@ -51,7 +42,7 @@ const configCache = {}
 let lastCacheReset = Date.now()
 const cacheResetInterval = 1000 * 30 // 30 seconds
 
-function resetCache() { 
+function resetCache() {
   if (Date.now() - lastCacheReset > cacheResetInterval) {
     Object.keys(configCache).forEach(key => delete configCache[key])
     lastCacheReset = Date.now()
@@ -66,6 +57,10 @@ async function _setCache(project, chain, json) {
     await setCache(project, chain, json)
 }
 
+function isHtml(data) {
+  return typeof data === 'string' && /^\s*<(!doctype html|html)/i.test(data)
+}
+
 async function getConfig(project, endpoint, { fetcher } = {}) {
   resetCache()
   if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
@@ -78,13 +73,38 @@ async function getConfig(project, endpoint, { fetcher } = {}) {
     try {
       let json
       if (endpoint) {
-        json = (await axios.get(endpoint)).data
+        json = await http.get(endpoint)
       } else {
         json = await fetcher()
       }
       if (!json) throw new Error('Invalid data')
+
+
+      // an html page (parked domain, cloudflare error, etc.) should never replace a non-html cache
+      if (isHtml(json)) {
+        const currentCache = await getCache(key, project)
+        if (!isHtml(currentCache))
+          throw new Error('Fetched html config, keeping the old cache: ' + project)
+      }
+
+      // check if the the response is a proper json, if not we might have an endpoint issue and we should keep the old cache instead of overwriting it with bad data
+      try {
+        if (typeof json === 'string') {
+          let parsedJson = JSON.parse(json)
+        }
+      } catch (e) {
+        // not json, maybe csv or something else, we just cache it as is
+        const currentCache = await getCache(key, project)
+        if (typeof currentCache !== 'string' && Object.keys(currentCache).length > 0) {
+          sdk.log(project, 'fetched non-json config, but we have valid json cache, so we keep the old cache')
+          throw new Error('Fetched non-json config, but we have valid json cache, so we keep the old cache: ' + project)
+        }
+      }
+
       await _setCache(key, project, json)
       return json
+
+
     } catch (e) {
       // sdk.log(e)
       sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
@@ -102,7 +122,7 @@ async function configPost(project, endpoint, data) {
 
   async function _configPost() {
     try {
-      const { data: json } = await axios.post(endpoint, data)
+      const json = await http.post(endpoint, data)
       await _setCache(key, project, json)
       return json
     } catch (e) {
@@ -125,13 +145,13 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
   async function _cachedGraphQuery() {
     try {
       let json
-      if (useBlock && !variables.block  && !fetchById) {
+      if (useBlock && !variables.block && !fetchById) {
         if (!api) throw new Error('Missing parameters')
         variables.block = await api.getBlock()
       }
       if (!fetchById)
         json = await graphql.request(endpoint, query, { variables, headers })
-      else 
+      else
         json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit, headers } })
       if (!json) throw new Error('Empty JSON')
       await _setCache(key, project, json)
@@ -145,7 +165,7 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
 }
 
 
-async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500, headers } = {} }) {
+async function graphFetchById({ endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500, headers } = {} }) {
   if (useBlock && !params.block)
     params.block = await api.getBlock() - safeBlockLimit
   endpoint = sdk.graph.modifyEndpoint(endpoint)

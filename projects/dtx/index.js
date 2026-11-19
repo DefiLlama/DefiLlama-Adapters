@@ -1,4 +1,4 @@
-const { sumERC4626VaultsExport } = require("../helper/erc4626")
+const { sumERC4626VaultsExport2 } = require("../helper/erc4626")
 const { sumTokensExport } = require("../helper/unwrapLPs")
 
 const sdk = require("@defillama/sdk")
@@ -44,7 +44,7 @@ const config = {
 
 Object.keys(config).forEach((chain) => {
   const { vaults, tokenConfig, factory } = config[chain]
-  const vaultTvl = sumERC4626VaultsExport({ vaults, isOG4626: true })
+  const vaultTvl = sumERC4626VaultsExport2({ vaults })
   const otherTvl = sumTokensExport(tokenConfig)
 
   let tvlCalculators = [vaultTvl, otherTvl]

@@ -187,6 +187,7 @@ module.exports = {
     ["2023-03-13", "Euler was hacked"],
     ["2023-08-02", "Migration to v2 (Transmuter)"],
     ["2024-03-14", "Rebrading of agEUR to EURA"],
+    ["2026-02-20", "Project announces wind down"],  // https://x.com/pablo_veyrat/status/2024789260054692114
   ],
   ethereum: {
     staking: staking(veANGLE, ANGLE),

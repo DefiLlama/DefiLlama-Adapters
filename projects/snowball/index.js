@@ -2,9 +2,13 @@ const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking.js');
 
-const abi = require('./abi.json')
-
-const API_URL = `https://api.snowapi.net/graphql`
+const abi = {
+    "getToken": "function getToken(uint8 index) view returns (address)",
+    "want": "address:want",
+    "balanceOf": "uint256:balanceOf",
+    "token": "address:token",
+    "balance": "uint256:balance"
+  };const API_URL = `https://api.snowapi.net/graphql`
 
 const query = `
 query {
@@ -28,12 +32,11 @@ const SNOB_TOKEN_CONTRACT = '0xc38f41a296a4493ff429f1238e030924a1542e50';
 
 async function getStableVaultBalances(stablevaults, api) {
   const calls = stablevaults.map(i => [0, 1, 2, 3].map(num => ({ params: num, target: i.swapAddress }))).flat()
-  const tokens = await api.multiCall({ abi: abi.getToken, calls: calls, withMetadata: true,
-    permitFailure: true, })
+  const tokens = await api.multiCall({ abi: abi.getToken, calls, permitFailure: true, })
   const toa = []
-  tokens.forEach(i => {
-    if (!i.output) return;
-    toa.push([i.output, i.input.target])
+  tokens.forEach((token, i) => {
+    if (!token) return;
+    toa.push([token, calls[i].target])
   })
   return sumTokens2({ api, tokensAndOwners: toa })
 }
@@ -43,14 +46,19 @@ async function getSnowglobeBalances(snowglobes, api) {
   const [tokens, tokenBalances] = await Promise.all([
     api.multiCall({
       calls: singleSidedPairs,
-      abi: abi.token
+      abi: abi.token,
+      permitFailure: true,
     }),
     api.multiCall({
       calls: singleSidedPairs,
-      abi: abi.balance
+      abi: abi.balance,
+      permitFailure: true,
     })
   ])
-  api.addTokens(tokens, tokenBalances)
+  tokens.forEach((token, i) => {
+    if (!token || tokenBalances[i] == null) return;
+    api.add(token, tokenBalances[i])
+  })
 }
 
 async function tvl(api) {

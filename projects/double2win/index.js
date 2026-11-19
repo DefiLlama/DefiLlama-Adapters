@@ -41,9 +41,12 @@ async function arbitrumTvl(api) {
   
   const tokens = await getTokens(chain, subgraph)
 
-  const blacklistedTokens = ['0x13654df31871b5d01e5fba8e6c21a5d0344820f5']
-  await sumTokens2({ api, owners: [addresses.uniswapV3Vault, addresses.uniswapV3Migration,], resolveUniV3: true, blacklistedTokens, })
-  await sumTokens2({ api, owners: [addresses.uniswapV2Migration, addresses.assetVault, addresses.uniswapV2Vault], tokens, resolveLP: true, blacklistedTokens, })
+  const blacklistedTokens = [
+    '0x13654df31871b5d01e5fba8e6c21a5d0344820f5',
+    '0x7264e133a63e07666e557cfcd0e81dac0eff72c9', // balanceOf reverts (contract no longer live)
+  ]
+  await sumTokens2({ api, owners: [addresses.uniswapV3Vault, addresses.uniswapV3Migration,], resolveUniV3: true, blacklistedTokens, permitFailure: true,})
+  await sumTokens2({ api, owners: [addresses.uniswapV2Migration, addresses.assetVault, addresses.uniswapV2Vault], tokens, resolveLP: true, blacklistedTokens, permitFailure: true,})
   
 }
 

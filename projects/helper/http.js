@@ -5,6 +5,10 @@ const { getEnv } = require('./env')
 
 const getCacheData = {}
 
+// One default here beats a timeout in every caller: axios default is no
+// timeout (hangs forever), which froze whole runs on dead upstreams.
+const DEFAULT_TIMEOUT = 30000
+
 async function getCache(endpoint) {
   if (!getCacheData[endpoint]) getCacheData[endpoint] = get(endpoint)
   return getCacheData[endpoint]
@@ -24,9 +28,14 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   }
 }
 
-async function get(endpoint, options) {
+async function get(endpoint, options = {}) {
+  const tonApiKey = getEnv('TON_API_KEY')
   try {
-    const data = (await axios.get(endpoint, options)).data
+    if (tonApiKey && endpoint.includes('tonapi.io')) {
+      if (!options.headers) options.headers = {}
+      options.headers['Authorization'] = tonApiKey
+    }
+    const data = (await axios.get(endpoint, { timeout: DEFAULT_TIMEOUT, ...options })).data
     return data
   } catch (e) {
     sdk.log(e.message)
@@ -35,12 +44,12 @@ async function get(endpoint, options) {
 }
 
 async function getWithMetadata(endpoint) {
-  return axios.get(endpoint)
+  return axios.get(endpoint, { timeout: DEFAULT_TIMEOUT })
 }
 
 async function post(endpoint, body, options) {
   try {
-    const data = (await axios.post(endpoint, body, options)).data
+    const data = (await axios.post(endpoint, body, { timeout: DEFAULT_TIMEOUT, ...options })).data
     return data
   } catch (e) {
     sdk.log(e.message)
@@ -64,6 +73,20 @@ async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, c
   return request(endpoint, graphQuery, params)
 }
 
+function extractIndexedBlockNumberFromError(errorString) {
+  const patterns = [
+    /Failed to decode.*block\.number.*has only indexed up to block number (\d+)/,
+    /missing block: \d+, latest: (\d+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = errorString.match(pattern);
+    if (match) return +match[1];
+  }
+  
+  return null;
+}
+
 async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   endpoint = sdk.graph.modifyEndpoint(endpoint)
   const graphQLClient = new GraphQLClient(endpoint)
@@ -76,10 +99,9 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
     e.chain = api.chain
     if (!block) throw e
     const errorString = e.toString()
-    const isBlockCatchupIssue = /Failed to decode.*block.number.*has only indexed up to block number \d+/.test(errorString)
-    if (!isBlockCatchupIssue) throw e
-    const indexedBlockNumber = +errorString.match(/indexed up to block number (\d+) /)[1]
-    sdk.log('We have indexed only upto ', indexedBlockNumber, 'requested block: ', block)
+    const indexedBlockNumber = extractIndexedBlockNumberFromError(errorString);
+    if (!indexedBlockNumber) throw e;
+    sdk.log('Block catchup detected: subgraph indexed up to', indexedBlockNumber, 'but requested block was', block, 'falling back to indexed block')
     if (block - blockCatchupLimit > indexedBlockNumber)
       throw e
     return graphQLClient.request(query, { block: indexedBlockNumber })
@@ -87,7 +109,32 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
 }
 
 
+async function proxiedFetch(url) {
+  const authInfo = getEnv('PROXY_AUTH')
+  if (!authInfo) return get(url)
+
+  const [host, username, password, port = 8001] = authInfo.split(':')
+
+  const client = axios.create({
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false,
+    }),
+  });
+  const { data } = await client
+    .get(url.toString(), {
+      timeout: DEFAULT_TIMEOUT,
+      proxy: {
+        protocol: "https",
+        host,
+        port: parseInt(port),
+        auth: { username, password },
+      },
+    })
+  return data
+}
+
 module.exports = {
+  DEFAULT_TIMEOUT,
   get,
   getCache,
   post,
@@ -95,4 +142,5 @@ module.exports = {
   graphQuery,
   getBlock,
   getWithMetadata,
+  proxiedFetch,
 }

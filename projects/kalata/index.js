@@ -16,7 +16,7 @@ async function tvl(api) {
         ADDRESSES.bsc.ETH,
         "0x23396cf899ca06c4472205fc903bdb4de249d6fc",
         ADDRESSES.bsc.USDC,
-        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+        ADDRESSES.bsc.CAKE,
         ADDRESSES.bsc.USDT,
         ADDRESSES.bsc.BUSD,
         "0x5066c68cae3b9bdacd6a1a37c90f2d1723559d18",], masterchef],

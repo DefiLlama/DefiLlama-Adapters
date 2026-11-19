@@ -1,3 +1,0 @@
-{
-  "strategyUnderlyingAmountAbi": "function getUnderlyingAssetAmounts() external view returns (uint256[] memory amounts)"
-}

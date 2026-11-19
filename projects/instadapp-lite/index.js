@@ -5,14 +5,25 @@ const vaults = [
     { "vault": "0xEC363faa5c4dd0e51f3D9B5d0101263760E7cdeB", "token": ADDRESSES.ethereum.WBTC },
     { "vault": "0x40a9d39aa50871Df092538c5999b107f34409061", "token": ADDRESSES.ethereum.DAI }
 ]
-const vaultsV2 = ["0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78"]
+const vaultsV2 = [
+    "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78", // Fluid Lite ETH
+    "0x273DA948ACa9261043fbdb2a857BC255ECC29012", // Fluid Lite USD
+]
 
 async function tvl(api) {
     const calls = vaults.map(v => ({ target: v.vault }))
-    const prices = await api.multiCall({
-        calls,
-        abi: "function getCurrentExchangePrice() public view returns (uint256 exchangePrice_, uint256 newTokenRevenue_)"
-    })
+    let prices
+    try {
+        prices = await api.multiCall({
+            calls,
+            abi: "function getCurrentExchangePrice() public view returns (uint256 exchangePrice_, uint256 newTokenRevenue_)"
+        })
+    } catch {
+        prices = await api.multiCall({
+            calls,
+            abi: 'uint256:lastRevenueExchangePrice'
+        })
+    }
     const supply = await api.multiCall({
         calls,
         abi: "erc20:totalSupply"

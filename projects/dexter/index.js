@@ -1,6 +1,8 @@
 const { queryContract } = require("../helper/chain/cosmos");
 const { transformDexBalances } = require("../helper/portedTokens");
 
+const faultyPoolIds = [1, 7, 9, 11]
+
 const chainConfigs = {
   persistence: {
     contract: 'persistence1k8re7jwz6rnnwrktnejdwkwnncte7ek7gt29gvnl3sdrg9mtnqkstujtpg'
@@ -18,7 +20,11 @@ async function tvl(api) {
     let poolId = 1
     const data = []
     do {
-      const { assets, pool_type } = await queryContract({ chain, contract, data: { get_pool_by_id: { pool_id: '' + poolId } }, })
+      if (faultyPoolIds.includes(poolId)) {
+        poolId++
+        continue
+      }
+      const { assets } = await queryContract({ chain, contract, data: { get_pool_by_id: { pool_id: '' + poolId } }, })
         assets.forEach(({ info: { native_token: { denom }}, amount }) => api.add(denom, amount))
       poolId++
     } while (poolId < +poolConfig.next_pool_id)

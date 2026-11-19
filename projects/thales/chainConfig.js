@@ -10,6 +10,12 @@ const CHAIN_CONFIG = {
     },
     speedMarkets: CONTRACTS.optimism.SPEED_MARKETS,
     managers: CONTRACTS.optimism.MANAGERS,
+    pool2: {
+      lpTokens: CONTRACTS.optimism.LP_TOKEN
+    },
+    stakingPools: [
+      { address: CONTRACTS.optimism.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' }
+    ],
     liquidityPools: {
       sports: [
         { address: CONTRACTS.optimism.SPORTS_POOLS.USDC, token: 'USDC' },
@@ -29,10 +35,17 @@ const CHAIN_CONFIG = {
     },
     speedMarkets: CONTRACTS.arbitrum.SPEED_MARKETS,
     managers: CONTRACTS.arbitrum.MANAGERS,
+    pool2: {
+      lpTokens: CONTRACTS.arbitrum.LP_TOKEN
+    },
+    stakingPools: [
+      { address: CONTRACTS.arbitrum.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' }
+    ],
     liquidityPools: {
       sports: [
         { address: CONTRACTS.arbitrum.SPORTS_POOLS.USDC, token: 'USDC' },
         { address: CONTRACTS.arbitrum.SPORTS_POOLS.WETH, token: 'WETH' },
+        { address: CONTRACTS.arbitrum.SPORTS_POOLS.WBTC, token: 'WBTC' },
         { address: CONTRACTS.arbitrum.SPORTS_POOLS.THALES, token: 'THALES' }
       ],
       digitalOptions: [
@@ -52,11 +65,25 @@ const CHAIN_CONFIG = {
     },
     speedMarkets: CONTRACTS.base.SPEED_MARKETS,
     managers: CONTRACTS.base.MANAGERS,
+    pool2: {
+      lpTokens: CONTRACTS.base.LP_TOKEN
+    },
+    stakingPools: [
+      { address: CONTRACTS.base.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' }
+    ],
     liquidityPools: {
+      sports: [
+        { address: CONTRACTS.base.SPORTS_POOLS.USDC, token: 'USDC' },
+        { address: CONTRACTS.base.SPORTS_POOLS.WETH, token: 'WETH' },
+        { address: CONTRACTS.base.SPORTS_POOLS.cbBTC, token: 'cbBTC' }
+      ],
       digitalOptions: [
         { address: CONTRACTS.base.DIGITAL_POOLS.USDC, token: 'USDC' }
       ]
     }
+  },
+  ethereum: {
+    tokens: CHAIN_TOKENS.ethereum,
   }
 }
 

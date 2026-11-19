@@ -1,4 +1,8 @@
-const { sumTokensExport } = require('../helper/chain/ton')
+const { sumTokensExport, getJettonsInfo } = require('../helper/chain/ton')
+const { get } = require('../helper/http')
+const { transformDexBalances } = require('../helper/portedTokens')
+const { address } = require('../helper/utils/ton')
+const ADDRESSES = require("../helper/coreAssets.json")
 
 // CES
 const CES_MASTER = "0:a5d12e31be87867851a28d3ce271203c8fa1a28ae826256e73c506d94d49edad"
@@ -28,11 +32,35 @@ const DFC_MASTER = "0:f6eb371de82aa9cfb5b22ca547f31fdc0fa0fbb41ae89ba84a73272ff0
 const DEDUST_DFC_TON_POOL = "0:84868f284afcd59de33eab700b57d18c3a8473946370ac6b6ae29db1dd29c89c"
 const STONFI_DFC_TON_POOL = "0:a66a91222d03b4b9810e9af0de5cd47d8b947891854f126c8d2447304824d251"
 
+const COFFEE_TON_ADDRESS = "native"
+
 module.exports = {
     methodology: "Counts swap.coffee smartcontract balance as TVL.",
     timetravel: false,
     ton: {
-        tvl: () => { },
+        tvl: async () => {
+            const pools = await get('https://backend.swap.coffee/v1/dex/pools')
+
+            const jettonIds = [...new Set(
+                pools.flatMap(item => [item.tokens[0], item.tokens[1]]).filter(val => val !== COFFEE_TON_ADDRESS)
+            )];
+
+            const jettonInfo = await getJettonsInfo(jettonIds)
+            const decimals = {[COFFEE_TON_ADDRESS]: 9}
+            for (const data of jettonInfo) {
+                decimals[address(data.metadata.address).toString()] = parseInt(data.metadata.decimals)
+            }
+
+            return transformDexBalances({
+                chain: 'ton',
+                data: pools.map(i => ({
+                    token0: normalizeAddress(i.tokens[0]),
+                    token1: normalizeAddress(i.tokens[1]),
+                    token0Bal: i.reserves[0] * (10 ** decimals[i.tokens[0]]),
+                    token1Bal: i.reserves[1] * (10 ** decimals[i.tokens[1]]),
+                }))
+            })
+        },
         staking: sumTokensExport({
             owners: [CES_STAKING_CONTRACT, XROCK_STAKING_CONTRACT, JETTON_STAKING_CONTRACT, DFC_STAKING_CONTRACT],
             tokens: [XROCK_MASTER, CES_MASTER, JETTON_MASTER, DFC_MASTER],
@@ -53,4 +81,8 @@ module.exports = {
             onlyWhitelistedTokens: true
         })
     }
+}
+
+function normalizeAddress(addr) {
+    return addr === COFFEE_TON_ADDRESS ? ADDRESSES.ton.TON : addr
 }

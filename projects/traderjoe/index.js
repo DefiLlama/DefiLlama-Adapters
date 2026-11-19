@@ -13,5 +13,11 @@ module.exports = {
   },
   bsc: {
     tvl: getUniTVL({ factory: '0x4f8bdc85e3eec5b9de67097c3f59b6db025d9986', useDefaultCoreAssets: true, })
+  },
+  monad: {
+    tvl: getUniTVL({ factory: '0xe32D45C2B1c17a0fE0De76f1ebFA7c44B7810034', useDefaultCoreAssets: true, })
+  },
+  arbitrum: {
+    tvl: getUniTVL({ factory: '0xaE4EC9901c3076D0DdBe76A520F9E90a6227aCB7', useDefaultCoreAssets: true, })
   }
 };

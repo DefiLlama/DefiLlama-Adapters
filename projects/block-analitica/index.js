@@ -1,10 +1,8 @@
-const { getCuratorExport } = require("../helper/curators");
+const { getCuratorExport } = require("../helper/curators")
+const { mergeExports } = require("../helper/utils")
 
-// we config vault addresses, we don't use vault owner addresses like other curators
-// because BlockAnalitica co-curator with B Protocol on some vaults
-// these vault owners are B Protocol addresses, so we can't use the vault owner configs
-const configs = {
-  methodology: 'Count all assets are deposited in all vaults curated by Block Analitica.',
+const morphoConfigs = {
+  methodology: 'Count all assets deposited in all vaults curated by Block Analitica.',
   blockchains: {
     ethereum: {
       morpho: [
@@ -21,7 +19,40 @@ const configs = {
         '0xf24608E0CCb972b0b0f4A6446a0BBf58c701a026',
       ],
     },
-  }
+  },
 }
 
-module.exports = getCuratorExport(configs)
+const summerConfig = {
+  ethereum: '0x09eb323dBFECB43fd746c607A9321dACdfB0140F',
+  base: '0x09eb323dBFECB43fd746c607A9321dACdfB0140F',
+  arbitrum: '0x09eb323dBFECB43fd746c607A9321dACdfB0140F',
+  sonic: '0xa8E4716a1e8Db9dD79f1812AF30e073d3f4Cf191',
+}
+
+const curatorExports = getCuratorExport(morphoConfigs)
+
+async function tvlSummer(api) {
+  const factory = summerConfig[api.chain]
+  const vaults = await api.call({ abi: 'address[]:getActiveFleetCommanders', target: factory })
+  return api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets'})
+}
+
+const CHAINS = ['ethereum', 'arbitrum', 'base', 'sonic']
+
+for (const chain of CHAINS) {
+  const originalTvl = curatorExports[chain]?.tvl;
+
+  curatorExports[chain] = {
+    ...(curatorExports[chain] || {}),
+    tvl: async (api) => {
+      if (originalTvl) await originalTvl(api);
+      await tvlSummer(api);
+    },
+  };
+}
+
+module.exports = mergeExports({
+  ...curatorExports,
+  doublecounted: true,
+  methodology: morphoConfigs.methodology,
+})

@@ -17,7 +17,7 @@ function getMarketPrice(api, fromBlock) {
       topic: 'TakeOrder(address,uint256,address,address,address,uint256,uint256,uint256,bool,uint256)',
       eventAbi: 'event TakeOrder(address indexed account, uint256 indexed orderId, address indexed maker, address token, address currency, uint256 price, uint256 amount, uint256 filled, bool bidAsk, uint256 timestamp)',
       onlyArgs: true,
-      skipCache: true,
+      skipCache: true,  // legit use case for skipping cache to get fresh data
       fromBlock,
     })
 

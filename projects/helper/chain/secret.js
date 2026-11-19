@@ -2,7 +2,7 @@ const { endPoints } = require('./cosmos');
 const EnigmaUtils = require('../utils/enigma')
 const host = endPoints.secret
 const { toBase64, fromBase64, fromUtf8, } = EnigmaUtils
-const axios = require('axios')
+const http = require('../http')
 let client
 
 function getClient() {
@@ -52,13 +52,15 @@ class SecretClient {
   }
 
   async get(api, queryParams = {}) {
-    const { data } = await axios.get(this.nodeURL + api, { params: queryParams })
-    return data
+    return http.get(this.nodeURL + api, { params: queryParams })
   }
 
   async getCodeHashByContractAddr(contract) {
-    if (!this.codeHashes[contract])
-      this.codeHashes[contract] = fetchCodeHash(this)
+    if (!this.codeHashes[contract]) {
+      const promise = fetchCodeHash(this)
+      this.codeHashes[contract] = promise
+      promise.catch(() => { if (this.codeHashes[contract] === promise) delete this.codeHashes[contract] })
+    }
 
     return this.codeHashes[contract]
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getConfig } = require('../helper/cache')
 
@@ -9,46 +10,53 @@ async function getContracts() {
 async function getDeployedContractAddress(chainId) {
   const allContracts = await getContracts()
   const record = allContracts[chainId + ''] ?? []
-  const contracts =  (record ?? [])[0]?.contracts ?? {}
+  const contracts = (record ?? [])[0]?.contracts ?? {}
 
   const result = [
     contracts.Connext?.address,
     contracts.Connext_DiamondProxy?.address,
   ].filter(i => i);
 
-  // Manually adding Connext-specific xERC20 lockboxes on L1. Don't yet have a programmatic way to retrieve these, so hardcoding the largest lockboxes only for now.
-  if (chainId === 1) {
-    result.push("0xC8140dA31E6bCa19b287cC35531c2212763C2059"); // ezETH
-  }
   return result;
 }
+
+// ezETH xERC20 lockbox on L1, counted only while Connext can still mint/burn xezETH. Its limits were set to 0 on
+// 2025-01-13, since then the lockbox is bridged over Hyperlane (projects/hyperlane). xezETH has no code before
+// XEZETH_DEPLOY_BLOCK, so the lockbox did not exist either; after it, a failed limits read must throw.
+const EZETH_LOCKBOX = "0xC8140dA31E6bCa19b287cC35531c2212763C2059"
+const XEZETH = "0x2416092f143378750bb29b79eD961ab195CcEea5"
+const XEZETH_DEPLOY_BLOCK = 19327270
+const CONNEXT_DIAMOND = "0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6"
+const bridgesAbi = 'function bridges(address) view returns ((uint256 timestamp, uint256 ratePerSecond, uint256 maxLimit, uint256 currentLimit) minterParams, (uint256 timestamp, uint256 ratePerSecond, uint256 maxLimit, uint256 currentLimit) burnerParams)'
 
 let getAssetsPromise
 // Taken from @connext/nxtp-utils
 async function getAssetIds(chainId) {
   const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
   if (!getAssetsPromise)
-    getAssetsPromise = getConfig('connect/assets/'+chainId, url)
+    getAssetsPromise = getConfig('connect/assets/' + chainId, url)
   const data = await getAssetsPromise
   const chainData = data.find(item => item.chainId === chainId) || {}
   const result = Object.entries(chainData.assetId || {}).filter(i => i[0].length && !i[1].symbol.startsWith('next')).map(i => i[0])
   // crossChain.json returns the xERC20 representation of ezETH instead of canonical addresses on L1. Manually add these below until a better JSON is available.
   if (chainId === 1) {
-    result.push("0xbf5495Efe5DB9ce00f80364C8B423567e58d2110"); // ezETH
+    result.push(ADDRESSES.linea.rzETH); // ezETH
   }
   return result;
 }
 
 
-function chainTvl(chain) {
-  return async (api) => {
-    const chainId = api.chainId
-    const owners = await getDeployedContractAddress(chainId)
-    if (!owners.length)
-      return {}
-    const tokens = await getAssetIds(chainId)
-    return sumTokens2({ owners, tokens, api, })
-  };
+async function tvl(api) {
+  const chainId = api.chainId
+  const owners = await getDeployedContractAddress(chainId)
+  if (chainId === 1 && (api.block === undefined || api.block >= XEZETH_DEPLOY_BLOCK)) {
+    const limits = await api.call({ target: XEZETH, abi: bridgesAbi, params: [CONNEXT_DIAMOND] })
+    if (+limits.minterParams.maxLimit > 0 || +limits.burnerParams.maxLimit > 0) owners.push(EZETH_LOCKBOX)
+  }
+  if (!owners.length)
+    return {}
+  const tokens = await getAssetIds(chainId)
+  return sumTokens2({ owners, tokens, api, })
 }
 
 const chains = [
@@ -81,5 +89,5 @@ const chains = [
 ];
 
 chains.forEach(chain => {
-  module.exports[chain] = { tvl: chainTvl(chain) }
+  module.exports[chain] = { tvl }
 })

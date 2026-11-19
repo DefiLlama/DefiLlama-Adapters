@@ -1,39 +1,34 @@
-const { get, post, } = require('../http')
+// toncenter / tonapi transport and the address / BoC codec live in @defillama/sdk (`sdk.chains.ton`, which
+// paces requests per service and sends TONCENTER_API_KEY / TON_API_KEY); this file keeps the TVL helpers.
 const ADDRESSES = require('../coreAssets.json')
 const plimit = require('p-limit')
-const _rateLimited = plimit(1)
+const _rateLimited = plimit(9)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 const { sumTokens2 } = require('../unwrapLPs')
-const tonUtils = require('../utils/ton')
-
 const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
+const { ton } = require('@defillama/sdk').chains
 
+// TON balance in nanoton (string)
 async function getTonBalance(addr) {
-  const res = await get(`https://toncenter.com/api/v3/account?address=${addr}`)
-  return res.balance
+  return ton.getTonBalance({ address: addr })
 }
 
+// { [rawJettonAddress]: { balance, price, decimals } }
 async function getJettonBalances(addr) {
-  const response = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
-
-  const res = {}
-  response.balances.forEach(val => {
-    res[val.jetton.address] = { balance: val.balance, price: val.price.prices.USD, decimals: val.jetton.decimals }
-  })
-
-  return res
+  const balances = await ton.getJettonBalances({ address: addr })
+  return ton.jettonBalancesByAddress(balances, 'USD')
 }
 
 async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false, useTonApiForPrices = true, }) {
   if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return;
-  const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
+  const balances = await ton.getJettonBalances({ address: addr })
   await sleep(1000 * (3 * Math.random() + 3))
   tokens = tokens.map((a) => {
     if (a === ADDRESSES.ton.TON) return ADDRESSES.ton.TON
-    return tonUtils.address(a).toString()
+    return ton.normalizeAddress(a)
   })
   balances.forEach(({ balance, price, jetton }) => {
-    const address = tonUtils.address(jetton.address).toString()
+    const address = ton.normalizeAddress(jetton.address)
     if (onlyWhitelistedTokens && !tokens.includes(address)) return;
     if (!useTonApiForPrices) {
       api.add(address, balance)
@@ -51,31 +46,22 @@ async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens
 }
 
 async function getTokenRates({ tokens = [] }) {
-  const { rates } = await get(`https://tonapi.io/v2/rates?` + (
-    new URLSearchParams({ tokens: tokens.join(','), currencies: "usd" })
-  ).toString());
+  return ton.getTokenRates({ tokens, currency: 'usd' })
+}
 
-  const tokenPrices = {};
-
-  tokens.forEach(tokenAddress => {
-    if (rates[tokenAddress]) {
-      const usdPrice = rates[tokenAddress].prices.USD;
-      tokenPrices[tokenAddress] = usdPrice;
-    }
-  });
-
-  return tokenPrices
+async function getJettonsInfo(tokens) {
+  return ton.getJettonsInfo({ addresses: tokens })
 }
 
 const sumTokensAccount = rateLimited(_sumTokensAccount)
 
-async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false, useTonApiForPrices = true }) {
+async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false, useTonApiForPrices = true, sleepMs }) {
   if (!api) throw new Error('api is required')
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners, api.chain)
 
-  if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
+  if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners, sleepMs })
   if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return sumTokens2({ api, })
 
   for (const addr of owners) {
@@ -89,20 +75,9 @@ function sumTokensExport({ ...args }) {
   return (api) => sumTokens({ api, ...args })
 }
 
+// runGetMethod; `num` stack entries are parsed as hex numbers, everything else is left raw
 async function call({ target, abi, params = [], rawStack = false, }) {
-  const requestBody = {
-    "address": target,
-    "method": abi,
-    "stack": params
-  }
-  const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
-  if (!ok) {
-    throw new Error("Unknown");
-  }
-  const { exit_code, stack } = result
-  if (exit_code !== 0) {
-    throw new Error('Expected a zero exit code, but got ' + exit_code)
-  }
+  const stack = await ton.call({ target, method: abi, params, rawStack: true })
 
   if (rawStack) return stack
 
@@ -115,28 +90,58 @@ async function call({ target, abi, params = [], rawStack = false, }) {
   return stack
 }
 
-async function addTonBalances({ api, addresses }) {
-  api.log('Fetching TON balances', { addresses: addresses.length })
-  const chunks = sliceIntoChunks(addresses, 399)
-  let i = 0
+async function addJettonBalances({ api, jettonAddress, addresses, chunkSize = 399, sleepMs = 3000, forceSleep = false }) {
+  api.log('Fetching Jetton balances', { jettonAddress, addresses: addresses.length })
+  const chunks = sliceIntoChunks(addresses, chunkSize)
   for (const chunk of chunks) {
-    api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
-    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
-    accounts.forEach(({ balance }) => {
-      api.add(ADDRESSES.null, balance)
+    const jetton_wallets = await ton.getJettonWallets({ owner: chunk, jetton: jettonAddress })
+    jetton_wallets.forEach(({ balance }) => {
+      api.add(jettonAddress, balance)
     })
-    if (addresses.length > 199) {
-      await sleep(3000)
+    if (addresses.length > 199 || forceSleep) {
+      await sleep(sleepMs)
     }
   }
 }
 
+// toncenter v3 accountStates is GET-only and 414s past ~64k url chars: friendly addresses are 48 chars vs 66 raw,
+// so 1200 per request fits (raw form caps out around 600). There is no on-chain multicall on TON.
+// sleepMs: extra pause between chunks on top of the sdk's per-service pacing; pass 0 for large lists
+async function addTonBalances({ api, addresses, sleepMs = 3000, chunkSize = 1200 }) {
+  api.log('Fetching TON balances', { addresses: addresses.length })
+  addresses = addresses.map(a => {
+    try { return ton.normalizeAddress(a) } catch (e) { return a }
+  })
+  const chunks = sliceIntoChunks(addresses, chunkSize)
+  let i = 0
+  for (const chunk of chunks) {
+    if (i % 50 === 0) api.log('Fetching TON balances', { chunk: i, chunks: chunks.length })
+    i++
+    const { accounts } = await ton.toncenterGet({ path: 'accountStates', params: { address: chunk.join(','), include_boc: false } })
+    accounts.forEach(({ balance }) => {
+      api.add(ADDRESSES.null, balance)
+    })
+    if (addresses.length > 199 && sleepMs) {
+      await sleep(sleepMs)
+    }
+  }
+}
+
+// friendly (bounceable, url-safe) address stored in a base64 BoC `cell` / `slice` stack entry
+function processTVMSliceReadAddress(base64String) {
+  return ton.readAddressFromSlice(base64String)
+}
+
 module.exports = {
   addTonBalances,
+  addJettonBalances,
   getTonBalance,
   getTokenRates,
   sumTokens,
   sumTokensExport,
   call,
   getJettonBalances,
+  getJettonsInfo,
+  rateLimited,
+  processTVMSliceReadAddress
 }

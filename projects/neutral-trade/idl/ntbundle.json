@@ -1,0 +1,355 @@
+{
+  "version": "0.1.0",
+  "name": "ntbundle",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "BundleMasterAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                96
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BundleCreatorAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "allowed",
+            "type": "bool"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserBundleAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "lastDepositTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "shares",
+            "type": "u128"
+          },
+          {
+            "name": "pendingDeposit",
+            "type": "u64"
+          },
+          {
+            "name": "pendingShares",
+            "type": "u128"
+          },
+          {
+            "name": "estimatedPendingWithdrawalValue",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawalAvailableTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "lastWithdrawalProcessTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "lastHighWaterMark",
+            "type": "u128"
+          },
+          {
+            "name": "hwmPerShare",
+            "type": "u128"
+          },
+          {
+            "name": "lastManagementFeeTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "netDeposits",
+            "type": "i128"
+          },
+          {
+            "name": "totalFeeCharged",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                264
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "averageExternalEquity",
+            "type": "u64"
+          },
+          {
+            "name": "lastUpdateTime",
+            "type": "i64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Strategy",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "receiverAddress",
+            "type": "publicKey"
+          },
+          {
+            "name": "allocationBps",
+            "type": "u32"
+          },
+          {
+            "name": "allowed",
+            "type": "bool"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                96
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BundleTempData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "cumulativePendingDeposits",
+            "type": "u64"
+          },
+          {
+            "name": "pendingDepositsCounter",
+            "type": "u64"
+          },
+          {
+            "name": "pendingWithdrawalsCounter",
+            "type": "u64"
+          },
+          {
+            "name": "pendingLockedWithdrawalsCounter",
+            "type": "u64"
+          },
+          {
+            "name": "lastTotalSharesMinted",
+            "type": "u128"
+          },
+          {
+            "name": "lastNettingTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "isNettingDone",
+            "type": "bool"
+          },
+          {
+            "name": "distributionBaseAmount",
+            "type": "u64"
+          },
+          {
+            "name": "isDistributionStarted",
+            "type": "bool"
+          },
+          {
+            "name": "pausedDepositsWithdrawals",
+            "type": "bool"
+          },
+          {
+            "name": "leftToDistribute",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                184
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Bundle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "manager",
+            "type": "publicKey"
+          },
+          {
+            "name": "keeper",
+            "type": "publicKey"
+          },
+          {
+            "name": "treasuryAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "allocatedReceivers",
+            "type": {
+              "vec": "publicKey"
+            }
+          },
+          {
+            "name": "bundleUnderlyingBalance",
+            "type": "u64"
+          },
+          {
+            "name": "maxDepositAmount",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawalDelay",
+            "type": "u64"
+          },
+          {
+            "name": "performanceFee",
+            "type": "u32"
+          },
+          {
+            "name": "managementFeeBps",
+            "type": "u32"
+          },
+          {
+            "name": "depositFee",
+            "type": "u32"
+          },
+          {
+            "name": "withdrawalFee",
+            "type": "u32"
+          },
+          {
+            "name": "managerPfeeShares",
+            "type": "u128"
+          },
+          {
+            "name": "currentAllocationBps",
+            "type": "u32"
+          },
+          {
+            "name": "oracleBuffer",
+            "type": "u64"
+          },
+          {
+            "name": "totalShares",
+            "type": "u128"
+          },
+          {
+            "name": "assetPrecision",
+            "type": "u64"
+          },
+          {
+            "name": "assetAddress",
+            "type": "publicKey"
+          },
+          {
+            "name": "assetDecimals",
+            "type": "u8"
+          },
+          {
+            "name": "withdrawalTMin",
+            "type": "i64"
+          },
+          {
+            "name": "withdrawalTMax",
+            "type": "i64"
+          },
+          {
+            "name": "withdrawalCurve",
+            "type": "f32"
+          },
+          {
+            "name": "permissionned",
+            "type": "bool"
+          },
+          {
+            "name": "managerMfeeShares",
+            "type": "u128"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                255
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": [ ]
+}

@@ -9,11 +9,13 @@ const CONFIG = {
       '0x933597a323Eb81cAe705C5bC29985172fd5A3973',
       '0xcDafB1b2dB43f366E48e6F614b8DCCBFeeFEEcD3',
       '0x268Ca24DAefF1FaC2ed883c598200CcbB79E931D',
+      '0x783129E4d7bA0Af0C896c239E57C06DF379aAE8c', // eurc pool
     ],
   },
   bsc: {
     pools: [
       '0x138EB30f73BC423c6455C53df6D89CB01d9eBc63',
+      '0x962Bd449E630b0d928f308Ce63f1A21F02576057'
     ],
   },
   avax: {
@@ -125,6 +127,27 @@ const CONFIG = {
   sonic: {
     pools: [
       '0xA272fFe20cFfe769CdFc4b63088DCD2C82a2D8F9', //usdc pool
+    ],
+  },
+  manta: {
+    pools: [
+      '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB', // eth pool
+    ],
+  },
+  swellchain: {
+    pools: [
+      '0xCc0587aeBDa397146cc828b445dB130a94486e74', // eth pool
+    ],
+  },
+  stable: {
+    pools: [
+      ADDRESSES.doma.USDC_e, // usdc pool
+      '0x0829f361a05d993d5ceb035ca6df3446b060970b' // weth pool
+    ],
+  },
+  doma: {
+    pools: [
+      '0x5d46805BBFAcA875a96Ebbd22Aaa3DE4A81180f5', // eth pool
     ],
   },
 }

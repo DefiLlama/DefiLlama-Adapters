@@ -69,7 +69,7 @@ const arb1Tvl = async (api) => {
 };
 
 module.exports = {
-  methodology: `We count the TVL on the protocol valuts`,
+  methodology: `We count the TVL on the protocol vaults`,
   arbitrum: {
     staking: staking,
     tvl: arb1Tvl,

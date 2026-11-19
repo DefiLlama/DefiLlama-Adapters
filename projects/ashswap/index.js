@@ -1,21 +1,11 @@
-const { cachedGraphQuery } = require('../helper/cache')
-const { sumTokens, sumTokensExport } = require('../helper/sumTokens')
+const { sumTokens, sumTokensExport, queryContractWithAbi, toBech32 } = require('../helper/chain/elrond')
 
-const API_URL = 'https://api-v2.ashswap.io/graphql';
+// https://docs.ashswap.io/developers/smart-contracts, getAllPoolAddresses covers both stable and v2 (crypto) pools
+const ROUTER = 'erd1qqqqqqqqqqqqqpgqjtlmapv42pcga5nglgfrnpqvkq06wdqx4fvsvw6xpt'
 
-const TVLQuery = `query ashBaseStateQuery {
-  pools {
-    address
-  }
-  poolsV2 {
-    address
-  }
-}`
-
-async function tvl() {
-  const data = await cachedGraphQuery('ashswap', API_URL, TVLQuery)
-  const owners = Object.values(data).flat().map(i => i.address)
-  return sumTokens({ owners, chain: 'elrond'})
+async function tvl(api) {
+  const pools = await queryContractWithAbi({ target: ROUTER, funcName: 'getAllPoolAddresses', outputType: 'Address', multiValue: true })
+  return sumTokens({ owners: pools.map((hex) => toBech32(hex)), balances: api.getBalances() })
 }
 
 module.exports = {
@@ -23,6 +13,6 @@ module.exports = {
   timetravel: false,
   elrond: {
     tvl,
-    staking: sumTokensExport({ owner: 'erd1qqqqqqqqqqqqqpgq58elfqng8edp0z83pywy3825vzhawfqp4fvsaldek8'}),
+    staking: sumTokensExport({ owner: 'erd1qqqqqqqqqqqqqpgq58elfqng8edp0z83pywy3825vzhawfqp4fvsaldek8' }),
   },
 }

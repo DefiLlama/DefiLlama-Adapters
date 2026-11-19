@@ -15,7 +15,6 @@ const config = {
     dexFactory: '0xF028F723ED1D0fE01cC59973C49298AA95c57472',
     dexFromBlock: 10943133,
     comptroller: '0xB5d53eC97Bed54fe4c2b77f275025c3fc132D770',
-    // cToken: '0xC597F86424EEb6599Ea40f999DBB739e3Aca5d82',
     stakingContracts: ['0x6ed306DbA10E6c6B20BBa693892Fac21f3B91977'],
     stakingToken: '0xC28E27870558cF22ADD83540d2126da2e4b464c2',
   },
@@ -23,13 +22,11 @@ const config = {
     dexFactory: '0x1DaeD74ed1dD7C9Dabbe51361ac90A69d851234D',
     dexFromBlock: 5208518,
     comptroller: '0x88fEf82FDf75E32e4BC0e662d67CfcEF4838F026',
-    // cToken: '0xC597F86424EEb6599Ea40f999DBB739e3Aca5d82',
   },
   heco: {
     dexFactory: '0xC28E27870558cF22ADD83540d2126da2e4b464c2',
     dexFromBlock: 783990,
     comptroller: '0x6Cb9d7ecf84b0d3E7704ed91046e16f9D45C00FA',
-    // cToken: '0xC597F86424EEb6599Ea40f999DBB739e3Aca5d82',
   },
 }
 
@@ -45,29 +42,15 @@ Object.keys(config).forEach(chain => {
         ownerTokens.push(...markets.map((m, i) => [[uTokens[i]], m]))
       }
       if (dexFactory) {
-        const logs = await getLogs({
-          api,
-          target: dexFactory,
-          topics: ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'],
-          eventAbi: 'event PairCreated (address indexed token0, address indexed token1, address pair, uint256)',
-          onlyArgs: true,
-          fromBlock: dexFromBlock,
-        })
-        const routers = await api.multiCall({ abi: 'address:router', calls: logs.map(i => i.pair) })
-        routers.forEach((r, i) => ownerTokens.push([[logs[i].token0, logs[i].token1], r]))
+        const pairs = await api.fetchList({  lengthAbi: 'allPairsLength', itemAbi: 'allPairs' , target: dexFactory })
+        const token0s = await api.multiCall({  abi: 'address:token0', calls:pairs })
+        const token1s = await api.multiCall({  abi: 'address:token1', calls:pairs })
+        const routers = await api.multiCall({  abi: 'address:router', calls:pairs })
+        routers.forEach((r, i) => ownerTokens.push([[token0s[i], token1s[i]], r]))
       }
       return sumTokens2({ api, ownerTokens, blacklistedTokens, })
     },
-    borrowed: async (api) => {
-      if (comptroller) {
-        const markets = await api.call({ abi: 'address[]:getAllMarkets', target: comptroller, })
-        let uTokens = await api.multiCall({ abi: 'address:underlying', calls: markets, permitFailure: true })
-        uTokens = uTokens.map(i => i ?? nullAddress)
-        let borrows = await api.multiCall({ abi: 'uint256:totalBorrows', calls: markets })
-        api.addTokens(uTokens, borrows)
-      }
-      api.getBalances()
-    },
+    borrowed: async (api) => {    }, // is insolvant
   }
 
   if (stakingContracts) {
@@ -125,28 +108,4 @@ const blacklistedTokens = [
   '0x176c673a31904dbfff4255f2501567b4ddc73f65',
   '0x7213c252e7857b529582dddc770ddb275759d1ec',
 
-  // heco
-  '0xc2037c1c13dd589e0c14c699dd2498227d2172cc',
-  '0x03271182cf2b47929978d0e4ca4af0846f66e2de',
-  '0x891daabf6de7a648c9665928e1097b808c1721e2',
-  '0xe9c95876f144bbdf5dc33d1a35c26cab0611903f',
-  '0x389eec1b8795853770874b76b912ec18de796e1b',
-  '0xeaac96f59e40d38bd970b37879a79a1d28737d8a',
-  '0x6c606fb47d99d1e66f9b599f8c5602cd4eb44d5a',
-  '0xae399aea42867fec2cd4a04963a7f0e247a39431',
-  '0x818bbc9b9d37685f9f4db032d46b52a70d890632',
-  '0x6ccbc3a5ae94e8a75f9571438a78f3e3aa956655',
-  '0xc2d36a8c0b1235ddecac2ed519139e9177e67736',
-  '0x611e93a7718a215bfda3c63f7175d764793272df',
-  '0x377dca38ff279a73a9075f25d36d00b98515a9a1',
-  '0x937a48287fdc4b503d608cb988ac35eee75f076f',
-  '0x3f3aaaa941ad756fc49a4b3241a87a7c04e39a4e',
-  '0x06068d90e0cbf9b7ccfd21efddb9bceb4c47fd31',
-  '0xe2a246c36fa86eee290acef79a8dc66b6b7f25ba',
-  '0x8fc67b8ed339c740a58ebd7aae24ba9d57d8dd25',
 ]
-
-
-Object.entries(module.exports.heco).forEach(([key, value]) => module.exports.heco[key] = () => ({}))
-
-module.exports.ethereum.borrowed = () => ({})

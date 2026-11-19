@@ -1,7 +1,0 @@
-{
-  "allMarkets": "address[]:allMarkets",
-  "getCash": "uint256:getCash",
-  "underlying": "address:underlying",
-  "totalBorrow": "uint256:totalBorrow",
-  "totalValueLockedOf": "function totalValueLockedOf(address[] markets) view returns (uint256 totalSupplyInUSD)"
-}

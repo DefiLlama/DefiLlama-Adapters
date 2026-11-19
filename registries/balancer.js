@@ -1,0 +1,217 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
+const { onChainTvl, v3Tvl, v1Tvl } = require('../projects/helper/balancer')
+const { buildProtocolExports } = require('./utils')
+
+/**
+ * helperType: 'v2' (default) = onChainTvl(vault, fromBlock, opts)
+ * helperType: 'v3' = v3Tvl(vault, fromBlock, opts)
+ * helperType: 'v1' = v1Tvl(factory, fromBlock, opts)
+ *
+ * Chain config:
+ *   { vault, fromBlock, blacklistedTokens?, permitFailure?, onlyUseExistingCache?, preLogTokens? }
+ *   For v1: { factory, fromBlock, blacklistedTokens? }
+ *   null = empty TVL () => ({})
+ */
+function balancerExportFn(chainConfigs, options = {}) {
+  const { helperType = 'v2' } = options
+  const result = {}
+
+  Object.entries(chainConfigs).forEach(([chain, config]) => {
+    if (config === null) {
+      result[chain] = { tvl: () => ({}) }
+      return
+    }
+
+    const { vault, factory, fromBlock, blacklistedTokens, permitFailure, onlyUseExistingCache, preLogTokens } = config
+    const opts = {}
+    if (blacklistedTokens) opts.blacklistedTokens = blacklistedTokens
+    if (permitFailure) opts.permitFailure = permitFailure
+    if (onlyUseExistingCache) opts.onlyUseExistingCache = onlyUseExistingCache
+    if (preLogTokens) opts.preLogTokens = preLogTokens
+
+    if (helperType === 'v3') {
+      result[chain] = { tvl: v3Tvl(vault, fromBlock, opts) }
+    } else if (helperType === 'v1') {
+      result[chain] = { tvl: v1Tvl(factory, fromBlock, opts) }
+    } else {
+      result[chain] = { tvl: onChainTvl(vault, fromBlock, opts) }
+    }
+  })
+
+  return result
+}
+
+// Shared blacklisted tokens for Balancer V2 main deployment
+const balancerV2Blacklist = [
+  "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F",
+  ADDRESSES.ethereum.sUSD_OLD, // sUSD_OLD
+  "0x00f109f744B5C918b13d4e6a834887Eb7d651535", "0x645F7dd67479663EE7a42feFEC2E55A857cb1833", "0x4922a015c4407F87432B179bb209e125432E4a2A",
+  "0xdA16D6F08F20249376d01a09FEBbAd395a246b2C", "0x9be4f6a2558f88A82b46947e3703528919CE6414", "0xa7fd7d83e2d63f093b71c5f3b84c27cff66a7802",
+  "0xacfbe6979d58b55a681875fc9adad0da4a37a51b", "0xd6d9bc8e2b894b5c73833947abdb5031cc7a4894",
+]
+
+const balancerV2Vault = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
+
+function balV2Chain(fromBlock) {
+  return { vault: balancerV2Vault, fromBlock, blacklistedTokens: balancerV2Blacklist }
+}
+
+const configs = {
+  // ===== Balancer V2 (onChainTvl) =====
+  'balancer': {
+    hallmarks: [['2026-10-30', 'Balancer pausable pools move to withdrawals-only']],
+    ethereum: balV2Chain(12272146),
+    polygon: balV2Chain(15832990),
+    arbitrum: balV2Chain(222832),
+    xdai: balV2Chain(24821598),
+    polygon_zkevm: balV2Chain(203079),
+    base: balV2Chain(1196036),
+    avax: balV2Chain(26386141),
+    mode: balV2Chain(8110317),
+    fraxtal: balV2Chain(4708596),
+  },
+  'swaap-v2': {
+    ethereum: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 17598578 },
+    arbitrum: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 137451745, permitFailure: true },
+    polygon: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 44520023 },
+    optimism: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 120693792 },
+    bsc: { vault: '0x03c01acae3d0173a93d819efdc832c7c4f153b06', fromBlock: 39148730 },
+    base: { vault: '0x03c01acae3d0173a93d819efdc832c7c4f153b06', fromBlock: 14451361 },
+    mode: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 7242549 },
+    mantle: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 65689171 },
+    scroll: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 6934854 },
+    linea: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 6052579 },
+    monad: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 32389136 },
+  },
+  'gaming-dex': {
+    defiverse: null,
+    oas: { vault: '0xfb6f8FEdE0Cb63674Ab964affB93D65a4a7D55eA', fromBlock: 4522800 },
+    megaeth: { vault: '0xd5e99c20b2e7Ab4C18b2e1709Fd6F5A20F488637', fromBlock: 9729855 },
+    hyperliquid: { vault: '0x2c0b37305F77309D0BD04fa75848DA2cBb5C4B90', fromBlock: 33401847 },
+  },
+  'sobal': {
+    neon_evm: { vault: '0x7122e35ceC2eED4A989D9b0A71998534A203972C', fromBlock: 206166057, blacklistedTokens: ['0x4440000000000000000000000000000000000002'] },
+    base: { vault: '0x7122e35ceC2eED4A989D9b0A71998534A203972C', fromBlock: 2029566, blacklistedTokens: ['0x4440000000000000000000000000000000000002'] },
+  },
+  'mondrian': {
+    abstract: { vault: '0x48cD08ad2065e0cD2dcD56434e393D55A59a4F64', fromBlock: 1199036 },
+  },
+  'burrbear': {
+    berachain: { vault: '0xBE09E71BDc7b8a50A05F7291920590505e3C7744', fromBlock: 1 },
+  },
+  'beraswap': {
+    berachain: { vault: '0x4Be03f781C497A489E3cB0287833452cA9B9E80B', fromBlock: 9384 },
+  },
+  'beethovenx': {
+    fantom: { vault: '0x20dd72ed959b6147912c2e529f0a0c651c33c9ce', fromBlock: 16896080 },
+    optimism: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 7003431 },
+    sonic: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 368312 },
+  },
+  'wavelength': {
+    velas: { vault: '0xa4a48dfcae6490afe9c779bf0f324b48683e488c', fromBlock: 56062385, onlyUseExistingCache: true },
+  },
+  'tanukix': {
+    methodology: "Sum of all the tokens locked in TanukiX vault",
+    taiko: { vault: '0x3251e99cEf4b9bA03a6434B767aa5Ad11ca6cc31', fromBlock: 204741 },
+  },
+  'phux': {
+    pulse: { vault: '0x7F51AC3df6A034273FB09BB29e383FCF655e473c', fromBlock: 17500116 },
+  },
+  'hummus-weighted': {
+    metis: { vault: '0x95B4F64c2a96F770C1b4216e18ED692C01506437', fromBlock: 7066703 },
+  },
+  'holdr-fi': {
+    aurora: { vault: '0x364d44dFc31b3d7b607797B514348d57Ad0D784E', fromBlock: 78113009 },
+  },
+  'embr': {
+    avax: { vault: '0xad68ea482860cd7077a5d0684313dd3a9bc70fbb', fromBlock: 8169253 },
+  },
+  'ducata': {
+    methodology: 'TVL counts the external assets deposited in the vaults',
+    arbitrum: { vault: '0x25898DEe0634106C2FcBB51B3DB5b14aA1c238a4', fromBlock: 230182440 },
+  },
+
+  // ===== Balancer V3 (v3Tvl) =====
+  'balancer-v3': {
+    _options: { helperType: 'v3' },
+    xdai: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 37360338 },
+    ethereum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 21332121, blacklistedTokens: [
+      '0x8399c8fc273bd165c346af74a02e65f10e4fd78f', // vgUSDC
+    ] },
+    arbitrum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 297810187 },
+    base: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 25343854 },
+    optimism: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 133969439 },
+    avax: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 59955604 },
+    hyperliquid: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 6132445 },
+    plasma: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 782595 },
+    monad: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 22091249 }
+  },
+  'beethovenx-v3': {
+    _options: { helperType: 'v3' },
+    sonic: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 368135 },
+  },
+  'coinhain': {
+    _options: { helperType: 'v3' },
+    bsc: { vault: '0xb61cb1E8EF4BB1b74bB858B8B60d82d79488F13D', fromBlock: 60471472 },
+  },
+  'bush': {
+    _options: { helperType: 'v3' },
+    robinhood: { vault: '0xB055000fbE3cc9bDE7742C583a86cc6283E3fF85', fromBlock: 24180135 },
+  },
+  'tickerspring-baskets': {
+    _options: { helperType: 'v3' },
+    methodology: 'TVL is the tokens held by the TickerSpring Balancer V3 vault on Robinhood Chain for its baskets: weighted pools of Stock Tokens, crypto tokens and USDG or WETH. SPRING, the TickerSpring token, is excluded.',
+    start: '2026-10-08', // vault deployed 2026-10-08 20:09 UTC
+    robinhood: { vault: '0xb01B26D72EB3a5d7846C36fc21e4e3B96994DaF2', fromBlock: 83584185, blacklistedTokens: [
+      '0x440e339a46eaa3bE8d723c2cBED2A30af74536D5', // SPRING, the parent protocol's token
+    ] },
+  },
+
+  // ===== Balancer V1 (v1Tvl) =====
+  'valueliquid': {
+    _options: { helperType: 'v1' },
+    start: '2020-09-30',
+    ethereum: { factory: '0xebc44681c125d63210a33d30c55fd3d37762675b', fromBlock: 10961776 },
+  },
+  'balancer-v1': {
+    _options: { helperType: 'v1' },
+    ethereum: { factory: '0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd', fromBlock: 9562480, blacklistedTokens: [
+      "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F",
+      ADDRESSES.ethereum.sUSD_OLD,
+      "0x00f109f744B5C918b13d4e6a834887Eb7d651535", "0x645F7dd67479663EE7a42feFEC2E55A857cb1833", "0x4922a015c4407F87432B179bb209e125432E4a2A",
+      "0xdA16D6F08F20249376d01a09FEBbAd395a246b2C", "0x9be4f6a2558f88A82b46947e3703528919CE6414",
+    ], permitFailure: true }, // several paused tokens (PieDAO pies etc.) revert balanceOf
+  },
+  'klex': {
+    klaytn: { vault: '0xb519Cf56C63F013B0320E89e1004A8DE8139dA27', fromBlock: 99368355, onlyUseExistingCache: true },
+  },
+  'polaris-finance': {
+    misrepresentedTokens: true,
+    methodology: 'Pool2 TVL accounts for all LPs staked in Dawn, Staking TVL accounts for all tokens staked in Sunrise.',
+    aurora: {
+      vault: '0x6985436a0E5247A3E1dc29cdA9e1D89C5b59e26b', fromBlock: 71729132,
+      // xpolar held by the sunrise contracts + single-stake tokens held by the xpolar reward pool
+      staking: { __sumTokens: { tokensAndOwners: [
+        ['0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993', '0xA452f676F109d34665877B7a7B203f2B445D7DE0'], // polarSunrise
+        ['0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993', '0x203a65b3153C55B57f911Ea73549ed0b8EC82B2D'], // tripolarSunrise
+        ['0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993', '0x37223e0066969027954a5499ea4445bB9F55b36F'], // uspSunrise
+        ['0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993', '0x33Fd42C929769f2C57cD68353Bff0bD7C6c51604'], // ethernalSunrise
+        ['0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993', '0x494E811678f84816878A6e7e333f834Be7d4f21D'], // orbitalSunrise
+        ['0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993', '0x5DB00aeFe6404A08802678480e953ACb32E14Eab'], // binarisSunrise
+        ['0x17cbd9C274e90C537790C51b4015a65cD015497e', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // ETHERNAL
+        ['0x266437E6c7500A947012F19A3dE96a3881a0449E', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // EBOND
+        ['0x3AC55eA8D2082fAbda674270cD2367dA96092889', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // ORBITAL
+        ['0x192bdcdd7b95A97eC66dE5630a85967F6B79e695', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // OBOND
+        ['0xa69d9Ba086D41425f35988613c156Db9a88a1A96', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // USP
+        ['0xcE32b28c19C61B19823395730A0c7d91C671E54b', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // USPBOND
+        ['0xf0f3b9Eee32b1F490A4b8720cf6F005d4aE9eA86', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // POLAR
+        ['0x3a4773e600086A753862621A26a2E3274610da43', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // PBOND
+        ['0x60527a2751A827ec0Adf861EfcAcbf111587d748', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // TRIPOLAR
+        ['0x8200B4F47eDb608e36561495099a8caF3F806198', '0x140e8a21d08cbb530929b012581a7c7e696145ef'], // TRIBOND
+      ] } },
+    },
+    telos: { vault: '0x9Ced3B4E4DC978265484d1F1f569010E13f911c9', fromBlock: 319760799 },
+  },
+}
+
+module.exports = buildProtocolExports(configs, balancerExportFn)

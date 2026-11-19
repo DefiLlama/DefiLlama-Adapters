@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
@@ -6,6 +7,7 @@ const config = {
     owners: bitcoinAddressBook.bitfinex,
   },
   ethereum: {
+    ownTokens: ['0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3'], // LEO
     owners: [
       '0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec', // ETH/ERC20 hot wallet
       '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', // ETH/ERC20 cold wallet
@@ -116,13 +118,22 @@ const config = {
   },
   zilliqa: {
     owners: [
-      'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
-      'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
+      // 'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
+      // 'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
     ]
   },
   doge: {
-    owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']
+    // owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']  // old hot wallet? inactive now
   }
 }
 
-module.exports = cexExports(config)
+const withdrawalAddresses = [
+  '0xe733455faddf4999176e99a0ec084e978f5552ed',
+  '0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec',
+]
+
+module.exports = mergeExports([
+  cexExports(config),
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])
+Object.defineProperty(module.exports, '_rawConfig', { value: config, enumerable: false })

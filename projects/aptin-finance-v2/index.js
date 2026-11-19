@@ -16,7 +16,8 @@ async function getData() {
       key_type: '0x1::string::String',
       value_type: '0x3c1d4a86594d681ff7e5d5a233965daeabdc6a15fe5672ceeda5260038857183::pool::Pool',
     }
-    const coinInfos = await Promise.all(coins.map(i => getTableData({ table, data: { ...params, key: i } })))
+    const coinInfos = []
+    for (const coin of coins) coinInfos.push(await getTableData({ table, data: { ...params, key: coin } }))
     const balances = {
       tvl: {},
       borrowed: {},

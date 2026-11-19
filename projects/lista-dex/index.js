@@ -1,0 +1,95 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
+const { nullAddress } = require('../helper/tokenMapping')
+
+const NATIVE_PLACEHOLDER = ADDRESSES.GAS_TOKEN_2
+const MARKET_LIST_URL = 'https://api.lista.org/api/moolah/borrow/marketList?pageSize=200&page='
+
+const chains = ['bsc', 'ethereum']
+
+/** The API caps pageSize at 200 and ignores the chain filter, so page through every market once. */
+async function fetchMarketList() {
+  const list = []
+  let total = Infinity
+  for (let page = 1; list.length < total; page++) {
+    const { data } = await get(MARKET_LIST_URL + page)
+    total = data?.total ?? 0
+    const pageList = data?.list ?? []
+    if (!pageList.length) break
+    list.push(...pageList)
+  }
+  const unique = [...new Map(list.map((m) => [m.marketId, m])).values()]
+  // throw on a short list so getConfig keeps the last complete one
+  if (!unique.length || unique.length < total) throw new Error(`lista: fetched ${unique.length}/${total} markets`)
+  return { data: { list: unique } }
+}
+
+async function getSmartLendingMarketIds(api) {
+  const { data } = await getConfig('lista-dex/marketList', undefined, { fetcher: fetchMarketList })
+  if (!data?.list?.length) throw new Error('lista: no market list')
+  return data.list
+    .filter((m) => m.chain === api.chain)
+    .filter((m) => m.isSmartLending === true)
+    .filter((m) => m.status === 1)
+    .map((m) => m.marketId)
+    .filter(Boolean)
+}
+
+async function getMarketConfig(api, marketId) {
+  const url = `https://api.lista.org/api/moolah/market/${marketId}?chain=${api.chain}`
+  const { data } = await getConfig(`lista/marketInfo-${api.chain}-${marketId}`, url)
+  const cfg = data?.smartCollateralConfig
+  if (!cfg?.swapPool || !cfg?.token0 || !cfg?.token1) return null
+  return {
+    swapPool: cfg.swapPool.toLowerCase(),
+    token0: cfg.token0.toLowerCase(),
+    token1: cfg.token1.toLowerCase(),
+  }
+}
+
+async function tvl(api) {
+  const marketIds = await getSmartLendingMarketIds(api)
+  if (marketIds.length === 0) return {}
+
+  const configs = await Promise.all(marketIds.map((id) => getMarketConfig(api, id)))
+  const valid = configs.filter(Boolean)
+  if (valid.length === 0) return {}
+
+  // Multiple marketIds can reference the same underlying swapPool.
+  // TVL lives at the pool level, so dedupe by swapPool to avoid double counting.
+  const byPool = new Map()
+  for (const c of valid) {
+    const existing = byPool.get(c.swapPool)
+    if (!existing) {
+      byPool.set(c.swapPool, c)
+      continue
+    }
+    // If metadata conflicts, keep the first and ignore the rest
+    if (existing.token0 !== c.token0 || existing.token1 !== c.token1) {
+      continue
+    }
+  }
+
+  const unique = [...byPool.values()]
+  const swapPools = unique.map((c) => c.swapPool)
+  const token0s = unique.map((c) => c.token0)
+  const token1s = unique.map((c) => c.token1)
+
+  const tokensAndOwners = []
+  for (let i = 0; i < unique.length; i++) {
+    tokensAndOwners.push([token0s[i], swapPools[i]])
+    const t1 = token1s[i] === NATIVE_PLACEHOLDER ? nullAddress : token1s[i]
+    tokensAndOwners.push([t1, swapPools[i]])
+  }
+  return api.sumTokens({ tokensAndOwners })
+}
+
+module.exports = {
+  methodology:
+    'TVL = sum of token0 and token1 balances in each smart lending market swapPool (two collateral assets). Data from Moolah market list + market basic info API.',
+}
+
+chains.forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

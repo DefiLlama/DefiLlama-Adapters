@@ -4,6 +4,7 @@ const { ripple } = require('../helper/chain/rpcProxy')
 const evmTBILLAddr = {
     ethereum: '0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a',
     arbitrum: '0xF84D28A8D28292842dD73D1c5F99476A80b6666A',
+    bsc: '0x5b4681F0d7A01B817675F25892D3Ad73572FD1D9',
 }
 
 const solTBILLAddr = '4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6'
@@ -29,6 +30,14 @@ async function arbTVL(api) {
     api.add(evmTBILLAddr.arbitrum, tbill)
 }
 
+async function bscTVL(api) {
+    const tbill = await api.call({ 
+        abi: 'uint256:totalSupply',
+        target: evmTBILLAddr.bsc
+    })
+    api.add(evmTBILLAddr.bsc, tbill)
+}
+
 async function solTVL(api) {
     const data = await getTokenSupplies([solTBILLAddr])
     Object.entries(data).forEach(([addr, tbill]) => {
@@ -47,6 +56,7 @@ async function xrpTVL(api) {
 module.exports = {
     ethereum: { tvl: ethTVL },
     arbitrum: { tvl: arbTVL },
+    bsc: { tvl: bscTVL },
     solana: { tvl: solTVL },
     ripple: { tvl: xrpTVL },
 }

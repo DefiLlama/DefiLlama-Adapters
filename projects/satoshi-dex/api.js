@@ -24,6 +24,7 @@ async function tvl() {
 
 
 module.exports = {
+  isHeavyProtocol: true,
   stacks: {
     tvl: tvl,
   }

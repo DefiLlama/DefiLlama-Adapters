@@ -1,6 +1,6 @@
 
 const { getUniqueAddresses, } = require('../tokenMapping')
-const { getFixBalancesSync } = require('../portedTokens')
+const { getFixBalances } = require('../portedTokens')
 const { sliceIntoChunks } = require('../utils')
 const BigNumber = require('bignumber.js')
 const { post } = require('../http')
@@ -12,9 +12,10 @@ const chain = 'radixdlt'
 
 const ENTITY_DETAILS_URL = `https://mainnet.radixdlt.com/state/entity/details`
 
-async function sumTokens({ owner, owners = [], api, transformLSU = false,  blacklistedTokens = [] }) {
+async function sumTokens({ owner, owners = [], api, transformLSU = false,  blacklistedTokens = [], tokens, }) {
+  
   const blacklistSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
-  const fixBalances = getFixBalancesSync(chain)
+  const fixBalances = getFixBalances(chain)
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners)
@@ -24,6 +25,7 @@ async function sumTokens({ owner, owners = [], api, transformLSU = false,  black
   let items = await queryAddresses({ addresses: owners })
   items.forEach((item) => {
     item.fungible_resources.items.forEach(({ resource_address, amount }) => {
+      if (Array.isArray(tokens) && !tokens.includes(resource_address.toLowerCase())) return;
       if (blacklistSet.has(resource_address.toLowerCase())) return;
       api.add(resource_address, +amount)
     });
@@ -140,6 +142,9 @@ async function transformLSUs(api) {
   if (tokens.length) {
     const lsuRedemptionValues = await queryLiquidStakeUnitDetails(tokens)
     Object.entries(lsuRedemptionValues).forEach(([lsuResourceAddress, { xrdRedemptionValue }]) => {
+      if (!Number.isFinite(Number(xrdRedemptionValue))) {
+        throw new Error(`Missing XRD redemption value for ${lsuResourceAddress}`)
+      }
       const bals = balances[`radixdlt:${lsuResourceAddress}`] * xrdRedemptionValue
       api.add(ADDRESSES.radixdlt.XRD, bals)
       delete balances[`radixdlt:${lsuResourceAddress}`]

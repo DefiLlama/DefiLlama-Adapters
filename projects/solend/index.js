@@ -1,8 +1,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2, decodeAccount, getMultipleAccounts, } = require("../helper/solana");
+const { sumTokens2, decodeAccount, getMultipleAccounts, getConnection, } = require("../helper/solana");
 const { getConfig } = require('../helper/cache')
 
 const solendConfigEndpoint = "https://api.solend.fi/v1/markets/configs?scope=all&deployment=production";
+// ~30 days at 400ms slots
+const STALE_SLOTS = 6_500_000
 
 async function borrowed(api) {
   const markets = (await getConfig('solend', solendConfigEndpoint))
@@ -13,9 +15,17 @@ async function borrowed(api) {
       reserves.push(reserve.address)
 
   const infos = await getMultipleAccounts(reserves)
+  const slot = await getConnection().getSlot()
   infos.forEach(i => {
-    const { info: { liquidity } } = decodeAccount('reserve', i)
+    const { info: { liquidity, lastUpdate } } = decodeAccount('reserve', i)
     const amount = liquidity.borrowedAmountWads.toString() / 1e18
+    // a fully utilized reserve nobody has touched in a month (every deposit, borrow, repay and liquidation
+    // refreshes it), or whose borrow index grew 10x, is bad debt compounding at the max borrow rate, not a
+    // live loan (the ScarCoin pool's USDC debt reads $93M after its borrow index grew 15,000x)
+    const utilization = amount / (amount + Number(liquidity.availableAmount.toString()))
+    const stale = slot - lastUpdate.slot.toNumber() > STALE_SLOTS
+    const runaway = liquidity.cumulativeBorrowRateWads.toString() / 1e18 > 10
+    if (utilization > 0.99 && (stale || runaway)) return
     api.add(liquidity.mintPubkey.toString(), amount)
   })
 }
@@ -28,7 +38,7 @@ async function tvl() {
 // TODO: Find a dynamic way to obtain this mapping
 const TOKEN_MINT_TO_TOKEN2022_MINT = {
   [ADDRESSES.solana.SOL]: ADDRESSES.solana.SOL,
-  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': 'GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn',
+  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': ADDRESSES.eclipse.ETH_2,
   '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': ADDRESSES.eclipse.WIF,
   '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': ADDRESSES.eclipse.SOL,
   'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': ADDRESSES.eclipse.USDC,
@@ -58,10 +68,10 @@ module.exports = {
   },
   eclipse: { tvl: eclipseTvl },
   methodology:
-    "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
+    "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Borrowed excludes fully utilized reserves untouched for a month or whose borrow index grew over 10x; their debt is bad debt that only grows with interest. Coingecko is used to price tokens.",
   hallmarks: [
-    [1635940800, "SLND launch"],
-    [1667826000, "FTX collapse, SOL whale liquidated"],
+    ['2021-11-03', "SLND launch"],
+    ['2022-11-07', "FTX collapse, SOL whale liquidated"],
   ],
 };
 

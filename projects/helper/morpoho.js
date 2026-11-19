@@ -60,6 +60,22 @@ function getMorphoVaultTvl(governor, {
 }
 
 
+// Morpho Blue SharesMathLib, shared so market-position adapters do not each carry their own copy.
+const VIRTUAL_SHARES = 1000000n
+const VIRTUAL_ASSETS = 1n
+
+function toAssetsDown(shares, totalAssets, totalShares) {
+  return BigInt(shares) * (BigInt(totalAssets) + VIRTUAL_ASSETS) / (BigInt(totalShares) + VIRTUAL_SHARES)
+}
+
+function toAssetsUp(shares, totalAssets, totalShares) {
+  const numerator = BigInt(shares) * (BigInt(totalAssets) + VIRTUAL_ASSETS)
+  const denominator = BigInt(totalShares) + VIRTUAL_SHARES
+  return (numerator + denominator - 1n) / denominator
+}
+
 module.exports = {
-  getMorphoVaultTvl
+  getMorphoVaultTvl,
+  toAssetsDown,
+  toAssetsUp,
 }

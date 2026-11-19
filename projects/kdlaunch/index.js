@@ -1,6 +1,6 @@
 const { fetchLocal, mkMeta } = require("../helper/pact");
 
-const network = (chainId) => `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
+const network = (chainId) => `https://api.chainweb-community.org/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
 const creationTime = () => Math.round(new Date().getTime() / 1000) - 10;
 
 const getReserve = (tokenData) => {
@@ -17,7 +17,7 @@ const getTotalStakedKdl = async () => {
     },
     network(chainId)
   );
-  
+
   if (data.result.status === "success") {
     return getReserve(data.result.data.totalStaked);
   }
@@ -35,8 +35,9 @@ async function fetchStakingTvl() {
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
+  deadFrom: "2026-01-25",
   kadena: {
-    tvl: ()=>({}),
+    tvl: () => ({}),
     staking: fetchStakingTvl,
   }
 }

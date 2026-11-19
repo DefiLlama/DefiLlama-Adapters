@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {function_view} = require("../helper/chain/aptos");
 
 const ARCHE_CONTRACT_ADDRESS = "0xbcc40f56a3538c9cc25254f485f48e6f150f9acac53a2e92c6d698a9c1751a0b";
-const MOVE_TOKEN_ADDRESS = "0x1::aptos_coin::AptosCoin";
+const MOVE_TOKEN_ADDRESS = ADDRESSES.aptos.APT;
 
 async function fetchLockedTokens() {
 

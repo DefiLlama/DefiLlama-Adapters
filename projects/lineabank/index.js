@@ -1,6 +1,7 @@
 const { function_view } = require("../helper/chain/aptos");
 const { compoundExports2 } = require("../helper/compound")
 const { mergeExports } = require("../helper/utils")
+const { aaveV3Export } = require("../helper/aave");
 
 /* LayerBank V2 */
 const v2Config = {
@@ -20,6 +21,18 @@ const v2Config = {
   hemi: '0x16B3A05f1adaCa8F028AAd7C5B0475cC512a0619',
 }
 
+const insolvantChains = {
+  mode: true,
+  scroll: true,
+  bsquared: true,
+  morph: true,
+  linea: true,
+  manta: true,
+  zklink: true,
+  bob: true,
+  move: true,
+}
+
 const abis = {
   getAllMarkets: "address[]:allMarkets",
   totalBorrows: "uint256:totalBorrow",
@@ -27,12 +40,12 @@ const abis = {
 
 Object.keys(v2Config).forEach(chain => {
   const comptroller = v2Config[chain]
-  module.exports[chain] = compoundExports2({ comptroller, abis, })
+  module.exports[chain] = compoundExports2({ comptroller, abis, isInsolvent: insolvantChains[chain] })
 })
 
-module.exports = mergeExports([module.exports, {
-  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, }),
-}])
+const compoundExports = {
+  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, isInsolvent: true, }),
+}
 
 /* LayerBank Move */
 
@@ -66,6 +79,7 @@ module.exports.move = {
     });
   },
   borrowed: async (api) => {
+    return {} // is insolvant
     // Fetch pool data
     const poolData = await fetchPoolData();
     const assets = poolData[0] || [];
@@ -79,47 +93,26 @@ module.exports.move = {
 
 /* LayerBank V3 */
 
-const v3Abi = {
-  getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
-  getAllReservesTokens: "function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])",
-  getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+const deprecatedV3Config = {
+  plume_mainnet: [`0xF9642C3B35Cd4Ccd55D22Fb2B35fcc31c5E0B62E`],
+  hemi: [`0x8D45801736F3504BEfA35ABEf8bc7a1C4d610651`],
+  nibiru: [`0x7F5f9E5D4643B4333464c18d072167B452C20d28`],
+  bob: { poolDatas: [`0xeb1Bea032d0DDCAFd29fb3b8c33A67BCAfCaFD8c`], isInsolvent: true, },
 };
 
 const v3Config = {
-  plume_mainnet: [`0xF9642C3B35Cd4Ccd55D22Fb2B35fcc31c5E0B62E`],
-  hemi: [`0x8D45801736F3504BEfA35ABEf8bc7a1C4d610651`],
+  rsk: ['0x47C1ef207d49cfC519F48b8251857CA6BE6c2caf'],
+  robinhood: ['0x7ED03A856D52172f9501aB0176f184baD287e546'],
 };
 
-const fetchReserveData = async (api, poolDatas, isBorrowed) => {
-  const reserveTokens = await api.multiCall({ calls: poolDatas, abi: v3Abi.getAllReservesTokens });
-  const calls = []
+// Deprecated deployments (V2, Move, older V3): the chains stay exported so their history is kept,
+// and return nothing from the cutoff onwards
+const DEPRECATED_TS = Date.parse('2026-11-16') / 1e3
+const gate = (fn) => async (api, ...args) => !api.timestamp || api.timestamp >= DEPRECATED_TS ? {} : fn(api, ...args)
 
-  poolDatas.map((pool, i) => {
-    reserveTokens[i].forEach(({ tokenAddress }) => calls.push({ target: pool, params: tokenAddress }));
-  });
-  const reserveData = await api.multiCall({ abi: isBorrowed ? v3Abi.getReserveData : v3Abi.getReserveTokensAddresses, calls, })
-  const tokensAndOwners = []
-  reserveData.forEach((data, i) => {
-    const token = calls[i].params
-    if (isBorrowed) {
-      api.add(token, data.totalVariableDebt)
-      api.add(token, data.totalStableDebt)
-    } else
-      tokensAndOwners.push([token, data.aTokenAddress])
-  })
+const deprecated = mergeExports([module.exports, compoundExports, aaveV3Export(deprecatedV3Config)])
+Object.values(deprecated).forEach(chainExport => {
+  Object.keys(chainExport).forEach(key => chainExport[key] = gate(chainExport[key]))
+})
 
-  if (isBorrowed) return api.getBalances()
-  return api.sumTokens({ tokensAndOwners })
-}
-
-const v3Exports = {};
-
-Object.keys(v3Config).forEach((chain) => {
-  const poolDatas = v3Config[chain];
-  v3Exports[chain] = {
-    tvl: (api) => fetchReserveData(api, poolDatas),
-    borrowed: (api) => fetchReserveData(api, poolDatas, true),
-  };
-});
-
-module.exports = mergeExports([module.exports, v3Exports]);
+module.exports = mergeExports([deprecated, aaveV3Export(v3Config)]);

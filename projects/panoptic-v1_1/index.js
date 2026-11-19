@@ -56,7 +56,6 @@ async function tvl(api) {
   const isV4 = {}
 
   for (const poolDeployedLog of poolDeployedLogs) {
-    if (poolDeployedLog.poolAddress !== '0x36a3088B94f73853a3964a0352B47605C6354f27') continue
     // get underlying token from each collateral tracker
     const tokens = await api.multiCall({ abi:'function asset() external view returns (address)', calls: [{target: poolDeployedLog.collateralTracker0, params: []}, {target: poolDeployedLog.collateralTracker1, params: []}] })
     
@@ -68,28 +67,35 @@ async function tvl(api) {
     api.addTokens(tokens, balancesRaw)
   }
 
-
-  const chunks = await cachedGraphQuery(`panoptic/v1_1/${chain}/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  const block = api.block ?? 0
+  let chunks = []
+  try {
+    chunks = await cachedGraphQuery(`panoptic/v1_1/${chain}/sfpm-chunks@${block}`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  } catch (e) {
+    api.log(`Panoptic: subgraph unavailable on ${chain}, skipping SFPM positions`)
+  }
+  if (!Array.isArray(chunks)) chunks = []
   chunks.forEach(chunk => {
     if (!isV4[chunk.panopticPool.id.toLowerCase()]) return
-    addUniV3LikePosition({ api, token0: chunk.pool.token0.id, token1: chunk.pool.token1.id, tick: chunk.pool.tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
+    addUniV3LikePosition({ api, token0: chunk.pool.token0.id, token1: chunk.pool.token1.id, tick: Number(chunk.pool.tick), liquidity: Number(chunk.netLiquidity), tickUpper: Number(chunk.tickUpper), tickLower: Number(chunk.tickLower), })
   })
 }
 
 module.exports = {
+  deadFrom: "2026-11-01", // migrated to v2
   ethereum: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1738292183,
+    start: '2025-01-31',
   },
   base: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1745308193,
+    start: '2025-04-22',
   },
   unichain: {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1748379902,
+    start: '2025-05-27',
   },
 }

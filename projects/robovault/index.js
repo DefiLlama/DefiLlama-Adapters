@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 
 module.exports = {
   hallmarks: [
-    [1674820800, "Vaults Pause"]
+    ['2023-01-27', "Vaults Pause"]
   ],
   methodology: 'TVL counts deposits made to the Robo-Vault vaults. Data is pulled from the Robo-Vault API:"https://api.robo-vault.com/vault".',
 }

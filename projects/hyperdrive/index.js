@@ -58,3 +58,7 @@ async function tvl(api) {
 
   return api.sumTokens({ tokensAndOwners })
 }
+
+module.exports.hallmarks = [
+  ['2025-06-17', 'Product is winding down'], //https://x.com/delv_tech/status/1934995962377756801, https://blog.delv.tech/farewell-to-delv/
+]

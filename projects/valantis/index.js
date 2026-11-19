@@ -1,39 +1,32 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { BigNumber } = require('bignumber.js')
 
-const STEX_CONTRACT = '0x39694eFF3b02248929120c73F90347013Aec834d';
-const STEX_LENS_CONTRACT = '0x68675DC8406252b6950128f6504A5E287Ef24ED0';
-const STEX_LENS_RESERVES_ABI = 'function getAllReserves(address stex) external view returns (uint256 reserve0Pool, uint256 reserve0Unstaking, uint256 reserve1Pool, uint256 reserve1Lending, uint256 amount1PendingLPWithdrawal)';
-const WHYPE = ADDRESSES.hyperliquid.WHYPE;
-const STHYPE = '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1';
+const STHYPE = '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1'
+const WHYPE = ADDRESSES.hyperliquid.WHYPE
+
+const STEX_STHYPE = '0x39694eFF3b02248929120c73F90347013Aec834d'
+const STEX_KHYPE = '0xbf747D2959F03332dbd25249dB6f00F62c6Cb526'
+const STEX_LENS = '0x95e88072c3fe908101a13584d7A0ff87DaDd88f3'
+const NAV_ABI = 'function getTotalValueToken1(address) view returns (uint256)'
 
 async function tvl(api) {
-    const stexReserves = await api.call({
-        abi: STEX_LENS_RESERVES_ABI,
-        target: STEX_LENS_CONTRACT,
-        params: [STEX_CONTRACT]
-    });
-
-    // Calculate human-readable amounts
-    const reserve0Pool = new BigNumber(stexReserves[0]);
-    const reserve0Unstaking = new BigNumber(stexReserves[1]);
-    const reserve1Pool = new BigNumber(stexReserves[2]);
-    const reserve1Lending = new BigNumber(stexReserves[3]);
-    const amount1PendingLPWithdrawal = new BigNumber(stexReserves[4]);
-
-    const stHypePoolAmount = reserve0Pool.plus(reserve0Unstaking);
-    const hypePoolAmount = reserve1Pool.plus(reserve1Lending).plus(amount1PendingLPWithdrawal);
-
-    // Add balances using the token addresses directly
-    // The API will handle the decimals internally
-    api.add(WHYPE, hypePoolAmount.toString());
-    api.add(STHYPE, stHypePoolAmount.toString());
+  const [sthypeValue, khypeValue, pool] = await api.batchCall([
+    { target: STEX_LENS, abi: NAV_ABI, params: [STEX_STHYPE] },
+    { target: STEX_LENS, abi: NAV_ABI, params: [STEX_KHYPE] },
+    { target: STEX_STHYPE, abi: 'address:pool' },
+  ])
+  const reserves = await api.call({ target: pool, abi: 'function getReserves() view returns (uint256,uint256)' })
+  const sthypeNav = BigInt(sthypeValue)
+  const reserve0 = BigInt(reserves[0])
+  // Keep live stHYPE visible for parent exclusions. Allocate liabilities to
+  // native exposure first, capping stHYPE at NAV to avoid negative balances.
+  const liveStHype = reserve0 < sthypeNav ? reserve0 : sthypeNav
+  api.add(STHYPE, liveStHype.toString())
+  api.add(WHYPE, (sthypeNav - liveStHype + BigInt(khypeValue)).toString())
 }
 
 module.exports = {
-    methodology: 'Counts the total amount of HYPE in Valantis pools',
-    start: 1743611,
-    hyperliquid: {
-        tvl
-    }
+  start: '2025-04-02',
+  doublecounted: true, // Lent WHYPE is also counted by HyperLend.
+  methodology: 'Counts combined stHYPE and kHYPE STEX net LP assets using the existing lens, including lending and pending unstaking less withdrawal liabilities. Preserves live stHYPE separately for parent exclusions; lending overlaps HyperLend TVL.',
+  hyperliquid: { tvl },
 }

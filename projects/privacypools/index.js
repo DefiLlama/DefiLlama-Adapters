@@ -1,9 +1,12 @@
+const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
+const poolRegisteredEvent = "event PoolRegistered(address pool, address asset, uint256 scope)"
+
 const config = {
-  ethereum: { poolsAndAssets: [
-    { pool: '0x6818809eefce719e480a7526d76bd3e561526b46', assets: ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE']}
-  ]},
+  ethereum: { entrypoint: '0x6818809eefce719e480a7526d76bd3e561526b46', fromBlock: 22153713, },
+  arbitrum: { entrypoint: '0x44192215FEd782896BE2CE24E0Bfbf0BF825d15E', fromBlock: 404391809, },
+  optimism: { entrypoint: '0x44192215FEd782896BE2CE24E0Bfbf0BF825d15E', fromBlock: 144288142, },
 }
 
 Object.keys(config).forEach(chain => {
@@ -13,17 +16,15 @@ Object.keys(config).forEach(chain => {
 })
 
 async function tvl(api) {
-  const { poolsAndAssets } = config[api.chain]
-  const tokens = []
-  const calls = []
-  poolsAndAssets.forEach(({ pool, assets }) => {
-    assets.forEach(asset => {
-      tokens.push(asset)
-      calls.push({ target: pool, params: asset })
-    })
+  const { entrypoint, fromBlock } = config[api.chain]
+  const logs = await getLogs2({ api, eventAbi: poolRegisteredEvent, fromBlock, target: entrypoint, })
+  const tokensAndOwners = logs.map(log => [log.asset, log.pool])
+
+  const tokens = logs.map(log => log.asset)
+  const poolConfig = await api.multiCall({ abi: 'function assetConfig(address) view returns ( address pool,  uint256 minimumDepositAmount,  uint256 vettingFeeBPS, uint256 maxRelayFeeBPS )', calls: tokens, target: entrypoint, field: 'pool' })
+  poolConfig.forEach((config, idx) => {
+    tokensAndOwners.push([tokens[idx], config])
   })
-  const poolConfig = await api.multiCall({  abi: "function assetConfig(address _asset) view returns (address pool, uint256 minimumDepositAmount, uint256 vettingFeeBPS, uint256 maxRelayFeeBPS)", calls: calls })
-  const owners = poolConfig.map(i => i.pool)
-  return sumTokens2({ api, tokensAndOwners2: [tokens, owners], })
-  
+
+  return sumTokens2({ api, tokensAndOwners })
 }

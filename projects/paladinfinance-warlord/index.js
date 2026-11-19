@@ -1,5 +1,9 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "token": "address:token",
+    "getCurrentLockedTokens": "uint256:getCurrentLockedTokens",
+    "lockers": "function lockers(uint256) view returns (address)"
+  };
 
 const WAR_CONTROLLER = "0xFDeac9F9e4a5A7340Ac57B47C67d383fb4f13DBb";
 

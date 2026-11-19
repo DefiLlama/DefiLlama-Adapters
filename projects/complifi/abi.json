@@ -1,6 +1,0 @@
-{
-  "getAllVaults": "address[]:getAllVaults",
-  "getVaultCollateral": "address:collateralToken",
-  "getAllPools": "address[]:getAllPools",
-  "getConfig": "function getConfig() view returns (tuple(uint256 minExitAmount, uint256 protocolFee, address feeWallet, address collateralToken, address collateralOracle, address collateralOracleIterator, address volatilityEvolution, address underlyingLiquidityValuer, address exposure, address poolShare, address traderPortfolio, uint8 collateralDecimals))"
-}

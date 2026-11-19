@@ -1,14 +1,15 @@
 const utils = require('../helper/utils');
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
-async function fetch() {
-  let data = await utils.fetchURL('https://api.for.tube/api/v1/bank/public/markets/TVL')
-  return data.data
+const url = 'https://api.for.tube/api/v1/bank/public/markets/TVL'
+
+const tvl = async (api) => {
+  const { data } = await utils.fetchURL(url)
+  return api.addUSDValue(Math.round(data.data))
 }
 
 module.exports = {
-  fetch
+  misrepresentedTokens: true,
+  ethereum: { tvl }
 }
+
+

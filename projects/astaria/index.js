@@ -52,5 +52,5 @@ Object.keys(config).forEach(chain => {
 })
 
 module.exports.hallmarks = [
-  [1687301106, "White hack"]
+  ['2023-06-20', "White hack"]
 ]

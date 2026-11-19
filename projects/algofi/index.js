@@ -88,7 +88,7 @@ async function staking() {
 
 module.exports = {
   hallmarks: [
-    [1688947200, "Winding down of protocol"]
+    ['2023-07-10', "Winding down of protocol"]
   ],
   timetravel: false,
   misrepresentedTokens: true,

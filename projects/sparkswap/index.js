@@ -62,7 +62,7 @@ async function tvl(api) {
   pInfos.forEach((pInfo, i) => {
     api.add(pInfo.lpToken, bals[i].amount);
     // THIS IS RETURNING STUPID VALUES
-    // api.add("0x2fa878ab3f87cc1c9737fc071108f904c0b0c95d", bals[i].rewardDebt);
+    // api.add(ADDRESSES.pulse.INC, bals[i].rewardDebt);
   });
   return sumUnknownTokens({ api, useDefaultCoreAssets: true, resolveLP: true });
 } // node test.js projects/sparkswap/index.js

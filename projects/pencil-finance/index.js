@@ -15,7 +15,7 @@ async function tvl(api) {
 
 module.exports = {
     methodology: 'TVL is calculated based on totalAssets() (WEDU tokens) held by the Pencil Finance Staking Vault on EduChain (OCC chain).',
-    start: 1745906937,
+    start: '2025-04-29',
     occ: {
         tvl,
     },

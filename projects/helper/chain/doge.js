@@ -1,21 +1,10 @@
-const sdk = require('@defillama/sdk')
-const { get } = require('../http')
-const plimit = require('p-limit')
-const { sleep } = require('../utils')
+const { utxo } = require('@defillama/sdk').chains
 
-const url = addr => 'https://doge1.trezor.io/api/v2/address/' + addr
-const _rateLimited = plimit(1)
-const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
-const getBalance = rateLimited(_getBalance)
+const CHAIN = 'doge'
 
-async function _getBalance(addr) {
-  const { balance } = await get(url(addr), {
-    headers: {
-      'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-    }
-  })
-  await sleep(2000)
-  return +balance
+// DOGE balance in base units (8 decimals); the sdk paces blockcypher / tatum calls
+async function getBalance(addr) {
+  return Number(await utxo.getBalance({ chain: CHAIN, address: addr }))
 }
 
 async function sumTokens({ api, owners = [] }) {

@@ -12,7 +12,7 @@ const polygon_tokens = Object.values({
   POLYGON_USDC: ADDRESSES.polygon.USDC,
   POLYGON_USDT: ADDRESSES.polygon.USDT,
   POLYGON_DAI: ADDRESSES.polygon.DAI,
-  POLYGON_XEN: "0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e",
+  POLYGON_XEN: ADDRESSES.ethpow.vvXEN,
 });
 
 // fantom

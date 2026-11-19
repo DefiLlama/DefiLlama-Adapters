@@ -34,6 +34,6 @@ module.exports = {
     borrowed,
   },
   hallmarks: [
-    [1688490168, "Launch Predy V5"]
+    ['2023-07-04', "Launch Predy V5"]
   ],
 };

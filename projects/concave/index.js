@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { ohmTvl } = require('../helper/ohm')
-const { uniTvlExport } = require('../helper/calculateUniTvl');
+const { uniTvlExport } = require('../helper/unknownTokens');
 const { nullAddress } = require('../helper/unwrapLPs');
 
 
@@ -24,8 +24,9 @@ async function tvl(api) {
   return api.sumTokens({ owner: treasury, tokens: [nullAddress, cvxDOLA_3CRV_BaseRewardPool]})
 }
 
+const uniTvl = uniTvlExport('chain', gemSwap_factory).chain.tvl
 
 module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, cnv_token, undefined, undefined, true)
-module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl, uniTvlExport(gemSwap_factory, undefined, true)])
+module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl, uniTvl])
 delete module.exports.ethereum.staking
 module.exports.methodology = 'Count the treasury assets backing the CNV price + LP assets in the AMM Gemswap'

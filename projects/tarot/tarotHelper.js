@@ -4,22 +4,27 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
-  async function tvl(api) {
+  // tvl and borrowed read the same pool list, fetch it once per chain/block and batch all factories together
+  const poolDataCache = {}
+  function getPoolData(api) {
+    const key = `${api.chain}-${api.block}`
+    if (!poolDataCache[key]) poolDataCache[key] = fetchPoolData(api)
+    return poolDataCache[key]
+  }
+
+  async function fetchPoolData(api) {
     const { factories } = config[api.chain]
+    const lendingPools = await api.fetchList({ lengthAbi: abi.allLendingPoolsLength, itemAbi: abi.allLendingPools, targets: factories, groupedByInput: true })
+    const calls = lendingPools.map((pools, i) => pools.map(pool => ({ target: factories[i], params: pool }))).flat()
+    return api.multiCall({ abi: abi.getLendingPool, calls, })
+  }
+
+  async function tvl(api) {
     const pools = []
-    await Promise.all(factories.map(async (factory) => {
-      const lendingPools = await api.fetchList({ lengthAbi: abi.allLendingPoolsLength, itemAbi: abi.allLendingPools, target: factory })
-
-      const poolData = await api.multiCall({
-        target: factory,
-        abi: abi.getLendingPool,
-        calls: lendingPools,
-      })
-
-      poolData.forEach(i => {
-        pools.push(i.collateral, i.borrowable0, i.borrowable1)
-      })
-    }))
+    const poolData = await getPoolData(api)
+    poolData.forEach(i => {
+      pools.push(i.collateral, i.borrowable0, i.borrowable1)
+    })
 
     const underlyings = await api.multiCall({
       abi: abi.underlying,
@@ -42,22 +47,12 @@ function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
   }
 
   async function borrowed(api) {
-    const { factories } = config[api.chain]
     const balances = {}
     const borrowables = []
-    await Promise.all(factories.map(async (factory) => {
-      const lendingPools = await api.fetchList({ lengthAbi: abi.allLendingPoolsLength, itemAbi: abi.allLendingPools, target: factory })
-
-      const poolData = await api.multiCall({
-        target: factory,
-        abi: abi.getLendingPool,
-        calls: lendingPools,
-      })
-
-      poolData.forEach(i => {
-        borrowables.push(i.borrowable0, i.borrowable1)
-      })
-    }))
+    const poolData = await getPoolData(api)
+    poolData.forEach(i => {
+      borrowables.push(i.borrowable0, i.borrowable1)
+    })
 
     const underlyings = await api.multiCall({
       abi: abi.underlying,
@@ -73,10 +68,13 @@ function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
     const blacklistedBorrowables = new Set([
       '0x5990Ddc40b63D90d3B783207069F5b9A8b661C1C',
       '0xec51a9f0dc97563147fb89176047283b9ae4cca9',
+      '0x93e3AF1734fB1BfeCfcB07Ea574438f84C8f0f5E',
+      '0xfCF859324183DDBa27d3eAB78206eed1499511a5', 
     ].map(a => a.toLowerCase()))
 
     const blacklistedTokens = new Set([
       '0xC5e2B037D30a390e62180970B3aa4E91868764cD', // Tarot
+      '0xb7C2ddB1EBAc1056231ef22c1b0A13988537a274', // Tarot
       '0xfb98b335551a418cd0737375a2ea0ded62ea213b',// Lot of MAI pools have bad debt, ignoring it
     ].map(a => a.toLowerCase()))
 

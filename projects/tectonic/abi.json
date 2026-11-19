@@ -1,4 +1,0 @@
-{
-  "totalBorrows": "uint256:totalBorrows",
-  "underlying": "address:underlying"
-}

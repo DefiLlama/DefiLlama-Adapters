@@ -1,3 +1,0 @@
-{
-  "tokens": "function tokens(address) view returns (uint256 totalPrincipal, uint256 tvlBusd, uint256 lastRewardBlock, uint256 accRevaPerToken, bool rewardsEnabled)"
-}

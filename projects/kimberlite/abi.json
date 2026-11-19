@@ -1,4 +1,0 @@
-{
-  "depositId": "uint256:depositId",
-  "lockedToken": "function lockedToken(uint256) view returns (address tokenAddress, address withdrawalAddress, uint256 tokenAmount, uint256 unlockTime, string memory lockName, string memory lockDescription, bool withdrawn)"
-}

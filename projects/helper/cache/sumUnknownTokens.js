@@ -7,7 +7,7 @@ const token1 = 'address:token1'
 const kslpABI = require('../abis/kslp.js');
 const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
-const { getChainTransform, stripTokenHeader, getFixBalances, getFixBalancesSync, } = require('../portedTokens')
+const { getChainTransform, stripTokenHeader, getFixBalances, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
 const { sumTokens2, nullAddress, } = require('../unwrapLPs')
 const { isLP, getUniqueAddresses, log } = require('../utils')
@@ -84,7 +84,7 @@ async function getTokenPrices({
   if (!cache.pairData) cache.pairData = {}
   let counter = 0
   if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+    transformAddress = getChainTransform(chain)
 
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
@@ -229,7 +229,7 @@ async function getTokenPrices({
   filterPrices(prices)
   const balances = {}
   Object.keys(pairBalances).forEach(key => addBalances(pairBalances[key], balances, { pairAddress: key }))
-  const fixBalances = getFixBalancesSync(chain)
+  const fixBalances = getFixBalances(chain)
   fixBalances(balances)
 
   return {
@@ -388,7 +388,7 @@ async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   await sumTokens2({ api, balances, chain, block, tokensAndOwners, skipFixBalances: true, resolveLP, abis })
   const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio, abis, allLps, })
   await updateBalances(balances, { skipConversion, onlyLPs })
-  const fixBalances = await getFixBalances(chain)
+  const fixBalances = getFixBalances(chain)
   fixBalances(balances)
   return balances
 }

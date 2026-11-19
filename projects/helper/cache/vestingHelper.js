@@ -1,15 +1,20 @@
 const sdk = require('@defillama/sdk');
 
-const { stripTokenHeader, getFixBalancesSync, } = require('../portedTokens')
+const { stripTokenHeader, getFixBalances, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
 const { sumTokens2, } = require('../unwrapLPs')
 const { getUniqueAddresses, sliceIntoChunks, sleep, log } = require('../utils')
 const { getTokenPrices, getLPList } = require('./sumUnknownTokens')
 
+// when `api` is passed, chain/block are taken from it and the result is also added to api's balances
 async function vestingHelper({
-  coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  api, coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, useDefaultCoreAssets = false, cache = {},
 }) {
+  if (api) {
+    chain = api.chain ?? chain
+    block = api.block ?? block
+  }
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
@@ -36,8 +41,9 @@ async function vestingHelper({
     Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
     if (i > 3 && i % 2 === 0) await sleep(1000)
   }
-  const fixBalances = getFixBalancesSync(chain)
+  const fixBalances = getFixBalances(chain)
   fixBalances(finalBalances)
+  if (api) api.addBalances(finalBalances)
   return finalBalances
 }
 

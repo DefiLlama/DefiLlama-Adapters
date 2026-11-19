@@ -29,6 +29,6 @@ module.exports = {
     'TVL counts LP token deposits made to Arrow Protocol. CoinGecko is used to find the price of tokens in USD, only the original "SOL" token price is used for all existing variations of the token.',
   solana: { tvl },
   hallmarks: [
-    [1648080000, 'Cashio was hacked!'],
+    ['2022-03-24', 'Cashio was hacked!'],
   ]
 };

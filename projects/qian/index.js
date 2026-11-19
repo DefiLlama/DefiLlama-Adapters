@@ -1,4 +1,14 @@
-const abi = require("./abi");
+const abi = {
+  "asset": {
+    "balances": "function balances(address token) view returns (uint256)"
+  },
+  "balance": {
+    "gsupply": "uint256:gsupply"
+  },
+  "env": {
+    "tokens": "address[]:tokens"
+  }
+};
 
 const AssetAddress = "0x6a2469944d3F0AA54531DfA6dCB4350F4A150b67";
 const EnvAddress = "0x3719C6ff935623A7B125952df5D849ef53B08cAc";

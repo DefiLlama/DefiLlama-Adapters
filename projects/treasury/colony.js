@@ -40,7 +40,7 @@ async function getValidatorData(nodeId) {
 
 async function tvl(api) {
   const validator = await getValidatorData(COLONY_NODE_ID)
-  if (validator === null) {
+  if (!validator) { // node no longer in the active validator set
     console.log("failed to fetch colony validator data")
     return api.getBalances()
   }

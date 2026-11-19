@@ -14,12 +14,9 @@ async function borrowed(api) {
     const debts = await api.multiCall({  abi: 'function debtInfo() external view returns (uint256, uint256, uint256, uint256)', calls: pools})
     const borrows = await api.multiCall({  abi: 'address:quoteTokenAddress', calls: pools})
     const borrowScale = await api.multiCall({  abi: 'uint:quoteTokenScale', calls: pools})
-    const balances = {}
-    pools.map((v, i) => sdk.util.sumSingleBalance(balances, borrows[i], debts[i][0]/borrowScale[i]))
-    return balances
+    pools.map((v, i) => api.add(borrows[i], debts[i][0]/borrowScale[i]))
   }
 
 module.exports = {
-  misrepresentedTokens: true,
   ethereum: { tvl, borrowed }
 }

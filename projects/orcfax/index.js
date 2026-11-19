@@ -1,12 +1,13 @@
 const axios = require('axios')
 const { getTxsMetadata, assetsAddresses, getAssets } = require('../helper/chain/cardano/blockfrost')
+const { getEnv } = require('../helper/env')
 
 
 // Modified /helper/chain/cardano/blockfrost getAddressUTXOs to limit to 1 page of UTXOs
 const axiosObj = axios.create({
     baseURL: 'https://cardano-mainnet.blockfrost.io/api/v0',
     headers: {
-        'project_id': 'mai' + 'nnetcxT8VaeCgVMzMTSe' + 'zZijWlVkyh6XytpS',
+        'project_id': getEnv('BLOCKFROST_PROJECT_ID'),
         'Content-Type': 'application/json'
     },
     timeout: 300000,

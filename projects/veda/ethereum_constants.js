@@ -65,7 +65,7 @@ const boringVaultsV0Ethereum = [
   },
   {
     name: "eBTC",
-    vault: "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642",
+    vault: ADDRESSES.ethereum.EBTC,
     accountant: "0x1b293DC39F94157fA0D1D36d7e0090C8B8B8c13F",
     teller: "0xe19a43B1b8af6CeE71749Af2332627338B3242D1",
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
@@ -92,7 +92,7 @@ const boringVaultsV0Ethereum = [
   },
   {
     name: "eUSD",
-    vault: "0x939778D83b46B456224A33Fb59630B11DEC56663",
+    vault: ADDRESSES.ethereum.EUSD,
     accountant: "0xEB440B36f61Bf62E0C54C622944545f159C3B790",
     teller: "0xA5C0bc543Ae9e522d0d8829191D759c0f0BcD098",
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
@@ -260,7 +260,34 @@ const boringVaultsV0Ethereum = [
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
     startBlock: 21882704,
     baseAsset: ADDRESSES.ethereum.WBTC,
-  }
+  },
+  {
+    name: "Plasma USD",
+    vault: "0xd1074E0AE85610dDBA0147e29eBe0D8E5873a000",
+    accountant: "0x737f2522d09E58a3Ea9dcCFDB127dD0dF5eB3F18",
+    teller: "0x4E7d2186eB8B75fBDcA867761636637E05BaeF1E",
+    lens: "0xC67Af7c42b64c2Bb5BdF20716cCFa995a07F6903",
+    startBlock: 22639318,
+    baseAsset: ADDRESSES.ethereum.USDT,
+  },
+  {
+    name: "Golden Goose",
+    vault: "0xef417FCE1883c6653E7dC6AF7c6F85CCDE84Aa09",
+    accountant: "0xc873F2b7b3BA0a7faA2B56e210E3B965f2b618f5",
+    teller: "0x0baAb6db8d694E1511992b504476ef4073fe614B",
+    lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
+    startBlock: 23231987,
+    baseAsset: ADDRESSES.ethereum.WETH,
+  },
+  {
+    name: "Sentora Advanced Yields ETH",
+    vault: "0xf15351A0d66743E09457C45EaE88dF34FcEe8CB7",
+    accountant: "0xE803d9283450189f168c825AC462dfe035345114",
+    teller: "0xc7bF176A0b782f594c8D7106E61bBcE705767c75",
+    lens: "0xA2c83e64990C6C53b76390678436d63d006534fB",
+    startBlock: 24250028,
+    baseAsset: ADDRESSES.ethereum.WETH,
+  },
 ];
 
 module.exports = {

@@ -1,3 +1,0 @@
-{
-  "depositVaultValues": "function depositVaultValues(address[] _vaults, bool _dp) view returns (uint256[] amounts, uint256[] values)"
-}

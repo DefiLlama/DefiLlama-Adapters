@@ -1,7 +1,7 @@
 const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const chainId = "5";
-const network = `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
+const network = `https://api.chainweb-community.org/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
 const GAS_PRICE = 0.00000001;
 const creationTime = () => Math.round(new Date().getTime() / 1000) - 10;
 
