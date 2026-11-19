@@ -3,7 +3,7 @@
 // The earlier Bitty lending markets are retired.
 //
 // TVL is what the vaults hold: every vault the factory has activated (one CREATE2 address per chain),
-// its native ETH plus the guard-listed assets, plus the receipt tokens of its protocol positions
+// its native coin (ETH, or BNB on BSC) plus the guard-listed assets, plus the receipt tokens of its protocol positions
 // (Aave aTokens, Lido stETH, Sky sUSDS). Those positions are also counted by the protocols
 // themselves, hence doublecounted. Bitty's own fee vault is protocol revenue, not deposits, and is
 // left out.
@@ -128,6 +128,47 @@ const config = {
       '0x5fc5360d0400a0fd4f2af552add042d716f1d168', // USDG
     ],
   },
+  bsc: {
+    fromBlock: 132700666,
+    tokens: [
+      '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', // WBNB
+      '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c', // BTCB
+      '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // ETH
+      // Tokenized stocks and ETFs (Ondo Global Markets)
+      '0x992879cd8ce0c312d98648875b5a8d6d042cbf34', // CRCL
+      '0xa9ee28c80f960b889dfbd1902055218cba016f75', // NVDA
+      '0x7313ea16493b2f55054df0131a3a14b043ec8992', // MSTR
+      '0x091fc7778e6932d4009b087b191d1ee3bac5729a', // GOOGL
+      '0x2494b603319d4d9f9715c9f4496d9e0364b59d93', // TSLA
+      '0x8b6acf6041a81567f012ff6a4c6d96d5818d74bf', // MU
+      '0x0cde6936d305d5b34667fc46425e852efd73559a', // QQQ
+      '0x390a684ef9cade28a7ad0dfa61ab1eb3842618c4', // AAPL
+      '0xa528caaa2f96090e379d43f90834c75df54d6e74', // INTC
+      '0x4553cfe1c09f37f38b12dc509f676964e392f8fc', // AMZN
+      '0xf8589b526fdd65f7f301c605a6e04f0f1b4b3620', // COIN
+      '0x6bfe75d1ad432050ea973c3a3dcd88f02e2444c3', // MSFT
+      '0x52ad57a7ea642e99a892afc79e937b383f1b59e9', // BMNR
+      '0x8b872732b07be325a8803cdb480d9d20b6f8d11b', // SLV
+      '0x6a708ead771238919d85930b5a0f10454e1c331a', // SPY
+      '0xd7df5863a3e742f0c767768cdfcb63f09e0422f6', // META
+      '0xc37042a7a4fa510d8884a433762ab87257b91965', // TSM
+      '0xd0a58bc9d88d3ff48c0294cb7e45937d0e41a928', // SPCX
+      '0x0ed2e3180edf393e6bf8db124bd15ddd54de150a', // AVGO
+      '0x9f16e46c73b43bdb70861247d537bee4ea18f639', // AMD
+      '0xfbd4d681c92ead6af0e49950c8b2e47eeacbb2db', // QCOM
+      '0x19601179a60f55ff6636f5d1a8b6671053bd60a8', // HOOD
+      '0x9351abd19f42101dd36025e495b98e910b255d78', // PLTR
+      // Stablecoins
+      '0x55d398326f99059ff775485246999027b3197955', // USDT
+      '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
+      // Position receipt tokens (Aave V3 BNB market)
+      '0x9b00a09492a626678e5a3009982191586c444df9', // aBnbWBNB
+      '0x56a7ddc4e848ebf43845854205ad71d5d5f72d3d', // aBnbBTCB
+      '0x2e94171493fabe316b6205f1585779c887771e2f', // aBnbETH
+      '0xa9251ca9de909cb71783723713b21e4233fbf1b1', // aBnbUSDT
+      '0x00901a076785e0906d1028c7d6372d247bec7d61', // aBnbUSDC
+    ],
+  },
 }
 
 async function tvl(api) {
@@ -138,7 +179,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Counts the native ETH and the tokens held by every Bitty vault the factory has activated, including the receipt tokens of positions a vault opened through Bitty (Aave aTokens, Lido stETH, Sky sUSDS). Bitty\'s own fee vault is excluded.',
+  methodology: 'Counts the native coin (ETH, or BNB on BNB Chain) and the tokens held by every Bitty vault the factory has activated, including the receipt tokens of positions a vault opened through Bitty (Aave aTokens, Lido stETH, Sky sUSDS). Bitty\'s own fee vault is excluded.',
   doublecounted: true,
 }
 
