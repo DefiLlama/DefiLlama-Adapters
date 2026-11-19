@@ -1205,4 +1205,18 @@ module.exports = {
       ]
     }
   },
+  "defiance": {
+    "methodology": "TVL is the USDG held by the Defiance House, LP vault and redemption queue on Robinhood Chain: trader balances and open stakes in the House, plus the LP capital the vault has funded into the House to back trades.",
+    "start": "2026-10-24", // V2 contracts deployed at block 97066927
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0x84fa704f41bdeedc2090fc0a21c4e5cca860c997", // DefianceHouse: trader cash, open stakes, LP capital funded from the vault
+          "0xf1e165d50fe333eb41c9e72947d9ffb233d4d069", // DefianceVault (dUSDG, ERC-4626): idle LP cash
+          "0x42c36ffa2df0bcbad5297a497a23a0df3dc1c242", // DefianceRedemptionQueue: cash set aside for LP exits
+        ],
+        "tokens": [ADDRESSES.robinhood.USDG],
+      },
+    },
+  },
 }
