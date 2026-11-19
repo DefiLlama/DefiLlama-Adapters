@@ -2,14 +2,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens');
-const { getTridentTVL } = require('../helper/sushi-trident')
 const sdk = require('@defillama/sdk')
-
-const CHAIN = 'avax'
 
 // --- FACTORIES / CONTRACTS ---
 const LEGACY_PUMPSPACE_V2_FACTORY   = '0x26B42c208D8a9d8737A2E5c9C57F4481484d4616' // V2
-const ALLBLUE_V3_FACTORY        = '0xE749c1cA2EA4f930d1283ad780AdE28625037CeD' // V3/Trident
 const ALLBLUE_V2_FACTORY   = '0x6FEa5651FaC99b854A961dbB41380AdB9F8F9a8b' // V2
 
 // If you later expose staking for other MasterChefs, add here
@@ -44,7 +40,7 @@ const TOKENS = {
 module.exports = {
   misrepresentedTokens: true,
   methodology: `
-  TVL is computed by summing liquidity reserves across the legacy PumpSpace V2 deployment, the current AllBlue V2 deployment, and AllBlue V3 (Trident) on Avalanche.
+  TVL is computed by summing liquidity reserves across the legacy PumpSpace V2 deployment and the current AllBlue V2 deployment on Avalanche. AllBlue V3 is tracked separately in projects/allblue-v3.
   Legacy PumpSpace contracts remain included as part of the migration to AllBlue.
   The staking bucket includes supported tokens deposited in both legacy PumpSpace and current AllBlue MasterChef contracts.
   `,
@@ -54,7 +50,6 @@ module.exports = {
       // v3FactoryTVL,
       getUniTVL({ factory: LEGACY_PUMPSPACE_V2_FACTORY, useDefaultCoreAssets: true }),
       getUniTVL({ factory: ALLBLUE_V2_FACTORY,useDefaultCoreAssets: true }),
-      getTridentTVL({ chain: CHAIN, factory:ALLBLUE_V3_FACTORY }),
     ]),
     staking: staking(
       MASTERCHEFS, 

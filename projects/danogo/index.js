@@ -1,8 +1,10 @@
-const { PromisePool } = require('@supercharge/promise-pool');
-const { get } = require('../helper/http');
+const { get, post } = require('../helper/http');
 
 const DANOGO_GATEWAY_ENDPOINT = 'https://danogo-gateway.api.danogo.io/api/v1'
-const KUPO_ENDPOINT = 'https://kupo.danogo.io/matches'
+const KOIOS_CREDENTIAL_UTXOS = 'https://api.koios.rest/api/v1/credential_utxos'
+// koios serves at most 1000 rows per response
+const KOIOS_PAGE_ROWS = 1000;
+const KOIOS_MAX_PAGES = 20;
 const DECODED_PREFIX_LENGTH = 2;
 const PAYMENT_CREDENTIAL_LENGTH = 56;
 const REQUEST_TIMEOUT = 30000;
@@ -85,16 +87,22 @@ const bech32AddressToPaymentCredential = (address) => {
 };
 
 const fetchSmartContractAddresses = async () => {
-  const { data: { addresses } } = await getWithRetry(`${DANOGO_GATEWAY_ENDPOINT}/smartcontract-addresses`);
+  const { data: { addresses } } = await withRetry(() => get(`${DANOGO_GATEWAY_ENDPOINT}/smartcontract-addresses`, { timeout: REQUEST_TIMEOUT }));
   // the enterprise and base forms of one script share a payment credential, dedupe so utxos are counted once
-  return [...new Set(addresses.map(bech32AddressToPaymentCredential))];
+  const paymentCredentials = [...new Set(addresses.map(bech32AddressToPaymentCredential))];
+  // an empty list would store a zero tvl
+  if (!paymentCredentials.length) throw new Error('danogo gateway returned no smart contract addresses');
+  paymentCredentials.forEach((credential) => {
+    if (!/^[0-9a-f]+$/.test(credential) || credential.length !== PAYMENT_CREDENTIAL_LENGTH) throw new Error(`invalid payment credential ${credential}`);
+  });
+  return paymentCredentials;
 }
 
-// kupo drops tls handshakes now and then, a dropped read would zero out the whole adapter
-const getWithRetry = async (url, attempts = 4) => {
+// a single dropped read fails the whole run, so transient errors get retried
+const withRetry = async (request, attempts = 4) => {
   for (let i = 1; ; i++) {
     try {
-      return await get(url, { timeout: REQUEST_TIMEOUT });
+      return await request();
     } catch (e) {
       if (i >= attempts) throw e;
       await new Promise((resolve) => setTimeout(resolve, 400 * i));
@@ -102,28 +110,37 @@ const getWithRetry = async (url, attempts = 4) => {
   }
 }
 
-const fetchSmartContractUTXOs = async (paymentCredential) => {
-  return getWithRetry(`${KUPO_ENDPOINT}/${paymentCredential}/*?unspent`);
+// koios matches the payment credential, so utxos at every stake-key variant of a script are included
+const fetchSmartContractUTXOs = async (paymentCredentials) => {
+  const utxos = new Map();
+  let offset = 0;
+  for (let page = 0; page < KOIOS_MAX_PAGES; page++) {
+    const url = `${KOIOS_CREDENTIAL_UTXOS}?select=tx_hash,tx_index,value,asset_list,is_spent&order=tx_hash.asc,tx_index.asc&offset=${offset}&limit=${KOIOS_PAGE_ROWS}`;
+    const rows = await withRetry(() => post(url, { _payment_credentials: paymentCredentials, _extended: true }, { timeout: REQUEST_TIMEOUT }));
+    if (!Array.isArray(rows) || rows.length > KOIOS_PAGE_ROWS) throw new Error('unexpected koios credential_utxos page');
+    // stop on an empty page, not a short one, so a lower server row cap cannot truncate the set
+    if (!rows.length) return [...utxos.values()];
+    rows.forEach((utxo) => {
+      if (utxo.is_spent) throw new Error(`koios returned spent utxo ${utxo.tx_hash}#${utxo.tx_index}`);
+      // keyed by outpoint, so a utxo shifted across a page boundary is counted once
+      utxos.set(`${utxo.tx_hash}#${utxo.tx_index}`, utxo);
+    });
+    offset += rows.length;
+  }
+  throw new Error(`danogo utxos exceed ${KOIOS_MAX_PAGES} koios pages`);
 }
 
 async function tvl(api) {
   const paymentCredentials = await fetchSmartContractAddresses();
+  const utxos = await fetchSmartContractUTXOs(paymentCredentials);
 
-  // kupo drops parallel connections, so the utxo reads have to stay sequential
-  const { results, errors } = await PromisePool
-    .withConcurrency(1)
-    .for(paymentCredentials)
-    .process(fetchSmartContractUTXOs);
+  utxos.forEach((utxo) => {
+    api.add('lovelace', utxo.value);
 
-  if (errors.length) throw errors[0];
-
-  results.flat().forEach((utxo) => {
-    api.add('lovelace', utxo.value.coins);
-
-    Object.entries(utxo.value.assets ?? {}).forEach(([asset, quantity]) => {
+    (utxo.asset_list ?? []).forEach(({ policy_id, asset_name, quantity }) => {
       if (+quantity < MIN_ASSET_QUANTITY) return;
-      // kupo returns `policyId.assetNameHex`, defillama prices the concatenated unit
-      const unit = asset.replace('.', '');
+      // defillama prices the concatenated `policyId + assetNameHex` unit
+      const unit = policy_id + (asset_name ?? '');
       const bridged = BRIDGED_TOKENS[unit];
       if (bridged) api.add(bridged.coingeckoId, quantity / 10 ** bridged.decimals, { skipChain: true });
       else api.add(unit, quantity);
@@ -133,7 +150,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Sums the ADA and native assets sitting in the unspent utxos of Danogo smart contracts. Contract addresses come from the Danogo gateway, utxos are read from Kupo by payment credential, and every asset is priced by DefiLlama.',
+  methodology: 'Sums the ADA and native assets sitting in the unspent utxos of Danogo smart contracts. Contract addresses come from the Danogo gateway, utxos are read from Koios by payment credential, and every asset is priced by DefiLlama.',
   cardano: {
     tvl
   },

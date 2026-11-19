@@ -41,6 +41,13 @@ function masterchefExportFn(chainConfigs, options = {}) {
     const helperConfig = { ...config }
     for (const key of chainExportKeys) delete helperConfig[key]
 
+    // A chain may carry only staking/pool2 (no masterchef): emit an empty tvl so
+    // buildProtocolExports can still attach its buckets.
+    if (!helperConfig.masterchef) {
+      result[chain] = { tvl: () => ({}) }
+      return
+    }
+
     if (helperType === 'old') {
       const {
         masterchef,
@@ -820,6 +827,15 @@ const configs = {
       { masterchef: '0xbEa60d145747a66CF27456ef136B3976322b7e77', nativeTokens: ['0x2A17Dc11a1828725cdB318E0036ACF12727d27a2', '0xedeCfB4801C04F3EB394b89397c6Aafa4ADDa15B'] },
       { masterchef: '0x3e91B21ddE13008Aa73f07BdE26970322Fe5D533', nativeTokens: ['0x2A17Dc11a1828725cdB318E0036ACF12727d27a2', '0xedeCfB4801C04F3EB394b89397c6Aafa4ADDa15B'] },
     ],
+  },
+  'GajFinance': {
+    // original spread masterChefExports after its own methodology, so the helper default won
+    _options: { helperType: 'old' },
+    polygon: { masterchef: '0xb03f95e649724df6ba575c2c6ef062766a7fdb51', stakingToken: '0xf4b0903774532aee5ee567c02aab681a81539e92' },
+    avax: {
+      // GAJ-AVAX token locked in the NFT farm
+      staking: { __sumTokens: { tokensAndOwners: [['0x595c8481c48894771CE8FaDE54ac6Bf59093F9E8', '0x65096f7dB56fC27C7646f0aBb6F9bC0CEA2d8765']] } },
+    },
   },
 }
 

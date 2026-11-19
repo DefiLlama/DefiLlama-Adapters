@@ -1,9 +1,11 @@
-const { getResource, } = require("../helper/chain/aptos");
+const { getResource, getResources, } = require("../helper/chain/aptos");
 const http = require("../helper/http");
 
-const aptosLendingContract = "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba";
-const movementLendingContract = "0x6a01d5761d43a5b5a0ccbfc42edf2d02c0611464aae99a2ea0e0d4819f0550b5";
-const echelonChainLendingContract = "0xedcdbb4c459064293924e0e96e01d5927faa11fd38d331111d99d23f14f6ed7d";
+const lendingContracts = {
+  aptos: "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba",
+  move: "0x6a01d5761d43a5b5a0ccbfc42edf2d02c0611464aae99a2ea0e0d4819f0550b5",
+  echelon_initia: "0xedcdbb4c459064293924e0e96e01d5927faa11fd38d331111d99d23f14f6ed7d",
+}
 const coinAssetType = '300';
 
 const echelonRESTEndpoint = "https://rest-echelon-1.anvil.asia-southeast.initia.xyz";
@@ -23,42 +25,57 @@ async function _getResource(account, key, chain) {
 }
 
 async function getMarketAddresses(network) {
-  let lendingAddress;
-  switch (network) {
-    case 'aptos':
-      lendingAddress = aptosLendingContract;
-      break;
-    case 'move':
-      lendingAddress = movementLendingContract;
-      break;
-    default:
-      lendingAddress = echelonChainLendingContract;
-  }
+  const lendingAddress = lendingContracts[network];
   const lending = await _getResource(lendingAddress, `${lendingAddress}::lending::Lending`, network);
   return lending.market_objects.map(obj => obj.inner);
 }
 
-async function getMarket(network, marketAddress) {
-  let lendingAddress;
-  switch (network) {
-    case 'aptos':
-      lendingAddress = aptosLendingContract;
-      break;
-    case 'move':
-      lendingAddress = movementLendingContract;
-      break;
-    default:
-      lendingAddress = echelonChainLendingContract;
-  }
+// every market resource we need lives on the market object, so on aptos/move one
+// `resources` call per market replaces the 2-3 by-type lookups
+function parseMarket(lendingAddress, resources) {
+  const byType = {}
+  resources.forEach(({ type, data }) => byType[type] = data)
+  const market = byType[`${lendingAddress}::lending::Market`]
+  if (!market) throw new Error('Market resource missing')
+  const coin = market.asset_type === coinAssetType
+    ? byType[`${lendingAddress}::lending::CoinInfo`].type_name
+    : byType[`${lendingAddress}::lending::FungibleAssetInfo`].metadata.inner
+  return { cash: market.total_cash, liability: market.total_liability, fee: market.total_reserve, coin };
+}
+
+async function getMarketInitia(network, marketAddress) {
+  const lendingAddress = lendingContracts[network];
   const market = await _getResource(marketAddress, `${lendingAddress}::lending::Market`, network)
-  var coinInfo = null;
-  if (market.asset_type === coinAssetType) {
-    coinInfo = (await _getResource(marketAddress, `${lendingAddress}::lending::CoinInfo`, network)).type_name
-  } else {
-    coinInfo = (await _getResource(marketAddress, `${lendingAddress}::lending::FungibleAssetInfo`, network)).metadata.inner; 
+  const coin = market.asset_type === coinAssetType
+    ? (await _getResource(marketAddress, `${lendingAddress}::lending::CoinInfo`, network)).type_name
+    : (await _getResource(marketAddress, `${lendingAddress}::lending::FungibleAssetInfo`, network)).metadata.inner
+  return { cash: market.total_cash, liability: market.total_liability, fee: market.total_reserve, coin };
+}
+
+// tvl and borrowed read the same markets, so fetch them once per chain and share
+// the result between the two exports of the same run
+const MARKETS_TTL_MS = 5 * 60 * 1000
+const marketsCache = {}
+
+function getMarkets(network) {
+  const cached = marketsCache[network]
+  if (cached && Date.now() - cached.at < MARKETS_TTL_MS) return cached.promise
+  const promise = _getMarkets(network).catch(e => { delete marketsCache[network]; throw e })
+  marketsCache[network] = { at: Date.now(), promise }
+  return promise
+}
+
+async function _getMarkets(network) {
+  const lendingAddress = lendingContracts[network];
+  const marketAddresses = await getMarketAddresses(network);
+  const markets = []
+  for (const marketAddress of marketAddresses) {
+    if (network === 'aptos' || network === 'move')
+      markets.push(parseMarket(lendingAddress, await getResources(marketAddress, network)))
+    else
+      markets.push(await getMarketInitia(network, marketAddress))
   }
-  
-  return { cash: market.total_cash, liability: market.total_liability, fee: market.total_reserve, coin: coinInfo };
+  return markets
 }
 
 module.exports = {
@@ -71,16 +88,14 @@ module.exports = {
 };
 
 async function tvl(api) {
-  const marketAddresses = await getMarketAddresses(api.chain);
-  const markets = await Promise.all(marketAddresses.map(marketAddress => getMarket(api.chain, marketAddress)));
+  const markets = await getMarkets(api.chain);
   markets.forEach(({ cash, coin }) => {
     api.add(coin, cash);
   });
 }
 
 async function borrowed(api) {
-  const marketAddresses = await getMarketAddresses(api.chain);
-  const markets = await Promise.all(marketAddresses.map(marketAddress => getMarket(api.chain, marketAddress)));
+  const markets = await getMarkets(api.chain);
   markets.forEach(({ liability, coin }) => {
     api.add(coin, liability)
   });

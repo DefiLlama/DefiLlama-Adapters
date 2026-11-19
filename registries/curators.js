@@ -6,7 +6,7 @@ const { getCuratorExport } = require('../projects/helper/curators')
 const configs = {
   "kamui": {
     config: {
-      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced and Boosted vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. Also counted under Lagoon.',
+      methodology: 'Counts the assets (totalAssets) held by the Kamui Stable, Balanced, Boosted and kGear vaults, ERC-4626 (ERC-7540) vaults on Lagoon infrastructure curated by Kamui. kGear is counted net of its Gearbox debt. Also counted under Lagoon.',
       start: '2026-08-27', // vaults redeployed through the Lagoon OptinProxyFactory
       blockchains: {
         ethereum: {
@@ -14,6 +14,7 @@ const configs = {
             '0xcDA323c2DF692d989B24BA51D0aCCa924cf9a344', // Lagoon: Kamui Stable Vault (USDst)
             '0xA5AE405242f42C47996a0C6857ff10a77F9bdeE6', // Lagoon: Kamui Balanced Vault (USDbl)
             '0x9E0DB8F43bb91e2148B0Db920E21370525CF3Aab', // Lagoon: Kamui Boosted Vault (USDbt)
+            '0xe9Fc51dF9168361c9cF00383C644Ae9dcF2aD6b0', // Lagoon: Kamui kGear (leveraged, Gearbox)
           ],
         },
       }
@@ -415,6 +416,7 @@ const configs = {
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
             '0x829A13850b684A575C0580a83322890e19c5eFaa',
             '0x40DdCcAC38E4F6f2cB802c09F0a08f39d3dCb48F', // Morpho V2 Noon Ecosystem Vault: owner at creation
+            '0xf9AC70A7D10F92e6Cc6d98837e0D9656C1eC459F', // Morpho V2 Solana and Tokenized Stocks vaults: owner at creation
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
@@ -478,6 +480,12 @@ const configs = {
         arbitrum: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0xf9AC70A7D10F92e6Cc6d98837e0D9656C1eC459F', // Morpho V2 Core USDG: owner at creation
+          ],
+        },
+        arc: {
+          morpho: [
+            '0xd45C268Ef9850a00D51d7c05C0aF17fdAd309060', // Morpho V2 Clearstar Core USDC
           ],
         },
         hemi: {
@@ -1174,6 +1182,20 @@ const configs = {
       }
     },
   },
+  "sigma-labs": {
+    config: {
+      methodology: 'Counts the settled NAV (totalAssets) of the Lagoon vaults curated by σ-Labs on Ethereum: Cross-chain USDC Lending (sigmaUSDC), stETH Redemption Carry (rcETH) and Stablecoin Market Making (sigmaLPP). sigmaUSDC lends part of its USDC on other chains and its whole NAV is counted on Ethereum, where the vault lives. Also counted under Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xF02030AB0d7385CE4CC2f7F64b7B44430fB44c89', // Lagoon: Cross-chain USDC Lending (sigmaUSDC)
+            '0x2746f31096f23670Caf4043f8b30D8D02405a257', // Lagoon: stETH Redemption Carry (rcETH)
+            '0x8595f5eE036e1F7C4f3ca66327Ba5f38C21cb7Fb', // Lagoon: Stablecoin Market Making (sigmaLPP)
+          ],
+        },
+      },
+    },
+  },
   "singularv": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by singularV.',
@@ -1492,11 +1514,18 @@ const configs = {
             '0x7054b25D47b9342dA3517AD41A4BD083De8D3f70',
             '0x7d07BFdd01422D7b655B333157eB551B9712dCd8',
           ],
+          excludedVaults: [
+            '0x138c289Bb8b855CF271305C8bcf91DC31Ba30194', // Stream xUSD, collapsed Nov 2025
+          ],
         },
         ethereum: {
           eulerVaultOwners: [
             '0x7054b25D47b9342dA3517AD41A4BD083De8D3f70',
             '0x7d07BFdd01422D7b655B333157eB551B9712dCd8',
+          ],
+          excludedVaults: [
+            '0xf1BA8c5Ca5aB011d06f31e64DaD313d204aCb9Eb', // Stream xUSD, price flaps 1.27 / 0.01
+            '0x0f080Bf8Ba818001EcfB2f461708D8484323D0cE', // PT-xUSD-18DEC2025
           ],
         }
       }
@@ -1554,6 +1583,8 @@ const configs = {
             "0xb09f761cb13baca8ec087ac476647361b6314f98", // Lagoon: Flagship cbBTC
             "0x7a12D4B719F5aA479eCD60dEfED909fb2A37e428", // Lagoon: RockSolid Looped ETH Vault
             "0xce0b790ae0d8cf91e01f3fb69025e14569b574f3", // Lagoon: Tulipa USDC
+            "0xaa1d6fa2bc21d5518dcbb0fa37e07b44c9899d26", // Ember: Tulipa Multi-Asset RWA (tulPRWA)
+            "0xbfda6fb6e61bdeb2a2ce3befebbd4939d0d828aa", // Ember: Enigma ONE USD, co-managed with Hilbert
           ],
         },
         berachain: {
@@ -1591,6 +1622,7 @@ const configs = {
         base: {
           erc4626: [
             "0x61a8606e04d350dfa1d1aaa68b37260746ae47d4", // Creditcoop: Tulipa Credit Vault
+            "0x9c2dcdbdb3f0a0f628d1112bbcabd9ae75353df3", // Ember: Syntetika BTC Hilbert Basis+ (hBTC), co-managed with Hilbert
           ]
         }
       }
@@ -1784,7 +1816,39 @@ const configs = {
         },
       }
     }
-  }
+  },
+  "hedgehood-share-lending": {
+    config: {
+      methodology: 'Counts USDG deposited in the HedgeHood-curated Morpho Vault V2 (hhUSDG), including assets lent against Stock Yield fund shares. Uses the standard curator accounting and is marked doublecounted because the vault supplies Morpho Blue. Pledged fund shares and their underlying assets are excluded.',
+      start: 1793674144, // 2026-11-03 02:49:04 UTC, block 104721572: vault moved to the v2.1 market
+      blockchains: {
+        robinhood: {
+          // EOA-deployed and transferred to the HedgeHood Safe; owner discovery would miss it.
+          morpho: ['0x54Bc097643BB9fd4ab004f11859893655529E954'], // hhUSDG
+        },
+      },
+    },
+  },
+  "navi-curator": {
+    config: {
+      methodology: "Counts total_assets of the NAVI vaults on Sui (USDC and SUI, Prime and High Yield), found on-chain by their navi_vault::Vault type, and totalAssets() of the Lagoon vaults curated by NAVI Protocol on Ethereum. The NAVI vaults supply into NAVI lending markets, and Lagoon deposits are bridged to Sui and supplied through NAVI vaults, so they are also counted under NAVI Lending and Lagoon.",
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x47491305479635357df29fe0cb6f1af10e51d4da', // Lagoon: USDC High Yield (nUSDC)
+          ],
+        },
+        sui: {
+          naviVaultPackages: [
+            '0x51cecaacaed0bd436f04ebbd8ba0ca1627c9c4d0e54ad28eff095ca78591518c', // navi_vault original package
+          ],
+        },
+      },
+    },
+    _meta: {
+      timetravel: false, // sui vaults are read at their latest state
+    },
+  },
 }
 
 const allProtocols = {}

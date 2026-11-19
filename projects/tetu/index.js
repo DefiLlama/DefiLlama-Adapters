@@ -93,32 +93,23 @@ Object.keys(config).forEach(chain => {
       // * ############### veTETU
       let veTETU_USDC = 0;
       if (veTETU) {
-        for (let i = 0; i < 100; i++) {
-          let token = '';
-          try {
-            token = (await api.call({ abi: abi.veTokens, target: veTETU, params: i, }));
-          } catch (e) {
-            // assume that tokens ended
-            // we don't have length for tokens so this workaround
-            break;
-          }
+        // we don't have length for tokens so probe the first 100 indexes, tokens end at the first failure
+        const probed = await api.multiCall({ abi: abi.veTokens, target: veTETU, calls: [...Array(100).keys()], permitFailure: true, })
+        const firstMissing = probed.findIndex(i => !i)
+        const veTokens = firstMissing === -1 ? probed : probed.slice(0, firstMissing)
+        const amounts = await api.multiCall({ abi: abi.balanceOf, calls: veTokens.map(token => ({ target: token, params: veTETU })), })
+        const prices = await api.multiCall({ abi: abi.getPrice, target: contract_Reader, calls: veTokens, })
 
-          const amount = (await api.call({ abi: abi.balanceOf, target: token, params: veTETU, }));
-          const price = (await api.call({ abi: abi.getPrice, target: contract_Reader, params: token, }));
-
-          // assume all tokens inside with decimal 18
-          // if not need addtionial call with decimals
-          veTETU_USDC += amount * price / 1e36;
-        }
+        // assume all tokens inside with decimal 18
+        // if not need addtionial call with decimals
+        veTokens.forEach((_, i) => veTETU_USDC += amounts[i] * prices[i] / 1e36)
       }
 
       // * ############### TOTALS
 
       let total = veTETU_USDC
-      for (const vault of vaultsCall) {
-        const usdcs = await api.call({ target: contract_Reader, abi: abi.totalTvlUsdc, params: [[vault]], })
-        total += usdcs / 1e18
-      }
+      const vaultUsdcs = await api.multiCall({ target: contract_Reader, abi: abi.totalTvlUsdc, calls: vaultsCall.map(vault => ({ params: [[vault]] })), })
+      vaultUsdcs.forEach(usdcs => total += usdcs / 1e18)
 
       usdcsV2.forEach(i => total += i / 1e18)
       return {

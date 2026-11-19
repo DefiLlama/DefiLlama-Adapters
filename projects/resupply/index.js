@@ -38,6 +38,8 @@ async function stakingTvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
+  methodology: 'Collateral is Curve LlamaLend and Fraxlend vault shares, valued in their underlying crvUSD and frxUSD. Those protocols also count these deposits.',
   start: '2025-03-15',
   ethereum: {
     tvl,

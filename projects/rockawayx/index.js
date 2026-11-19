@@ -40,9 +40,13 @@ const LISTA_VAULTS = {
   ],
 };
 
+// fromBlock: strategy deployment block
 const ACCOUNTABLE_VAULTS = {
   ethereum: [
-    '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', // Accountable USDC yield strategy
+    { strategy: '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', fromBlock: 25143624 }, // Accountable USDC yield strategy
+  ],
+  monad: [
+    { strategy: '0x945dc31B38C811A0188b5b30cF1EA7721666cF7c', fromBlock: 89634915 }, // Tori Ecosystem Monad (metrUSD)
   ],
 };
 
@@ -62,7 +66,8 @@ const configs = {
         '0x93e0F9d502eEfce8D34924ab3478C7EA0CBC5a2E',
         '0x9C57E02bC31e7e463f439353D97bd8f42F5a7F9c',
         '0xD6d4b804014EF27836dBe9f8f6Bf6c71251548Ec',
-        '0xc207d3f66537D7F66456808379A0E560cF20Da36'
+        '0xc207d3f66537D7F66456808379A0E560cF20Da36',
+        '0x195B3a57dd0480534c84A5607a52a92304fA81f2'
       ],
       upshiftV2: [
         '0xcd69123b3FBBfC666E1f6a501da27B564C00De54', // Upshift Tori
@@ -94,6 +99,7 @@ const configs = {
     pharos: {
       morpho: [
         '0x047cd0a91e9b92ed979189a6c8a120bf280f02e5', // RockawayX USDC (roxUSDC)
+        '0x1275671ccbff43d9a0676f70c22d99a9328a5842', // RockawayX Reservoir Ecosystem
       ],
     },
     solana: {
@@ -111,7 +117,8 @@ const configs = {
     },
     monad: {
       morpho: [
-        '0xA2fa4CeD4E2d448D084f5a15011b3564922119d6'
+        '0xA2fa4CeD4E2d448D084f5a15011b3564922119d6',
+        '0xBD6d56b5b1b535B92D4A0A8C0a9e6Cfd9b545167'
       ],
       midasTokens: [
         '0x6CF55183eA297ba200Cf88419Bba156EBA2Ed206'
@@ -142,14 +149,18 @@ for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
   };
 }
 
-async function accountableTvl(api, strategies) {
-  // Accountable yield strategies report their NAV (deployed + idle assets) via lastTotalAssets
-  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies, permitFailure: true });
-  const totalAssets = await api.multiCall({ abi: 'uint256:lastTotalAssets', calls: strategies, permitFailure: true });
-  for (let i = 0; i < strategies.length; i++) {
-    if (!assets[i] || totalAssets[i] === null || totalAssets[i] === undefined) continue;
-    api.add(assets[i], totalAssets[i]);
-  }
+async function accountableTvl(api, entries) {
+  // the calls below revert before deployment, which would fail the chain's other TVL sources on historical runs
+  const strategies = entries.filter(({ fromBlock }) => !api.block || api.block >= fromBlock).map(({ strategy }) => strategy);
+  if (!strategies.length) return;
+
+  // NAV = assets deployed by the strategy + idle assets held by its vault, which matches the vault share price.
+  // lastTotalAssets is not the NAV: it lags and reads 0 on some strategies.
+  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies });
+  const vaults = await api.multiCall({ abi: 'address:vault', calls: strategies });
+  const deployed = await api.multiCall({ abi: 'uint256:deployedAssets', calls: strategies });
+  api.add(assets, deployed);
+  await api.sumTokens({ tokensAndOwners: assets.map((asset, i) => [asset, vaults[i]]) });
 }
 
 for (const [chain, vaults] of Object.entries(ACCOUNTABLE_VAULTS)) {

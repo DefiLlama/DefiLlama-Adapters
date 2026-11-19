@@ -1,5 +1,5 @@
 const { PublicKey } = require("@solana/web3.js");
-const { getConnection, sumTokens2 } = require("../helper/solana");
+const { getConnection, sumTokens2, getMultipleAccounts } = require("../helper/solana");
 
 const PROGRAM_ID = "gLHaGJsZ6G7AXZxoDL9EsSWkRbKAWhFHi73gVfNXuzK";
 const TOKEN_2022_PROGRAM = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
@@ -30,24 +30,38 @@ async function unwrapRaydiumLP(lpMint, lpBalance) {
   };
 }
 
-async function getVaultData() {
+// tvl and staking both need the same scan, so it runs once per process
+let vaultDataPromise;
+function getVaultData() {
+  if (!vaultDataPromise) vaultDataPromise = fetchVaultData();
+  return vaultDataPromise;
+}
+
+async function fetchVaultData() {
   const connection = getConnection();
-  
+
+  // only the token mint (40-72) and the staking vault (80-112) are read
   const accounts = await connection.getProgramAccounts(
     new PublicKey(PROGRAM_ID),
-    { filters: [{ dataSize: 379 }] }
+    {
+      filters: [{ dataSize: 379 }],
+      dataSlice: { offset: TOKEN_MINT_OFFSET, length: STAKING_VAULT_OFFSET + 32 - TOKEN_MINT_OFFSET },
+    }
   );
-  
+
   const sptVaults = { spl: [], token2022: [] };
   const otherVaults = { spl: [], token2022: [] };
   const lpTokens = [];
-  
-  for (const { account } of accounts) {
-    const data = account.data;
-    const tokenMint = new PublicKey(data.slice(TOKEN_MINT_OFFSET, TOKEN_MINT_OFFSET + 32));
-    const stakingVault = new PublicKey(data.slice(STAKING_VAULT_OFFSET, STAKING_VAULT_OFFSET + 32));
-    
-    const vaultInfo = await connection.getAccountInfo(stakingVault);
+
+  const pools = accounts.map(({ account: { data } }) => ({
+    tokenMint: new PublicKey(data.slice(0, 32)),
+    stakingVault: new PublicKey(data.slice(STAKING_VAULT_OFFSET - TOKEN_MINT_OFFSET, STAKING_VAULT_OFFSET - TOKEN_MINT_OFFSET + 32)),
+  }));
+  // one batched read for every vault instead of a getAccountInfo per pool
+  const vaultInfos = await getMultipleAccounts(pools.map(p => p.stakingVault));
+
+  for (const [i, { tokenMint, stakingVault }] of pools.entries()) {
+    const vaultInfo = vaultInfos[i];
     if (!vaultInfo) continue;
 
     const balance = Number(vaultInfo.data.readBigUInt64LE(64));

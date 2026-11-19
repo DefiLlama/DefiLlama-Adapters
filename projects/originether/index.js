@@ -49,7 +49,10 @@ const ethTvl = async (api) => {
 
 async function baseTvl(api) {
   const vault = '0x98a0CbeF61bD2D21435f433bE4CD42B56B38CC93'
-  const woethStrategy = '0x80c864704dd06c3693ed5179190786ee38acf835'
+  const woethStrategies = [
+  '0x80c864704dd06c3693ed5179190786ee38acf835', // Legacy
+  '0xa03360b3f6d902f1b3334c0adbd5c6995d3513fe',
+]
   const curveAMO = '0x9cfcAF81600155e01c63e4D2993A8A81A8205829'
   const aeroAMO = '0xF611cC500eEE7E4e4763A05FE623E2363c86d2Af'
   const curveGauge = '0x9da8420dbeebdfc4902b356017610259ef7eedd8'
@@ -62,7 +65,7 @@ async function baseTvl(api) {
   api.add(ADDRESSES.base.WETH, vaultBalance)
 
   for (const strategy of strategies) {
-    if (strategy.toLowerCase() === woethStrategy.toLowerCase()) continue
+    if (woethStrategies.includes(strategy.toLowerCase())) continue
     if (strategy.toLowerCase() === curveAMO.toLowerCase()) {
       // only count WETH side: our share of gauge, gauge's share of pool, pool WETH balance
       const ourGaugeBal = await api.call({ abi: 'erc20:balanceOf', target: curveGauge, params: curveAMO })

@@ -82,6 +82,7 @@ const configs = {
   },
   'ramses-dlmm': {
     robinhood: '0xdcD5F77697914E27f56FD263EF82923C8524AbAc',
+    elysium: '0xF31632C73B8775e45Ce6d2539dEb008cB766D51b',
   },
   'hoodit': {
     robinhood: '0x22602d966DeFd638ee94E97A92e2Eb0934c3fE1B',

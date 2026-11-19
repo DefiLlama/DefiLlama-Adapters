@@ -13,6 +13,11 @@ const abi = {
   getPreReshufflingSnapshot: "uint256:getPreReshufflingSnapshot",
   notion: "address:notion",
   decimals: "uint8:decimals",
+  logic: "address:logic",
+  getDefiisFor: "function getDefiisFor(address owner) view returns (address[])",
+  getOpsFor: "function getOpsFor(address owner) view returns (address[])",
+  getWhitelistedTokens: "function getWhitelistedTokens() view returns (address[])",
+  underlyingTokensBalances: "function underlyingTokensBalances(address defii) view returns (address[] tokens, uint256[] amounts)",
 };
 
 
@@ -23,11 +28,34 @@ const vaults = {
   },
 };
 
+// Chain -> Institutional Private Vaults: the SelfManagedFactory and the account whose positions it tracks
+const privateVaults = {
+  ethereum: [
+    { factory: "0x3FaD5aFBA6e3169C9c688aaC3Ba77200c5168378", account: "0x8FcC3aAc6b16dC821B7E4A2841b2Db3a9c999B4C" },
+  ],
+};
+
 const chainNamesById = Object.fromEntries(
   Object.entries(sdk.providerListJSON ?? {})
     .filter(([, { chainId }]) => chainId)
     .map(([name, { chainId }]) => [chainId, name])
 );
+
+function getChainApi(api, chainId) {
+  if (chainId === Number(api.chainId)) return api;
+  const chain = chainNamesById[chainId];
+  if (!chain) throw new Error(`Unknown chainId ${chainId}`);
+  return new sdk.ChainApi({ chain, timestamp: api.timestamp });
+}
+
+// Adds an 18-decimal value as an amount of `token`
+async function addNav(api, token, nav) {
+  const decimals = BigInt(await api.call({ target: token, abi: abi.decimals }));
+  const amount = decimals < NAV_DECIMALS
+    ? nav / 10n ** (NAV_DECIMALS - decimals)
+    : nav * 10n ** (decimals - NAV_DECIMALS);
+  api.add(token, amount);
+}
 
 async function getVaultNav(api, vault, tvlReporter) {
   const [containersRes, isReshuffling] = await Promise.all([
@@ -57,44 +85,49 @@ async function getVaultNav(api, vault, tvlReporter) {
   }
 
   const navAbi = isReshuffling ? abi.getPreReshufflingSnapshot : abi.getStrategiesNav;
-  const navs = await Promise.all([...chainIds].map((chainId) => {
-    if (chainId === Number(api.chainId)) {
-      return api.call({ target: tvlReporter, abi: navAbi });
-    }
-
-    const chain = chainNamesById[chainId];
-    if (!chain) throw new Error(`Unknown chainId ${chainId}`);
-    const chainApi = new sdk.ChainApi({ chain, timestamp: api.timestamp });
-    return chainApi.call({ target: tvlReporter, abi: navAbi });
-  }));
+  const navs = await Promise.all([...chainIds].map((chainId) =>
+    getChainApi(api, chainId).call({ target: tvlReporter, abi: navAbi })
+  ));
   return navs.reduce((total, nav) => total + BigInt(nav), 0n);
 }
 
+// Strategy (defii) positions as underlying tokens, plus whitelisted token balances held by the
+// account and its ops addresses
+async function privateVaultsTvl(api) {
+  for (const { factory, account } of privateVaults[api.chain] ?? []) {
+    const defiis = await api.call({ target: factory, abi: abi.getDefiisFor, params: [account] });
+    const logics = await api.multiCall({ abi: abi.logic, calls: defiis });
+    const positions = await api.multiCall({
+      abi: abi.underlyingTokensBalances,
+      calls: defiis.map((defii, i) => ({ target: logics[i], params: [defii] })),
+    });
+    positions.forEach(({ tokens, amounts }) => tokens.forEach((token, i) => api.add(token, amounts[i])));
+
+    const ops = await api.call({ target: factory, abi: abi.getOpsFor, params: [account] });
+    const tokens = await api.call({ target: factory, abi: abi.getWhitelistedTokens });
+    await api.sumTokens({ owners: [account, ...ops], tokens });
+  }
+}
+
+async function liquidVaultsTvl(api) {
+  for (const [vault, tvlReporter] of Object.entries(vaults[api.chain] ?? {})) {
+    const nav = await getVaultNav(api, vault, tvlReporter);
+    const notion = await api.call({ target: vault, abi: abi.notion });
+    await addNav(api, notion, nav);
+  }
+}
+
 async function tvl(api) {
-  await Promise.all(
-    Object.entries(vaults[api.chain] ?? {}).map(async ([vault, tvlReporter]) => {
-      const [nav, notion] = await Promise.all([
-        getVaultNav(api, vault, tvlReporter),
-        api.call({ target: vault, abi: abi.notion }),
-      ]);
-      const notionDecimals = BigInt(await api.call({ target: notion, abi: abi.decimals }));
-      const tokenAmount = notionDecimals < NAV_DECIMALS
-        ? nav / 10n ** (NAV_DECIMALS - notionDecimals)
-        : nav * 10n ** (notionDecimals - NAV_DECIMALS);
-      api.add(
-        notion,
-        tokenAmount
-      );
-    })
-  );
+  await liquidVaultsTvl(api);
+  await privateVaultsTvl(api);
 }
 
 module.exports = {
   doublecounted: true,
   methodology:
-    "Shift DeFi's total protocol TVL is calculated as the sum of the TVLs of all Vaults within the ecosystem. Each Vault's TVL is calculated as the sum of the NAVs of all strategies that make up the Vault's portfolio, as reported on-chain by each chain's TvlReporter. Strategies deposit into Curve and Morpho, so these assets are also counted in those protocols.",
+    "Shift DeFi's total protocol TVL is calculated as the sum of the TVLs of all Vaults within the ecosystem. Each Vault's TVL is calculated as the sum of the NAVs of all strategies that make up the Vault's portfolio, as reported on-chain by each chain's TvlReporter. Strategies deposit into Curve and Morpho, so these assets are also counted in those protocols. Institutional Private Vaults are counted as tokens: the underlying token balances of each strategy (defii) the vault's account holds in the SelfManagedFactory, plus the factory's whitelisted tokens held by the account and its ops addresses.",
 };
 
-Object.keys(vaults).forEach((chain) => {
+new Set([...Object.keys(vaults), ...Object.keys(privateVaults)]).forEach((chain) => {
   module.exports[chain] = { tvl };
 });

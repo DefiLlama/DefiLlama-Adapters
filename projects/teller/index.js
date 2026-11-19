@@ -113,6 +113,14 @@ async function getPoolBidData(chain) {
   return { activeBids, allPoolBidIds };
 }
 
+// tvl and borrowed need the same TellerV2 info and the same full bid scan, run them once per chain/block
+const sharedResults = {};
+function runOnce(name, api, fn) {
+  const key = `${name}-${api.chain}-${api.block}`;
+  if (!sharedResults[key]) sharedResults[key] = fn();
+  return sharedResults[key];
+}
+
 async function getTellerV2Info(api, pools) {
   if (pools.length === 0) return null;
   let tellerV2;
@@ -265,14 +273,14 @@ async function tvl(api) {
   }
 
   // Get TellerV2 info
-  const tellerInfo = await getTellerV2Info(api, pools);
+  const tellerInfo = await runOnce('tellerInfo', api, () => getTellerV2Info(api, pools));
   if (tellerInfo) {
     // Pool escrow collateral
     const poolEscrowTokens = await getPoolEscrowTokens(api, pools, activeBids, tellerInfo.collateralManager);
     tokensAndOwners.push(...poolEscrowTokens);
 
     // Direct (non-pool) bid ERC20 collateral (active + defaulted, skipping NFTs)
-    const directBids = await getDirectBids(api, tellerInfo, allPoolBidIds);
+    const directBids = await runOnce('directBids', api, () => getDirectBids(api, tellerInfo, allPoolBidIds));
     for (const bid of directBids) {
       for (const c of bid.collaterals) {
         if (c._collateralAddress && c._collateralAddress !== ZERO_ADDR && String(c._collateralType) === COLLATERAL_ERC20) {
@@ -293,7 +301,7 @@ async function borrowed(api) {
   const { activeBids, allPoolBidIds } = poolBidData;
   const addresses = pools.map(p => p.group_pool_address);
 
-  const tellerInfo = await getTellerV2Info(api, pools);
+  const tellerInfo = await runOnce('tellerInfo', api, () => getTellerV2Info(api, pools));
 
   // Pool borrowed
   const [lended, repaid, tokens] = await Promise.all([
@@ -358,7 +366,7 @@ async function borrowed(api) {
 
   // Direct (non-pool) bid borrowed — only non-defaulted loans
   if (tellerInfo) {
-    const directBids = await getDirectBids(api, tellerInfo, allPoolBidIds);
+    const directBids = await runOnce('directBids', api, () => getDirectBids(api, tellerInfo, allPoolBidIds));
     const activeDirectBids = directBids.filter(b => !b.defaulted);
     const bidIds = activeDirectBids.map(b => b.bidId);
 

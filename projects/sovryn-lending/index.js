@@ -29,5 +29,6 @@ async function borrowed(api) {
 }
 
 module.exports = {
+  deadFrom: "2026-07-12", // sunset?
   rsk: { tvl, borrowed, }
 }

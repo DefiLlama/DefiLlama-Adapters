@@ -52,6 +52,11 @@ const configs = {
       ],
     },
   },
+  'o1-wsto-vault': {
+    methodology: "Counts the O tokens held by each chain's wstO vault as staking.",
+    robinhood: { staking: ['0xE92bD1C05E4E308792003C8205127A6FA662b4D4', '0x500A02a20B0B0A3F3efCCFc0559543F5743bd1C4'] },
+    base: { staking: ['0x80C6BAE89B636c6Ee96FE8F198c0D6926C2C91df', '0x182FA643E5f29d5EcA75e7b9CF9336A3fe4620b2'] },
+  },
   'onecash': {
     misrepresentedTokens: true,
     methodology: "Counts liquidty on the Staking and Pool2 Only",
@@ -163,12 +168,6 @@ const configs = {
     methodology: 'TVL is the total REPPO tokens locked in the VeREPPO contract.',
     base: {
       staking: { owners: ['0x0EFBE19Cb7B07D934D01990a8989E9CaA98b9009'], tokens: ['0xFf8104251E7761163faC3211eF5583FB3F8583d6']}
-    }
-  },
-  'nara': {
-    methodology: 'Total NARA locked in NARAEngineV4 on Base. Users lock NARA for a chosen duration to participate in protocol consensus and earn rewards every 15-minute epoch.',
-    base: {
-      staking: { owners: ['0x98ab6406D6B548F37dEF7110961bb45A399e5aFC'], tokens: ['0xB6333F5D4cEd8dffA80F3F13697D6aA3BB3f19c1']}
     }
   },
   'venice-protocol': {
@@ -1411,6 +1410,14 @@ const configs = {
       staking: ['0xB078cc304A0B264C5F3680DC0488954ACcd02E87', '0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'],
     },
   },
+  "bond-ceo": {
+    "methodology": "BOND staked in the BOND staking contract. Pool2 is BOND/USDG liquidity staked in LP staking.",
+    "start": "2026-10-07",
+    "robinhood": {
+      staking: ['0x8b22e1e453ccc7fbb109d3509c48ba81965d838b', '0xeb288e3ca1607e7b921bcb47d5831e88331d65ef'],
+      pool2: ['0x68349d68660134ec1b2bcaab68423a5792cfd2a7', '0xbe5296539b19da2ce4771f9725e9de1073281015'],
+    },
+  },
   "nukes-fun": {
     "methodology": "NUKE staked in the NUKES.FUN staking contract",
     "robinhood": {
@@ -1429,7 +1436,17 @@ const configs = {
     "robinhood": {
       staking: ["0x7F1d2b117aBac121f99cEED7f80e5925fFF37A53", "0xFE936755185353b63a81dD72b47533Eb6021018E"]
     }
-  }
+  },
+  'array-capital': {
+    arbitrum: {
+      staking: ['0x1b91b24d12C934383f25aa07C2c9C9666accf39e', '0x164731cd270daa4a94bc70761e53320e48367b8b'], // masterchef, token
+    },
+  },
+  'o2-dao': {
+    avax: {
+      staking: ['0x50971d6B5a3CCd79C516f914208C67C8104977dF', '0xAA2439DBAd718c9329a5893A51a708C015F76346'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)

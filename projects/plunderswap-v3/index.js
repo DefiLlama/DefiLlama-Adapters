@@ -6,7 +6,7 @@ async function tvl(api) {
   const v3Pairs = data.filter(pair => pair.version === 'V3').map(pair => pair.address)
   const token0s = await api.multiCall({ abi: 'address:token0', calls: v3Pairs })
   const token1s = await api.multiCall({ abi: 'address:token1', calls: v3Pairs })
-  return sumTokens2({ api, tokensAndOwners2: [token0s.concat(token1s), v3Pairs.concat(v3Pairs)] })
+  return sumTokens2({ api, tokensAndOwners2: [token0s.concat(token1s), v3Pairs.concat(v3Pairs)], permitFailure: true })
 }
 
 module.exports = {

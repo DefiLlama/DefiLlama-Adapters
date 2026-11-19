@@ -30,11 +30,9 @@ const Pools = [
 ];
 
 async function tvl(api) {
-  const poolConfigs = await Promise.all([
-    getResource(Pools[0].poolAddress, `${POOL_TRADING_ACCOUNT}::pool::Pool`),
-    getResource(Pools[1].poolAddress, `${POOL_TRADING_ACCOUNT}::pool::Pool`),
-    getResource(Pools[2].poolAddress, `${POOL_TRADING_ACCOUNT}::pool::Pool`),
-  ]);
+  const poolConfigs = []
+  for (const { poolAddress } of Pools)
+    poolConfigs.push(await getResource(poolAddress, `${POOL_TRADING_ACCOUNT}::pool::Pool`))
   const mergeArray = poolConfigs.map((p, i) => {
     return { ...p, ...Pools[i] };
   });

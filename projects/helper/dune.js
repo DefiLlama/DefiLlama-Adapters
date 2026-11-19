@@ -1,6 +1,6 @@
 require('dotenv').config()
-const axios = require('axios')
 const { getEnv } = require('./env')
+const { get, post } = require('./http')
 
 function getApiKey() {
   const raw = getEnv('DUNE_API_KEYS') || ''
@@ -18,7 +18,7 @@ async function getLatestDuneResults(queryId, { pageSize = 1000 } = {}) {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const url = `https://api.dune.com/api/v1/query/${queryId}/results?limit=${pageSize}&offset=${offset}`
-    const { data } = await axios.get(url, { headers })
+    const data = await get(url, { headers })
     const batch = (data && data.result && data.result.rows) || []
     rows = rows.concat(batch)
     if (!batch.length || data.next_offset == null) break
@@ -39,7 +39,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 async function queryDuneSql(sql, { maxWaitMs = 240000 } = {}) {
   const headers = { 'X-Dune-Api-Key': getApiKey() }
 
-  const { data: submitted } = await axios.post(
+  const submitted = await post(
     `${DUNE_API}/query/${PASSTHROUGH_QUERY_ID}/execute`,
     { query_parameters: { fullQuery: sql } },
     { headers })
@@ -50,13 +50,13 @@ async function queryDuneSql(sql, { maxWaitMs = 240000 } = {}) {
   let state
   do {
     await sleep(2000 + Math.floor(Math.random() * 3000))
-    const { data } = await axios.get(`${DUNE_API}/execution/${executionId}/status`, { headers })
+    const data = await get(`${DUNE_API}/execution/${executionId}/status`, { headers })
     state = data.state
   } while ((state === 'QUERY_STATE_PENDING' || state === 'QUERY_STATE_EXECUTING') && Date.now() < deadline)
 
   if (state !== 'QUERY_STATE_COMPLETED') throw new Error(`Dune query did not complete (state: ${state})`)
 
-  const { data } = await axios.get(`${DUNE_API}/execution/${executionId}/results?limit=100000`, { headers })
+  const data = await get(`${DUNE_API}/execution/${executionId}/results?limit=100000`, { headers })
   return (data && data.result && data.result.rows) || []
 }
 

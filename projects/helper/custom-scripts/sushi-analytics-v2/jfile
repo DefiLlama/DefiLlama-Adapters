@@ -53,7 +53,9 @@ pipeline {
                         script {
                             def timestamp = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone('UTC'))
 
-                            sh """
+                            // bash + pipefail: with plain sh the pipeline only sees tee's exit code, so a crashing script is reported as SUCCESS
+                            sh """#!/bin/bash
+                                set -eo pipefail
                                 echo "=== Running sushi analytics TVL Script ==="
                                 echo "Start time: ${timestamp}"
 

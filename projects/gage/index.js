@@ -1,6 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 // DefiLlama TVL adapter for gage. Every address comes from ./universe.json, generated from gage's deployment manifest;
-// each one is published with its role at https://docs.gage.cash/protocol/addresses.
+// each one is published with its role at https://docs.gage.cash/protocol/addresses, the Intent (partner lending)
+// contracts at https://docs.gage.cash/protocol/bounty-targets.
+const ADDRESSES = require('../helper/coreAssets.json')
 const { unwrapUniswapV3NFT, unwrapUniswapV4NFTs } = require('../helper/unwrapLPs')
 const U = require('./universe.json')
 
@@ -115,15 +116,16 @@ async function engineLoans(api, engine) {
 }
 
 /**
- * V2 engines keep each loan's collateral in its own account contract and lender USDG in the engine until the
- * fourth slot fills. Whatever an account still holds is user value in custody, whatever the loan's state.
+ * V2 engines keep each loan's collateral in its own account contract and lender funds in the engine until the
+ * fourth slot fills. Whatever an account still holds is user value in custody, whatever the loan's state. An engine
+ * lends `asset`: USDG, or the stock token an Intent lend-asset generation's core lends, in raw units of it.
  */
 async function engineTvl(api, groups) {
   for (const engine of U.engines) {
     const loans = (await engineLoans(api, engine)).filter((l) => Number(l.state) !== LOAN.NONE && lower(l.account) !== ZERO)
     let escrow = 0n
     for (const l of loans) escrow += fundingEscrow(l)
-    if (escrow > 0n) api.add(U.usdg, escrow.toString())
+    if (escrow > 0n) api.add(engine.asset, escrow.toString())
     const erc20 = loans.filter((l) => Number(l.kind) === KIND.ERC20 && !isExcluded(l.token))
     if (erc20.length) {
       const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: erc20.map((l) => ({ target: l.token, params: l.account })) })
@@ -163,29 +165,40 @@ async function addHoldings(api, tokensAndOwners) {
 }
 
 const EARN_VERSION = { hybrid: 2, earn: 3 } // Factory kind → strategy design: HybridVault (2), EarnVault (3).
+const INTENT = 3 // An IntentVault keeps EarnVault's books (cash, reserve, unassigned cash, side pockets) in its asset.
 const POCKET_ABI = {
   2: 'function pockets(uint256) view returns (uint256 dealId, address token, uint256 amount, uint256 supply, uint256 claimed)',
   3: 'function pockets(uint256) view returns (uint256 loanId, address token, uint256 amount, uint256 supply, uint256 claimed, uint64 snapshotId)',
 }
 
+/** Every vault a factory has created by the block, lowercased, or none before the factory existed. */
+async function factoryVaults(api, factory) {
+  const block = await api.getBlock()
+  if (block < factory.startBlock) return []
+  const count = Number(await api.call({ target: factory.address, abi: 'uint256:count' }))
+  if (!count) return []
+  return (await api.multiCall({ target: factory.address, abi: 'function vaults(uint256) view returns (address)', calls: range(count).map((i) => i - 1) })).map(lower)
+}
+
 /**
- * Earn strategies: USDG idle in the strategy, USDG a repayment brought in that no loan outcome has booked yet, the
- * strategy's position in the external ERC-4626 reserve at the reserve's own conversion, and collateral recovered from
- * defaults into side pockets that depositors have not claimed yet. Principal a strategy has lent is engine principal
- * and is reported under borrowed, never twice.
+ * Earn strategies and Intent partner vaults: what is idle in the vault, what a repayment brought in that no loan
+ * outcome has booked yet, the vault's position in its reserve at the reserve's own conversion (an external ERC-4626
+ * for USDG; a lend-asset generation's closed reserve accepts nothing and converts zero), and collateral recovered from
+ * defaults, or a partner vault's early-repayment earnings, held in side pockets that depositors have not claimed yet.
+ * A partner vault keeps these books in the asset its generation lends. Principal a vault has lent is engine principal
+ * and is reported under borrowed, never twice; fees owed to the vault's manager and the protocol are not counted.
  */
 async function earnTvl(api) {
   const block = await api.getBlock()
-  const vaults = new Map(U.earn.filter((s) => block >= s.startBlock).map((s) => [s.vault, s.version]))
-  for (const f of U.factories) {
-    if (block < f.startBlock) continue
-    const count = Number(await api.call({ target: f.address, abi: 'uint256:count' }))
-    if (count) (await api.multiCall({ target: f.address, abi: 'function vaults(uint256) view returns (address)', calls: range(count).map((i) => i - 1) })).forEach((v) => { if (!vaults.has(lower(v))) vaults.set(lower(v), EARN_VERSION[f.kind]) })
-  }
+  const vaults = new Map(U.earn.filter((s) => block >= s.startBlock).map((s) => [s.vault, { version: s.version, asset: U.usdg }]))
+  for (const f of U.factories) (await factoryVaults(api, f)).forEach((v) => { if (!vaults.has(v)) vaults.set(v, { version: EARN_VERSION[f.kind], asset: U.usdg }) })
+  for (const g of U.intent) (await factoryVaults(api, { address: g.factory, startBlock: g.startBlock })).forEach((v) => { if (!vaults.has(v)) vaults.set(v, { version: INTENT, asset: g.asset }) })
   const list = [...vaults.keys()]
   if (!list.length) return
-  const v2 = list.filter((v) => vaults.get(v) === 2)
-  const v3 = list.filter((v) => vaults.get(v) === 3)
+  const version = (v) => vaults.get(v).version
+  const asset = (v) => vaults.get(v).asset
+  const v2 = list.filter((v) => version(v) === 2)
+  const v3 = list.filter((v) => version(v) === 3)
   const [cash, shares, reserves, pocketCounts, unassigned, harvested, assigned] = await Promise.all([
     api.multiCall({ abi: 'uint256:cash', calls: list }),
     api.multiCall({ abi: 'uint256:reserveShares', calls: list }),
@@ -196,13 +209,13 @@ async function earnTvl(api) {
     v2.length ? api.multiCall({ abi: 'uint256:assignedCash', calls: v2 }) : [],
   ])
   const assets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: list.map((_, i) => ({ target: reserves[i], params: [shares[i]] })) })
-  list.forEach((_, i) => api.add(U.usdg, (BigInt(cash[i]) + BigInt(assets[i])).toString()))
-  unassigned.forEach((amount) => api.add(U.usdg, amount))
+  list.forEach((v, i) => api.add(asset(v), (BigInt(cash[i]) + BigInt(assets[i])).toString()))
+  unassigned.forEach((amount, i) => api.add(asset(v3[i]), amount))
   harvested.forEach((amount, i) => api.add(U.usdg, (BigInt(amount) - BigInt(assigned[i])).toString()))
   const pockets = []
-  for (const version of [2, 3]) {
-    const calls = list.flatMap((target, i) => (vaults.get(target) === version ? range(pocketCounts[i]).map((id) => ({ target, params: [id] })) : []))
-    if (calls.length) (await api.multiCall({ abi: POCKET_ABI[version], calls })).forEach((p, i) => pockets.push({ vault: calls[i].target, token: p.token, left: BigInt(p.amount) - BigInt(p.claimed) }))
+  for (const design of [2, 3]) {
+    const calls = list.flatMap((target, i) => (version(target) === design ? range(pocketCounts[i]).map((id) => ({ target, params: [id] })) : []))
+    if (calls.length) (await api.multiCall({ abi: POCKET_ABI[design], calls })).forEach((p, i) => pockets.push({ vault: calls[i].target, token: p.token, left: BigInt(p.amount) - BigInt(p.claimed) }))
   }
   // A pocket holds its recovered asset for the holders of record until each one claims: amount minus claimed.
   for (const p of pockets) {
@@ -221,8 +234,8 @@ async function tvl(api) {
 }
 
 /**
- * Gross funded principal stays outstanding until repayment or the collateral claim. A legacy deal backed by an
- * engine receipt is that engine's loan and is counted there.
+ * Gross funded principal stays outstanding until repayment or the collateral claim, in the asset each engine lends.
+ * A legacy deal backed by an engine receipt is that engine's loan and is counted there.
  */
 async function borrowed(api) {
   for (const vault of U.vaults) {
@@ -233,7 +246,7 @@ async function borrowed(api) {
   for (const engine of U.engines) {
     const loans = await engineLoans(api, engine)
     const amount = loans.filter((l) => Number(l.state) === LOAN.ACTIVE).reduce((sum, l) => sum + BigInt(l.principal), 0n)
-    if (amount > 0n) api.add(U.usdg, amount.toString())
+    if (amount > 0n) api.add(engine.asset, amount.toString())
   }
 }
 
@@ -241,6 +254,6 @@ module.exports = {
   timetravel: true, // Historical runs need an archive RPC for Robinhood Chain.
   doublecounted: true, // LP collateral overlaps Uniswap V3/V4; the Earn reserve overlaps its own ERC-4626 listing.
   start: U.start,
-  methodology: 'Counts user collateral in custody across every Gage lending contract (listed at docs.gage.cash/protocol/addresses): the legacy deal vaults (ERC-20 collateral, including collateral awaiting withdrawal, and USDG escrowed for open bids) and the V2 engines (collateral held by each loan account, whatever the loan state, and USDG committed to loans that have not activated). Earn strategies add their idle USDG, repayments they have received but not yet booked, their position in the external ERC-4626 reserve and collateral recovered from defaults that depositors have not claimed yet. USDG credited for withdrawal (loan proceeds, repayments, withdrawn bids, protocol fees) is excluded. Vault-owned Uniswap V3/V4 NFTs are unwrapped into underlying principal without uncollected fees. Gross active loan principal is reported separately under borrowed until repayment, claim or a finalised default. Excludes GAGE, sGAGE, the internal receipt tokens, reward reserves, the treasury and the protocol-owned GAGE/sGAGE pool. Token balances are priced by DefiLlama.',
+  methodology: 'Counts user collateral in custody across every Gage lending contract (listed at docs.gage.cash/protocol/addresses, partner lending at docs.gage.cash/protocol/bounty-targets): the legacy deal vaults (ERC-20 collateral, including collateral awaiting withdrawal, and USDG escrowed for open bids) and the V2 engines, Intent cores included (collateral held by each loan account, whatever the loan state, and lender funds committed to loans that have not activated). Earn strategies and Intent partner vaults (every vault each Intent factory has created) add their idle cash, repayments they have received but not yet booked, their reserve position and what side pockets hold for depositors who have not claimed yet. Intent lend-asset generations lend a stock token instead of USDG: their amounts are counted in that token. USDG credited for withdrawal (loan proceeds, repayments, withdrawn bids, protocol fees) and fees owed to vault managers or the protocol are excluded. Vault-owned Uniswap V3/V4 NFTs are unwrapped into underlying principal without uncollected fees. Gross active loan principal is reported separately under borrowed until repayment, claim or a finalised default. Excludes GAGE, sGAGE, the internal receipt tokens, reward reserves, the treasury and the protocol-owned GAGE/sGAGE pool. Token balances are priced by DefiLlama.',
   [U.chain]: { tvl, borrowed },
 }

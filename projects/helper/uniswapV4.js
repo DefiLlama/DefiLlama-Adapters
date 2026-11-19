@@ -92,10 +92,15 @@ async function getHookPools({ api, hook, poolManager, fromBlock }) {
 }
 
 // adds the reserves of the given v4 pools ([{ id, token0, token1, spacing }]) to api, reconstructed from
-// the pool's tick bitmap, tick liquidity and current price read via StateView (v4 keeps all pools in one PoolManager)
-async function addUniV4PoolReserves({ api, pools, stateView }) {
+// the pool's tick bitmap, tick liquidity and current price read via StateView (v4 keeps all pools in one PoolManager).
+// `abis` overrides the three view ABIs for a v4-shaped pool manager that names them differently, e.g. PancakeSwap
+// Infinity's CLPoolManager (getPoolBitmapInfo / getPoolTickInfo, same tick layout), passed in as `stateView`.
+async function addUniV4PoolReserves({ api, pools, stateView, abis = {} }) {
   if (!pools.length) return
-  const slot0s = await api.multiCall({ abi: getSlot0Abi, target: stateView, calls: pools.map((p) => p.id) })
+  const slot0Abi = abis.getSlot0 ?? getSlot0Abi
+  const bitmapAbi = abis.getTickBitmap ?? getTickBitmapAbi
+  const tickInfoAbi = abis.getTickInfo ?? getTickInfoAbi
+  const slot0s = await api.multiCall({ abi: slot0Abi, target: stateView, calls: pools.map((p) => p.id) })
   const live = []
   slot0s.forEach((s, i) => {
     const sqrtP = BigInt(s.sqrtPriceX96)
@@ -110,7 +115,7 @@ async function addUniV4PoolReserves({ api, pools, stateView }) {
     const hi = Math.floor(MAX_TICK / p.spacing) >> 8
     for (let w = lo; w <= hi; w++) words.push({ pool: i, word: w })
   })
-  const bitmaps = await api.multiCall({ abi: getTickBitmapAbi, target: stateView, calls: words.map(({ pool, word }) => ({ params: [live[pool].id, word] })) })
+  const bitmaps = await api.multiCall({ abi: bitmapAbi, target: stateView, calls: words.map(({ pool, word }) => ({ params: [live[pool].id, word] })) })
   bitmaps.forEach((raw, i) => {
     const bits = BigInt(raw)
     if (bits === 0n) return
@@ -126,7 +131,7 @@ async function addUniV4PoolReserves({ api, pools, stateView }) {
     p.ticks.forEach((tick) => tickCalls.push({ pool: i, tick }))
   })
   if (tickCalls.length) {
-    const tickData = await api.multiCall({ abi: getTickInfoAbi, target: stateView, calls: tickCalls.map(({ pool, tick }) => ({ params: [live[pool].id, tick] })) })
+    const tickData = await api.multiCall({ abi: tickInfoAbi, target: stateView, calls: tickCalls.map(({ pool, tick }) => ({ params: [live[pool].id, tick] })) })
     tickData.forEach((info, i) => {
       const { pool, tick } = tickCalls[i]
       live[pool].nets[tick] = BigInt(info.liquidityNet)

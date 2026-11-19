@@ -26,12 +26,14 @@ const binanceToDefillama = {
   AVAX: 'avax',
   ARB: 'arbitrum',
   ARBITRUM: 'arbitrum',
+  ARC: 'arc',
   AVAXC: 'avax',
   LTC: 'litecoin',
   MATIC: 'polygon',
   OP: 'optimism',
   OPTIMISM: 'optimism',
   RON: 'ronin',
+  ROBINHOOD: 'robinhood',
   XRP: 'ripple',
   SOL: 'solana',
   DOT: 'polkadot',
@@ -80,6 +82,24 @@ const withdrawalAddresses = [
   '0xd27b39cb25fed854f9fce3a4e451f96e62089e48',
   '0x6357e4bdaff733dfe8f50d12d07c03b3bed0884b',
 ]
+const binanceBridgedTokens = [
+  '0x570a5d26f7765ecb712c0924e4de545b89fd43df', // SOL
+  "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47", // ADA
+  "0xba2ae424d960c26247dd6c32edc70b295c744c43", // DOGE
+  "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD", // LINK
+  "0x7083609fce4d1d8dc0c979aab8c869ea2c873402", // DOT
+  "0x2859e4544c4bb03966803b044a93563bd2d0dd4d", // SHIB
+  "0x4338665cbb7b2485a8855a139b75d5e34ab0db94", // LTC
+  "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe", // XRP
+  "0xa2b726b1145a4773f68593cf171187d8ebe4d495", // INJ
+  "0x1fa4a73a3f0133f0025378af00236f3abdee5d63", // NEAR
+  "0x6FDcdfef7c496407cCb0cEC90f9C5Aaa1Cc8D888", // VET
+  "0xfb6115445Bff7b52FeB98650C87f44907E58f802", // AAVE
+  "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce", // BEAM
+  "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153", // FIL
+  "0x43C934A845205F0b514417d757d7235B8f53f1B9", // XLM
+  "0x1Ba42e5193dfA8B03D15dd1B86a3113bbBEF8Eeb", // ZEC
+]
 
 const chainToNetworks = {}
 for (const [network, chain] of Object.entries(binanceToDefillama)) {
@@ -90,30 +110,38 @@ for (const [network, chain] of Object.entries(binanceToDefillama)) {
 }
 
 const perChainConfig = {
-  ethereum: { blacklistedTokens: [
-    ADDRESSES.ethereum.BNB,
-    ADDRESSES.bsc.wBETH, // wBETH, we are already counting staked ETH via withdrawal addresses, so we don't want to double count it
-  ] },
-  bsc: { blacklistedTokens: [
-    ADDRESSES.bsc.TUSD,
-    ADDRESSES.bsc.wBETH, // wBETH
-  ] },
+  ethereum: {
+    blacklistedTokens: [
+      ADDRESSES.ethereum.BNB,
+      ADDRESSES.bsc.wBETH, // wBETH, we are already counting staked ETH via withdrawal addresses, so we don't want to double count it
+    ]
+  },
+  bsc: {
+    ownTokens: [nullAddress], // BNB
+    blacklistedTokens: [
+      ADDRESSES.bsc.TUSD,
+      ADDRESSES.bsc.wBETH, // wBETH
+      ...binanceBridgedTokens,
+    ]
+  },
+  op_bnb: { ownTokens: [nullAddress] }, // BNB
   solana: { blacklistedTokens: ['7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY', 'CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt'] },
 }
 
 function buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens) {
   const base = perChainConfig[chain] || {}
-  let { tokensAndOwners, tokens, blacklistedTokens, fungibleAssets } = base
+  let { tokensAndOwners, tokens, blacklistedTokens = [], fungibleAssets, ownTokens = [], ...rest } = base
 
   if (!tokensAndOwners && !tokens && chain !== 'solana') {
     tokens = defaultTokens[chain]
     if (!tokens) tokens = [nullAddress]
   }
 
-  if (!blacklistedTokens) blacklistedTokens = []
+  // BNB is reported under ownTokens instead of tvl
+  blacklistedTokens = [...ownTokens, ...blacklistedTokens]
   if (wrappedTokens && wrappedTokens.length) blacklistedTokens.push(...wrappedTokens)
 
-  const options = { ...base, owners, tokens, chain, blacklistedTokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
+  const options = { ...rest, tokensAndOwners, owners, tokens, chain, blacklistedTokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
 
   if (binanceTokensOnChain && binanceTokensOnChain.length) {
     if (!options.tokens) options.tokens = []
@@ -133,7 +161,7 @@ function buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens) {
   return options
 }
 
-const tvl = async (api) => {
+async function getOwners(api) {
   const chain = api.chain.toLowerCase()
   const networks = chainToNetworks[chain]
 
@@ -142,13 +170,16 @@ const tvl = async (api) => {
     getConfig('binance-cex/lock-info', LOCK_INFO_ENDPOINT),
   ])
 
+  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'arc', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'robinhood', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
+  const isEvm = evmChains.includes(chain)
+
   const contracts = data.data
     .filter(({ network }) => networks.includes(network.toUpperCase()))
     .map(({ address }) => address)
     .filter(Boolean)
-
-  const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma', 'klaytn','sei', 'kava', 'wc']
-  const isEvm = evmChains.includes(chain)
+    // PoR api sometimes lists non-evm addresses under evm networks; avax X-Chain owners are handled by sumTokens
+    .filter(a => !isEvm || /^0x[0-9a-fA-F]{40}$/.test(a) || (chain === 'avax' && /^(X-)?avax1[a-z0-9]{38}$/i.test(a)))
+  const porAddresses = new Set(contracts.map(a => a.toLowerCase()))
 
   const lockInfoAddresses = []
   const wrappedTokens = []
@@ -157,6 +188,7 @@ const tvl = async (api) => {
       if (!networks.includes(li.network.toUpperCase())) return
       if (!li.address || /^[A-Z0-9]+-[A-Z0-9]+$/i.test(li.address)) return
       if (isEvm && (!/^0x[0-9a-fA-F]{40}$/.test(li.address))) return
+      if (porAddresses.has(li.address.toLowerCase())) return // already in PoR, sometimes lowercased (invalid on case-sensitive chains like LTC)
       lockInfoAddresses.push(li.address)
     });
     (token.wrapInfo || []).forEach(wi => {
@@ -168,16 +200,30 @@ const tvl = async (api) => {
   })
 
   const owners = [...new Set([...contracts, ...lockInfoAddresses])]
+  return { owners, wrappedTokens }
+}
 
+const tvl = async (api) => {
+  const chain = api.chain.toLowerCase()
+  const { owners, wrappedTokens } = await getOwners(api)
   const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
   const options = buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens)
 
   return await sumTokensExport(options)(api)
 }
 
+const ownTokens = async (api) => {
+  const chain = api.chain.toLowerCase()
+  const { owners } = await getOwners(api)
+  return await sumTokensExport({ chain, owners, tokens: perChainConfig[chain].ownTokens, permitFailure: true })(api)
+}
+
 const chainExports = {}
 const chains = new Set(Object.values(binanceToDefillama))
-chains.forEach((chain) => { chainExports[chain] = { tvl } })
+chains.forEach((chain) => {
+  chainExports[chain] = { tvl }
+  if (perChainConfig[chain]?.ownTokens) chainExports[chain].ownTokens = ownTokens
+})
 
 const ethStakedExport = { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } }
 
@@ -189,3 +235,11 @@ module.exports.bitcoin = { tvl: bitcoinTvl }
 async function bitcoinTvl(api) {
   return sumTokens({ api, owners: await bitcoinAddressBook.binanceFetcher() })
 }
+
+Object.defineProperty(module.exports, '_rawConfig', {
+  value: {
+    ...Object.fromEntries([...chains].map((chain) => [chain, { owners: async () => (await getOwners({ chain })).owners }])),
+    bitcoin: { owners: bitcoinAddressBook.binanceFetcher },
+  },
+  enumerable: false,
+})

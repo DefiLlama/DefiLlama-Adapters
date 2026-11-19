@@ -9,6 +9,7 @@ const kvaultIdl = require('../../gauntlet/kvault-idl.json')
 const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
 const { callSoroban } = require('../chain/stellar')
+const sui = require('../chain/sui')
 
 
 async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults = [] }) {
@@ -381,37 +382,32 @@ async function getCuratorTvlErc4626(api, vaults, { euler = false, booked = new S
 
   const v2VaultSet = new Set(v2Vaults.map(v => v.vault))
 
+  // v2's deposits in v1: the v1 shares held by the v2 adapter, converted to underlying assets
+  // (two multicalls for all pairs instead of two calls per pair)
+  const deposits = [...v1Groups.values()].flatMap(({ v1, v2Vaults: v2List }) =>
+    v2List.filter(v2 => v2.depositor).map(v2 => ({ v1, v2 })))
+  const depositShares = await api.multiCall({
+    abi: ABI.ERC4626.balanceOf,
+    calls: deposits.map(({ v1, v2 }) => ({ target: v1.vault, params: [v2.depositor] })),
+    permitFailure: true,
+  })
+  const heldDeposits = deposits.map((d, i) => ({ ...d, shares: depositShares[i] })).filter(d => d.shares && BigInt(d.shares) > 0n)
+  const depositAssets = await api.multiCall({
+    abi: ABI.ERC4626.convertToAssets,
+    calls: heldDeposits.map(({ v1, shares }) => ({ target: v1.vault, params: [shares] })),
+    permitFailure: true,
+  })
+  const v2DepositsInV1 = new Map() // v1 address -> assets its v2 vaults hold in it
+  heldDeposits.forEach(({ v1 }, i) => {
+    if (!depositAssets[i]) return
+    const key = v1.vault.toLowerCase()
+    v2DepositsInV1.set(key, (v2DepositsInV1.get(key) || 0n) + BigInt(depositAssets[i]))
+  })
+
   // Process each unique V1 vault once, summing all V2 contributions
   for (const { v1, v2Vaults: v2List } of v1Groups.values()) {
-    let totalV2Assets = 0n
-    let totalV2DepositsInV1 = 0n
-
-    for (const v2 of v2List) {
-      totalV2Assets += v2.totalAssets
-
-      if (v2.depositor) {
-        // Get v2's deposits in v1 using the adapter that holds v1 shares
-        const v2AdapterSharesInV1 = await api.call({
-          abi: ABI.ERC4626.balanceOf,
-          target: v1.vault,
-          params: [v2.depositor],
-          permitFailure: true,
-        })
-
-        if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
-          // Convert v1 shares held by v2 adapter to underlying assets
-          const v2AssetsInV1 = await api.call({
-            abi: ABI.ERC4626.convertToAssets,
-            target: v1.vault,
-            params: [v2AdapterSharesInV1],
-            permitFailure: true,
-          })
-          if (v2AssetsInV1) {
-            totalV2DepositsInV1 += BigInt(v2AssetsInV1)
-          }
-        }
-      }
-    }
+    const totalV2Assets = v2List.reduce((sum, v2) => sum + v2.totalAssets, 0n)
+    const totalV2DepositsInV1 = v2DepositsInV1.get(v1.vault.toLowerCase()) || 0n
 
     // Unique TVL = V1 + sum(V2) - sum(v2_deposits_in_v1)
     // Count V1 totalAssets only ONCE regardless of how many V2 vaults wrap it
@@ -547,6 +543,21 @@ async function getCuratorTvlSymbioticVault(api, vaults) {
   api.add(assets, totalStakes.map(v => v || 0))
 }
 
+// Aave V4 hubs: getAddedAssets() is what the spokes supplied (liquidity + swept + owed, net of fees),
+// but it keeps bad debt in as deficit until it is covered, so the deficit is taken out
+async function getCuratorTvlAaveV4Hub(api, hubs) {
+  const RAY = 10n ** 27n
+  const assetCounts = await api.multiCall({ abi: ABI.aaveV4Hub.getAssetCount, calls: hubs })
+  const calls = hubs.flatMap((hub, i) => Array.from({ length: Number(assetCounts[i]) }, (_, assetId) => ({ target: hub, params: [assetId] })))
+  const assets = await api.multiCall({ abi: ABI.aaveV4Hub.getAssetUnderlyingAndDecimals, calls })
+  const added = await api.multiCall({ abi: ABI.aaveV4Hub.getAddedAssets, calls })
+  const deficits = await api.multiCall({ abi: ABI.aaveV4Hub.getAssetDeficitRay, calls })
+  assets.forEach(([underlying], i) => {
+    const amount = BigInt(added[i]) - BigInt(deficits[i]) / RAY
+    if (amount > 0n) api.add(underlying, amount)
+  })
+}
+
 async function getNested4626Vaults(api, vaults) {
   const vaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
   const nestedVaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaultAsset, permitFailure: true })
@@ -626,6 +637,17 @@ async function getCuratorTvl(api, vaults) {
       const asset = await callSoroban(vault, 'query_asset')
       const totalAssets = await callSoroban(vault, 'total_assets')
       api.add(asset, totalAssets.toString())
+    }
+
+    return api.getBalances()
+  }
+
+  if (api.chain === 'sui') {
+    // NAVI vaults (navi_vault::Vault<CoinType>), every vault of each package found on-chain by type.
+    // total_assets is the idle balance plus what the vault supplied to NAVI lending markets.
+    for (const pkg of vaults.naviVaultPackages ?? []) {
+      const naviVaults = await sui.getObjectsByType(`${pkg}::navi_vault::Vault`)
+      naviVaults.forEach(vault => api.add(vault.type.split('<')[1].slice(0, -1), vault.fields.total_assets))
     }
 
     return api.getBalances()
@@ -722,6 +744,11 @@ async function getCuratorTvl(api, vaults) {
   // market price (e.g. EtherFi's "Liquid Euro" weEUR)
   if (vaults.midasTokens) {
     await getCuratorTvlMidasToken(api, vaults.midasTokens)
+  }
+
+  // aave v4 hubs where the curator is the hub's risk curator
+  if (vaults.aaveV4Hubs) {
+    await getCuratorTvlAaveV4Hub(api, vaults.aaveV4Hubs)
   }
 
   const shareVaults = [...booked, ...(vaults.accountableVaults || [])] // only vaults whose reads succeeded

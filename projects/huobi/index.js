@@ -7,6 +7,7 @@ const config = {
     owners: bitcoinAddressBook.huobi,
   },
   ethereum: {
+    ownTokens: ['0x6f259637dcd74c767781e37bc6133cd6a68aa161'], // HT
     owners: [
       "0xa929022c9107643515f5c777ce9a910f0d1e490c",
       "0x18709e89bd403f470088abdacebe86cc60dda12e",
@@ -74,6 +75,7 @@ const config = {
     ],
   },
   tron: {
+    ownTokens: ['TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6'], // HTX (HTX DAO), successor of HT
     owners: [
       "TYh6mgoMNZTCsgpYHBz7gttEfrQmDMABub",
       "TKgD8Qnx9Zw3DNvG6o83PkufnMbtEXis4T",
@@ -190,3 +192,4 @@ module.exports = mergeExports([
 
 module.exports.methodology = "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
 module.exports.hallmarks = [['2024-08-07', "remove usdd collateral"]];
+Object.defineProperty(module.exports, '_rawConfig', { value: config, enumerable: false })

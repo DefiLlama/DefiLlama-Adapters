@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
-const { stakingPriceLP } = require("../helper/staking")
+const { staking } = require("../helper/staking")
 const sdk = require("@defillama/sdk")
 const iceBoxABI = {
     "totalPrimaryStaked": "uint256:totalPrimaryStaked"
@@ -89,13 +89,13 @@ module.exports = {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory }),
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
-      stakingPriceLP(contracts.telos.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
+      staking(contracts.telos.stakingContract_sPOPS, contracts.avax.pops),
       // Ice Box
       stakedAVAXIceBox,
       stakedAVAXIceBox2,
       // IceVault
       stakedUSDC,
-      stakingPriceLP(contracts.avax.stakingContract_IV, contracts.avax.pops,'0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true)
+      staking(contracts.avax.stakingContract_IV, contracts.avax.pops),
     ])
   },
   polygon: {
@@ -120,9 +120,9 @@ module.exports = {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.telos.factory }),
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
-      stakingPriceLP(contracts.telos.stakingContract_sPOPS, contracts.telos.pops,'0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
+      staking(contracts.telos.stakingContract_sPOPS, contracts.telos.pops),
       // NFT's
-      stakingPriceLP(contracts.telos.stakingContract_NFT, contracts.telos.pops,'0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
+      staking(contracts.telos.stakingContract_NFT, contracts.telos.pops),
       // Ice Box
       stakedTLOSIceBox
    ])

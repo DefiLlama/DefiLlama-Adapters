@@ -42,6 +42,7 @@ const MORPHO_POOL_ADDRESSES = {
     'Steakhouse High Yield USDC V2': '0xbeeff7aE5E00Aae3Db302e4B0d8C883810a58100',
     'Noon Ecosystem Vault': '0x8B12106a70FE2F8bB255F691f1CF9a9ccfB278AF',
     'Yearn OG USDC V2': '0xe7D0DBE3493830e2Ab62619211A2BfF0Fc60dB42',
+    'Steakhouse Prime ETH': '0xbeef00f0A818894a2Cf111644A5098421611100E',
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
@@ -106,6 +107,30 @@ const UNPRICED_VAULTS = [
     '0xd46a3c2d958d0a2cb098d48c48dc19fe3a710f37', // IPOR Fusion USDC
     '0x363600ac7173e8d91bcfee68d711bb93e992c110', // Superform GOOGLc
     '0x301a1ceb684d62833101b373ab6c395349b24033', // Superform AAPLc
+    '0xc63374bf46d7a9654a96b14a3dc363c92b26d5a3', // Superform METAc
+    '0xaf0edf09ec7f9357292f6bc6445a09aa84a31fa7', // Superform TSLAC
+    '0x7778192c7e2c22a27c63d63485699888148d5919', // Superform MSFTC
+    '0x02b12a394f0a98b80e53d85f6831041932f1b621', // Superform SPCXC
+];
+
+// Wallet holds the share token. convertToAssets lives on the Machine, not the share.
+const MAKINA_PAIRS = [
+    { share: '0xB862067aa005bE1530cB0CEDFdF33658f9Bb1E01', machine: '0x473aD980F67487C03A8cf2A50C2a501C488bF9a3' }, // yNVDAc
+    { share: '0x91Faa9a75aED4CcF3e96f84C50BB9C2A5f3E6d1d', machine: '0x2ad7de46614FefEE6702b626dACa480538132510' }, // yAAPLc
+    { share: '0x4fAce8A423fc7C99E10c0dfe92fBd9633aA863fD', machine: '0x82FC5772a6fd76D308444963359c796954Ff3651' }, // yGOOGLc
+    { share: '0x34Ee32b53E8F167240a16b771B54F4D96d454ACD', machine: '0xc4aD7A9146bFEC1E0ce71345199172CA8824A220' }, // yMETAc
+    { share: '0x2864E4da1e818aAE5982C2D9B7634e459c4e2E86', machine: '0x55f1B3CB53d2bfbC67F7cb01D3D84d240Af7c2c4' }, // yAMZNc
+    { share: '0xAA27E79974EFa53276A866697FFF626f1cd0C7B4', machine: '0x073d562A17815e0266be74CAF15FbBD9D0f9B9a1' }, // yMSFTc
+    { share: '0x0dE17a4Ec93e389A501925139E5FeEF30BE3d368', machine: '0x584BEC800e3C0AE5B12FC329C9bCb30fD424f758' }, // yTSLAc
+];
+
+// Morpho Blue market ids. Not ERC-20s, so they stay out of allPoolTokens.
+const MORPHO_BLUE_MARKETS = [
+    '0xd4a903dc6d949519060c7707f9604fdc9772c046e05c2e3a8fce0bd7196e4109', // USDC/cbXRP
+    '0x73527ddd796e6d4f48387adaae36f6f3d49d606d7f2a15eb0c931416a58875d8', // USDC/cbDOGE
+    '0xd7520ad198b497b6eb75bc690268f4597630dbc12e305e9d4105843bab36e41d', // USDC/cbADA
+    '0xe458a501c1103ca3b256f2bcb45d223263fb34b6349d82675494ce3a94ce1327', // USDC/cbZEC
+    '0x76629002c9fdb20fb2092053a4f22c5c65e04a81887218b9546f2a2d82b4c0a8', // USDC/cbHYPE
 ];
 
 const AUTOFINANCE_POOLS = {
@@ -143,4 +168,6 @@ const allPoolTokens = [
 module.exports = {
   allPoolTokens,
   unpricedVaults: UNPRICED_VAULTS,
+  makinaPairs: MAKINA_PAIRS,
+  morphoBlueMarkets: MORPHO_BLUE_MARKETS,
 };

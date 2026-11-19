@@ -39,7 +39,7 @@ async function ethereumTvl(api) {
 }
 
 module.exports = {
-  methodology: 'Total Value Locked (TVL) consists of LYX tokens staked in the Stakingverse liquid staking protocol.',
+  methodology: 'Total Value Locked (TVL) is calculated using totalAssets() for the Stakingverse staking contract on LUKSO (native LYX) and the Stakingverse StakeWise V3 vault on Ethereum (native ETH).',
   start: 1975213, // Deployment block of staking protocol
   hallmarks: [
     ['2024-12-29', "Deployment of sLYX liquid staking token (block 4084835)"]

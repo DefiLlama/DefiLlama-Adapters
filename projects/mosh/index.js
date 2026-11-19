@@ -39,10 +39,17 @@ function poolIdOf({ currency0, currency1, fee, tickSpacing, hooks }) {
 
 const SwarmCreated = 'event SwarmCreated(address indexed swarm, address indexed creator, uint256 index, bytes32 launchParamsHash)'
 
-// Sums the swarms' and vaults' pair asset and both sides of the vaults' ranges, keeping only BUN
-// (ownToken) or everything but BUN (!ownToken)
-async function swarmBalances(api, ownToken) {
-  const counts = (token) => (token.toLowerCase() === BUN) === ownToken
+// tvl and staking walk the same swarms, vaults and ranges and differ only in which token they keep,
+// so that state is read once per run (keyed by timestamp) and shared; a failed read is not cached
+const stateCache = {}
+function getState(api) {
+  const key = api.timestamp
+  if (!stateCache[key]) stateCache[key] = loadState(api).catch(e => { delete stateCache[key]; throw e })
+  return stateCache[key]
+}
+
+// Swarms, their vaults and the vaults' open ranges with each range's pool key and price; null if no swarm
+async function loadState(api) {
   const created = []
   for (const target of FACTORIES) created.push(...await getLogs2({ api, target, eventAbi: SwarmCreated, fromBlock }))
   const allSwarms = [...new Set([...created.map(i => i.swarm.toLowerCase()), ...LEGACY_SWARMS])]
@@ -59,7 +66,7 @@ async function swarmBalances(api, ownToken) {
   })
   const swarms = allSwarms.filter((_, i) => Boolean(allCounters[i]))
   const counterOf = allCounters.filter(Boolean)
-  if (!swarms.length) return api.getBalances()
+  if (!swarms.length) return null
 
   const memecoins = await api.multiCall({ abi: 'address:memecoin', calls: swarms, permitFailure: true })
   // counts say how many vaults exist: a failed read must fail the run, not read as zero vaults
@@ -70,12 +77,6 @@ async function swarmBalances(api, ownToken) {
   const vaultCalls = swarms.flatMap((s, i) => Array.from({ length: Number(vaultCounts[i]) }, (_, j) => ({ target: s, params: [j], swarm: i })))
   const vaults = await api.multiCall({ abi: 'function vaults(uint256) view returns (address)', calls: vaultCalls.map(({ target, params }) => ({ target, params })) })
   const swarmOfVault = vaults.map((_, k) => vaultCalls[k].swarm)
-
-  // cash: the pair asset held by each swarm and each of its vaults
-  const ownerTokens = swarms.map((s, i) => [[counterOf[i]], s])
-  vaults.forEach((v, k) => ownerTokens.push([[counterOf[swarmOfVault[k]]], v]))
-  const counted = ownerTokens.filter(([[token]]) => counts(token))
-  if (counted.length) await sumTokens2({ api, ownerTokens: counted })
 
   // Each vault's pool key for venue 0, the token's Pons pool
   const fees = await api.multiCall({ abi: 'uint24:v4Fee', calls: vaults, permitFailure: true })
@@ -122,6 +123,23 @@ async function swarmBalances(api, ownToken) {
   const slot0 = pools.length ? await api.multiCall({ abi: GET_SLOT0_ABI, target: STATE_VIEW, calls: pools, permitFailure: true }) : []
   const sqrtPriceOf = new Map(pools.map((id, i) => [id, slot0[i] ? Number(slot0[i].sqrtPriceX96) / 2 ** 96 : 0]))
 
+  return { swarms, counterOf, memecoins, hasPair, vaults, swarmOfVault, ponsKeyOf, rangeCalls, ranges, rangeKeys, rangePools, sqrtPriceOf }
+}
+
+// Sums the swarms' and vaults' pair asset and both sides of the vaults' ranges, keeping only BUN
+// (ownToken) or everything but BUN (!ownToken)
+async function swarmBalances(api, ownToken) {
+  const counts = (token) => (token.toLowerCase() === BUN) === ownToken
+  const state = await getState(api)
+  if (!state) return api.getBalances()
+  const { swarms, counterOf, memecoins, hasPair, vaults, swarmOfVault, ponsKeyOf, rangeCalls, ranges, rangeKeys, rangePools, sqrtPriceOf } = state
+
+  // cash: the pair asset held by each swarm and each of its vaults
+  const ownerTokens = swarms.map((s, i) => [[counterOf[i]], s])
+  vaults.forEach((v, k) => ownerTokens.push([[counterOf[swarmOfVault[k]]], v]))
+  const counted = ownerTokens.filter(([[token]]) => counts(token))
+  if (counted.length) await sumTokens2({ api, ownerTokens: counted })
+
   ranges.forEach((r, j) => {
     if (!r) return
     const key = rangeKeys[j], sp = key && sqrtPriceOf.get(rangePools[j]), L = Number(r.liquidity)
@@ -151,15 +169,15 @@ async function swarmBalances(api, ownToken) {
     })
     // a swarm whose token has not graduated has no Pons pool to sell into
     const sells = [...idleOf].filter(([i, idle]) => idle > 0n && keyOf.has(i)).map(([i, idle]) => ({ i, idle, key: keyOf.get(i) }))
-    for (const { i, idle, key } of sells) {
-      const memeIs0 = key.currency0 !== counterOf[i]
-      const poolKey = [key.currency0, key.currency1, key.fee, key.tickSpacing, key.hooks]
-      const { amountOut } = await api.call({ abi: QUOTE_ABI, target: QUOTER, params: [[poolKey, memeIs0, idle.toString(), '0x']] })
-      const { sqrtPriceX96 } = await api.call({ abi: GET_SLOT0_ABI, target: STATE_VIEW, params: poolIdOf(key) })
-      const s2 = BigInt(sqrtPriceX96) ** 2n, q192 = 1n << 192n
+    const memeIs0Of = ({ i, key }) => key.currency0 !== counterOf[i]
+    const quotes = sells.length ? await api.multiCall({ abi: QUOTE_ABI, target: QUOTER, calls: sells.map(sell => ({ params: [[[sell.key.currency0, sell.key.currency1, sell.key.fee, sell.key.tickSpacing, sell.key.hooks], memeIs0Of(sell), sell.idle.toString(), '0x']] })) }) : []
+    const sellSlot0 = sells.length ? await api.multiCall({ abi: GET_SLOT0_ABI, target: STATE_VIEW, calls: sells.map(({ key }) => poolIdOf(key)) }) : []
+    sells.forEach((sell, j) => {
+      const { i, idle } = sell, memeIs0 = memeIs0Of(sell), { amountOut } = quotes[j]
+      const s2 = BigInt(sellSlot0[j].sqrtPriceX96) ** 2n, q192 = 1n << 192n
       const spotEquivalent = memeIs0 ? BigInt(amountOut) * q192 / s2 : BigInt(amountOut) * s2 / q192
       api.add(memecoins[i], spotEquivalent < idle ? spotEquivalent : idle)
-    }
+    })
   }
 
   return api.getBalances()

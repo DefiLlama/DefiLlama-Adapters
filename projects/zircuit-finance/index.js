@@ -3,43 +3,42 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
   base: {
-    // Aave strategies: track aToken balances directly
-    aaveStrategies: [
-      ['0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB', '0xc91E44E9302288FE5Df24d6392875E5069E1aca7'], // aBasUSDC held by Aave V3 USDC strategy
+    // Strategy managers: every strategy they list is an ERC4626, use totalAssets
+    strategyManagers: [
+      '0xf7E745658fa6f1fe8f2CAb47861a273991Cd3374', // USDC SM
+      '0x075193D36693DA7BA3Bb709cF63bEf070BA04D94', // USDT SM
     ],
-    // Monarq strategies: no discoverable yield token, use ERC4626 totalAssets
-    erc4626Strategies: [
-      '0xe83EF4375d806c02387069f1b753b2ab76ab1dc5', // Monarq USDC Lender
-      '0x1A48Cec817Bcb5436EFE99BAb6dDe228Cc37e1Cc', // Monarq USDT Lender
-    ],
-    // Idle funds in strategy managers
+    // Idle funds in strategy managers and OFTs
     idleFunds: [
       [ADDRESSES.base.USDC, '0xf7E745658fa6f1fe8f2CAb47861a273991Cd3374'],  // USDC SM
       [ADDRESSES.base.USDT, '0x075193D36693DA7BA3Bb709cF63bEf070BA04D94'],  // USDT SM
+      [ADDRESSES.base.USDC, '0xd7aBC360dfcF1B6dD0a03138235e12A2bc1c1C8B'],  // USDC OFT
+      [ADDRESSES.base.USDT, '0x264D6474802Ef8bc1bc05F89F7d640D1E93c5330'],  // USDT OFT
     ],
   },
   ethereum: {
-    aaveStrategies: [
-      ['0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', '0x28966Ce36d0F25858dc5d10DfC2829F05C332C49'], // aEthUSDC held by Aave V3 USDC strategy
-      ['0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a', '0x6424c7548e214f89B64Ea5981c5A0c5Ec22b6e38'], // aEthUSDT held by Aave V3 USDT strategy
+    strategyManagers: [
+      '0xf7E745658fa6f1fe8f2CAb47861a273991Cd3374', // USDC SM
+      '0x075193D36693DA7BA3Bb709cF63bEf070BA04D94', // USDT SM
     ],
-    erc4626Strategies: [],
-    idleFunds: [],
+    idleFunds: [
+      [ADDRESSES.ethereum.USDC, '0xf7E745658fa6f1fe8f2CAb47861a273991Cd3374'],  // USDC SM
+      [ADDRESSES.ethereum.USDT, '0x075193D36693DA7BA3Bb709cF63bEf070BA04D94'],  // USDT SM
+      [ADDRESSES.ethereum.USDC, '0xd58E8c1c83d598aD76B5f0E26B4a25cdB885d190'],  // USDC OFT Adapter
+      [ADDRESSES.ethereum.USDT, '0x2D342De4c58a871b3525740C58a1C112D5835865'],  // USDT OFT Adapter
+    ],
   },
 }
 
 Object.keys(config).forEach(chain => {
-  const { aaveStrategies, erc4626Strategies, idleFunds } = config[chain]
+  const { strategyManagers, idleFunds } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      // Track aToken balances directly for Aave strategies
-      const tokensAndOwners = [...aaveStrategies, ...idleFunds]
+      // Use ERC4626 totalAssets for every strategy listed by the strategy managers
+      const strategies = await api.multiCall({ abi: 'address[]:getStrategies', calls: strategyManagers })
+      await api.erc4626Sum({ calls: strategies.flat(), isOG4626: true })
 
-      // Use ERC4626 totalAssets for Monarq strategies (mapped to underlying USDC/USDT)
-      if (erc4626Strategies.length)
-        await api.erc4626Sum({ calls: erc4626Strategies, isOG4626: true })
-
-      return sumTokens2({ api, tokensAndOwners })
+      return sumTokens2({ api, tokensAndOwners: idleFunds })
     }
   }
 })

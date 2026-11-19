@@ -1,24 +1,7 @@
-const { get } = require('../helper/http')
-
-async function tvl(api) {
-
-  const endpoint = 'http://api.ociswap.com/statistics/pool-types';
-  const options = {
-    headers: {
-      'accept': 'application/json'
-    }
-  };
-
-  const statistics = await get(endpoint, options)
-
-  const basicIndex = statistics.findIndex(pool => pool.pool_type === 'basic')
-
-  return {
-    'radix': statistics[basicIndex].total_value_locked.xrd.now
-  }
-}
+const { ociswapTvl } = require('../ociswap/pools')
 
 module.exports = {
   timetravel: false,
-  radixdlt: { tvl }
+  methodology: 'Sums the token reserves held on-chain by Ociswap basic pools, discovered through the Ociswap pool list.',
+  radixdlt: { tvl: ociswapTvl(['basic']) },
 }

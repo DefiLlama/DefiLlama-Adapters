@@ -11,13 +11,15 @@
   ],
   "receipts": [
     "0x2166a547bc27fef846c9858e3101b84d1a8d994e",
-    "0x647d46c0577453be8c75039f829740b5d2e44938"
+    "0x647d46c0577453be8c75039f829740b5d2e44938",
+    "0x789637f1f3fde2760d66b365f2cf7e30d2c7f6ca"
   ],
   "excludedTokens": [
     "0x7163ae1b5aea2f09ebc609c52b4dcac0a7a4bc2d",
     "0x78c88cf8f6e612955526ceb501be82bf3279bd5d",
     "0x2166a547bc27fef846c9858e3101b84d1a8d994e",
-    "0x647d46c0577453be8c75039f829740b5d2e44938"
+    "0x647d46c0577453be8c75039f829740b5d2e44938",
+    "0x789637f1f3fde2760d66b365f2cf7e30d2c7f6ca"
   ],
   "stateView": "0xf3334192d15450cdd385c8b70e03f9a6bd9e673b",
   "v3Factories": [
@@ -74,6 +76,7 @@
     {
       "name": "V2",
       "engine": "0x22658055b70b8b09616b1e0953f2a51cc66cf493",
+      "asset": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
       "cashoutRouter": "0x38e37cc00427dd2a930d2a31e29e4104530d671b",
       "startBlock": 58114969,
       "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
@@ -82,6 +85,7 @@
     {
       "name": "V2",
       "engine": "0x08561c817a5bf5230f91c001800449f047e4c07d",
+      "asset": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
       "cashoutRouter": "0x8f0ddfbb88a4a70ef4c82ab237eb8407c6b6d866",
       "startBlock": 60445674,
       "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
@@ -90,8 +94,45 @@
     {
       "name": "V3",
       "engine": "0xfee799ade96229c2c128bc5ed9e55f8d9d01a7e9",
+      "asset": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
       "cashoutRouter": "0x895285fdbbec09eada41fc3784117d5177427acc",
       "startBlock": 62950248,
+      "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
+    },
+    {
+      "name": "Intent V1, r9 code (Pashov final fixes, I-04 tenth-unit floor)",
+      "engine": "0x856e4232469b957150cb29a8ce9b60059449e87e",
+      "asset": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+      "cashoutRouter": "0x3e7dc9bd908f5ba5aae43238c915e4f28a073ea7",
+      "startBlock": 88938673,
+      "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
+    },
+    {
+      "name": "Intent V1 GLD",
+      "engine": "0xf2b98f79040b4157373093cdda2a4f2cb3c838d8",
+      "asset": "0xc9a981fee1f9dec688bb123ccdecc63d0debfc4e",
+      "cashoutRouter": "0x4fb133edc4b72b81b2804b00b4e843ad34deca84",
+      "startBlock": 89095605,
+      "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
+    },
+    {
+      "name": "Intent V1 NVDA",
+      "engine": "0x380a536b1c8bf9e8c1035413497f767f76d30b6e",
+      "asset": "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",
+      "cashoutRouter": "0xdc5c966e05279fb860b4986c7483e431f1a3d482",
+      "startBlock": 89111601,
+      "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
+      "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
+    },
+    {
+      "name": "Intent V1 HIMS",
+      "engine": "0x359bb9751f5c2cfdce5d034a9742e7a0a3ac8e54",
+      "asset": "0xccee82fe024c36fa15e1005ede3e9e4787e23d09",
+      "cashoutRouter": "0x4a9ef39ca35ff26e4f21099e8dd8914c1df8bb14",
+      "startBlock": 90058471,
       "v3Manager": "0x73991a25c818bf1f1128deaab1492d45638de0d3",
       "v4Manager": "0x58daec3116aae6d93017baaea7749052e8a04fa7"
     }
@@ -140,6 +181,40 @@
       "kind": "earn",
       "address": "0x124d74d5626d392e937c3410c0325ea464700682",
       "startBlock": 64910936
+    }
+  ],
+  "intent": [
+    {
+      "id": "USDG",
+      "asset": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+      "factory": "0x20a908d82885cf4e990a9f8f3f5a483687660822",
+      "core": "0x856e4232469b957150cb29a8ce9b60059449e87e",
+      "fillRouter": "0xf8560439d914fe1fc2c1a2faa5b19ed46f73208d",
+      "startBlock": 88949068
+    },
+    {
+      "id": "GLD",
+      "asset": "0xc9a981fee1f9dec688bb123ccdecc63d0debfc4e",
+      "factory": "0x0966d92887d41796fcf6f77159d543b1565fec0d",
+      "core": "0xf2b98f79040b4157373093cdda2a4f2cb3c838d8",
+      "fillRouter": "0x5f4c6be5cb0695f7a795debbed326d760dc30566",
+      "startBlock": 89095877
+    },
+    {
+      "id": "NVDA",
+      "asset": "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",
+      "factory": "0xcb848a80801bfcdb7fa43a6729013ecf319a000b",
+      "core": "0x380a536b1c8bf9e8c1035413497f767f76d30b6e",
+      "fillRouter": "0xda8bb629cfd4ffd8e0e00d7bf96fba35bbf354f4",
+      "startBlock": 89111885
+    },
+    {
+      "id": "HIMS",
+      "asset": "0xccee82fe024c36fa15e1005ede3e9e4787e23d09",
+      "factory": "0x48a234770e74d907071b8d310f06cf253a846e9d",
+      "core": "0x359bb9751f5c2cfdce5d034a9742e7a0a3ac8e54",
+      "fillRouter": "0x81495ca59861b17af926fad46d8b2d9f547479b7",
+      "startBlock": 90059003
     }
   ]
 }

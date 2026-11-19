@@ -5,9 +5,12 @@ const { getConnection, sumTokens2, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } = r
 // Akashi vaults: Senior/Junior USDC vaults whose deposits the vault program allocates to
 // lending and credit protocols through adapter programs. Each vault keeps its cash in
 // two token accounts (idle, and payout for funded withdrawals not yet claimed); each leg
-// holds its protocol receipt token (jlUSDC, Kamino cTokens, syrupUSDC, PRIME, AUTO, PST)
-// and a USDC transit account, all owned by the leg's authority PDA.
-const PROGRAM_ID = new PublicKey('11pvmug4MazGHegPLFYn7RxSwoV7AkFF1LSbbNJ1QyF')
+// holds its protocol or receipt token (e.g. ONyc, Hastra AUTO, Huma PST, Kamino Earn
+// shares, jlUSDC, Kamino cTokens, syrupUSDC) and a USDC transit account, all owned by
+// the leg's authority PDA.
+// Vault program with commissions (live since 2026-10-27). The earlier program
+// 11pvmug4MazGHegPLFYn7RxSwoV7AkFF1LSbbNJ1QyF was wound down and owns no accounts.
+const PROGRAM_ID = new PublicKey('12i2UkpXrG9QExaZfisyqowHVDW2kf2RK7xFxUo71bDi')
 
 // sha256("account:Vault")[0..8]
 const VAULT_DISCRIMINATOR = Buffer.from([211, 8, 232, 43, 2, 152, 117, 119])
@@ -20,6 +23,7 @@ const VAULT_DISCRIMINATOR = Buffer.from([211, 8, 232, 43, 2, 152, 117, 119])
 //            max_valuation_age_slots u64, junior_seed u64 },
 //   state u8, usdc_mint, senior_mint, junior_mint, idle_account, payout_account,
 //   senior_escrow, junior_escrow (Pubkey each), accounts_initialized bool, leg_count u8, ...
+//   (the fee ledger is appended at the end and not read here)
 const PREMIUM_CURVE_LEN = 8 + 8 + 32 + 32 + 2 + 2 // offset of the curve's u32 length
 const MAX_CURVE_POINTS = 4 // #[max_len(4)] in state.rs
 const AFTER_CURVE = 4 + 4 + 8 + 8 + 2 + 2 + 8 + 8 // rest of params
@@ -68,7 +72,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  doublecounted: true, // the legs' receipt tokens are deposits in Kamino Lend, Jupiter Lend, Maple, Hastra and Huma
-  methodology: 'Token balances held by every Akashi vault: USDC in each vault\'s idle and payout accounts (payout holds funded withdrawals not yet claimed), plus the protocol receipt tokens and USDC held by each leg\'s authority (jlUSDC, Kamino reserve cTokens, syrupUSDC, Hastra PRIME/AUTO, Huma PST). Those positions are also counted by Kamino Lend, Jupiter Lend, Maple, Hastra and Huma, so the TVL is marked double counted. An async exit still pending at the protocol (e.g. a Huma redemption request) holds no token and is counted once it settles.',
+  doublecounted: true, // the legs' tokens are deposits in OnRe, Hastra, Huma, Kamino, Jupiter Lend and Maple
+  methodology: 'Token balances held by every Akashi vault: USDC in each vault\'s idle and payout accounts (payout holds funded withdrawals not yet claimed), plus the protocol tokens and USDC held by each leg\'s authority (e.g. OnRe ONyc, Hastra AUTO/PRIME, Huma PST, Kamino Earn shares and reserve cTokens, jlUSDC, syrupUSDC). Those positions are also counted by OnRe, Hastra, Huma, Kamino, Jupiter Lend and Maple, so the TVL is marked double counted. An async exit still pending at the protocol (e.g. a Huma redemption request) holds no token and is counted once it settles.',
   solana: { tvl },
 }

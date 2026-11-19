@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk')
 const { PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
 const { getConnection, getMultipleAccounts, decodeAccount, sumTokens2 } = require('../helper/solana')
+const { getCache, setCache } = require('../helper/cache')
 const { POSITION_V2_DISCRIMINATOR } = require('../helper/utils/solana/layouts/meteora-dlmm-layout')
 
 const HAWKFI_PROGRAM = new PublicKey('FqGg2Y1FNxMiGd51Q6UETixQWkF5fB92MysbYogRJb3P')
@@ -11,6 +12,10 @@ const USER_PDA_DISCRIMINATOR = bs58.encode(Buffer.from('9011f207136bad76', 'hex'
 const BINS_PER_ARRAY = 70
 const DLMM_POSITION_BASE_SIZE = 8120 // resized positions append 112 bytes per extra bin, liquidity share first
 const DLMM_EXTRA_BIN_SIZE = 112
+
+const CACHE_PROJECT = 'hawksight'
+const CACHE_KEY = 'solana-dlmm-empty-owners'
+const EMPTY_OWNER_RECHECK_SECONDS = 7 * 24 * 3600
 
 const readU128 = (data, offset) => data.readBigUInt64LE(offset) + (data.readBigUInt64LE(offset + 8) << 64n)
 
@@ -22,28 +27,48 @@ async function getUserPdas(connection) {
   return accounts.map(({ pubkey }) => pubkey.toBase58())
 }
 
-async function tvl(api) {
-  const connection = getConnection(api.chain)
-  const ownerSet = new Set(await getUserPdas(connection))
-  // no dataSize filter: resized positions are larger than the base PositionV2 account
-  // the scan is sharded by the owner's first byte, a single scan over all positions exceeds the RPC's scan limit
-  const positionKeys = []
+// Positions are fetched per owner: scanning all DLMM positions exceeds the RPC's scan limit, even sharded by owner byte.
+// ~95% of user PDAs hold no position, so owners found empty are cached and only re-checked once a week;
+// owners with positions and new owners are checked every run.
+async function getPositionAccounts(connection) {
+  const owners = await getUserPdas(connection)
+  const { emptyOwners = {} } = await getCache(CACHE_PROJECT, CACHE_KEY)
+  const now = Math.floor(Date.now() / 1000)
+  const stillEmpty = {}
+  const toCheck = []
+  for (const owner of owners) {
+    if (now - emptyOwners[owner] < EMPTY_OWNER_RECHECK_SECONDS) stillEmpty[owner] = emptyOwners[owner]
+    else toCheck.push(owner)
+  }
+
+  const positionAccounts = []
   await sdk.util.runInPromisePool({
-    concurrency: 3,
-    items: [...Array(256).keys()],
-    processor: async (ownerByte) => {
+    concurrency: 10,
+    items: toCheck,
+    processor: async (owner) => {
+      // no dataSize filter: resized positions are larger than the base PositionV2 account
       const rows = await connection.getProgramAccounts(DLMM_PROGRAM, {
         filters: [
           { memcmp: { offset: 0, bytes: bs58.encode(POSITION_V2_DISCRIMINATOR) } },
-          { memcmp: { offset: 40, bytes: bs58.encode(Buffer.from([ownerByte])) } },
+          { memcmp: { offset: 40, bytes: owner } },
         ],
-        dataSlice: { offset: 40, length: 32 },
       })
-      rows.forEach(({ pubkey, account }) => { if (ownerSet.has(new PublicKey(account.data).toBase58())) positionKeys.push(pubkey) })
+      rows.forEach(({ account }) => positionAccounts.push(account))
+      if (rows.length) return
+      // first-time empties get a random age so the weekly re-checks are spread across runs instead of landing on one
+      const firstSeen = emptyOwners[owner] === undefined
+      stillEmpty[owner] = firstSeen ? now - Math.floor(Math.random() * EMPTY_OWNER_RECHECK_SECONDS) : now
     },
   })
 
-  const positions = (await getMultipleAccounts(positionKeys)).filter(Boolean).map(info => {
+  await setCache(CACHE_PROJECT, CACHE_KEY, { emptyOwners: stillEmpty })
+  return positionAccounts
+}
+
+async function tvl(api) {
+  const connection = getConnection(api.chain)
+
+  const positions = (await getPositionAccounts(connection)).map(info => {
     const position = decodeAccount('meteoraPosition', info)
     const shares = position.liquidityShares.map(share => BigInt(share.toString()))
     for (let offset = DLMM_POSITION_BASE_SIZE; offset < info.data.length; offset += DLMM_EXTRA_BIN_SIZE)

@@ -30,6 +30,10 @@ const config = {
   zora: { factory: "0x0575338e4c17006ae181b47900a84404247ca30f", fromBlock: 25434534 },
   wc: { factory: "0xb1860d529182ac3bc1f51fa2abd56662b7d13f33", fromBlock: 9111872 },
   ink: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 4580556 },
+  celo: { factory: "0x288dc841a52fca2707c6947b3a777c5e56cd87bc", fromBlock: 43985163 },
+  hyperliquid: { factory: "0x12d4fd9c5dedd00ab8a0bce2cf0167bbf94b6b1f", fromBlock: 45998366 },
+  linea: { factory: "0x248083fb965359d82b06c1f5322480dcfc1ad857", fromBlock: 28974969 },
+  elysium: { factory: "0xE2e105d3F7209A9DA11f83cCf3E7398a753823F1", fromBlock: 256083 },
   soneium: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 2473300, useIndexerSql: true },
   avax: { factory: "0x06380c0e0912312b5150364b9dc4542ba0dbbc85", fromBlock: 56195376, useIndexerSql: true },
   bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, useIndexerSql: true, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343', '0x8145eb83744aac883b68ae34060bebb5031d8f5c',
@@ -38,7 +42,8 @@ const config = {
     '0x44f161ae29361e332dea039dfa2f404e0bc5b5cc', // H hacked 2026-06-08
     '0xac531eb26ca1d21b85126de8fb87e80e09002dcf', // fake SAND mispriced on BSC (~$5.6B phantom TVL)
     '0xbe8d9ec5d3c9313e4af08d50b6f85af76a69a1f1', // USDB mispriced, same coingecko asset blacklisted on arc
-
+    '0xf8f331dfa811132c43c308757cd802ca982b7211', // MCH: 4.2e22 supply, priced at $0.0000677 (~$508 quadrillion phantom TVL)
+    '0xef6d459fe81c3ed53d292c936b2df5a8084975de', // crUSDT: dead Cream market, 0 cash, exchangeRate inflated by interest on bad debt (~$279M phantom TVL)
   ] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1, useIndexerSql: true },
   monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895, useIndexerSql: true },

@@ -2,7 +2,9 @@ const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper, } = require("../helper/unknownTokens")
 const { getCoreAssets, getUniqueAddresses, } = require("../helper/tokenMapping")
 const { getSqrtPriceX96AtTick, } = require("../helper/utils/tick")
+const { getLogs2, } = require("../helper/cache/getLogs")
 const config = require("./config")
+const vestingConfig = require("./vestingConfig")
 
 const project = 'bulky/team-finance'
 
@@ -152,6 +154,22 @@ async function addV3Positions({ api, nftAddress, positions, whitelistedTokens, i
   }
 }
 
+const vestingCreatedEvent = 'event VestingCreated(address indexed creator, address vestingAddr, address indexed token, bytes32 merkleRoot, uint256 totalAmount, uint256 fee)'
+const vestingFactoryV2 = '0x65d22f2b883f4527ba64d6f5123cb4f04cccae98'
+const vestingV2CreatedEvent = 'event VestingCreated(address indexed creator, address vestingAddr, address indexed token, bytes32 merkleRoot, uint256 start, uint256 end, uint256 totalAmount, uint256 fee)'
+
+async function vesting(api) {
+  const { fromBlock, factories, v2FromBlock, blacklistedTokens = [], } = vestingConfig[api.chain]
+  const sources = factories.map(factory => ({ factory, eventAbi: vestingCreatedEvent, fromBlock, }))
+  if (v2FromBlock) sources.push({ factory: vestingFactoryV2, eventAbi: vestingV2CreatedEvent, fromBlock: v2FromBlock, })
+  const tokensAndOwners = []
+  for (const { factory, eventAbi, fromBlock } of sources) {
+    const logs = await getLogs2({ api, factory, eventAbi, fromBlock, })
+    logs.forEach(({ token, vestingAddr }) => tokensAndOwners.push([token, vestingAddr]))
+  }
+  return api.sumTokens({ tokensAndOwners, blacklistedTokens, })
+}
+
 function getPositionAmounts({ tickLower, tickUpper, liquidity }, sqrtPriceX96) {
   const sp = Number(sqrtPriceX96) / 2 ** 96
   const sa = Number(getSqrtPriceX96AtTick(+tickLower)) / 2 ** 96
@@ -166,11 +184,19 @@ module.exports = {
   methodology: `Counts each LP pair's native token and
   stable balance, adjusted to reflect locked pair's value.
   Balances and merged across multiple locker to return sum TVL per chain.
-  Locked Uniswap V3 style positions count their native token and stable side the same way`,
+  Locked Uniswap V3 style positions count their native token and stable side the same way.
+  Vesting counts the tokens still held by vesting contracts deployed through the Team Finance vesting factories`,
   misrepresentedTokens: true,
   isHeavyProtocol: true,
 };
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl }
+})
+
+const blastHaltedAt = Date.parse('2026-11-17') / 1e3
+module.exports.blast = { tvl: async (api) => !api.timestamp || api.timestamp >= blastHaltedAt ? {} : tvl(api) }
+
+Object.keys(vestingConfig).forEach(chain => {
+  module.exports[chain] = { tvl: module.exports[chain]?.tvl ?? (() => ({})), vesting }
 })

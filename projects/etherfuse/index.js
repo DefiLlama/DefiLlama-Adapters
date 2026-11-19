@@ -1,6 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getTokenSupplies } = require('../helper/solana');
-const { get } = require('../helper/http');
+const { stellar } = require('@defillama/sdk').chains;
 
 // ---------------- CONFIG ----------------
 const config = {
@@ -48,20 +48,9 @@ async function solanaTVL(api) {
 
 // ---------------- STELLAR TVL ----------------
 async function stellarTVL(api) {
-  for (const [tokenName, asset] of Object.entries(config.stellar)) {
-    const [code, issuer] = asset.split('-');
-    try {
-      const res = await get(`https://api.stellar.expert/explorer/public/asset/${code}-${issuer}`);
-      if (!res || !res.supply) {
-        throw new Error(`Stellar API returned invalid data for ${asset}: ${JSON.stringify(res)}`);
-      }
-
-      // Correct scaling: divide by 10^7 to get actual supply in millions
-      const supply = Number(res.supply) / 1e7;
-      api.addTokens(asset, supply);
-    } catch (err) {
-      throw err;
-    }
+  for (const asset of Object.values(config.stellar)) {
+    const { supply } = await stellar.getAssetSupply({ asset }); // stroops, the coins server prices `CODE-ISSUER` with 7 decimals
+    api.addTokens(asset, supply);
   }
 }
 

@@ -1,59 +1,36 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 // --- CONSTANTS ---
-const AERO_TOKEN = ADDRESSES.base.AERO;
+// On 2026-10-22 Aerodrome migrated to Aero on Base. iAERO's backing moved from veAERO NFTs
+// held by the PermalockVault (0x180DAB53968e599Dd43CF431E27CB01AA5C37909) into a permanent
+// stake on the Aero VotingEscrow.
+const AERO_TOKEN = '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee'; // Aero AERO (new token)
 const iAERO_TOKEN = '0x81034fb34009115f215f5d5f564aac9ffa46a1dc';
-const VE_AERO_CONTRACT = '0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4'; // Aerodrome Voting Escrow
+const AERO_VOTING_ESCROW = '0xBF7977E1521e9a3032bf7243Ee4712f311f13915';
 
-const VAULT_ADDRESS = '0x180DAB53968e599Dd43CF431E27CB01AA5C37909';
+// Permanent Aero stakes that back iAERO. Update this list if the stake is moved or re-issued
+// (e.g. when the sAERO vault takes custody of it).
+const STAKE_IDS = [1584];
+
 const PEG_DEFENDER = '0x7961523a81cc89beb33f2f140255213a6433cdbd';
+const POOL_V2 = '0x72Decb30DFE4F6Cf7Db3ba1D58411dDda5ed903b'; // Aero vAMMV2-AERO/iAERO
 
-const POOL_V2 = '0x08d49da370ecffbc4c6fdd2ae82b2d6ae238affd';
-
-// --- ABIs ---
 const ABI = {
-  // Standard
-  balanceOf: "erc20:balanceOf",
-  token0: "function token0() view returns (address)",
-  token1: "function token1() view returns (address)",
-  totalSupply: "function totalSupply() view returns (uint256)",
-  tokenOfOwnerByIndex: "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
-
-  // veAERO Specific
-  ownerToNFTokenIdList: "function ownerToNFTokenIdList(address, uint256) view returns (uint256)",
-  locked: "function locked(uint256) view returns (int128 amount, uint256 end)",
-
-  // V2 Pool Reserves
-  getReserves: "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  staked: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)',
 };
 
 async function tvl(api) {
+  // AERO side of the protocol-owned AERO/iAERO liquidity held by the Peg Defender
+  await sumTokens2({ api, owner: PEG_DEFENDER, tokens: [POOL_V2], resolveLP: true });
+  api.removeTokenBalance(iAERO_TOKEN); // we dont treat project's own token as TVL
 
-  await sumTokens2({ api, owner: PEG_DEFENDER, tokens: [POOL_V2], resolveLP: true })
-  api.removeTokenBalance(iAERO_TOKEN)  // we dont treat project's own token as TVL
-
-
-  // --- PART A: veAERO in Vault ---
-  const vaultBalance = await api.call({ target: VE_AERO_CONTRACT, params: [VAULT_ADDRESS], abi: ABI.balanceOf });
-  const calls = [];
-
-
-  for (let i = 0; i < vaultBalance; i++) {
-    calls.push({ target: VE_AERO_CONTRACT, params: [VAULT_ADDRESS, i] });
-  }
-  const vaultTokenIds = await api.multiCall({ abi: ABI.ownerToNFTokenIdList, calls });
-
-    const lockedCalls = vaultTokenIds.map(id => ({ target: VE_AERO_CONTRACT, params: [id] }));
-    const lockedData = await api.multiCall({ abi: ABI.locked, calls: lockedCalls });
-
-    lockedData.forEach((data) => {
-      api.add(AERO_TOKEN, data.amount);
-    });
+  // AERO permanently staked on the Aero VotingEscrow
+  const stakes = await api.multiCall({ target: AERO_VOTING_ESCROW, abi: ABI.staked, calls: STAKE_IDS });
+  stakes.forEach(({ amount }) => api.add(AERO_TOKEN, amount));
 }
 
 module.exports = {
-  methodology: 'TVL includes veAERO locked in the protocol vault and V2 liquidity held by the Peg Defender. iAERO is priced internally via the AERO peg.',
+  methodology: 'TVL is the AERO permanently staked on the Aero VotingEscrow that backs iAERO, plus the AERO side of the AERO/iAERO liquidity owned by the Peg Defender. iAERO itself is excluded.',
   base: {
     tvl
   }

@@ -25,36 +25,86 @@ async function getHypercoreStakedHype(user) {
  * they are unpriceable dust here.
  */
 async function addHypercoreSpotBalances({ api, owners = [], blacklistedTokens = [] }) {
+  const addToken = await getCoreTokenAdder({ api, blacklistedTokens })
+  for (const user of owners) {
+    const { balances } = await post(API_URL, { type: 'spotClearinghouseState', user })
+    for (const { coin, token, total } of balances) addToken(token, +total, coin)
+  }
+}
+
+/**
+ * Add a user's HyperCore lending positions (supplied minus borrowed, per token) to the api.
+ *
+ * On a default-mode account, manually supplied tokens leave the spot balance, so
+ * spotClearinghouseState no longer shows them. Unified and portfolio-margin accounts
+ * already report lent balances in spot state, so those are skipped here.
+ */
+async function addHypercoreLendingBalances({ api, owners = [], blacklistedTokens = [] }) {
+  const addToken = await getCoreTokenAdder({ api, blacklistedTokens })
+  for (const user of owners) {
+    const mode = await post(API_URL, { type: 'userAbstraction', user })
+    if (mode === 'unifiedAccount' || mode === 'portfolioMargin') continue
+    const { tokenToState } = await post(API_URL, { type: 'borrowLendUserState', user })
+    if (!Array.isArray(tokenToState))
+      throw new Error(`Unexpected borrowLendUserState response for ${user}`)
+    for (const [token, { supply, borrow }] of tokenToState) {
+      const supplied = Number(supply?.value)
+      const borrowed = Number(borrow?.value)
+      if (typeof supply?.value !== 'string' || typeof borrow?.value !== 'string' || !Number.isFinite(supplied) || !Number.isFinite(borrowed))
+        throw new Error(`Unexpected borrowLendUserState value for ${user}, token ${token}`)
+      addToken(token, supplied - borrowed)
+    }
+  }
+}
+
+// Returns (token index, amount, coin?) => void, which adds one HyperCore token amount to the api.
+async function getCoreTokenAdder({ api, blacklistedTokens = [] }) {
   const { tokens: meta } = await post(API_URL, { type: 'spotMeta' })
   const tokenById = {}
   meta.forEach(token => tokenById[token.index] = token)
   const blacklist = new Set(blacklistedTokens.map(i => i.toLowerCase()))
 
-  for (const user of owners) {
-    const { balances } = await post(API_URL, { type: 'spotClearinghouseState', user })
-    for (const { coin, token, total } of balances) {
-      const amount = +total
-      if (!amount) continue
-      const info = tokenById[token]
-      if (!info) continue
-      if (coin === 'HYPE') {
-        api.addGasToken(BigInt(Math.round(amount * 1e18)))
-        continue
-      }
-      if (coin === 'USDC') {
-        // spotMeta points USDC at its bridge contract, which is not the address
-        // the pricing side knows - count it as plain dollars instead
-        api.addUSDValue(amount)
-        continue
-      }
-      const address = info.evmContract?.address
-      if (!address || blacklist.has(address.toLowerCase())) continue
-      // the EVM twin's decimals are the core token's weiDecimals shifted by the
-      // per-token extra the bridge applies
-      const decimals = info.weiDecimals + (info.evmContract.evm_extra_wei_decimals ?? 0)
-      api.add(address, BigInt(Math.round(amount * 10 ** decimals)))
+  return (token, amount, coin) => {
+    if (!amount) return
+    const info = tokenById[token]
+    if (!info) return
+    coin = coin ?? info.name
+    if (coin === 'HYPE') {
+      api.addGasToken(BigInt(Math.round(amount * 1e18)))
+      return
     }
+    if (coin === 'USDC') {
+      // spotMeta points USDC at its bridge contract, which is not the address
+      // the pricing side knows - count it as plain dollars instead
+      api.addUSDValue(amount)
+      return
+    }
+    const address = info.evmContract?.address
+    if (!address || blacklist.has(address.toLowerCase())) return
+    // the EVM twin's decimals are the core token's weiDecimals shifted by the
+    // per-token extra the bridge applies
+    const decimals = info.weiDecimals + (info.evmContract.evm_extra_wei_decimals ?? 0)
+    api.add(address, BigInt(Math.round(amount * 10 ** decimals)))
   }
 }
 
-module.exports = { getUserStakingSummary, getHypercoreStakedHype, addHypercoreSpotBalances }
+/**
+ * Add a user's HyperCore perp margin equity (accountValue, USDC-denominated) to the api.
+ */
+async function addHypercorePerpMargin({ api, owners = [] }) {
+  for (const user of owners) {
+    const { marginSummary } = await post(API_URL, { type: 'clearinghouseState', user })
+    const accountValue = +(marginSummary?.accountValue ?? 0)
+    if (accountValue) api.addUSDValue(accountValue)
+  }
+}
+
+/**
+ * Add a user's full HyperCore holdings: spot balances plus perp margin equity.
+ */
+async function addHypercoreBalances({ api, owners = [], blacklistedTokens = [] }) {
+  await addHypercoreSpotBalances({ api, owners, blacklistedTokens })
+  await addHypercorePerpMargin({ api, owners })
+}
+
+module.exports = { getUserStakingSummary, getHypercoreStakedHype, addHypercoreSpotBalances, addHypercoreLendingBalances, addHypercorePerpMargin, addHypercoreBalances }

@@ -5,6 +5,7 @@ const tradingAccountRegistryContractId = '0x284c6802ad33bb95a37a1113106238ee9d08
 const queryPageSize = 50;
 
 async function tvl(api) {
+  throw new Error('pulling tvl from their api now')
   let contractIds = [];
 
   for (let page = 0; ; page++) {

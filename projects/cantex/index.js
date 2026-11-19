@@ -33,6 +33,7 @@ async function tvl(api) {
 
 function addReserve(api, coingeckoIds, instrument, reserve) {
   if (reserve == null) return // pool with no reserves yet
+  if (instrument.id === 'EDELx') return // Canton-native token distinct from EDEL (docs.edel.finance/token/overview), tokens/info maps it to EDEL's CoinGecko id
   const coingeckoId = coingeckoIds[`${instrument.admin}:${instrument.id}`]
   if (!coingeckoId) return // token without a CoinGecko listing is excluded from TVL
   // Reserves are decimal strings in whole token units; do not scale them again.
@@ -50,6 +51,6 @@ module.exports = {
     'TVL is the sum of the token reserves held in all live Cantex pools, read from the Cantex public API (/v1/public/pools/state), ' +
     'which serves per-pool reserve balances derived from on-chain Canton ledger events. ' +
     'Each Canton instrument is mapped to the CoinGecko coin it represents via /v1/public/tokens/info; ' +
-    'tokens without a CoinGecko listing are excluded from TVL. Cantex has no borrow side, so nothing is netted.',
+    'tokens without a CoinGecko listing are excluded from TVL, as is EDELx, a Canton-native token distinct from EDEL. Cantex has no borrow side, so nothing is netted.',
   canton: { tvl },
 }

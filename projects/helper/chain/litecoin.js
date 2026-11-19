@@ -13,13 +13,14 @@ async function getBalance(addr) {
 async function sumTokens({ balances = {}, owners = [] }) {
   let total = 0
 
-  await PromisePool
+  const { errors } = await PromisePool
   .withConcurrency(5)
   .for(owners)
   .process(async owner => {
     const balance = await getBalance(owner)
     total += balance
   })
+  if (errors && errors.length) throw errors[0]
   sdk.util.sumSingleBalance(balances, 'litecoin', total)
   return balances
 }

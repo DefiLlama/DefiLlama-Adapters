@@ -58,9 +58,10 @@ async function tvl(api) {
   })
 
   await PromisePool.withConcurrency(5).for(escrows).handleError(rethrow).process(async (e) => {
-    const { account } = await get(`/v2/accounts/${getApplicationAddress(e.id)}`)
+    const { account } = await get(`/v2/accounts/${getApplicationAddress(e.id)}`, { 'include-all': true })
+    if (account.deleted) return
     for (const asset of account.assets ?? []) {
-      if (!asset.amount) continue
+      if (asset.deleted || !asset.amount) continue
       if (String(asset['asset-id']) === USDC) api.add(USDC, asset.amount)
       else api.add(USDC, Math.floor(asset.amount * (e.price ?? 0) / 1e6)) // YES/NO tokens valued at the order's limit price
     }

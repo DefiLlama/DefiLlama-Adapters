@@ -7,11 +7,11 @@ const erc20 = require('./abis/erc20.json');
 const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
-  return axios.get(url)
+  return axios.get(url, { timeout: http.DEFAULT_TIMEOUT })
 }
 
 async function postURL(url, data) {
-  return axios.post(url, data)
+  return axios.post(url, data, { timeout: http.DEFAULT_TIMEOUT })
 }
 
 function createIncrementArray(length) {
@@ -326,13 +326,13 @@ function once(func) {
   return wrapped
 }
 
-function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses }) {
   return async (api) => {
 
     if (!withdrawalAddress && !withdrawalAddresses?.length)
       throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
 
-    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    const addresses = [...new Set((withdrawalAddresses ?? [withdrawalAddress]).map(i => i.toLowerCase()))]
     api.addGasToken(await beacon.balance(addresses))
     return api.getBalances()
   };
@@ -370,7 +370,9 @@ function getCustomScriptTvl(chain, project) {
               {
                 range: {
                   timestamp: {
-                    gte: Math.floor(Date.now() / 1000) - 24 * 60 * 60, // last 24 hours
+                    // last 24 hours; log timestamps are epoch milliseconds (sdk.elastic.writeLog default).
+                    // comparing against a seconds threshold accepted any log, however old - metadao served April balances for months
+                    gte: Date.now() - 24 * 60 * 60 * 1000,
                   },
                 },
               },
@@ -383,7 +385,10 @@ function getCustomScriptTvl(chain, project) {
     })
 
     if (cachedLog?.hits?.hits?.length > 0) {
-      const balances = cachedLog.hits.hits[0]._source.balances
+      const { balances, timestamp } = cachedLog.hits.hits[0]._source
+      // belt and braces: a script that stamps seconds would slip past the range filter above
+      if (timestamp < Date.now() - 24 * 60 * 60 * 1000)
+        throw new Error(`Latest custom script log for ${project}/${chain} is stale (timestamp ${timestamp})`)
       return balances
     }
     throw new Error("No recent cached TVL found, run the custom script to populate the cache")

@@ -100,7 +100,7 @@ async function run() {
   // stamp each module with the commit that added its file (meta.addedCommit),
   // so consumers (born-to-llama bot) do not need a local clone for commit links
   try {
-    const { fileMap, dirMap, createdMap } = getGitAddedInfo()
+    const { fileMap, dirMap, createdMap, registryKeyMap } = getGitAddedInfo()
     for (const [modulePath, moduleObject] of Object.entries(moduleMap)) {
       if (!moduleObject || typeof moduleObject !== 'object') continue
       const path = `projects/${modulePath}`
@@ -112,6 +112,8 @@ async function run() {
         ?? dirMap[path.replace(/\/index\.js$/, '')]
         ?? createdMap[path]
         ?? createdMap[`${path}.js`]
+        // registry adapters are a key inside a shared registries/ file, not a file of their own
+        ?? registryKeyMap[modulePath.replace(/\.js$/, '').replace(/\/index$/, '')]
       if (commit) {
         if (!moduleObject.meta) moduleObject.meta = {}
         moduleObject.meta.addedCommit = commit
@@ -164,6 +166,8 @@ function convertHallmarkStrings(hallmarks) {
 // dirMap: directory path -> commit that added the first file under it (adapter creation)
 // createdMap: file path -> oldest commit that touched it, i.e. the commit that
 //   created it (fallback for files that never show as added)
+// registryKeyMap: registry key -> oldest commit whose diff added that key at the
+//   top level of a registries/ or cex/ config object
 function getGitAddedInfo() {
   const { execSync } = require("child_process")
 
@@ -198,7 +202,24 @@ function getGitAddedInfo() {
 
   const added = walk('--diff-filter=A', false)
   const touched = walk('', true)
-  return { fileMap: added.fileMap, dirMap: added.dirMap, createdMap: touched.fileMap }
+  return { fileMap: added.fileMap, dirMap: added.dirMap, createdMap: touched.fileMap, registryKeyMap: walkRegistryKeys() }
+
+  function walkRegistryKeys() {
+    const output = execSync('git log --first-parent --no-renames --format="%H|" -p --unified=0 -- registries/ cex/', { maxBuffer: 1024 * 1024 * 512 }).toString()
+    const keyMap = {}
+    let commit = null
+    for (const line of output.split('\n')) {
+      if (line.length === 41 && line[40] === '|' && /^[0-9a-f]{40}$/.test(line.slice(0, 40))) {
+        commit = line.slice(0, 40)
+        continue
+      }
+      // added top level entry, e.g. `+  "h10x": {` or `+  'o1-wsto-vault': {`
+      const match = /^\+  ['"]?([\w.$/-]+)['"]?\s*:/.exec(line)
+      // log is newest-first: overwriting keeps the oldest commit that added the key
+      if (match && commit) keyMap[match[1]] = commit
+    }
+    return keyMap
+  }
 }
 
 //Replace all fuctions with mock functions in an object all the way down

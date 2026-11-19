@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js');
-const { getConnection, sumTokens2, getTokenAccountBalances } = require('../helper/solana');
+const { getConnection, sumTokens2, getTokenAccountBalances, getMultipleAccounts } = require('../helper/solana');
 const { Program } = require('@project-serum/anchor');
 const kaminoIdl = require('./kamino-lending-idl.json');
 const kaminoFarmsIdl = require('./kamino-farms-idl.json');
@@ -27,35 +27,40 @@ const ETHENA_KVAULT_POSITIONS = [
   },
 ]
 
-async function tvl(api) {
+const KLEND_PROGRAM_ID = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
+const KAMINO_PROGRAM_ID = new PublicKey('6LtLpnUFNByNXLyCoK9wA2MykKAmQNZKBdY8s47dehDc');
+
+// tvl and borrowed both need the reserves of the listed markets, so they are read once per process
+let reservesPromise;
+function getReserves() {
+  if (!reservesPromise) reservesPromise = fetchReserves();
+  return reservesPromise;
+}
+
+// Reserves of the markets listed by the Kamino API, without kToken reserves (their underlying is counted elsewhere)
+async function fetchReserves() {
   const connection = getConnection();
-  const programId = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
-  const markets = (await getConfig('kamino-lending', 'https://api.kamino.finance/v2/kamino-market')).map(x => x.lendingMarket);
-  const tokenAccounts = [];
-  const ktokens = {};
+  const markets = new Set((await getConfig('kamino-lending', 'https://api.kamino.finance/v2/kamino-market')).map(x => x.lendingMarket));
 
-  const kaminoLendProgram = new Program(kaminoIdl, programId, { connection, publicKey: PublicKey.unique() });
-  for (const market of markets) {
-    const reserves = await kaminoLendProgram.account.reserve.all([
-      { dataSize: 8624 },
-      { memcmp: { offset: 32, bytes: market } },
-    ]);
+  // one scan of every reserve, then keep the listed markets, instead of one scan per market
+  const kaminoLendProgram = new Program(kaminoIdl, KLEND_PROGRAM_ID, { connection, publicKey: PublicKey.unique() });
+  const reserves = (await kaminoLendProgram.account.reserve.all([{ dataSize: 8624 }]))
+    .map(r => r.account)
+    .filter(r => markets.has(r.lendingMarket.toString()));
 
-    for (const reserveData of reserves) {
-      const reserve = reserveData.account;
-      if (
-        ktokens[reserve.liquidity.mintPubkey] ||
-        (await isKToken(new PublicKey(reserve.liquidity.mintPubkey), connection))
-      ) {
-        ktokens[reserve.liquidity.mintPubkey] = true;
-      } else {
-        ktokens[reserve.liquidity.mintPubkey] = false;
-        tokenAccounts.push(reserve.liquidity.supplyVault.toString());
-      }
-    }
-  }
+  // one batched read of the distinct mints instead of a getAccountInfo per reserve
+  const mints = [...new Set(reserves.map(r => r.liquidity.mintPubkey.toString()))];
+  const mintInfos = await getMultipleAccounts(mints);
+  const kTokens = new Set(mints.filter((mint, i) => isKToken(new PublicKey(mint), mintInfos[i])));
+
+  return reserves.filter(r => !kTokens.has(r.liquidity.mintPubkey.toString()));
+}
+
+async function tvl(api) {
+  const reserves = await getReserves();
+  const tokenAccounts = reserves.map(r => r.liquidity.supplyVault.toString());
   await sumTokens2({ api, tokenAccounts })
-  await subtractEthenaKVaultDeposits(api, connection)
+  await subtractEthenaKVaultDeposits(api, getConnection())
 }
 
 async function subtractEthenaKVaultDeposits(api, connection) {
@@ -83,10 +88,9 @@ async function subtractEthenaKVaultDeposits(api, connection) {
   }
 }
 
-async function isKToken(mint, connection) {
-  const mintInfo = await connection.getAccountInfo(new PublicKey(mint.toString()));
+// a kToken's mint authority is the Kamino PDA derived from the mint
+function isKToken(mint, mintInfo) {
   const rawMint = MintLayout.decode(mintInfo.data.slice(0, MintLayout.span));
-  const KAMINO_PROGRAM_ID = new PublicKey('6LtLpnUFNByNXLyCoK9wA2MykKAmQNZKBdY8s47dehDc');
   const [expectedMintAuthority] = PublicKey.findProgramAddressSync(
     [Buffer.from('authority'), mint.toBuffer()],
     KAMINO_PROGRAM_ID
@@ -95,38 +99,11 @@ async function isKToken(mint, connection) {
 }
 
 async function borrowed(api) {
-  const connection = getConnection();
-  const programId = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
-  const markets = (await getConfig('kamino-lending', 'https://api.kamino.finance/v2/kamino-market')).map(x => x.lendingMarket);
-  const ktokens = {};
-
-  const kaminoLendProgram = new Program(kaminoIdl, programId, { connection, publicKey: PublicKey.unique() });
-  
-  for (const market of markets) {
-    const reserves = await kaminoLendProgram.account.reserve.all([
-      { dataSize: 8624 },
-      { memcmp: { offset: 32, bytes: market } },
-    ]);
-    for (const reserveData of reserves) {
-      const reserve = reserveData.account;
-      
-      // Skip kTokens like in the tvl function
-      if (
-        ktokens[reserve.liquidity.mintPubkey] ||
-        (await isKToken(new PublicKey(reserve.liquidity.mintPubkey), connection))
-      ) {
-        ktokens[reserve.liquidity.mintPubkey] = true;
-      } else {
-        ktokens[reserve.liquidity.mintPubkey] = false;
-        
-        // Calculate borrowed amount using this formula
-        // liquidity.borrowedAmountSf / 2**60 / 10**liquidity.mintDecimals
-        const borrowedAmountSf = reserve.liquidity.borrowedAmountSf;
-        const borrowedAmount = borrowedAmountSf / Math.pow(2, 60)
-
-        api.add(reserve.liquidity.mintPubkey.toString(), borrowedAmount);
-      }
-    }
+  const reserves = await getReserves();
+  for (const reserve of reserves) {
+    // liquidity.borrowedAmountSf / 2**60 is the borrowed amount in the mint's base units
+    const borrowedAmount = reserve.liquidity.borrowedAmountSf / Math.pow(2, 60)
+    api.add(reserve.liquidity.mintPubkey.toString(), borrowedAmount);
   }
 }
 

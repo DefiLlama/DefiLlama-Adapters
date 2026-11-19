@@ -1,11 +1,13 @@
 const { getExports } = require('../helper/heroku-api')
 const indexExports = require('./index')
 const chainKeys = Object.keys(indexExports).filter(chain => typeof indexExports[chain] === 'object' && indexExports[chain].tvl)
+const vestingChains = chainKeys.filter(chain => indexExports[chain].vesting)
 
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   ...getExports("team-finance", chainKeys),
+  ...getExports("team-finance", vestingChains, ['vesting']),
   // hallmarks: [
   //   ['2022-10-27',"$14.5m Exploit"]
   // ],

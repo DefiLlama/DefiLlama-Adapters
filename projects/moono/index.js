@@ -1,6 +1,7 @@
 const { getMultipleAccounts, sumTokens2 } = require('../helper/solana')
 const ADDRESSES = require('../helper/coreAssets.json')
 
+// program moono1nEzk6NWAHzgFjeeSYn3WVtr3N2ZVArwsxrhFX
 const QUOTE_VAULTS = [
   {
     mint: ADDRESSES.solana.SOL,
@@ -29,22 +30,31 @@ async function borrowed(api) {
   const accounts = await getMultipleAccounts(QUOTE_VAULTS.map((vault) => vault.quoteVault), { api })
 
   accounts.forEach((account, index) => {
-    if (!account) throw new Error(`Missing Moono quote vault account: ${QUOTE_VAULTS[index].quoteVault}`)
+    const { quoteVault, mint } = QUOTE_VAULTS[index]
+    // the protocol swept and closed its quote vaults on 2026-11-02, a missing vault means it was wound down
+    if (!account) {
+      console.log(`Moono quote vault ${quoteVault} is closed, skipping`)
+      return
+    }
 
     const data = Buffer.from(account.data)
-     if (data.length < MIN_QUOTE_VAULT_SIZE) {
-        throw new Error(`Unexpected Moono quote vault layout: ${QUOTE_VAULTS[index].quoteVault}`)
+    if (data.length < MIN_QUOTE_VAULT_SIZE) {
+      throw new Error(`Unexpected Moono quote vault layout: ${quoteVault}`)
     }
     if (!data.subarray(0, DISCRIMINATOR_SIZE).equals(QUOTE_VAULT_DISCRIMINATOR)) {
-        throw new Error(`Unexpected Moono quote vault discriminator: ${QUOTE_VAULTS[index].quoteVault}`)
+      throw new Error(`Unexpected Moono quote vault discriminator: ${quoteVault}`)
     }
-   
-    api.add(QUOTE_VAULTS[index].mint, data.readBigUInt64LE(BORROWED_OFFSET).toString())
+
+    api.add(mint, data.readBigUInt64LE(BORROWED_OFFSET).toString())
   })
 }
 
 module.exports = {
   timetravel: false,
+  deadFrom: '2026-11-02',
+  hallmarks: [
+    ['2026-11-02', 'Protocol wound down: quote vaults swept and closed, program set inert'],
+  ],
   methodology: 'TVL counts idle LP-supplied quote liquidity tracked by Moono quote vaults. Borrowed reports the outstanding principal separately.',
   solana: {
     tvl,

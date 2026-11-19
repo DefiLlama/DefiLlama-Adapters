@@ -15,6 +15,11 @@ const bitcoinAddressBook = require('../projects/helper/bitcoin-book/index.js')
 // Adapters using ohmStaking/ohmTreasury, sumChainTvls, mergeExports, isComplex
 // with extra custom code, or any logic beyond a single treasuryExports() call
 // stay as individual files in projects/treasury/.
+
+// Since the 2026-10-22 Aerodrome -> Aero migration, veAERO (and OP veVELO) locks live on as sAERO stakes
+// on the Aero VotingEscrow on Base, owned by the treasury's Base address
+const sAERO = { isAltAbi: true, baseToken: '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee', veNft: '0xBF7977E1521e9a3032bf7243Ee4712f311f13915', lockedAbi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', fromBlock: 52688150 }
+
 const gmxOwners = [
         '0x4bd1cdaab4254fc43ef6424653ca2375b4c94c0e',
         '0xc6378ddf536410c14666dc59bc92b5ebc0f2f79e',
@@ -29,6 +34,49 @@ const gmxOwners = [
       ]
 
 const configs = {
+  // ----- plain treasuryExports adapters living under projects/<name>/ (migrated 2026-10-22) -----
+  'anvil': {
+    ethereum: { owners: ['0x5d2725fdE4d7Aa3388DA4519ac0449Cc031d675f'] },
+  },
+  'aof-stake-mining': {
+    metis: { owners: ['0x946D86422775E7B32F3F8f0580504EADccF9b800'], tokens: [nullAddress] },
+  },
+  'astaria-v2': {
+    base: { owners: ['0x0000000000A6F0986c92cf1EC4d2e77aFBE1466D'] },
+    ethereum: { owners: ['0x0000000000A6F0986c92cf1EC4d2e77aFBE1466D'] },
+  },
+  'plasma-saving-vaults': {
+    plasma: {
+      tokens: [ADDRESSES.plasma.USDT0, '0x5D72a9d9A9510Cd8cBdBA12aC62593A58930a948'],
+      owners: ['0xd1074E0AE85610dDBA0147e29eBe0D8E5873a000'], // LendingVault
+    },
+  },
+  'tokeniza': {
+    moonbeam: {
+      tokens: [nullAddress, ADDRESSES.moonbeam.USDT, ADDRESSES.moonbeam.USDC, ADDRESSES.moonbeam.WGLMR],
+      owners: ['0xbaECbdde43C6c6a167c37d5b789023592B27fF93'],
+    },
+    ethereum: {
+      tokens: [nullAddress, ADDRESSES.ethereum.USDT],
+      owners: ['0xbaECbdde43C6c6a167c37d5b789023592B27fF93'],
+    },
+    polygon: {
+      tokens: [nullAddress, ADDRESSES.polygon.USDT],
+      owners: ['0xbaECbdde43C6c6a167c37d5b789023592B27fF93'],
+    },
+  },
+  'trader-joe-stek': {
+    avax: {
+      tokens: [
+        nullAddress,
+        '0xEbB5d4959B2FbA6318FbDa7d03cd44aE771fc999', // kong
+        '0x5ac04b69bde6f67c0bd5d6ba6fd5d816548b066a', // tech
+        '0x8ad25b0083c9879942a64f00f20a70d3278f6187', // meow
+      ],
+      owners: ['0xb22c6d1c2897b950fc1040913c0d84d788f24df2'], // staking contract
+      ownTokens: [],
+    },
+  },
   // ----- from batch00.js -----
   'treasury/nexus-mutual': {
     ethereum: {
@@ -1924,6 +1972,29 @@ const configs = {
       ownTokens: ['0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73'],
     },
   },
+  'treasury/escapehub': {
+    solana: {
+      owners: [
+        '4grHVxs1ja1aRMZ7kvGKs5cPbkbLjJYr9eTE7uuJGyhf',
+        '73CzwRjyUiANeLFKWwTqwgGmQrafiW7DiaJDyy7cvf4T',
+        '3erpBQDik1HfHjcUFZvk1pwpeYEo3pspeAjkDXf7ZsKD',
+        '9JUq2gJ23qBsfDWJ4SuSHjQyy4iMejYnv5CUScDsKdiK',
+        '3RvCQ7CimppEa3Vh3eT8cWVTZ3wrcXxxzdYB2oSLLQEo',
+        'BFZmmrBpStJhd73f8eAK6kKHCENcRbrfeFXjudBjzG5z',
+        '3HXixFEArKq9bkT12eESU2Qvi2AYpFbu5hUbwN8VKNcv',
+        '8ZniFaHPUyAEGC2ca8E29sBzHCKZkNLEU1cx2PMWyRLX',
+      ],
+      tokens: [ADDRESSES.solana.SOL],
+    },
+    base: {
+      owners: ['0x1f4E1154f549a1CA1E6f4C7fd2908fC7BF4C76Cd'],
+      tokens: [nullAddress, ADDRESSES.base.WETH],
+    },
+    robinhood: {
+      owners: ['0x1f4E1154f549a1CA1E6f4C7fd2908fC7BF4C76Cd'],
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+    },
+  },
   'treasury/ether': {
     optimism: {
       tokens: [
@@ -2920,7 +2991,8 @@ const configs = {
         ADDRESSES.base.AERO, // AERO
       ],
       solidlyVeNfts: [
-        { baseToken: ADDRESSES.base.AERO, veNft: "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4" },// veVelo
+        { baseToken: ADDRESSES.base.AERO, veNft: "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4" },// veAERO
+        sAERO,
       ],
       owners: ['0x586CF50c2874f3e3997660c0FD0996B090FB9764'],
       ownTokens: [],
@@ -3147,6 +3219,25 @@ const configs = {
       ownTokens: ["0x91fbB2503AC69702061f1AC6885759Fc853e6EaE"]
     },
   },
+  'treasury/kalos': {
+    elysium: {
+      owners: [
+        '0xcA105395094Ceb27e6AfdA492c6379cBF468CDb8', // revenue splitter
+        '0xca10595e1F7a722ed80A6BEc7Ac27d183F3C541C', // Treasury vault
+        '0xCA1058B5339e97cE75AB2885A56570Ecb2F54881', // Team vault
+        '0xcA10538C4e513512cf1a222A2e00cF720b9CA9Cc', // Rewards vault
+        '0xCA105Dd42d1563889D4eF0905Fdf91E97517Df46', // Liquidity vault
+      ],
+      tokens: [
+        nullAddress,
+        ADDRESSES.elysium.WHYPE,
+        ADDRESSES.elysium.USDC,
+        ADDRESSES.elysium.USDT0,
+        ADDRESSES.elysium.kHYPE,
+        '0xe45a355d9e9cAd2aD85F2d03E3eE3102A036acF0', // KNTQ
+      ],
+    },
+  },
   'treasury/kayen-finance': {
     chz: {
       tokens: [nullAddress],
@@ -3259,6 +3350,7 @@ const configs = {
       ],
       solidlyVeNfts: [
         { baseToken: ADDRESSES.base.AERO, veNft: '0xebf418fe2512e7e6bd9b87a8f0f294acdc67e6b4' },
+        sAERO,
       ],
       owners: ['0xa79cd47655156b299762dfe92a67980805ce5a31'],
       ownTokens: ['0xdcefd8c8fcc492630b943abcab3429f12ea9fea2'],
@@ -4099,6 +4191,20 @@ const configs = {
       resolveLP: true,
     },
   },
+  'treasury/bond-ceo': {
+    robinhood: {
+      owners: [
+        '0xa91e7bc98ddc6cfed37e9bf47e627b33adef5b1b', // Treasury
+      ],
+      tokens: [
+        ADDRESSES.robinhood.USDG,
+        '0xbe5296539b19da2ce4771f9725e9de1073281015', // BOND/USDG POL
+        '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG (ERC-4626)
+      ],
+      ownTokens: ['0xeb288e3ca1607e7b921bcb47d5831e88331d65ef'], // BOND
+      resolveLP: true,
+    },
+  },
   'treasury/nukes-fun': {
     robinhood: {
       owners: [
@@ -4139,10 +4245,23 @@ const configs = {
       owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
       tokens: [nullAddress],
     },
+    avax: {
+      owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
+      tokens: [nullAddress, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt],
+    },
+    arbitrum: {
+      owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
+      tokens: [nullAddress, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT],
+    },
+    monad: {
+      owners: ['0xDD85F4AfDE114dc7c480b012Feaa83152a0C0D09'], // pool treasury(), receives swept protocol fees
+      tokens: [nullAddress, ADDRESSES.monad.USDC, ADDRESSES.monad.USDT],
+    },
     solana: {
       owners: [
         'GRbpmTbmDeGn8BXHXb1jfEeUT6sGAt7Da44YpWxCS8nr', // ops wallet
         'FrXTvkebakR2oNctgsHz1yeijmu9wTZifL3FmffJP5xJ', // team wallet
+        '2Xkx9CgdeTiHNZ9Fb5nmjQsGK6TbbJkenVZnvrKC8x1w', // Solana pool treasury, receives swept protocol fees
       ],
       ownTokens: ['HuAXPyDWDaMYFKuwQHpqL1oPnj93zdzWmtvFGzCeCUa7'], // MASK
     },
@@ -4696,6 +4815,13 @@ const configs = {
     arbitrum: {
       tokens: [nullAddress],
       owners: ['0xf32e759d5f1c63ed62042497d3a50f044ee0982b'],
+    },
+  },
+  'treasury/quotum': {
+    robinhood: {
+      owners: ['0x42AbC7b64eD47dB6899b4F01Aa6c765c600a53a2'], // TaxSink
+      tokens: [ADDRESSES.robinhood.NVDA],
+      fetchCoValentTokens: false,
     },
   },
   'treasury/raac': {
@@ -6197,6 +6323,20 @@ const configs = {
       ownTokens: ["0x474021845c4643113458ea4414bdb7fb74a01a77"],
     },
   },
+  'treasury/urm': {
+    base: {
+      tokens: [
+        ADDRESSES.base.USDC,
+        '0xBC7755a153E852CF76cCCDdb4C2e7c368f6259D8', // HESTIA
+        '0x5baBfc2F240bc5De90Eb7e19D789412dB1dEc402', // CIRCLE
+      ],
+      owners: ['0xd3e9637Cfc255AD3FffA1e88Bd9BA7fa5a76b4Fe'], // Fortress
+      resolveUniV3: true,
+      ownTokens: ['0xf0e3349f00972475a5d16721796091aa3b997837'], // URM
+      blacklistedTokens: ['0x95fa3FA511Ef8DD9e48453eaE76b241D1c1AC651'], // fURM
+      fetchCoValentTokens: false,
+    },
+  },
   'treasury/uwulend': {
     ethereum: {
       tokens: [
@@ -6646,6 +6786,13 @@ const configs = {
         nullAddress,
       ],
       owners: ["0x5be4fb908a43d61b1c8086fe62e39ae8ec483926"],
+    },
+  },
+  'treasury/quotrons': {
+    ink: {
+      // Buyback Safe and Growth Sink; the Growth Sink's LP vault shares are counted in the protocol's TVL
+      owners: ['0x79aF491d1B533A3fcD1c9ab009931aC95701F6ff', '0x73F5111EE91672c114923793C03B5c868d9C5E03'],
+      tokens: [nullAddress, ADDRESSES.ink.WETH, ADDRESSES.ink.USDT0, ADDRESSES.ink.USDC, '0xe343167631d89B6Ffc58B88d6b7fB0228795491D'], // + USDG
     },
   },
 }

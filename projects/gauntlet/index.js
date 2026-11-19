@@ -1,5 +1,4 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
-const axios = require('axios');
 // const aeraV3 = require('../aera-v3')  // excluded till we find a way to exclude deposits from aera-v3 into other gauntlet curated vaults
 const coreAssets = require('../helper/coreAssets.json')
 
@@ -8,6 +7,7 @@ const configs = {
   blockchains: {
     ethereum: {
       morphoVaultOwners: [
+        '0x256DaC8fad2788F4182A42cE8F26029F0DEd7cf9',
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
         '0xd79766D2FeC43886e995EA415a2Bf406280B2e2C',
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
@@ -67,6 +67,7 @@ const configs = {
     },
     base: {
       morphoVaultOwners: [
+        '0x256DaC8fad2788F4182A42cE8F26029F0DEd7cf9',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
         '0xFd144f7A189DBf3c8009F18821028D1CF3EF2428',
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
@@ -89,6 +90,11 @@ const configs = {
         '0xdb223128a4524ce733c575421267dc56992c796d',
         '0x70f6fd99a43fce03648b20d44b9f0cd2b14eea68',
         '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
+      ],
+    },
+    xlayer: {
+      morphoVaultOwners: [
+        '0xf3b8d49d4c0f6d4c882a1f529504b455f76ea66d',
       ],
     },
     polygon: {
@@ -159,13 +165,13 @@ const configs = {
       ],
     },
     morph: {
-      morpho: [
-        '0x9131eb40bd0bdce73c72755f1bb2cf39a9453341', // Gauntlet USDC Morpho vault
+      morphoVaultOwners: [
+        '0x178fcfe43feeaf3c194f1360d57804040809e88e',
       ],
     },
     arc: {
-      morpho: [
-        '0xdECcd53BE5453215821184824B519E04C7e00bC7', // Gauntlet USDC Prime (Morpho V2)
+      morphoVaultOwners: [
+        '0x592db4fdaac9d4a0c358aef06f05d918d0415b89',
       ],
     },
   }
@@ -289,21 +295,9 @@ async function tvl(api) {
   await kaminoLendVaultTvl(api, { adminAddress: GAUNTLET_ADMIN })
 }
 
-async function megavaultTvl(api) {
-  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
-  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
-  const pnlArr = data.megavaultPnl;
-  if (!pnlArr || !pnlArr.length) return;
-  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
-
-  // Report as USD Coin using coingecko identifier
-  api.add(ADDRESSES.ethereum.USDC, (currentTvl * 1e6).toFixed(0));
-}
-
 async function combinedEthereumTvl(api) {
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.ethereum?.tvl) await curatorExport.ethereum.tvl(api);
-  await megavaultTvl(api);
   // await aeraV3.ethereum.tvl(api);
   
   // remove bad debt from Resolv hack

@@ -57,13 +57,16 @@ function treasuryExports(config) {
     if (ownTokens.length > 0) {
       // token auto-discovery must not run here: this bucket is meant to hold ownTokens
       // only, and anything it finds is already counted in the tvl bucket above
-      const { solOwners, fetchCoValentTokens, tokenConfig, ...other } = config[chain];
+      const { solOwners, fetchCoValentTokens, tokenConfig, solidlyVeNfts = [], ...other } = config[chain];
+      // veNft locks are added as their base token whatever `tokens` says, so keep only those locking an own token
+      const ownTokenSet = new Set(ownTokens.map(i => i.toLowerCase()))
       const opts = {
         ...other,
         owners: [...owners, ...ownTokenOwners],
         tokens: ownTokens,
         chain,
         uniV3WhitelistedTokens: ownTokens,
+        solidlyVeNfts: solidlyVeNfts.filter(i => ownTokenSet.has(i.baseToken.toLowerCase())),
       };
       exportObj[chain].ownTokens = sumTokensExport(opts);
     }

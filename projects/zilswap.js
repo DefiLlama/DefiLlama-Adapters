@@ -1,12 +1,11 @@
 const BigNumber = require('bignumber.js')
-const { call, formQuery } = require('./helper/chain/zilliqa')
+const { getContractSubState } = require('@defillama/sdk').chains.zilliqa
 
 // https://github.com/Switcheo/zilswap#deployed-contracts
 const CONTRACT = '459cb2d3baf7e61cfbd5fe362f289ae92b2babb0'
 
 async function tvl() {
-  const { result, error } = await call(formQuery({ params: [CONTRACT, 'pools', []] }))
-  if (error) throw new Error(`ZilSwap RPC error: ${error.message}`)
+  const result = await getContractSubState({ contract: CONTRACT, variable: 'pools' })
 
   const pools = result?.pools
   if (!pools || typeof pools !== 'object' || Array.isArray(pools))

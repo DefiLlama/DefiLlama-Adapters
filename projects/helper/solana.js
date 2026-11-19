@@ -538,9 +538,9 @@ async function sumTokens2_historical({
       const tokenAccountsSet = new Set(tokenAccountList);
       const solOwnersSet = new Set(getUniqueAddresses(solOwners, chain));
 
-      // Helper to check if mint is native SOL (canonical: So11111..., Allium variant: Sol11111...)
+      // Helper to check if mint is native SOL
       const isNativeSOL = (mint) => {
-        return mint === ADDRESSES.solana.SOL || mint === ADDRESSES.solana.SOL;
+        return mint === ADDRESSES.solana.SOL;
       };
 
       const tokenBalances = {};

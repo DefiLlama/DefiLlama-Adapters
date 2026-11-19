@@ -1,6 +1,8 @@
 const { sumTokens } = require("../helper/chain/elrond");
 const { getConfig } = require("../helper/cache");
 const { getCoreAssets } = require("../helper/tokenMapping");
+const { transformBalances } = require("../helper/portedTokens");
+const sdk = require("@defillama/sdk");
 
 const API_BASE_URL = "https://api.peerme.io";
 
@@ -17,20 +19,33 @@ async function getDaoAddresses() {
   )).filter(address => address !== null);
 }
 
-async function tvl() {
+// The elrond helper pauses between owners, so reading every DAO twice (once for tvl, once for vesting)
+// doubled the run. Balances are read once per process and split into core assets (tvl) and the rest (vesting).
+let balancesPromise;
+function getSplitBalances() {
+  if (!balancesPromise) balancesPromise = fetchSplitBalances();
+  return balancesPromise;
+}
+
+async function fetchSplitBalances() {
   const daoAddresses = await getDaoAddresses();
-  return await sumTokens({
-    owners: [...PROTOCOL_ADDRESSES, ...daoAddresses],
-    whitelistedTokens: getCoreAssets("elrond"),
-  });
+  const all = await sumTokens({ owners: [...PROTOCOL_ADDRESSES, ...daoAddresses] });
+  // the helper prefixes and renames token ids in its output, so core assets are matched by the keys it would produce
+  const coreBalances = {};
+  getCoreAssets("elrond").forEach(t => sdk.util.sumSingleBalance(coreBalances, t, "1", "elrond"));
+  const coreKeys = new Set(Object.keys(transformBalances("elrond", coreBalances)));
+  const core = {};
+  const rest = {};
+  for (const [key, value] of Object.entries(all)) (coreKeys.has(key) ? core : rest)[key] = value;
+  return { core, rest };
+}
+
+async function tvl() {
+  return { ...(await getSplitBalances()).core };
 }
 
 async function vestingTvl() {
-  const daoAddresses = await getDaoAddresses();
-  return await sumTokens({
-    owners: [...PROTOCOL_ADDRESSES, ...daoAddresses],
-    blacklistedTokens: getCoreAssets("elrond"),
-  });
+  return { ...(await getSplitBalances()).rest };
 }
 
 module.exports = {

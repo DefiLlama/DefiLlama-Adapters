@@ -9,12 +9,14 @@ const RESERVE = '0xEc417Ccb6dD26868Cca993a92F37217b1D4b3c2f' // thUSD reserve wa
 
 module.exports = {
   start: '2026-04-09', // thUSD deployed 2026-04-08
+  misrepresentedTokens: true, // the off-chain metal residual is booked as USDC, not as the asset actually held
   methodology:
     'thUSD TVL equals circulating thUSD supply, built from the reserve side. On-chain reserves held in the ' +
     'thUSD reserve wallet — thBILL (valued at thBILL contract NAV via convertToAssets, not market price), ' +
     'USDC and USDT — are reported as those assets. The remainder of supply is backed by physical gold and silver ' +
     'purchased and leased through StoneX and Monetary Metals, part of it tokenized as thGOLD and thSLVR held in the ' +
-    'reserve wallet, with the gold position hedged with CME gold futures, and is reported as thUSD. thBILL held in ' +
+    'reserve wallet, with the gold position hedged with CME gold futures, and is reported as USDC — a dollar ' +
+    'amount rather than a token balance, hence misrepresentedTokens. thBILL held in ' +
     'the reserve is also tracked by the Theo Network thBILL adapter, which is flagged doublecounted under the Theo ' +
     'Network parent.',
   hallmarks: [
@@ -46,8 +48,10 @@ module.exports = {
       // 3. Off-chain metal reserves = the remainder of supply not covered by on-chain reserves.
       //    Added unconditionally, as in projects/ethena, so the total is always exactly thUSD supply:
       //    were on-chain reserves ever to exceed supply, this residual goes negative and nets it back down.
+      //    Booked as USDC (also 6 decimals): the residual is a dollar quantity, and thUSD's own mark is a
+      //    CoinGecko feed off two stale Uniswap V4 pools that goes unpriced whenever it stops updating.
       const onchainUsd = await api.getBalancesV2().getUSDValue()
-      api.add(thUSD, supply - onchainUsd * 1e6)
+      api.add(ADDRESSES.ethereum.USDC, supply - onchainUsd * 1e6)
     },
   },
 }

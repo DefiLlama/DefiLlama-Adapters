@@ -23,3 +23,4 @@ const config = {
 module.exports = {
     ...cexExports(config), methodology: 'https://www.gemini.com/trust-center/'
 }
+Object.defineProperty(module.exports, '_rawConfig', { value: config, enumerable: false })

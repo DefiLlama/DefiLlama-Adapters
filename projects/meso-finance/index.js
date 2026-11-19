@@ -13,7 +13,8 @@ function getPoolData() {
   async function fetchPoolData(resolve, reject) {
     try {
       const poolAddresses = await getPoolAddresses()
-      const poolInfos = await Promise.all(poolAddresses.map(getPoolInfo))
+      const poolInfos = []
+      for (const pool of poolAddresses) poolInfos.push(await getPoolInfo(pool))
       resolve(poolInfos)
     } catch (e) { reject(e) }
   }

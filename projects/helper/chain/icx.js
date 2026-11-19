@@ -1,11 +1,13 @@
+// ICON JSON-RPC transport lives in @defillama/sdk (`sdk.chains.icon`, `ICON_RPC` overrides the endpoint);
+// this file keeps the TVL helpers (hex parsing into BigNumber, sumTokens).
 const ADDRESSES = require('../coreAssets.json')
-const { post } = require("../http");
+const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js');
 const { getUniqueAddresses } = require("../tokenMapping");
 const { transformBalances } = require("../portedTokens");
 const { sleep } = require("../utils");
 
-const icxApiEndpoint = 'https://ctz.solidwallet.io/api/v3';
+const icon = sdk.chains.icon
 
 const LOOP = new BigNumber('1000000000000000000');
 
@@ -17,33 +19,17 @@ function toHex(value) {
   return new BigNumber(value).div(LOOP);
 }
 
+// native ICX balance as the raw `0x` hex loop amount
 async function getICXBalance(address) {
-  let response = await post(icxApiEndpoint, {
-    jsonrpc: '2.0',
-    method: 'icx_getBalance',
-    id: 1234,
-    params: { address }
-  })
-  return response.result
+  return icon.rpc('icx_getBalance', { address })
 }
 
+// read-only `icx_call`; returns the raw hex / object unless `parseInt` (-> number) or `parseHex` (-> BigNumber ICX) is set
 async function call(address, method, params, { parseInt, parseHex } = {}) {
-  let response = await post(icxApiEndpoint, {
-    jsonrpc: '2.0',
-    method: 'icx_call',
-    id: 1234,
-    params: {
-      to: address,
-      dataType: 'call',
-      data: {
-        method: method,
-        params: params
-      }
-    }
-  })
-  if (parseInt) response.result = toInt(response.result)
-  if (parseHex) response.result = toHex(response.result)
-  return response.result
+  let result = await icon.call({ to: address, method, params })
+  if (parseInt) result = toInt(result)
+  if (parseHex) result = toHex(result)
+  return result
 }
 
 async function sumTokens({ api, owner, owners = [], tokens = [] }) {

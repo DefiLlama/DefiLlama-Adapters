@@ -154,7 +154,6 @@ module.exports = {
 
     // Bitcoin Custodian Addresses
     "131fpYjELat58RVzPp2A9Bo8oNuKiP4vxg",
-    "15G6tKbavXQ1ynipkZTPAMjEtuosN1Pkmg",
     "13btmzTg63MpdozLoyeVYCeRbXe4dWN52a",
     "1DtXWGnqWrZEk7XQarSkDUidbFdK7bj44n",
     "1JABsaDFCi28sp2uAmbajNJ2NvEiEMETtM",
@@ -437,6 +436,13 @@ module.exports = {
     "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
     "3PSEjhkUQDGRNDPWqAcPhy9tEY6g6AHgPN", // add on 18/09/2026
     "33FyMfJMRnqNvQiPDvE13L9cRHaEAXQziE", // add on 18/09/2026
+    "bc1q6mejasmfzd7hlasnlsnxuptwjk5y7dl3h0g3zj", // add on 21/10/2026
+    "bc1p3dfge99g2ulp8ry7almgr64fmwqzfxqclgh5mca39rzl2lw3zvasavfyzu", // add on 21/10/2026
+    "bc1ps398h24s2zwm763k0n6c7hq9y4r6jm94pf6mxntrwprtj47nyt8q8qacet", // add on 21/10/2026
+    "bc1p0jm3ucw8sh7edx37lw06ce9aaem09tcx2yr2zuenqr33hqce3lps67k0ns", // add on 21/10/2026
+    "bc1pk0ynqw5zt36sep3eq5qe3c70w7vcwremwv092e02e0htm9wlm7zsf4dvt6", // add on 21/10/2026
+    "19E7ErLwXbACKhfNoBAngYK6DBPukmx9V1", // add on 09/11/2026
+    "1EDu33g4TfWtQHktDK9uNS6GvhqhrmqP2q", // add on 09/11/2026
   ],
   bitmake: [
     // wallet provide by a bitmake team
@@ -522,6 +528,8 @@ module.exports = {
     "1HDnsptgeJ6fYFHCgd1TFzLSRpuVcV51GL",
     "1Nb9NUVWpjruzafXh2uKK5v5xxEEL1hPrH",
     "1P7o14PYsuiaj57DUDWoeD8f36fsc4VgVf",
+    "bc1qknl6p2cmw30cyx3fz4sdvjjqf6sj682qndcerk",
+    "bc1q3krff4s70lx4wfgnrr0ux2c09flcp5rgs2d8k6",
   ],
   cakeDefi: ["3GcSHxkKY8ADMWRam51T1WYxYSb2vH62VL"],
   coindcx: [
@@ -655,7 +663,10 @@ module.exports = {
     "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
     "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
     "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
-    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh"
+    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh",
+    "38PFUcFi7o7RVYYJjWCodU9t9yiQ9Qt8Gw", // add on 22/10/2026
+    "1MEPB525tEHRFLdq6aR8d2t8jaaRQj2iWX", // add on 22/10/2026
+    "bc1phqnz3j2a6dh2srwmfv9mnznvv68fxvhu0u683nmhe6v52fagtcsqlmrtge", // Gate Babylon staking, add on 06/11/2026
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",

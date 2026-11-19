@@ -1,9 +1,6 @@
-const sdk = require("@defillama/sdk");
 const { getLogs2 } = require("../helper/cache/getLogs");
-const { getFactoryTvl } = require("../terraswap/factoryTvl");
 
-// v1: terraswap-style CosmWasm factory on Injective
-const v1Factory = "inj1k9lcqtn3y92h4t3tdsu7z8qx292mhxhgsssmxg";
+// v1 (the CosmWasm factory) is tracked separately in projects/choice-exchange-v1
 
 // v2: an Infinity (Uniswap v4 style) fork on Injective EVM (chain id 1776).
 // Both pool managers custody every pool's tokens in the one singleton Vault, so
@@ -27,7 +24,7 @@ const v2 = {
   ],
 };
 
-async function v2Tvl(api) {
+async function tvl(api) {
   // `injective` is registered as both a cosmos and an EVM chain, and the sdk resolves
   // its block over the cosmos lcd. Same workaround as projects/pumex
   if (!api.block) api.block = (await api.provider.getBlockNumber()) - 20;
@@ -44,26 +41,10 @@ async function v2Tvl(api) {
   await api.sumTokens({ owner: v2.vault, tokens: [...tokens], permitFailure: true });
 }
 
-async function tvl(api) {
-  // kept apart as a precaution: v1 prices its pairs off their own reserve ratios,
-  // and that pass walks every balance on the api it is handed, not just the ones it
-  // put there. The two eras do not share an address namespace today, so nothing is
-  // observably wrong with sharing one api - this just keeps it that way.
-  const v1Api = new sdk.ChainApi({ chain: api.chain });
-  const v2Api = new sdk.ChainApi({ chain: api.chain });
-
-  await getFactoryTvl(v1Factory)(v1Api);
-  await v2Tvl(v2Api);
-
-  api.addBalances(v1Api.getBalances());
-  api.addBalances(v2Api.getBalances());
-}
-
 module.exports = {
-  misrepresentedTokens: true,
   // v2 reads at the current EVM height, since the block for a timestamp cannot be
-  // resolved on this chain - see v2Tvl
+  // resolved on this chain - see tvl
   timetravel: false,
-  methodology: "Liquidity on the DEX: the CosmWasm (v1) pair contracts' reserves, plus the tokens the Infinity (v2) singleton Vault holds on Injective EVM, in every currency a pool was opened with.",
+  methodology: "Liquidity on the DEX: the tokens the Infinity (v2) singleton Vault holds on Injective EVM, in every currency a pool was opened with.",
   injective: { tvl },
 };

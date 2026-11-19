@@ -1,6 +1,6 @@
 const { getConnection } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
-const { sleep } = require('../helper/utils')
+const { getCache, setCache } = require('../helper/cache')
 
 // Vaultex (https://vaultex.fun): Solana meme coin launchpad built on Meteora's
 // Dynamic Bonding Curve. Coins can be paired with several quote assets (SOL,
@@ -21,6 +21,11 @@ const CONFIG_FEE_CLAIMER_OFFSET = 40
 const POOL_CONFIG_OFFSET = 72
 const QUOTE_RESERVE_OFFSET = 240
 const IS_MIGRATED_OFFSET = 305
+const NOT_MIGRATED = '1' // base58 of the single byte 0x00
+
+const CACHE_PROJECT = 'vaultex'
+const CACHE_KEY = 'solana-empty-configs'
+const EMPTY_CONFIG_RECHECK_SECONDS = 7 * 24 * 3600
 
 async function tvl(api) {
   const connection = getConnection()
@@ -33,28 +38,39 @@ async function tvl(api) {
     dataSlice: { offset: CONFIG_QUOTE_MINT_OFFSET, length: 32 },
   })
 
+  // most configs have no live pools: those are re-checked once a week, the rest (and new configs) every run
+  const { emptyConfigs = {} } = await getCache(CACHE_PROJECT, CACHE_KEY)
+  const now = Math.floor(Date.now() / 1000)
+
   for (const { pubkey, account } of configs) {
+    const config = pubkey.toBase58()
+    if (now - emptyConfigs[config] < EMPTY_CONFIG_RECHECK_SECONDS) continue
+
     const quoteMint = new PublicKey(account.data).toBase58()
-    // one getProgramAccounts per config; spaced so public RPCs don't rate-limit (429)
-    await sleep(1200)
+    // one getProgramAccounts per config: memcmp filters can't be OR'ed
     const pools = await connection.getProgramAccounts(DBC_PROGRAM, {
       filters: [
         { memcmp: { offset: 0, bytes: VIRTUAL_POOL_DISC } },
-        { memcmp: { offset: POOL_CONFIG_OFFSET, bytes: pubkey.toBase58() } },
+        { memcmp: { offset: POOL_CONFIG_OFFSET, bytes: config } },
+        // migration moves the reserve to DAMM v2 but leaves quote_reserve unchanged, so migrated pools are filtered out by the RPC
+        { memcmp: { offset: IS_MIGRATED_OFFSET, bytes: NOT_MIGRATED } },
       ],
-      dataSlice: { offset: QUOTE_RESERVE_OFFSET, length: IS_MIGRATED_OFFSET - QUOTE_RESERVE_OFFSET + 1 },
+      dataSlice: { offset: QUOTE_RESERVE_OFFSET, length: 8 },
     })
-    for (const { account: { data } } of pools) {
-      // migration moves the reserve to DAMM v2 but leaves quote_reserve unchanged
-      if (data.readUInt8(IS_MIGRATED_OFFSET - QUOTE_RESERVE_OFFSET) !== 0) continue
-      // quote_reserve excludes the unclaimed protocol, partner and creator fees that sit in the same quote vault
+    // quote_reserve excludes the unclaimed protocol, partner and creator fees that sit in the same quote vault
+    for (const { account: { data } } of pools)
       api.add(quoteMint, data.readBigUInt64LE(0).toString())
-    }
+
+    if (pools.length) delete emptyConfigs[config]
+    else emptyConfigs[config] = now
   }
+
+  await setCache(CACHE_PROJECT, CACHE_KEY, { emptyConfigs })
 }
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   methodology:
     'TVL is the quote asset (SOL, USDC, PUMP and others) held as reserves in Vaultex bonding curves on Meteora Dynamic Bonding Curve. Vaultex pools are the pools created against DBC configs whose partner fee claimer is the Vaultex treasury. Launched tokens and unclaimed trading fees are not counted. Graduated curves are excluded: their liquidity moves to Meteora DAMM v2 and is counted there.',
   solana: { tvl },

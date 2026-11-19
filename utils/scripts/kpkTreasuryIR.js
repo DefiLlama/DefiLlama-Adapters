@@ -343,6 +343,7 @@ const CURATED_VAULTS = {
     "0xb5ce3CA2C774b72955C25875022FdD91f7a7B938": "Morpho",  // v2 wARS Yield
     "0x6251482812cE95d11b3E447FE6888b1a1bE66C25": "Morpho",  // v2 EURe Yield
     "0x7a72bcD2c3F7F7e4D6679170a0625bAB15D7DDa1": "Morpho",  // v2 USDC Yield RWA
+    "0x355A1c6A3f1946d4DbD7cE932492925AB9F261a7": "Morpho",  // v2 YO Ecosystem
     "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245": "Euler",   // kpk USDC Prime RWA (Euler Earn)
     "0xB6D6D89ad4b4D61C15a293e28b74f77F6817fF48": "Euler",   // kpk ETH Yield Term (Euler Earn)
     "0x8BcD746976885b5832bAD07B4921E3f2dD1D3703": "Symbiotic", // kpk USDC RWA Liquidity (Symbiotic v2 Liquid Lane)
@@ -356,6 +357,7 @@ const CURATED_VAULTS = {
   arbitrum: {
     "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d": "Morpho",  // USDC Yield
     "0x5837e4189819637853a357aF36650902347F5e73": "Morpho",  // USDC Yield v2
+    "0x7bfdE3A7bd346Da92521D384563F89BB45dE1f60": "Morpho",  // v2 EURe Yield
   },
   base: {
     "0x392B3CCf36C8adB8094F45573346B457414cD752": "Morpho",  // v2 USDC Yield
@@ -487,6 +489,7 @@ const PROTOCOL_TOKENS = {
     '0xdA89af5bF2eb0B225d787aBfA9095610f2E79e7D', // Upshift Resolv USR Maxi
     '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a', // Pendle PT-USDe-25SEP2025
     '0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b', // syrupUSDC (Maple)
+    '0x356B8d89c1e1239Cbbb9dE4815c39A1474d5BA7D', // syrupUSDT (Maple)
     '0xcafeaa466736aC01E0aC9ca72644BeF348694731', // Nexus RWI vault (unpriced, see RECEIPT_VAULTS)
     '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // Fluid fUSDC
     '0x5C20B550819128074FD538Edf79791733ccEdd18', // Fluid fUSDT
@@ -528,6 +531,7 @@ const PROTOCOL_TOKENS = {
     ADDRESSES.ethereum.USDT,
     ADDRESSES.ethereum.DAI,
     ADDRESSES.ethereum.WBTC,
+    '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c', // EURC (coreAssets has no ethereum EURC)
     '0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB', // COW
     '0x6810e776880C02933D47DB1b9fc05908e5386b96', // GNO
     '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72', // ENS
@@ -605,6 +609,7 @@ const TOKEN_PROTOCOLS = {
     '0xdA89af5bF2eb0B225d787aBfA9095610f2E79e7D': 'Upshift',     // Upshift Resolv USR Maxi
     '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a': 'Pendle',      // PT-USDe-25SEP2025
     '0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b': 'Maple',       // syrupUSDC
+    '0x356B8d89c1e1239Cbbb9dE4815c39A1474d5BA7D': 'Maple',       // syrupUSDT
     '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33': 'Fluid',       // fUSDC
     '0x5C20B550819128074FD538Edf79791733ccEdd18': 'Fluid',       // fUSDT
     '0x6A29A46E21C730DcA1d8b23d637c101cec605C5B': 'Fluid',       // fGHO

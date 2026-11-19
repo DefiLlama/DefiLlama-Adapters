@@ -125,12 +125,19 @@ module.exports = {
     }
   },
   "woofi": {
+    "methodology": "TVL is the balance of the WooPP pool on each chain in its base and quote tokens, the base tokens are the ones returned by the WOOFi IntegrationHelper (allBaseTokens). Staking counts WOO in the WOOFi staking contracts.",
     "fantom": {
       "tvl": { "owner": "0x286ab107c5E9083dBed35A2B5fb0242538F4f9bf", "tokens": [ADDRESSES.fantom.WFTM, "0x74b23882a30290451A17c44f4F05243b6b58C76d", ADDRESSES.fantom.WBTC, "0x6626c47c00F1D87902fc13EECfaC3ed06D5E8D8a", "0x04068da6c83afcfa0e13ba15a6696662335d5b75", "0x049d68029688eabf473097a2fc38ef61633a3c7a"] },
       "staking": { "owners": ["0x2Fe5E5D341cFFa606a5d9DA1B6B646a381B0f7ec", "0x1416E1378682b5Ca53F76656549f7570ad0703d9"], "tokens": ["0x6626c47c00f1d87902fc13eecfac3ed06d5e8d8a"] }
     },
     "bsc": {
-      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.bsc.WBNB, ADDRESSES.bsc.ETH, ADDRESSES.bsc.BTCB, "0x4691937a7508860F876c9c0a2a617E7d9E945D4B", ADDRESSES.bsc.USDT, ADDRESSES.bsc.BUSD, ADDRESSES.bsc.CAKE] },
+      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.bsc.WBNB, ADDRESSES.bsc.ETH, ADDRESSES.bsc.BTCB, "0x4691937a7508860F876c9c0a2a617E7d9E945D4B", ADDRESSES.bsc.USDT, ADDRESSES.bsc.BUSD, ADDRESSES.bsc.CAKE,
+        "0x02Fca66C1D1aFB4E2A7884261eB00F63598a7436", // NVDAB
+        "0xbe9D156892E55e7154BcD3cB0FEA677F9D3103E1", // SPCXB
+        "0x5b1910eAaD6450E50f816082Aa078C41F10C292f", // TSLAB
+        "0xCA750eF65f295BBECd685Abf54e82CAf297BDB61", // SKHYB
+        "0x205812CdBed920aFf76C6580abD681a46D11efc7", // QQQB
+      ] },
       "staking": { "owners": ["0x2AEab1a338bCB1758f71BD5aF40637cEE2085076", "0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13"], "tokens": ["0x4691937a7508860f876c9c0a2a617e7d9e945d4b"] }
     },
     "avax": {
@@ -175,10 +182,10 @@ module.exports = {
       "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.berachain.WBERA, ADDRESSES.berachain.WBTC, ADDRESSES.berachain.WETH, ADDRESSES.berachain.USDC] }
     },
     "hyperliquid": {
-      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.hyperliquid.WHYPE, "0xBe6727B535545C67d5cAa73dEa54865B92CF7907", "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463", ADDRESSES.hyperliquid.USDT0] }
+      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.hyperliquid.WHYPE, "0xBe6727B535545C67d5cAa73dEa54865B92CF7907", "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463", ADDRESSES.hyperliquid.USDT0, ADDRESSES.hyperliquid.USDC] }
     },
     "monad": {
-      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.monad.WMON, ADDRESSES.monad.WETH, ADDRESSES.monad.USDC] }
+      "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.monad.WMON, ADDRESSES.monad.WETH, ADDRESSES.monad.USDC, ADDRESSES.monad.WBTC, "0xd18B7EC58Cdf4876f6AFebd3Ed1730e4Ce10414b"] }
     }
   },
   "everclear": {
@@ -596,7 +603,7 @@ module.exports = {
   },
   "datamine": {
     "methodology": "Pool2 counts all the permanent liquidity in LOCK/WETH Uniswap v2 pool. Staking counts all the tokens locked-in to mint FLUX/ArbiFLUX/LOCK",
-    "hallmarks": [[1727644318, "Lockquidity Launch"]],
+    "hallmarks": [["2024-09-29", "Lockquidity Launch"]],
     "ethereum": {
       "tvl": { "__empty": true },
       "staking": {

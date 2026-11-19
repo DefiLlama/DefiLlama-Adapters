@@ -126,12 +126,8 @@ function mappingTokenAsset(type){
             return ADDRESSES.sui.USDC
         case '0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b::scallop_sui::SCALLOP_SUI':
             return ADDRESSES.sui.SUI
-        case '0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC':
-            return ADDRESSES.sui.BTC
-		case '0x7438e8caf5c345fbd3772517380bf0ca432f53892dee65ee0dda3eb127993cd9::bfbtc::BFBTC':
-            return ADDRESSES.sui.BTC
-		case '0x0041f9f9344cac094454cd574e333c4fdb132d7bcc9379bcd4aab485b2a63942::wbtc::WBTC':
-			return ADDRESSES.sui.BTC
+        // xBTC, bfBTC and bridged wBTC price on their own coin types; mapping them onto sui.BTC marked
+        // bfBTC, a yield-bearing LST worth 1.1145 BTC per share, at 1 BTC and hid which one moved
         default:
             return type
     }

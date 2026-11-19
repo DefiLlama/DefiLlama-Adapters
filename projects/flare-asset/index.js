@@ -1,63 +1,76 @@
+const sdk = require('@defillama/sdk')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { sumTokens } = require('../helper/sumTokens');
-const { post } = require('../helper/http')
+const { sumTokens } = require('../helper/sumTokens')
 
-const agentVaults = [
-  '0xe56f464c23760d563dd4c73dADA05159aE71FC50', // Au
-  '0xA69bF2eC0eF91A29B5da634BD4958AA32BaD9fe3', // Bifrost
-  '0x7CeC6EC27F3A0f0a37B1847E5Af3E99A7499A0bC', // Atlas
-  '0x0F6AB40fE44aA3AB15B8ff96Df98C6F5865F048E', // NORTSO
-  '0x8eA74D78A03F20597cEE115176f7f8b65271c87A', // OD
-  '0x09011d2A11A40DB855Cb00B3AA5a0F5F3bd485FD', // WK
-]
+const { xrpl } = sdk.chains
 
-const agentPools = [
-  '0xf45c1a5Ef4fB09F1c33f772175b2fec229D1885B', // Au
-  '0x3A06584A47972fF7005301b5A44c7D2214A4d3b4', // Bifrost
-  '0x0e647177Df92A75e16D4043EE4bbA9CcCae874A6', // Atlas
-  '0xd6af7ef36732A5A71121363bE380AB6C8e9F72e0', // NORTSO
-  '0x71eE56f6B793386cECf536CD566ff50FE558f70E', // OD
-  '0xa7F4335e5233C50e1022c2607dfE83c3d73d516B', // WK
-]
-
-const coreVault = "rfkXSaCZKTg1EZzec2rLDyrWHxRVJdtVXj"
-const escrowAccount = "rMLNvZR9dascY5jtCfCv3whAp8HdUSZAQ"
-
-async function XRPLLocked(api) {
-  const baseTokens = await sumTokens({ api, owner: coreVault, chain: 'ripple' })
-
-  // escrows
-  const response = await post('https://s1.ripple.com:51234', 
-    { "method": "account_objects", "params": [{
-        "account": coreVault,
-        "ledger_index": "validated",
-        "type": "escrow"
-      }]
-    }
-  )
-  if (response.result.error === 'actNotFound') return baseTokens;
-  const escrowed = response.result.account_objects.filter(
-    (obj) => obj.LedgerEntryType === 'Escrow' && obj.Destination === escrowAccount
-  ).reduce((acc, escrow) => acc + (+escrow.Amount / 1e6), 0)
-
-  return {
-    "ripple": baseTokens.ripple + escrowed,
-  }
+const abi = {
+  assetManager: 'address:assetManager',
+  getAllAgents: 'function getAllAgents(uint256 _start, uint256 _end) view returns (address[] _agents, uint256 _totalLength)',
+  getAgentInfo: 'function getAgentInfo(address _agentVault) view returns (tuple(uint8 status, address ownerManagementAddress, address ownerWorkAddress, address collateralPool, address collateralPoolToken, string underlyingAddressString, bool publiclyAvailable, uint256 feeBIPS, uint256 poolFeeShareBIPS, address vaultCollateralToken, uint256 mintingVaultCollateralRatioBIPS, uint256 mintingPoolCollateralRatioBIPS, uint256 freeCollateralLots, uint256 totalVaultCollateralWei, uint256 freeVaultCollateralWei, uint256 vaultCollateralRatioBIPS, address poolWNatToken, uint256 totalPoolCollateralNATWei, uint256 freePoolCollateralNATWei, uint256 poolCollateralRatioBIPS, uint256 totalAgentPoolTokensWei, uint256 announcedVaultCollateralWithdrawalWei, uint256 announcedPoolTokensWithdrawalWei, uint256 freeAgentPoolTokensWei, uint256 mintedUBA, uint256 reservedUBA, uint256 redeemingUBA, uint256 poolRedeemingUBA, uint256 dustUBA, uint256 liquidationStartTimestamp, uint256 maxLiquidationAmountUBA, uint256 liquidationPaymentFactorVaultBIPS, uint256 liquidationPaymentFactorPoolBIPS, int256 underlyingBalanceUBA, uint256 requiredUnderlyingBalanceUBA, int256 freeUnderlyingBalanceUBA, uint256 announcedUnderlyingWithdrawalId, uint256 buyFAssetByAgentFactorBIPS, uint256 poolExitCollateralRatioBIPS, uint256 redemptionPoolFeeShareBIPS))',
+  getCoreVaultManager: 'address:getCoreVaultManager',
+  coreVaultAddress: 'string:coreVaultAddress',
 }
 
+// every FXRP agent, read from the AssetManager that the FXRP token points to
+async function getAgents(api) {
+  const assetManager = await api.call({ target: ADDRESSES.flare.FXRP, abi: abi.assetManager })
+  const vaults = []
+  let total = 1
+  for (let start = 0; start < total; start += 100) {
+    const { _agents, _totalLength } = await api.call({ target: assetManager, abi: abi.getAllAgents, params: [start, start + 100] })
+    vaults.push(..._agents)
+    total = Number(_totalLength)
+  }
+  const infos = await api.multiCall({ target: assetManager, abi: abi.getAgentInfo, calls: vaults })
+  const agents = infos.map((info, i) => ({
+    vault: vaults[i],
+    vaultCollateralToken: info.vaultCollateralToken,
+    pool: info.collateralPool,
+    poolCollateralToken: info.poolWNatToken,
+    underlyingAddress: info.underlyingAddressString,
+  }))
+  return { assetManager, agents }
+}
+
+// vault collateral in each agent vault and WFLR in each collateral pool; FXRP fees and pool tokens held there are
+// skipped, as they are claims on the XRP and WFLR already counted
 async function flareTvl(api) {
+  const { agents } = await getAgents(api)
   return sumTokens2({
     api,
-    tokensAndOwners: [
-      ...agentVaults.map(v => [ADDRESSES.monad.USDT, v]), // USDT0 in agent vaults
-      ...agentPools.map(p => [ADDRESSES.flare.WFLR, p]), // WFLR in agent pools
-    ],
+    tokensAndOwners: agents.flatMap(a => [
+      [a.vaultCollateralToken, a.vault],
+      [a.poolCollateralToken, a.pool],
+    ]),
   })
 }
 
+// XRP backing FXRP: agents' underlying addresses, the core vault and the escrows it created
+async function xrplTvl(api) {
+  const flareApi = new sdk.ChainApi({ chain: 'flare', timestamp: api.timestamp })
+  const { assetManager, agents } = await getAgents(flareApi)
+  const owners = agents.map(a => a.underlyingAddress)
+
+  const coreVaultManager = await flareApi.call({ target: assetManager, abi: abi.getCoreVaultManager })
+  const coreVault = coreVaultManager === ADDRESSES.null ? undefined : await flareApi.call({ target: coreVaultManager, abi: abi.coreVaultAddress })
+  if (coreVault) owners.push(coreVault)
+
+  await sumTokens({ api, chain: 'ripple', owners })
+  if (!coreVault) return
+
+  // core vault escrows return to the core vault at expiry; escrows other accounts made towards it are skipped
+  const escrows = await xrpl.getAccountObjects({ account: coreVault, type: 'escrow' })
+  const escrowedDrops = escrows
+    .filter(e => e.Account === coreVault && typeof e.Amount === 'string')
+    .reduce((sum, e) => sum + Number(e.Amount), 0)
+  api.addCGToken('ripple', escrowedDrops / 1e6)
+}
+
 module.exports = {
-  methodology: "Value of USDT0 and WFLR held in Agent's vaults and pools together with XRP tokens locked on XRPL either in core vault or in the escrows.",
+  methodology: 'XRPL: XRP held in the underlying XRPL address of every FXRP agent and in the FAssets core vault, plus the XRP in escrows created by the core vault. Agents and the core vault address are read from the FXRP AssetManager and CoreVaultManager contracts on Flare. Flare: vault collateral (currently USDT0) in each agent vault and WFLR in each agent collateral pool.',
+  timetravel: false,
   flare: { tvl: flareTvl },
-  ripple: { tvl: XRPLLocked },
+  ripple: { tvl: xrplTvl },
 }

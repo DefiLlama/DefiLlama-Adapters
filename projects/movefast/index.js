@@ -43,7 +43,8 @@ async function launchedTokens() {
 
 const tvl = async (api) => {
   const tokens = await launchedTokens();
-  const resources = await Promise.all(tokens.map((token) => getResources(token)));
+  const resources = []
+  for (const token of tokens) resources.push(await getResources(token))
 
   resources.forEach((list) => {
     const pool = list.find((resource) => POOL_TYPES.has(resource.type));

@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
+const SOLIDLY_VE_NFT_ABI = require('../helper/abis/solidlyVeNft.json');
 
 const vaultMapping = {
   optimism: ['0x08dCDBf7baDe91Ccd42CB2a4EA8e5D199d285957'],
@@ -36,6 +36,14 @@ const veNftMapping = {
     pharaoh: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', // vePHAR
     blackhole: '0xEac562811cc6abDbB2c9EE88719eCA4eE79Ad763' //veBLACK
   }
+}
+// Since the 2026-10-22 Aerodrome -> Aero migration, veAERO locks are upgraded into permanent stakes
+// (sAERO NFTs) on the Aero VotingEscrow, minted to the same portfolio
+const stakeMapping = {
+  base: {
+    votingEscrow: '0xBF7977E1521e9a3032bf7243Ee4712f311f13915', // sAERO
+    token: '0x3f5bF3EdAc59d650D8fDf9657a71F2f904A3a4Ee', // Aero AERO (new token)
+  },
 }
 const portfolioManager = "0x40ac2e40acb7bdd6ec83e468143262fe216529ec";
 const avaxPortfolioFactory = '0x52d43C377e498980135C8F2E858f120A18Ea96C2';
@@ -98,22 +106,34 @@ async function getAvaxTvl(api) {
     await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[chain]['blackhole'], veNft: veNftMapping[chain]['blackhole'], owner:fortyAcresMapping[chain][1],isAltAbi:true});
 }
 
+// same as unwrapSolidlyVeNft but batched across all portfolios: 3 multicalls total instead of 3 calls per portfolio
 async function getPortfolioVeNftTvl(api) {
   const chain = api.chain;
+  const veNft = veNftMapping[chain]
   const factories = await api.call({ target: portfolioManager, abi: allFactoriesAbi })
   const portfolios = await api.multiCall({ calls: factories.map(f => ({target: f})), abi: portfolioAbi});
   const allPortfolios = [...new Set(portfolios.flat().map(a => a.toLowerCase()))]
-  
-  await sdk.util.runInPromisePool({
-    items: allPortfolios,
-    concurrency: 10,
-    processor: owner => unwrapSolidlyVeNft({
-      api,
-      baseToken: baseTokenMapping[chain],
-      veNft: veNftMapping[chain],
-      owner,
-    }),
-  });
+
+  const counts = await api.multiCall({ abi: 'erc20:balanceOf', calls: allPortfolios, target: veNft })
+  const idCalls = []
+  counts.forEach((count, i) => {
+    for (let j = 0; j < +count; j++) idCalls.push({ params: [allPortfolios[i], j] })
+  })
+  const tokenIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.ownerToNFTokenIdList, calls: idCalls, target: veNft })
+  const locked = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.locked, calls: tokenIds, target: veNft })
+  locked.forEach(i => api.add(baseTokenMapping[chain], i.amount))
+
+  const stake = stakeMapping[chain]
+  if (!stake) return
+  // permitFailure: the VotingEscrow was deployed just before the migration, earlier blocks get empty calls below
+  const stakeCounts = await api.multiCall({ abi: 'erc20:balanceOf', calls: allPortfolios, target: stake.votingEscrow, permitFailure: true })
+  const stakeIdCalls = []
+  stakeCounts.forEach((count, i) => {
+    for (let j = 0; j < +(count ?? 0); j++) stakeIdCalls.push({ params: [allPortfolios[i], j] })
+  })
+  const stakeIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex, calls: stakeIdCalls, target: stake.votingEscrow })
+  const staked = await api.multiCall({ abi: 'function staked(uint256) view returns (uint128 amount, uint48 end, bool isPermanent)', calls: stakeIds, target: stake.votingEscrow })
+  staked.forEach(i => api.add(stake.token, i.amount))
 }
 
 module.exports = {

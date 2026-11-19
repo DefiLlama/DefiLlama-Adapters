@@ -77,4 +77,5 @@ module.exports = {
     tvl,
   },
   start: '2025-01-12',
+  deadFrom: "2026-11-01", // abandoned
 };

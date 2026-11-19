@@ -132,7 +132,7 @@ function getRegistryType(registryId) {
   return registryIdsReverse[registryId]
 }
 
-async function getPools(block, chain) {
+async function getPools(block, chain, api) {
   let { registriesMapping, addressProvider } = contracts[chain]
   if (!registriesMapping) {
     registriesMapping = {};
@@ -147,13 +147,17 @@ async function getPools(block, chain) {
         .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
     }
   }
-  if (contracts[chain].CurveStableswapFactoryNG) {
+  // factories added to a chain after its first deployment list their deployment block, earlier dates skip them
+  const { startBlocks = {} } = contracts[chain]
+  const currentBlock = Object.keys(startBlocks).length ? await api.getBlock() : undefined
+  const isDeployed = name => !startBlocks[name] || currentBlock >= startBlocks[name]
+  if (contracts[chain].CurveStableswapFactoryNG && isDeployed('CurveStableswapFactoryNG')) {
     registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
   }
-  if (contracts[chain].CurveTricryptoFactoryNG) {
+  if (contracts[chain].CurveTricryptoFactoryNG && isDeployed('CurveTricryptoFactoryNG')) {
     registriesMapping.CurveTricryptoFactoryNG = contracts[chain].CurveTricryptoFactoryNG
   }
-  if (contracts[chain].CurveTwocryptoFactoryNG) {
+  if (contracts[chain].CurveTwocryptoFactoryNG && isDeployed('CurveTwocryptoFactoryNG')) {
     registriesMapping.CurveTwocryptoFactoryNG = contracts[chain].CurveTwocryptoFactoryNG
   }
   const poolList = {}
@@ -295,7 +299,7 @@ async function tvl(api) {
   const { plainFactoryConfig = [] } = config[chain] ?? {}
   const { block } = api
   let balances = {};
-  let poolLists = await getPools(block, chain);
+  let poolLists = await getPools(block, chain, api);
   const bl = new Set((blacklistedPools[chain] || []).map(a => a.toLowerCase()));
 
   for (const [registry, pools] of Object.entries(poolLists)) {

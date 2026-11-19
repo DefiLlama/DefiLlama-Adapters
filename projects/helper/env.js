@@ -35,9 +35,11 @@ const DEFAULTS = {
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   TRON_WALLET_RPC: 'https://api.trongrid.io',
+  TRON_EVM_WHITELISTED_RPC: 'https://api.trongrid.io/jsonrpc,https://tron-rpc.publicnode.com/jsonrpc',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
+  DARWINIA_RPC: "https://rpc.darwinia.network",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   SHIDO_RPC: 'https://shidoscan.net/api/eth-rpc',
   ACE_RPC: 'https://explorer-endurance.fusionist.io/api/eth-rpc',
@@ -80,6 +82,7 @@ const DEFAULTS = {
   BTCWCHAIN_RPC: 'https://rpc.btcw.tech',
   BTCWCHAIN_RPC_CHAIN_ID: '482120',
   BTCWCHAIN_RPC_MULTICALL: '0xA0093EA76633A983364cb2582959870eaffDdea0',
+  ZILLIQA_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RLS_ARCHIVAL_RPC: 'https://mainnet-archive.rayls.com',
   CRONOS_RPC: 'https://evm.cronos.org,https://rpc.vvs.finance,https://cronos.drpc.org,https://cronos.rpc.sentio.xyz,https://evm-cronos.crypto.org',
   // chains with no provider in the SDK providers list (chainid.network RPCs)
@@ -87,7 +90,17 @@ const DEFAULTS = {
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
   // p2p/everstake neon proxies are gone (dns), thirdweb refuses the chain; blockscout's eth-rpc proxy still serves it
   NEON_EVM_RPC: 'https://neon.blockscout.com/api/eth-rpc',
+  ETN_RPC: 'https://blockexplorer.electroneum.com/api/eth-rpc',
   THORCHAIN_LCD: 'https://gateway.liquify.com/chain/thorchain_api',
+  INITIA_LCD: 'https://rest.initia.xyz',
+  LUXA_LCD: 'https://api.luxaecosystem.xyz,https://luxaecosystem.alwaysdata.net',
+  // mainnet.telos.net/evm now serves a 404 or an HTML page with HTTP 200, which the sdk treats as a successful call with a null result; rpc1.eu.telos.net hangs
+  TELOS_RPC: 'https://rpc.telos.net,https://rpc1.us.telos.net/evm,https://telos.drpc.org,https://public.1rpc.io/telos/evm',
+  TELOS_RPC_MULTICALL_V3: '0x4E06d6ec4a3A90790edee253C8BF098bbb4F51E5',
+  // Somnia Tokyo, chainId 50321 - separate mainnet chain from Somnia (5031), not in the SDK providers list
+  SOMNIA_TOKYO_RPC: 'https://api.tokyo.infra.mainnet.somnia.network',
+  SOMNIA_TOKYO_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  KUSAMA_ASSETHUB_SUBSTRATE_RPC: 'https://kusama-asset-hub-rpc.polkadot.io,https://statemine.api.onfinality.io/public',
 }
 
 const ENV_KEYS = [

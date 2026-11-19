@@ -111,3 +111,7 @@ module.exports = mergeExports([
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
 ])
 
+Object.defineProperty(module.exports, '_rawConfig', {
+  value: Object.fromEntries(chains.map((chain) => [chain, { owners: async () => (await getAllData())[chain]?.owners ?? [] }])),
+  enumerable: false,
+})

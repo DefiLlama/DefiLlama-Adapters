@@ -207,6 +207,7 @@ const config = {
   pharos: {
     tokensAndOwners: [
       ['0x047cD0a91E9B92ED979189a6C8A120bf280f02E5', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // mmUSDC (Morpho Rockaway USDC)
+      ['0x1275671ccbff43d9a0676f70c22d99a9328a5842', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // roxRESERVOIR (Morpho Rockaway USDC Reservoir Ecosystem)
     ]
   },
   hyperliquid: {
@@ -265,3 +266,6 @@ module.exports.solana = {
 module.exports.hallmarks = [
   ['2025-11-04', 'Stream finance XUSD depeg'],
 ]
+
+module.exports.doublecounted = true
+module.exports.methodology = 'Reserve assets backing rUSD. Most of them are deposited into other listed protocols (lending markets, Morpho vaults), which count them too.'

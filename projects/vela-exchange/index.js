@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking")
 const { graphQuery } = require('../helper/http')
@@ -37,8 +36,5 @@ module.exports = {
   },
   hallmarks: [
     ['2023-04-13', 'Refunded tokens to VLP holders & traders'],
-    ['2023-09-05', 'Launched on Base Chain'],
-    ['2024-07-18', 'Implemented Aave VLP supply integration'],
-    ['2024-09-17', 'Burned 65m Vela tokens']
   ],
 }

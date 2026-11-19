@@ -1,26 +1,9 @@
-const { getCache } = require("../helper/cache");
-const { transformDexBalances } = require("../helper/portedTokens");
+const { getExports } = require('../helper/heroku-api')
 
-const tvl = async (api) => {
-  const { balances = [] } = await getCache('xrpl-dex', 'balances');
-  if (balances.length < 9500) throw new Error('No balances found')
-
-  const tvl = transformDexBalances({
-    chain: 'ripple',
-    data: balances
-      .filter(i => i.token0Reserve && i.token1Reserve)
-      .map(i => ({
-        token0: i.token0Reserve.currency,
-        token0Bal: i.token0Reserve.amount,
-        token1: i.token1Reserve.currency,
-        token1Bal: i.token1Reserve.amount,
-      }))
-  })
-  api.addCGToken('ripple', tvl?.XRP / 1e6)
-}
-
+// balances are computed by ./api.js in the custom-scripts runner (bulky group) and read back from elastic
 module.exports = {
-  methodology: "Finds all AMM pools on XRPL, checks their reserves, calculates TVL (in XRP) for each pool and sums them up.",
-  ripple: { tvl },
+  timetravel: false,
   misrepresentedTokens: true,
-};
+  methodology: 'Sums the reserves of every AMM pool on the XRP Ledger (XLS-30), read with amm_info at one validated ledger by a scheduled job. XRP and RLUSD are priced directly, and a pool with one priced asset counts that side twice. Other tokens are converted at the price of their deepest pool against XRP or RLUSD, capped as in other DEX adapters. Order-book offers are not counted: offer funds stay in the owner account and are not locked.',
+  ...getExports('xrpl-dex', ['ripple']),
+}

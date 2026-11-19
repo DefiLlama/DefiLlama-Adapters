@@ -1,3 +1,5 @@
+const { getUniqueAddresses } = require('../helper/utils')
+
 const srUSDeVault = "0x3d7d6fdf07EE548B939A80edbc9B2256d0cdc003";
 const jrUSDeVault = "0xC58D044404d8B14e953C115E67823784dEA53d8F";
 const jrNUSDVault = "0xFC807058A352b61aEef6A38e2D0fC3990225E772";
@@ -13,13 +15,29 @@ const srtPrimeVault = "0x35bFF778d3fc53a561486BF28e761428499232Eb";
 const jrNOPALVault = "0x1b2b8cFEF0b7B1Fad216b55fefeEb0c3349Da141";
 const srNOPALVault = "0x8a646Edc4633ADBA5Ec87DedaF3Af958e268FE96";
 
+const vaults = [srUSDeVault, jrUSDeVault, srNUSDVault, jrNUSDVault, srmHYPERVault, jrmHYPERVault, srmM1USDVault, jrmM1USDVault, srUSDatVault, jrUSDatVault, jrtPrimeVault, srtPrimeVault, jrNOPALVault, srNOPALVault]
+
+async function tvl(api) {
+  const assets = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  // totalAssets() reverts when the underlying yield source's accountant is paused (e.g. nOPAL: AccountantWithRateProviders__Paused)
+  const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: true })
+
+  const failed = []
+  vaults.forEach((vault, i) => {
+    if (totalAssets[i] != null) api.add(assets[i], totalAssets[i])
+    else failed.push(vault)
+  })
+  if (!failed.length) return
+
+  // junior + senior tranches of a pair share one CDO whose strategy holds the yield-source share token,
+  // value that balance directly instead of the paused rate
+  const cdos = getUniqueAddresses(await api.multiCall({ abi: 'address:cdo', calls: failed }))
+  const strategies = await api.multiCall({ abi: 'address:strategy', calls: cdos })
+  const shareTokens = await api.multiCall({ abi: 'address:shareToken', calls: strategies })
+  return api.sumTokens({ tokensAndOwners: strategies.map((strategy, i) => [shareTokens[i], strategy]) })
+}
+
 module.exports = {
-    methodology: "Protocol TVL refers to the dollar value of all assets deposited into the protocol smart contracts.",
-    ethereum: {
-        async tvl (api) {
-            return await api.erc4626Sum2({
-                calls: [ srUSDeVault, jrUSDeVault, srNUSDVault, jrNUSDVault, srmHYPERVault, jrmHYPERVault, srmM1USDVault, jrmM1USDVault, srUSDatVault, jrUSDatVault, jrtPrimeVault, srtPrimeVault, jrNOPALVault, srNOPALVault ],
-            });
-        }
-    },
+  methodology: "Protocol TVL refers to the dollar value of all assets deposited into the protocol smart contracts.",
+  ethereum: { tvl },
 };

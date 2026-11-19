@@ -1,5 +1,6 @@
 module.exports = {
   ethereum: {
+    ownTokens: ['0x1b66474c8eca3827f16202907f41f63785579716'], // WXT
     owners: [
       "0x7bceb96a8757114d79c7dcd6b52c460202f17d13",
       "0xc3b77c3f5a733986558c91e0faf95f1659b1b9b6",

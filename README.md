@@ -1,6 +1,6 @@
 # Defillama Adapters
 
-Follow [this guide](https://docs.llama.fi/submit-a-project) to create an adapter and submit a PR with it.
+Follow [this guide](https://docs.llama.fi/list-your-project/submit-a-project) to create an adapter and submit a PR with it.
 
 Also, don't hesitate to send a message on [our discord](https://discord.defillama.com/) if we're late to merge your PR.
 
@@ -35,6 +35,11 @@ node test.js projects/pangolin/index.js
 node test.js projects/aave/v3.js 1729080692
 # or using YYYY-MM-DD
 node test.js projects/aave/v3.js 2024-10-16
+# The projects/ prefix is optional
+node test.js pangolin
+# Add a chain name to only run that chain, it can be combined with a timestamp
+node test.js uniswap base
+node test.js uniswap base 2024-10-16
 ```
 
 ## Changing RPC providers

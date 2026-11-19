@@ -84,6 +84,21 @@ module.exports = {
       "fetchCoValentTokens": true
     },
   },
+  "blast-bridge": {
+    "hallmarks": [
+      ['2026-10-02', 'Blast L2 shutdown announced, bridge withdrawals until Oct 26'],
+    ],
+    "ethereum": {
+      "owners": [
+        "0xa230285d5683C74935aD14c446e137c8c8828438",
+        "0x98078db053902644191f93988341E31289E1C8FE",
+        "0x5F6AE08B8AeB7078cf2F96AFb089D7c9f51DA47d",
+        "0x9D31771458B421C7EA8A06CB8D12663E91617869", // BlastExit, shutdown merkle claim contract funded by the Blast admin Safe on 2026-10-31
+        "0x23eA8c6ACEb5673BBd712137cE2Aa33db36CB513"  // BlastExit2, second claim contract funded by the same Safe on 2026-11-03
+      ],
+      "fetchCoValentTokens": true
+    },
+  },
   "blackwing": {
     "arbitrum": {
       "tokens": [
@@ -417,10 +432,34 @@ module.exports = {
       ]
     },
   },
-  "immutable-zkevm": {
-    "ethereum": {
-      "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
+  "horizen-bridge": {
+    // Horizen is an OP Stack L3 (Caldera) settling to Base. https://docs.horizen.io/horizen-chain/bridging/how-bridging-works
+    "methodology": "Counts assets escrowed on Base for Horizen's canonical bridge: ETH in the OptimismPortal and ERC-20s in the L1StandardBridge. ZEN, USDC and cbBTC reach Horizen through Stargate and are not included.",
+    "start": "2025-11-17", // first deposit through the OptimismPortal
+    "base": {
+      "owners": [
+        "0xf4a6cc4171fda694439f856d912777aa6ab05369", // L1StandardBridge
+        "0x78e794d10a355468A0e7A14AA1a9F9A253D78784"  // OptimismPortal2, L1StandardBridge.messenger().portal()
+      ],
       "fetchCoValentTokens": true
+    },
+  },
+  "immutable-zkevm": {
+    "methodology": "Counts ETH and ERC-20s escrowed on Ethereum in Immutable zkEVM's RootERC20BridgeFlowRate. IMX is Immutable's own token and is counted under staking.",
+    "ethereum": {
+      "tvl": {
+        "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
+        "blacklistedTokens": [
+          "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF" // IMX
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
+        "tokens": [
+          "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF"
+        ]
+      }
     },
   },
   "injective": {
@@ -464,12 +503,29 @@ module.exports = {
     },
   },
   "linea": {
+    "methodology": "Counts assets escrowed on Ethereum for Linea's canonical bridge: ETH in the LineaRollup and ERC-20s in the TokenBridge. LINEA is Linea's own token and is counted under staking.",
     "ethereum": {
-      "owners": [
-        "0xd19d4B5d358258f05D7B411E21A1460D11B0876F",
-        "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"
-      ],
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owners": [
+          "0xd19d4B5d358258f05D7B411E21A1460D11B0876F",
+          "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"
+        ],
+        "blacklistedTokens": [
+          "0x1789e0043623282D5DCc7F213d703C6D8BAfBB04" // LINEA
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owners": [
+          "0xd19d4B5d358258f05D7B411E21A1460D11B0876F",
+          "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"
+        ],
+        "tokens": [
+          "0x1789e0043623282D5DCc7F213d703C6D8BAfBB04"
+        ],
+        // LINEA was deployed at block 23033087 (2025-07-30), after the listing start: earlier reads count 0 instead of throwing
+        "permitFailure": true
+      }
     },
   },
   "lisk-l2": {
@@ -494,11 +550,27 @@ module.exports = {
     },
   },
   "mantle": {
+    "methodology": "Counts assets escrowed on Ethereum for Mantle's canonical bridge: ETH and MNT in the OptimismPortal and ERC-20s in the L1StandardBridge. MNT is Mantle's own token and is counted under staking.",
     "ethereum": {
-      "owners": [
-        "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012"
-      ],
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owners": [
+          "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012",
+          "0xc54cb22944F2bE476E02dECfCD7e3E7d3e15A8Fb" // OptimismPortal, holds bridged ETH and MNT since the Tectonic upgrade (2024-03-15)
+        ],
+        "blacklistedTokens": [
+          "0x3c3a81e81dc49A522A592e7622A7E711c06bf354" // MNT
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owners": [
+          "0x95fC37A27a2f68e3A647CDc081F0A89bb47c3012",
+          "0xc54cb22944F2bE476E02dECfCD7e3E7d3e15A8Fb"
+        ],
+        "tokens": [
+          "0x3c3a81e81dc49A522A592e7622A7E711c06bf354"
+        ]
+      }
     },
   },
   "megaeth-bridge": {
@@ -512,9 +584,21 @@ module.exports = {
     },
   },
   "metis": {
+    "methodology": "Counts ETH and ERC-20s escrowed on Ethereum in Metis's L1StandardBridge. METIS is Metis's own token and is counted under staking.",
     "ethereum": {
-      "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
+        "blacklistedTokens": [
+          "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e" // METIS
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
+        "tokens": [
+          "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e"
+        ]
+      }
     },
   },
   "mint-chain": {
@@ -673,23 +757,35 @@ module.exports = {
     },
   },
   "polygon": {
+    "methodology": "Counts assets escrowed on Ethereum for Polygon PoS: ERC-20s in the ERC20Predicate, ETH in the EtherPredicate and POL/MATIC in the plasma DepositManager. POL staked by validators and delegators in the StakeManager is reported under staking.",
     "start": "2020-05-30",
     "ethereum": {
-      owners: [
-        '0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf',
-        '0x8484Ef722627bf18ca5Ae6BcF031c23E6e922B30',
-        '0x401F6c983eA34274ec46f84D70b31C151321188b',
-        '0x5e3Ef299fDDf15eAa0432E6e66473ace8c13D908',
-      ],
-      tokens: [
-        ADDRESSES.null,
-        ADDRESSES.ethereum.MATIC,
-      ],
-      "blacklistedTokens": [
-        "0x99fe3b1391503a1bc1788051347a1324bff41452"
-      ],
-      fetchCoValentTokens: true,
-      permitFailure: true,
+      tvl: {
+        owners: [
+          '0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf',
+          '0x8484Ef722627bf18ca5Ae6BcF031c23E6e922B30',
+          '0x401F6c983eA34274ec46f84D70b31C151321188b',
+        ],
+        tokens: [
+          ADDRESSES.null,
+          ADDRESSES.ethereum.MATIC,
+          ADDRESSES.ethereum.POL,
+        ],
+        "blacklistedTokens": [
+          "0x99fe3b1391503a1bc1788051347a1324bff41452"
+        ],
+        fetchCoValentTokens: true,
+        permitFailure: true,
+      },
+      // StakeManager: validator and delegator stake, not bridge escrow
+      staking: {
+        owner: '0x5e3Ef299fDDf15eAa0432E6e66473ace8c13D908',
+        tokens: [
+          ADDRESSES.ethereum.MATIC,
+          ADDRESSES.ethereum.POL,
+        ],
+        permitFailure: true,
+      },
     },
   },
   "polygonZk": {
@@ -796,7 +892,8 @@ module.exports = {
     "ethereum": {
       "owners": [
         "0xeb9bf100225c214Efc3E7C651ebbaDcF85177607",
-        "0x88e529a6ccd302c948689cd5156c83d4614fae92"
+        "0x88e529a6ccd302c948689cd5156c83d4614fae92",
+        "0x67B4de6FfA66EF201Ea6099A89cA397D56622E31" // ETHLockbox (OP Stack Upgrade 16), OptimismPortal.ethLockbox()
       ],
       "fetchCoValentTokens": true
     },
@@ -891,12 +988,27 @@ module.exports = {
     },
   },
   "taiko-bridge": {
+    "methodology": "Counts assets escrowed on Ethereum for Taiko's canonical bridge: ETH in the Bridge and ERC-20s in the ERC20Vault. TAIKO is Taiko's own token and is counted under staking.",
     "ethereum": {
-      "owners": [
-        "0xd60247c6848B7Ca29eDdF63AA924E53dB6Ddd8EC",
-        "0x996282cA11E5DEb6B5D122CC3B9A1FcAAD4415Ab"
-      ],
-      "fetchCoValentTokens": true
+      "tvl": {
+        "owners": [
+          "0xd60247c6848B7Ca29eDdF63AA924E53dB6Ddd8EC",
+          "0x996282cA11E5DEb6B5D122CC3B9A1FcAAD4415Ab"
+        ],
+        "blacklistedTokens": [
+          "0x10dea67478c5F8C5E2D90e5E9B26dBe60c54d800" // TAIKO
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owners": [
+          "0xd60247c6848B7Ca29eDdF63AA924E53dB6Ddd8EC",
+          "0x996282cA11E5DEb6B5D122CC3B9A1FcAAD4415Ab"
+        ],
+        "tokens": [
+          "0x10dea67478c5F8C5E2D90e5E9B26dBe60c54d800"
+        ]
+      }
     },
   },
   "tzwrap": {
@@ -909,7 +1021,8 @@ module.exports = {
     "ethereum": {
       "owners": [
         "0x81014F44b0a345033bB2b3B21C7a1A308B35fEeA",
-        "0x0bd48f6B86a26D3a217d0Fa6FfE2B491B956A7a2"
+        "0x0bd48f6B86a26D3a217d0Fa6FfE2B491B956A7a2",
+        "0x08bA0023eD60C7Bd040716dD13C45fA0062df5C5" // ETHLockbox (OP Stack Upgrade 16), OptimismPortal.ethLockbox()
       ],
       "fetchCoValentTokens": true
     },

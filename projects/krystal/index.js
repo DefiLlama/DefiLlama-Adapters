@@ -20,6 +20,7 @@ chains.forEach(chain => {
 });
 
 module.exports.solana = { tvl: solana.tvl };
+module.exports.ronin.tvl = () => ({}) // low tvl, takes too long to scan.
 
 module.exports.isHeavyProtocol = true;
 module.exports.methodology =

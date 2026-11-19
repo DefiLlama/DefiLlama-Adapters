@@ -22,8 +22,15 @@ function evmTvl(chain) {
   return async function tvl(api) {
     const vaults = await getIncludedVaults();
     const addresses = vaults.filter(vault => vault.chain?.[chain]).map(vault => vault.vaultAddress);
+    await api.getBlock(); // supplies and nested balances must come from the same block
     const supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: addresses });
-    api.add(addresses, supplies);
+    // Nest vaults also hold shares of other Nest vaults, which are already counted in the inner vault's supply
+    const owners = [...new Set(vaults.map(vault => vault.vaultAddress))];
+    const calls = addresses.flatMap(target => owners.filter(owner => owner !== target).map(owner => ({ target, params: owner })));
+    const nested = await api.multiCall({ abi: "erc20:balanceOf", calls });
+    const netSupplies = Object.fromEntries(addresses.map((token, i) => [token, BigInt(supplies[i])]));
+    calls.forEach(({ target }, i) => netSupplies[target] -= BigInt(nested[i]));
+    api.add(addresses, addresses.map(token => netSupplies[token].toString()));
   }
 }
 
@@ -34,7 +41,7 @@ async function tvl_solana(api) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated from the value of Nest tokens, which represent user shares in vaults backed by yield-generating assets.",
+  methodology: "TVL is calculated from the value of Nest tokens, which represent user shares in vaults backed by yield-generating assets. Nest tokens held by other Nest vaults are deducted.",
   ethereum: { tvl: evmTvl("mainnet") },
   plume_mainnet: { tvl: evmTvl("plume") },
   bsc: { tvl: evmTvl("bsc") },

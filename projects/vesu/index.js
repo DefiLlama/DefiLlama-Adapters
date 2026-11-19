@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { multiCall, sumTokens } = require("../helper/chain/starknet");
+const { multiCall, sumTokens, getLogs, parseAddress } = require("../helper/chain/starknet");
+const { getSelectorFromName } = require("../helper/utils/starknet");
 const { erc20ABI, singletonABI, poolABI } = require("./abi");
 
 const INTERNAL_SCALE = 10 ** 18;
@@ -17,14 +18,30 @@ const SINGLETON_POOLS = [
   "0x2906e07881acceff9e4ae4d9dacbcd4239217e5114001844529176e1f0982ec", // Alterscope Cornerstone Pool
   "0x3de03fafe6120a3d21dc77e101de62e165b2cdfe84d12540853bd962b970f99", // Re7 rUSDC Pool
 ];
-const V2_POOLS = [
-  "0x451fe483d5921a2919ddd81d0de6696669bccdacd859f72a4fba7656b97c3b5", // Vesu Prime Pool
-  "0x2eef0c13b10b487ea5916b54c0a7f98ec43fb3048f60fdeedaf5b08f6f88aaf", // Re7 USDC Prime Pool
-  "0x3976cac265a12609934089004df458ea29c776d77da423c96dc761d09d24124", // Re7 USDC Core Pool
-  "0x3a8416bf20d036df5b1cf3447630a2e1cb04685f6b0c3a70ed7fb1473548ecf", // Re7 xBTC Pool
-  "0x73702fce24aba36da1eac539bd4bae62d4d6a76747b7cdd3e016da754d7a135", // Re7 USDC Stable Core Pool
-  "0x5c03e7e0ccfe79c634782388eb1e6ed4e8e2a013ab0fcc055140805e46261bd", // Re7 USDC Frontier Pool
-];
+// V2 pools are deployed by the pool factory, which emits CreatePool(pool) when it deploys a pool and AddAsset(pool, asset)
+// for every asset it lists in a pool
+// https://github.com/vesuxyz/vesu-v2/blob/main/deployment.json
+const V2_POOL_FACTORY = { target: "0x3760f903a37948f97302736f89ce30290e45f441559325026842b7a6fb388c0", fromBlock: 2367000 };
+const CREATE_POOL = getSelectorFromName("CreatePool");
+const ADD_ASSET = getSelectorFromName("AddAsset");
+
+// factory add_asset accepts any contract whose curator() is the caller, so only pools the factory deployed are kept
+// each (pool, asset) pair is kept once
+async function getV2PoolAssets() {
+  const [createLogs, addLogs] = await Promise.all([
+    getLogs({ ...V2_POOL_FACTORY, topics: [CREATE_POOL] }),
+    getLogs({ ...V2_POOL_FACTORY, topics: [ADD_ASSET] }),
+  ]);
+  const pools = new Set(createLogs.map(({ keys }) => parseAddress(keys[1])));
+  const pairs = new Map();
+  addLogs.forEach(({ keys }) => {
+    const pool = parseAddress(keys[1]);
+    const asset = parseAddress(keys[2]);
+    if (pools.has(pool)) pairs.set(`${pool}-${asset}`, { pool, asset });
+  });
+  return [...pairs.values()];
+}
+
 const ASSETS = [
   ADDRESSES.starknet.ETH,
   ADDRESSES.starknet.WBTC,
@@ -51,7 +68,9 @@ const ASSETS = [
 ];
 
 async function tvl(api) {
-  return sumTokens({ api, owners: [SINGLETON, ...V2_POOLS], tokens: ASSETS });
+  const poolAssetsV2 = await getV2PoolAssets();
+  await sumTokens({ api, owner: SINGLETON, tokens: ASSETS });
+  return sumTokens({ api, tokensAndOwners: poolAssetsV2.map(({ pool, asset }) => [asset, pool]) });
 }
 
 const borrowed = async (api) => {
@@ -66,7 +85,7 @@ const borrowed = async (api) => {
     api.add(poolAssets[index].asset, scaledTotalDebt);
   });
   // V2 Pools
-  const poolAssetsV2 = V2_POOLS.map((pool) => ASSETS.map((asset) => ({ pool, asset }))).flat();
+  const poolAssetsV2 = await getV2PoolAssets();
   const callsV2 = poolAssetsV2.map(({ pool, asset }) => ({ target: pool, params: [asset] }))
   const assetStatesV2 = await multiCall({ calls: callsV2, abi: poolABI[0], allAbi: poolABI, permitFailure: true });
   assetStatesV2.forEach((res, index) => {
@@ -79,6 +98,7 @@ const borrowed = async (api) => {
 };
 
 module.exports = {
+  timetravel: false, // the starknet helper calls always read the latest block
   starknet: {
     tvl,
     borrowed,

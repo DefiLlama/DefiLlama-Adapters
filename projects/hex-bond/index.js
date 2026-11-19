@@ -36,10 +36,8 @@ async function tvl(api) {
   })
   const stakes = await api.multiCall({ abi: abi.stakeDataFetch, calls: hsiAddresses })
 
-  const [maturityInfo, wrapped] = await Promise.all([
-    api.multiCall({ target: HEX_BOND_MANAGER, abi: abi.maturityInfo, calls: MATURITIES }),
-    api.multiCall({ target: BOND_MIGRATOR, abi: abi.wrapped, calls: MATURITIES }),
-  ])
+  const maturityInfo = await api.multiCall({ target: HEX_BOND_MANAGER, abi: abi.maturityInfo, calls: MATURITIES })
+  const wrapped = await api.multiCall({ target: BOND_MIGRATOR, abi: abi.wrapped, calls: MATURITIES })
 
   // HEX principal in custodied stakes, settled HEX in redemption pots, and
   // Actuator HTT claims held by the migrator (redeemable 1:1 for HEX at maturity).
@@ -49,17 +47,16 @@ async function tvl(api) {
 }
 
 async function pool2(api) {
-  const [masterChefPools, hbrpChefPools] = await Promise.all([
-    api.fetchList({ target: MASTER_CHEF, lengthAbi: abi.poolLength, itemAbi: abi.masterChefPoolInfo }),
-    api.fetchList({ target: HBRP_CHEF, lengthAbi: abi.poolLength, itemAbi: abi.hbrpChefPoolInfo }),
-  ])
+  const masterChefPools = await api.fetchList({ target: MASTER_CHEF, lengthAbi: abi.poolLength, itemAbi: abi.masterChefPoolInfo })
+  const hbrpChefPools = await api.fetchList({ target: HBRP_CHEF, lengthAbi: abi.poolLength, itemAbi: abi.hbrpChefPoolInfo })
   masterChefPools.forEach((pool) => api.add(pool.lpToken, pool.totalStaked))
   hbrpChefPools.forEach((pool) => api.add(pool.token, pool.lpBalance))
 
   // Farm LPs pair HBR/HBRP with HEX, WPLS, PLSX or INC; each LP is valued at
-  // twice its priced side. HBR and HBRP themselves are not priced.
+  // twice its priced side. Some pools stake single tokens (HBR/HBRP) that are
+  // not LPs, so let the helper filter by symbol rather than assuming every entry is an LP.
   const lps = [...masterChefPools.map((pool) => pool.lpToken), ...hbrpChefPools.map((pool) => pool.token)]
-  return sumUnknownTokens({ api, lps, useDefaultCoreAssets: true, resolveLP: true, allLps: true })
+  return sumUnknownTokens({ api, lps, useDefaultCoreAssets: true, resolveLP: true })
 }
 
 module.exports = {
