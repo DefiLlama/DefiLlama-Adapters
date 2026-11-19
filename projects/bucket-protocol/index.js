@@ -29,7 +29,11 @@ async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
   const vaultObject = await getObject(SUI_HASUI_VAULT_ID)
   const lpSupply = vaultObject.fields.lp_token_treasury.fields.total_supply.fields.value;
   const lpRatio = lpAmount / lpSupply
-  const clmmPosition = vaultObject.fields.positions[0]?.fields?.clmm_postion?.fields
+  // the position was moved out of the positions vector into a dynamic field
+  const [position] = vaultObject.fields.positions.length
+    ? vaultObject.fields.positions
+    : (await sui.getDynamicFieldObjects({ parent: SUI_HASUI_VAULT_ID })).map((i) => i.fields.value)
+  const clmmPosition = position?.fields?.clmm_postion?.fields
   if (!clmmPosition) return // vault currently holds no CLMM position (rebalancing / withdrawn)
   const liquidity = clmmPosition.liquidity * lpRatio
   // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
@@ -119,24 +123,6 @@ const CETABLE_PSM =
 const STAPEARL_PSM =
   "0xccdaf635eb1c419dc5ab813cc64c728a9f5a851202769e254f348bff51f9a6dc";
 
-const afSUI_sLP_ID =
-  "0x508da82c0b6785653f638b95ebf7c89d720ecffae15c4d0526228a2edae7d429";
-
-const vSUI_sLP_ID =
-  "0xa68124b518290f430f2133bcb679c519e51c99045e622cd6bcb00374c97f6d9d";
-
-const haSUI_sLP_ID =
-  "0xa8993bf1c1e717b7c0f164c51346fa99a4e771c50d90c14e755adc48e39b7768";
-
-const navi_sLP_ID =
-  "0xcbe804c8c334dcadecd4ba05ee10cffa54dad36f279ab4ec9661d67f9372881c";
-
-const navi_stSUI_sLP_ID =
-  "0xd3f6b8f3c92d8f967f7e177e836770421e351b419ffe074ce57911365b4ede56";
-
-const navi_sbWBTC_LP_ID =
-  "0x208628e8800828b272dfc4cf40ef98e1ba137f65d26a28961176a1718c2bdb4c";
-
 const scallop_sUSDC_LP_ID =
   "0x7b16192d63e6fa111b0dac03f99c5ff965205455089f846804c10b10be55983c";
 
@@ -149,32 +135,10 @@ const scallop_sCircleUSDC_LP_ID =
 const scallop_sSuiBridgeUSDT_LP_ID =
   "0x8471787fc69ef06f4762cb60863e1c48475d79c804a000e613306adee7b7824a";
 
-const navi_sCircleUSDC_LP_ID =
-  "0xb5ed3f2e5c19f425baad3d9a0afffdc84d0550ace2372692cf93325da81e4392";
-
-const navi_sSuiBridgeUSDT_LP_ID =
-  "0x4ae310b93c65e358b6f8beb73f34d0ac7d507947d8aea404159d19883a3b1c6a";
-
-const navi_fdUSD_LP_ID =
-  "0xa2790bbd90275e35214bffd8da3c01742bb5883fde861bf566a9ecfa1b3f5090";
-
-const haSUI_Navi_Pond_ID = "0xef1ff1334c1757d8e841035090d34b17b7aa3d491a3cb611319209169617518e"
-
-const SUI_Navi_Pond_ID = "0xcf887d7201c259496a191348da86b4772a2e2ae3f798ca50d1247194e30b7656";
-
-async function getStakingLPAmount(id) {
-  const stakingLPObject = await sui.getObject(id);
-  return stakingLPObject.fields.output_volume;
-}
-
+// read the Balance<T> field, not the u64 accounting field (Balance is the real asset amount)
 async function getScallopsLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
-  return stakingLPObject.fields.coin_balance;
-}
-
-async function getNaviLPAmount(id) {
-  const stakingLPObject = await sui.getObject(id);
-  return stakingLPObject.fields.coin_balance;
+  return stakingLPObject.fields.scoin_balance;
 }
 
 function convertUnderlyingAssets(coin) {
@@ -346,52 +310,7 @@ async function tvl(api) {
     Math.floor(afsuiPercentage * afsuiSuiLpBucketStaked)
   );
 
-  //Staking LPs
-  const safSUILPAmount = await getStakingLPAmount(afSUI_sLP_ID);
-  api.add(
-    "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI",
-    safSUILPAmount
-  );
-
-  const svSUILPAmount = await getStakingLPAmount(vSUI_sLP_ID);
-  api.add(
-    "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
-    svSUILPAmount
-  );
-
-  const shaSUILPAmount = await getStakingLPAmount(haSUI_sLP_ID);
-  api.add(
-    "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
-    shaSUILPAmount
-  );
-
-  const snaviLPAmount = await getStakingLPAmount(navi_sLP_ID);
-  api.add(
-    "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
-    snaviLPAmount
-  );
-
-  const snavistSUILPAmount = await getStakingLPAmount(navi_stSUI_sLP_ID);
-  api.add(
-    "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
-    snavistSUILPAmount
-  );
-
-  const snavisbWBTCLPAmount = await getStakingLPAmount(navi_sbWBTC_LP_ID);
-  api.add(ADDRESSES.sui.WBTC, snavisbWBTCLPAmount);
-
-  const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
-  api.add(
-    "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
-    haSuiNaviPondAmount
-  );
-
-  const suiNaviPondAmount = await getStakingLPAmount(SUI_Navi_Pond_ID);
-  api.add(
-    SUI,
-    suiNaviPondAmount
-  );
-
+  /// Scallop sCOIN held by the vaults, regarded as underlying assets
   const scallopUSDC_LPAmount = await getScallopsLPAmount(scallop_sUSDC_LP_ID);
   api.add(USDC, scallopUSDC_LPAmount);
 
@@ -403,15 +322,6 @@ async function tvl(api) {
 
   const scallopSuiBridgeUSDT_LPAmount = await getScallopsLPAmount(scallop_sSuiBridgeUSDT_LP_ID);
   api.add(ADDRESSES.sui.suiUSDT, scallopSuiBridgeUSDT_LPAmount);
-
-  const naviCircleUSDC_LPAmount = await getNaviLPAmount(navi_sCircleUSDC_LP_ID);
-  api.add(USDC_CIRCLE, naviCircleUSDC_LPAmount);
-
-  const naviSuiBridgeUSDT_LPAmount = await getNaviLPAmount(navi_sSuiBridgeUSDT_LP_ID);
-  api.add(ADDRESSES.sui.suiUSDT, naviSuiBridgeUSDT_LPAmount);
-
-  const naviFDUSD_LPAmount = await getNaviLPAmount(navi_fdUSD_LP_ID);
-  api.add(FDUSD, naviFDUSD_LPAmount);
 
   api.removeTokenBalance('0x622345b3f80ea5947567760eec7b9639d0582adcfd6ab9fccb85437aeda7c0d0::scallop_wal::SCALLOP_WAL')  // incorrect price, temporarily remove
 }
