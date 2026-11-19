@@ -326,13 +326,13 @@ function once(func) {
   return wrapped
 }
 
-function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses }) {
   return async (api) => {
 
     if (!withdrawalAddress && !withdrawalAddresses?.length)
       throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
 
-    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    const addresses = [...new Set((withdrawalAddresses ?? [withdrawalAddress]).map(i => i.toLowerCase()))]
     api.addGasToken(await beacon.balance(addresses))
     return api.getBalances()
   };
