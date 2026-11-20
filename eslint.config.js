@@ -11,6 +11,7 @@ module.exports = [
             "no-useless-escape": "warn",
             "no-prototype-builtins": "off",
             "no-unreachable": "off",
+            "no-dupe-keys": "error",
         }
     }
 ];
