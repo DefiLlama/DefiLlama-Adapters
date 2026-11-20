@@ -96,14 +96,9 @@ async function tvl(api) {
   })
 }
 
-// POLYDASH has no robinhood:<address> price on coins.llama.fi, only the
-// CoinGecko id, so staked POLYDASH is reported through the CoinGecko id.
 async function staking(api) {
-  const pools = (await getPools(api)).filter(isPolydash)
-  if (!pools.length) return
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools.map(([, pool]) => ({ target: POLYDASH, params: [pool] })) })
-  const total = balances.reduce((sum, b) => sum + BigInt(b), 0n)
-  api.addCGToken('defidash-2', Number(total) / 1e18)
+  const pools = await getPools(api)
+  return api.sumTokens({ tokensAndOwners: pools.filter(isPolydash) })
 }
 
 module.exports = {
