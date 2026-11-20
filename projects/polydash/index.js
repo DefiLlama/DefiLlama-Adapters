@@ -35,6 +35,7 @@ const fundFactoriesEthOnly = [
 const fundFactoriesWithAssets = [
   '0xd3c6ae470c25989cC8d2876c1855fB570B98894E', // FundFactoryInvest (phase 2)
   '0xb9BA453677A6b2C49290CfD4D0713502Ec6bF82B', // FundFactoryPhase3
+  '0xe50Da719947E83f316977d9c425DF95672E7B27e', // FundFactoryPhase3V2 (phase 6, agent API default)
   '0xB5251BaC3CFE2A057B7703D4477Bf80f10B8154B', // FundFactoryPhase3V3
 ]
 
@@ -95,9 +96,14 @@ async function tvl(api) {
   })
 }
 
+// POLYDASH has no robinhood:<address> price on coins.llama.fi, only the
+// CoinGecko id, so staked POLYDASH is reported through the CoinGecko id.
 async function staking(api) {
-  const pools = await getPools(api)
-  return api.sumTokens({ tokensAndOwners: pools.filter(isPolydash) })
+  const pools = (await getPools(api)).filter(isPolydash)
+  if (!pools.length) return
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools.map(([, pool]) => ({ target: POLYDASH, params: [pool] })) })
+  const total = balances.reduce((sum, b) => sum + BigInt(b), 0n)
+  api.addCGToken('defidash-2', Number(total) / 1e18)
 }
 
 module.exports = {
