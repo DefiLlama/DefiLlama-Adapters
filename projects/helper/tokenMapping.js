@@ -48,11 +48,6 @@ const fixBalancesTokens = {
   xom: {
     '0x81f4072fcca24d373ffcb34c248995dfc6c1219c': { coingeckoId: 'usd-coin', decimals: 6 },
   },
-  // BlackFort Exchange Network (chain 488): bxUSD is the BlackFort bridge's wrapped USD (6 decimals),
-  // redeemable 1:1 for USDC/USDT through the BlackFort bridge; the coins service has no price for it.
-  bxn: {
-    '0x756de4cc5578cbc0e68153d6590a048adbc884f8': { coingeckoId: 'usd-coin', decimals: 6 },
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
