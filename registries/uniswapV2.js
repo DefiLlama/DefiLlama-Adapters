@@ -1208,10 +1208,6 @@ const uniV2Configs = {
   'LizardExchange': {
     oasis: '0xefA6861931991CCE372c477a015619A21dfEBE8c',
   },
-  'lobsterswap': {
-    bsc: '0xF936CDe5138282eDC6370F9f5ac70d9a1AFC6F78',
-    ozone: '0xE6E64C926af9ABEc9D819f52c9572AB961CEF6C1',
-  },
   'lootswap': {
     hallmarks: [
       ['2022-06-23', "Horizon bridge Hack $100m"],
