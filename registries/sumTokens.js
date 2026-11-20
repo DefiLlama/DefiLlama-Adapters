@@ -16619,6 +16619,18 @@ const configs = {
       ]
     },
   },
+  "inovaults": {
+    "methodology": "TVL is the value of every VVS V3 concentrated-liquidity position held by the InoVaults vault and custody contracts on Cronos, unwrapped to underlying token amounts at the current pool tick. Those positions are the prize pools: the pool of each open vault, and the pool of a vault already won whose position has not yet been released to its winner. Protocol fees and treasury holdings are not counted.",
+    "doublecounted": true,
+    "start": "2026-11-03",
+    // [VVS V3 Positions NFT-V1, owner]: the vault contract while a vault is funded, the custody contract once it is sealed
+    "cronos": {
+      "uniV3nftsAndOwners": [
+        ["0xc2ddb059fec2afa593dff9c70fda2cfabe9b4ec8", "0x0F7AA5b029d86596f44875F98EfD9713F9C377B4"],
+        ["0xc2ddb059fec2afa593dff9c70fda2cfabe9b4ec8", "0xd37b050FDB75230d4029255aFC5B4d41C5F390BF"],
+      ]
+    },
+  },
   "inriswap": {
     "misrepresentedTokens": true,
     "methodology": "TVL counts assets held in the official INRISwap iUSD/WINRI pair and the official Liquidity Seeder contract used during the liquidity formation phase. The Seeder holds iUSD and native INRI outside the live pair until the liquidity target is reached.",
