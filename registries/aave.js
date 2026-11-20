@@ -82,14 +82,6 @@ const aaveV2Configs = {
     methodology,
     hedera: { registry: '0x236897c518996163E7b313aD21D1C9fCC7BA1afc', isInsolvent: true },
   },
-  'takoTako': {
-    methodology,
-    taiko: {
-      registry: '0xD07B62ee683267D4A884453eaE982A151653515E',
-      fromBlock: 381054,
-      blacklistedTokens: ['0xf7fb2df9280eb0a76427dc3b34761db8b1441a49'],
-    },
-  },
 }
 
 // --- aaveExports based protocols ---
