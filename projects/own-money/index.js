@@ -38,9 +38,8 @@ const LIQUIDITY_MANAGERS = [
   '0x62f482452340E5a4beB2bC910248DFfcF8f59C4b', // SPY/eUSD
 ]
 
-// Legacy eUSD manager (mint paused, winding down) holds eSPY, which its PSM ReserveVault backs with R.SPY
-const LEGACY_MANAGER = '0x9748964d733Ff5d47F1d7E3fea620aF014dA5a9b'
-const ESPY = '0xb9D2F8A79F59b84269Adf7d82Fe44ad41139FcF5'
+// Legacy eUSD manager (mint paused, winding down) holds eSPY, which the PSM ReserveVault backs 1:1 with R.SPY.
+// The reserve vault's SPY balance is counted, which covers all eSPY in circulation.
 const SPY = '0x117cc2133c37B721F49dE2A7a74833232B3B4C0C'
 const ESPY_RESERVE_VAULT = '0x2c47516319B56519ada1433701F2673877f168Ea'
 
@@ -49,6 +48,7 @@ const HOLDINGS_ABI = 'function holdings(uint256 price) view returns (uint256 ass
 
 async function cdpCollateral(api) {
   const tokensAndOwners = Object.entries(CDP_MANAGERS).flatMap(([manager, tokens]) => tokens.map((t) => [t, manager]))
+  tokensAndOwners.push([SPY, ESPY_RESERVE_VAULT])
   await api.sumTokens({ tokensAndOwners })
 }
 
@@ -73,26 +73,15 @@ async function lpCollateral(api) {
   holdings.forEach((h, i) => api.add(assets[i], h.assetAmount))
 }
 
-async function legacyCollateral(api) {
-  const [held, supply, reserve] = await Promise.all([
-    api.call({ target: ESPY, abi: 'erc20:balanceOf', params: [LEGACY_MANAGER] }),
-    api.call({ target: ESPY, abi: 'erc20:totalSupply' }),
-    api.call({ target: SPY, abi: 'erc20:balanceOf', params: [ESPY_RESERVE_VAULT] }),
-  ])
-  // the manager's share of the R.SPY reserve, so it shows as SPY
-  if (BigInt(supply) > 0n) api.add(SPY, (BigInt(held) * BigInt(reserve)) / BigInt(supply))
-}
-
 async function tvl(api) {
   await cdpCollateral(api)
   await psmReserves(api)
   await lpCollateral(api)
-  await legacyCollateral(api)
   api.removeTokenBalance(EUSD)
 }
 
 module.exports = {
-  methodology: 'TVL is the collateral backing eUSD: stock tokens and WETH locked in the EUSDManager CDPs, the non-eUSD side (USDG, SPY) of the LP positions in EUSDLiquidityManager vaults, the stablecoins in the eUSD PSM, and the legacy eSPY CDPs counted as the R.SPY that backs eSPY 1:1 in its PSM reserve vault. eUSD itself is excluded. Staking is $MONEY staked in the sMONEY vault.',
+  methodology: 'TVL is the collateral backing eUSD: stock tokens and WETH locked in the EUSDManager CDPs, the non-eUSD side (USDG, SPY) of the LP positions in EUSDLiquidityManager vaults, the stablecoins in the eUSD PSM, and the R.SPY held in the PSM reserve vault that backs the legacy eSPY 1:1. eUSD itself is excluded. Staking is $MONEY staked in the sMONEY vault.',
   robinhood: {
     tvl,
     staking: staking(SMONEY, MONEY),
