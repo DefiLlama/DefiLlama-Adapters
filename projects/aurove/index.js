@@ -25,7 +25,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL counts Aurove Ledger ERC-1155 totalSupply for the managed avBTCm (tranche 65540) and avMEZOm (tranche 131280) products as the underlying locked on Mezo (native BTC and MEZO). Share minting is 1:1 with locked underlying, but liquid-token market prices are separate: avBTCm trades vs MUSD, and avMEZOm prices through avBTCm → MUSD. Marked doublecounted because the same underlying is already included in Mezo Earn (veBTC/veMEZO). Concentrated-liquidity pool balances for MUSD/avBTCm and avBTCm/avMEZOm are tracked under Tigris Mezo V3, not here.',
+    "TVL counts the supply of Aurove's avBTCm and avMEZOm receipts, minted 1:1 for BTC and MEZO locked in Mezo Earn's veBTC and veMEZO through Aurove's managed locks. Doublecounted with Mezo Earn.",
   doublecounted: true,
   mezo: { tvl },
 }
