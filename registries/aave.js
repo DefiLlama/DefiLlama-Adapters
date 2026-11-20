@@ -84,10 +84,14 @@ const aaveV2Configs = {
   },
   'takoTako': {
     methodology,
+    hallmarks: [
+      ["2025-12-05", "Closure announced"],
+    ],
     taiko: {
       registry: '0xD07B62ee683267D4A884453eaE982A151653515E',
       fromBlock: 381054,
       blacklistedTokens: ['0xf7fb2df9280eb0a76427dc3b34761db8b1441a49'],
+      isInsolvent: true,
     },
   },
 }
