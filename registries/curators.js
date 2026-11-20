@@ -520,9 +520,6 @@ const configs = {
       hallmarks: [
         ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
       ],
-      hallmarks: [
-        ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
-      ],
     },
   },
   "coinmerce-capital": {
@@ -1136,10 +1133,6 @@ const configs = {
     },
     _meta: {
       timetravel: false, // starknet doesn't support historical queries
-      hallmarks: [
-        ['2025-06-01', "Start tracking Vesu V1 vaults on Starknet"],
-        ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
-      ],
       hallmarks: [
         ['2025-06-01', "Start tracking Vesu V1 vaults on Starknet"],
         ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
