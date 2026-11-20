@@ -53,6 +53,13 @@ const fixBalancesTokens = {
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
+  // Aurove liquid Earn wrappers: ERC-20 ID20 claims backed 1:1 by Ledger shares on
+  // Mezo managed veBTC / veMEZO. coins.llama.fi has no price for these addresses yet;
+  // pegging lets Tigris Mezo V3 (and other adapters) value MUSD/avBTCm and avBTCm/avMEZOm pools.
+  mezo: {
+    '0xf333171788dE7005695b2E8FB9cAE97Ba9c4dD7a': { coingeckoId: 'bitcoin', decimals: 18 }, // avBTCm
+    '0xb894b11A78B762c82Cb095148F5BC11DC93C3560': { coingeckoId: 'mezo', decimals: 18 }, // avMEZOm
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
