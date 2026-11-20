@@ -612,29 +612,5 @@ function buildPricesGetQueries(readKeys, timestamp) {
   return queries
 }
 
-async function initCache() {
-  let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
-  // if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
-  //   sdk.log('cache size:', JSON.stringify(currentCache).length, 'chains:', Object.keys(currentCache).length)
-  const ONE_WEEK = 60 * 60 * 24 * 31
-  if (!currentCache || !currentCache.startTime || (Date.now() / 1000 - currentCache.startTime > ONE_WEEK)) {
-    currentCache = {
-      startTime: Math.round(Date.now() / 1000),
-    }
-    await sdk.cache.writeCache(INTERNAL_CACHE_FILE, currentCache)
-  }
-  sdk.sdkCache.startCache(currentCache)
-}
-
-async function saveSdkInternalCache() {
-  await sdk.cache.writeCache(INTERNAL_CACHE_FILE, sdk.sdkCache.retriveCache(), { skipR2CacheWrite: true })
-}
-
 async function preExit() {
-  // try {
-  //     await saveSdkInternalCache() // save sdk cache to r2
-  // } catch (e) {
-  //   if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
-  //     sdk.error(e)
-  // }
 }

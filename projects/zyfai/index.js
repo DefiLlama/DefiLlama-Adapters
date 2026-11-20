@@ -1,5 +1,7 @@
 const { allPoolTokens: baseTokens, unpricedVaults: baseUnpricedVaults, makinaPairs, morphoBlueMarkets: baseBlueMarkets } = require('./base');
 const { getConfig } = require('../helper/cache');
+const { getLowValueCache } = require('../helper/cache/lowValue');
+const { sliceIntoChunks } = require('../helper/utils');
 const { toAssetsDown } = require('../helper/morpoho');
 const morphoAbi = require('../helper/abis/morpho.json').morphoBlueFunctions;
 const { allPoolTokens: ethereumPoolTokens, unpricedVaults: ethereumUnpricedVaults, morphoBlueMarkets: ethereumBlueMarkets } = require('./ethereum');
@@ -55,37 +57,52 @@ const YIELDFI_POOL = {
     'yUSD': "0x4772D2e014F9fC3a820C444e3313968e9a5C8121"
 }
 
-async function beetsTvl(api, owners) {
+// Every reader below takes `wallets`: { owners, add(owner, token, amount), fail(owner) }. Balances are collected per
+// wallet instead of straight into the api, so that low-value wallets can be stored (see tvl). A failed read marks its
+// wallet with fail(): the rest of that wallet is still counted, it is just not stored.
+async function beetsTvl(api, wallets) {
+    const { owners } = wallets;
     const calls = owners.flatMap(owner => [
         { target: BEETS_POOL.deposit, params: [owner] },
         { target: BEETS_POOL.stake, params: [owner] },
     ]);
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true });
 
-    // Process balances in pairs (deposit + stake) for each owner
-    for (let i = 0; i < balances.length; i += 2) {
-        const depositBalance = Number(balances[i]);
-        const stakeBalance = Number(balances[i + 1]);
-        const totalBalance = depositBalance + stakeBalance;
+    owners.forEach((owner, i) => {
+        const depositBalance = balances[2 * i];
+        const stakeBalance = balances[2 * i + 1];
+        if (depositBalance == null || stakeBalance == null) return wallets.fail(owner);
+        const totalBalance = BigInt(depositBalance) + BigInt(stakeBalance);
 
         // Add the combined balance for both deposit and stake tokens
-        api.add(calls[i].target, totalBalance);
-        api.add(calls[i + 1].target, totalBalance);
-    }
+        wallets.add(owner, BEETS_POOL.deposit, totalBalance);
+        wallets.add(owner, BEETS_POOL.stake, totalBalance);
+    });
 }
 
-async function penpieTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({
-        target: PENPIE_CONTRACT,
-        params: [PENPIE_MARKET_ADDRESS, owner]
-    }));
+async function penpieTvl(api, wallets) {
+    const { owners } = wallets;
     const balances = await api.multiCall({
         abi: 'function balance(address,address) view returns (uint256)',
-        calls: balanceCalls,
+        calls: owners.map(owner => ({ target: PENPIE_CONTRACT, params: [PENPIE_MARKET_ADDRESS, owner] })),
+        permitFailure: true,
     });
 
-    balances.forEach(balance => {
-        api.add(PENPIE_MARKET_ADDRESS, balance);
+    owners.forEach((owner, i) => {
+        if (balances[i] == null) return wallets.fail(owner);
+        wallets.add(owner, PENPIE_MARKET_ADDRESS, balances[i]);
+    });
+}
+
+async function poolTokensTvl(api, wallets, tokens) {
+    const { owners } = wallets;
+    tokens = [...new Set(tokens.map(token => token.toLowerCase()))]; // the lists overlap; a token is counted once per wallet
+    const calls = owners.flatMap(owner => tokens.map(token => ({ target: token, params: [owner] })));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true });
+    balances.forEach((balance, i) => {
+        const owner = owners[Math.floor(i / tokens.length)];
+        if (balance == null) return wallets.fail(owner);
+        wallets.add(owner, tokens[i % tokens.length], balance);
     });
 }
 
@@ -202,30 +219,37 @@ const TOKENS = {
 };
 
 // Llama drops these share tokens (no coins.llama.fi price). convertToAssets into the underlying, which is priced.
-async function unpricedVaultsTvl(api, owners, vaults) {
-    const assets = await api.multiCall({ abi: 'address:asset', calls: vaults });
+async function unpricedVaultsTvl(api, wallets, vaults) {
+    const { owners } = wallets;
+    const assets = await api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: true });
     const vaultAsset = {};
     vaults.forEach((vault, i) => { if (assets[i]) vaultAsset[vault.toLowerCase()] = assets[i]; });
     const okVaults = Object.keys(vaultAsset);
     if (!okVaults.length) return;
 
     const calls = owners.flatMap(owner => okVaults.map(vault => ({ target: vault, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true });
 
     const convertCalls = [];
-    const convertAssets = [];
+    const converted = [];
     balances.forEach((balance, i) => {
-        if (!balance || balance === '0') return;
+        const owner = owners[Math.floor(i / okVaults.length)];
+        if (balance == null) return wallets.fail(owner);
+        if (balance === '0') return;
         convertCalls.push({ target: calls[i].target, params: [balance] });
-        convertAssets.push(vaultAsset[calls[i].target.toLowerCase()]);
+        converted.push({ owner, asset: vaultAsset[calls[i].target.toLowerCase()] });
     });
     if (!convertCalls.length) return;
 
     const amounts = await api.multiCall({
         abi: 'function convertToAssets(uint256) view returns (uint256)',
         calls: convertCalls,
+        permitFailure: true,
     });
-    amounts.forEach((amount, i) => { if (amount) api.add(convertAssets[i], amount); });
+    amounts.forEach((amount, i) => {
+        if (amount == null) return wallets.fail(converted[i].owner);
+        wallets.add(converted[i].owner, converted[i].asset, amount);
+    });
 }
 
 // projects/makina-finance values a share balance with these two calls. lastTotalAum() is the whole
@@ -235,69 +259,105 @@ const makinaAbi = {
     convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
 };
 
-async function makinaSharesTvl(api, owners, pairs) {
+async function makinaSharesTvl(api, wallets, pairs) {
+    const { owners } = wallets;
     if (!owners.length || !pairs.length) return;
     const accountings = await api.multiCall({
         abi: makinaAbi.accountingToken,
         calls: pairs.map((pair) => pair.machine),
+        permitFailure: true,
     });
     const calls = owners.flatMap((owner) => pairs.map((pair) => ({ target: pair.share, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true });
     const held = [];
     balances.forEach((shares, i) => {
-        if (!shares || BigInt(shares) === 0n) return;
+        const owner = owners[Math.floor(i / pairs.length)];
         const pairIndex = i % pairs.length;
-        held.push({ machine: pairs[pairIndex].machine, accountingToken: accountings[pairIndex], shares });
+        // a machine whose accounting token could not be read cannot be valued: its holders are read again next run
+        if (shares == null || (!accountings[pairIndex] && BigInt(shares) !== 0n)) return wallets.fail(owner);
+        if (BigInt(shares) === 0n) return;
+        held.push({ owner, machine: pairs[pairIndex].machine, accountingToken: accountings[pairIndex], shares });
     });
     if (!held.length) return;
     const amounts = await api.multiCall({
         abi: makinaAbi.convertToAssets,
         calls: held.map(({ machine, shares }) => ({ target: machine, params: [shares] })),
+        permitFailure: true,
     });
-    held.forEach(({ accountingToken }, i) => { if (amounts[i] && amounts[i] !== '0') api.add(accountingToken, amounts[i]); });
+    held.forEach(({ owner, accountingToken }, i) => {
+        if (amounts[i] == null) return wallets.fail(owner);
+        wallets.add(owner, accountingToken, amounts[i]);
+    });
 }
 
 // Morpho Blue supply is not an ERC-20: convert supply shares with the market totals and add the
 // loan token. Market ids stay out of allPoolTokens.
-async function morphoBlueSupplyTvl(api, owners, marketIds) {
+async function morphoBlueSupplyTvl(api, wallets, marketIds) {
+    const { owners } = wallets;
     if (!owners.length || !marketIds.length) return;
-    const params = await api.multiCall({ target: MORPHO, abi: morphoAbi.idToMarketParams, calls: marketIds });
-    const markets = await api.multiCall({ target: MORPHO, abi: morphoAbi.market, calls: marketIds });
+    const params = await api.multiCall({ target: MORPHO, abi: morphoAbi.idToMarketParams, calls: marketIds, permitFailure: true });
+    const markets = await api.multiCall({ target: MORPHO, abi: morphoAbi.market, calls: marketIds, permitFailure: true });
     const positions = await api.multiCall({
         target: MORPHO,
         abi: morphoAbi.position,
         calls: owners.flatMap((owner) => marketIds.map((id) => ({ params: [id, owner] }))),
+        permitFailure: true,
     });
     positions.forEach((position, i) => {
+        const owner = owners[Math.floor(i / marketIds.length)];
         const m = i % marketIds.length;
+        if (!position || !params[m] || !markets[m]) return wallets.fail(owner);
         const assets = toAssetsDown(position.supplyShares, markets[m].totalSupplyAssets, markets[m].totalSupplyShares);
-        api.add(params[m].loanToken, assets.toString());
+        wallets.add(owner, params[m].loanToken, assets.toString());
     });
 }
 
+const WALLETS_PER_GROUP = 500
+
+// Every wallet is checked against every pool token (about 95 reads per wallet on Base) while most wallets hold next to
+// nothing. A wallet worth under $100 is stored with its balances, counted from the store, and read again once a week.
+// Wallets go through in groups and the store is saved after each one, so a run that is cut short keeps what it read.
 async function tvl(api) {
     const owners = await getConfig('zyfai/'+api.chain, `https://api.zyf.ai/api/v1/data/active-wallets?chainId=${api.chainId}`);
-    const cleanOwners = owners.filter(o => o !== '');
+    const cleanOwners = [...new Set(owners.filter(o => o !== '').map(o => o.toLowerCase()))];
 
-    if(api.chain == 'sonic') {
-        await Promise.all([
-            beetsTvl(api, cleanOwners),
-            penpieTvl(api, cleanOwners),
-        ]);
+    const lowValue = await getLowValueCache({ api, project: 'zyfai', checkpointEvery: 1 });
+    for (const group of sliceIntoChunks(lowValue.filter(cleanOwners), WALLETS_PER_GROUP)) {
+        const held = {};
+        group.forEach(owner => held[owner] = {});
+        const failed = new Set();
+        const wallets = {
+            owners: group,
+            fail: owner => failed.add(owner),
+            add: (owner, token, amount) => {
+                if (BigInt(amount) === 0n) return;
+                held[owner][token] = (BigInt(held[owner][token] ?? 0) + BigInt(amount)).toString();
+            },
+        };
+
+        if (api.chain == 'sonic') {
+            await beetsTvl(api, wallets);
+            await penpieTvl(api, wallets);
+        }
+
+        if (api.chain === 'base') {
+            await unpricedVaultsTvl(api, wallets, baseUnpricedVaults);
+            await makinaSharesTvl(api, wallets, makinaPairs);
+            await morphoBlueSupplyTvl(api, wallets, baseBlueMarkets);
+        }
+
+        if (api.chain === 'ethereum') {
+            await unpricedVaultsTvl(api, wallets, ethereumUnpricedVaults);
+            await morphoBlueSupplyTvl(api, wallets, ethereumBlueMarkets);
+        }
+
+        await poolTokensTvl(api, wallets, TOKENS[api.chain]);
+
+        // a wallet with a failed read is counted with what was read, and read in full again next run
+        group.filter(owner => failed.has(owner)).forEach(owner => Object.entries(held[owner]).forEach(([token, amount]) => api.add(token, amount)));
+        await lowValue.record(group.filter(owner => !failed.has(owner)).map(owner => [owner, held[owner]]));
     }
-
-    if (api.chain === 'base') {
-        await unpricedVaultsTvl(api, cleanOwners, baseUnpricedVaults);
-        await makinaSharesTvl(api, cleanOwners, makinaPairs);
-        await morphoBlueSupplyTvl(api, cleanOwners, baseBlueMarkets);
-    }
-
-    if (api.chain === 'ethereum') {
-        await unpricedVaultsTvl(api, cleanOwners, ethereumUnpricedVaults);
-        await morphoBlueSupplyTvl(api, cleanOwners, ethereumBlueMarkets);
-    }
-
-    return api.sumTokens({ownerTokens: cleanOwners.map(o => [TOKENS[api.chain], o])});
+    await lowValue.save();
 }
 
 module.exports = {

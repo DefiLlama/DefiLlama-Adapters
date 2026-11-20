@@ -1,5 +1,5 @@
-const { sliceIntoChunks, sleep, mergeExports } = require('../helper/utils');
-const { PromisePool } = require('@supercharge/promise-pool');
+const { sliceIntoChunks, mergeExports } = require('../helper/utils');
+const { getLowValueCache } = require('../helper/cache/lowValue');
 const { aaveV4Export } = require("../helper/aave");
 
 const CONFIG = {
@@ -26,44 +26,58 @@ const abi = {
 
 const SAFES_PER_CALL = 50
 const MULTICALL_SIZE = 3
-const CONCURRENCY = 80
+// ranges are read in groups, one multiCall per group, so the low-value ranges found so far can be saved between groups
+const RANGES_PER_GROUP = 600
+const LOW_VALUE_RANGE_USD = 500
+const MAX_FAILED_RANGES = 20
 
+// The helper only reports collateral for a run of consecutive safes, so a "range" of SAFES_PER_CALL safes is the unit here.
+// Most ranges hold next to nothing (all of Scroll since the move to OP Mainnet): a range worth under LOW_VALUE_RANGE_USD is
+// stored with its collateral, counted from the store, and read again once a week.
 const tvl = async (api) => {
   const { etherFiCashFactory, cashBorrowerHelperContract, multicallSize = MULTICALL_SIZE } = CONFIG[api.chain]
   const numSafes = (await api.call({ abi: abi.numContractsDeployed, target: etherFiCashFactory })) - 1
-  const calls = []
-  for (let i = 0; i < numSafes; i += SAFES_PER_CALL) {
-    calls.push({ target: cashBorrowerHelperContract, params: [i, Math.min(SAFES_PER_CALL, numSafes - i)] })
-  }
+  const starts = []
+  for (let i = 0; i < numSafes; i += SAFES_PER_CALL) starts.push(i)
+  if (!starts.length) return api.getBalances()
 
-  const chunks = sliceIntoChunks(calls, multicallSize)
-  let processed = 0
+  const lowValue = await getLowValueCache({ api, project: 'etherfi-cash', key: `${api.chain}-ranges-of-${SAFES_PER_CALL}`, thresholdUSD: LOW_VALUE_RANGE_USD, checkpointEvery: RANGES_PER_GROUP })
+  // the last range is still filling up with new safes: it is read every run and never stored
+  const lastStart = starts.pop()
+  const toRead = [...lowValue.filter(starts.map(String)).map(Number), lastStart]
   let failures = 0
 
-  await PromisePool.withConcurrency(CONCURRENCY)
-    .for(chunks)
-    .process(async (chunk) => {
-      let res
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk, permitFailure: true })
-          break
-        } catch (e) {
-          if (attempt === 2) throw e
-          await sleep(1000 * (attempt + 1))
-        }
-      }
-      res.forEach(batchResult => {
-        if (!batchResult) {
-          if (++failures >= 20) throw new Error(`Too many sub-call failures (${failures}), aborting to avoid serving incomplete data`)
-          return
-        }
-        batchResult.forEach(({ token, amount }) => api.add(token, amount))
-      })
-      processed += chunk.length * SAFES_PER_CALL
-      // api.log(`Processed ${Math.min(processed, numSafes)}/${numSafes} safes (${failures} sub-call failures, ~${failures * SAFES_PER_CALL} safes skipped)`)
-    })
+  const readRanges = (rangeStarts, chunkSize) => api.multiCall({
+    abi: abi.getTotalCollateralForSafesWithIndex, target: cashBorrowerHelperContract, chunkSize, permitFailure: true,
+    calls: rangeStarts.map(start => ({ params: [start, Math.min(SAFES_PER_CALL, numSafes - start)] })),
+  })
 
+  for (const group of sliceIntoChunks(toRead, RANGES_PER_GROUP)) {
+    const res = await readRanges(group, multicallSize)
+    // The helper call is heavy and RPCs drop whole batches of it under load, while the same range reads fine on its own:
+    // ranges that came back empty are read again, one range per eth_call, before any of them counts as failed.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const missing = group.map((_, i) => i).filter(i => !res[i])
+      if (!missing.length) break
+      const retried = await readRanges(missing.map(i => group[i]), 1)
+      missing.forEach((i, j) => res[i] = retried[j])
+    }
+    const results = []
+    res.forEach((rangeCollateral, i) => {
+      if (!rangeCollateral) {
+        // a failed range is left out of this run only; too many of them and the total is not worth reporting
+        if (++failures >= MAX_FAILED_RANGES) throw new Error(`Too many sub-call failures (${failures}), aborting to avoid serving incomplete data`)
+        return
+      }
+      const held = {}
+      rangeCollateral.forEach(({ token, amount }) => held[token] = (BigInt(held[token] ?? 0) + BigInt(amount)).toString())
+      if (group[i] === lastStart) Object.entries(held).forEach(([token, amount]) => api.add(token, amount))
+      else results.push([String(group[i]), held])
+    })
+    await lowValue.record(results)
+  }
+
+  await lowValue.save()
   return api.getBalances()
 }
 

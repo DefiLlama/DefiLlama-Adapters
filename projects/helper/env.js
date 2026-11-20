@@ -100,6 +100,9 @@ const DEFAULTS = {
   // Somnia Tokyo, chainId 50321 - separate mainnet chain from Somnia (5031), not in the SDK providers list
   SOMNIA_TOKYO_RPC: 'https://api.tokyo.infra.mainnet.somnia.network',
   SOMNIA_TOKYO_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  // Viction: canonical Multicall3 is deployed (since block 87169904) but missing from the SDK deployment map, so every call went out as a single eth_call.
+  // The SDK map entry is added too; drop this line once that sdk version is in use, the map also knows the deployment block.
+  TOMOCHAIN_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
   KUSAMA_ASSETHUB_SUBSTRATE_RPC: 'https://kusama-asset-hub-rpc.polkadot.io,https://statemine.api.onfinality.io/public',
 }
 

@@ -1,6 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2, unwrapUniswapV3NFT, unwrapSlipstreamNFT } = require('../helper/unwrapLPs')
+const { getLowValueCache } = require('../helper/cache/lowValue')
+const { getCache, setCache } = require('../helper/cache')
+const { sliceIntoChunks } = require('../helper/utils')
+
+const VAULTS_PER_GROUP = 2000
 
 // Not counted, in both Autofarm and Community vaults because the position ids cannot be enumerated on chain: Uniswap V4 and
 // PancakeSwap Infinity positions (their position managers are not ERC721Enumerable), and Aerodrome
@@ -124,65 +129,122 @@ const abis = {
   },
 }
 
-// Enumerate CL position ids per vault. `nftIdFetcher` is whichever contract reports ownership: the
-// position manager itself for positions sitting in the vault, or a farm that has taken custody of
-// the NFT but still credits the vault. Batching every vault into one balanceOf multicall keeps this
-// to a handful of RPC round trips per position manager.
-async function getPositionIds(api, { nftIdFetcher, owners }) {
-  const counts = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    target: nftIdFetcher,
-    calls: owners,
-    permitFailure: false,
+// A vault mints a new position NFT every time it rebalances and keeps the old, emptied one: BSC alone has ~570k position
+// NFTs across ~3k vaults, and about 99% of them hold no liquidity. Enumerating and reading every one of them on every
+// run is what made this adapter time out. So this is stored per position source and vault:
+//   [time of the last full read, id at the last index, NFT count, ids with liquidity, ids without, tokens of all its positions]
+// and on a run:
+//  - the NFT count and the id at the last index are read. Both unchanged: the stored list is used and only the positions
+//    that had liquidity are read. Either changed: the vault's ids are enumerated again, and of those only the ids not
+//    already known to be empty are read.
+//  - once a week every vault is read in full again. That also catches what the two checks cannot see: an emptied
+//    position that got liquidity back, or a mint plus a burn that left the count and the last id as they were.
+const POSITIONS_RECHECK_SECONDS = 7 * 24 * 3600
+
+// `fetcher` is whichever contract reports ownership: the position manager itself for positions sitting in the vault,
+// or a farm that has taken custody of the NFT but still credits the vault.
+async function addPositions(api, { nfpm, fetcher, kind, vaults, vaultTokens, withLiquidity, unreadable, stored, now }) {
+  const counts = await api.multiCall({ abi: 'erc20:balanceOf', target: fetcher, calls: vaults, permitFailure: true })
+
+  const isFresh = (vault, i) => stored[vault] && stored[vault][2] === +counts[i] && now - stored[vault][0] < POSITIONS_RECHECK_SECONDS
+  const lastIdChecks = vaults.filter((vault, i) => +counts[i] && isFresh(vault, i))
+  const lastIds = await api.multiCall({ abi: abis.tokenOfOwnerByIndex, target: fetcher, calls: lastIdChecks.map(vault => ({ params: [vault, stored[vault][2] - 1] })), permitFailure: true })
+  const lastIdOf = {}
+  lastIdChecks.forEach((vault, i) => lastIdOf[vault] = lastIds[i])
+
+  const liveIds = [] // { id, vault }
+  const toEnumerate = [] // { vault, count }
+  const failed = new Set() // vaults with a failed read from this source: counted with what was read, nothing stored
+  vaults.forEach((vault, i) => {
+    if (counts[i] == null) return failed.add(vault)
+    const count = +counts[i]
+    if (!count) return delete stored[vault]
+    const record = stored[vault]
+    if (isFresh(vault, i) && lastIdOf[vault] != null && +lastIdOf[vault] === record[1]) {
+      record[3].forEach(id => liveIds.push({ id, vault }))
+      record[5].forEach(token => vaultTokens[vault].add(token))
+    } else toEnumerate.push({ vault, count })
   })
 
-  const calls = []
-  const callOwners = []
-  counts.forEach((count, i) => {
-    for (let index = 0; index < +(count ?? 0); index++) {
-      calls.push({ params: [owners[i], index] })
-      callOwners.push(owners[i])
+  const ids = await api.multiCall({
+    abi: abis.tokenOfOwnerByIndex, target: fetcher, permitFailure: true,
+    calls: toEnumerate.flatMap(({ vault, count }) => Array.from({ length: count }, (_, index) => ({ params: [vault, index] }))),
+  })
+
+  const toRead = [] // { id, vault }
+  const pending = {}
+  let offset = 0
+  for (const { vault, count } of toEnumerate) {
+    const vaultIds = ids.slice(offset, offset + count)
+    offset += count
+    if (vaultIds.some(id => id == null)) failed.add(vault)
+    const record = stored[vault]
+    const reuse = record && now - record[0] < POSITIONS_RECHECK_SECONDS
+    const knownEmpty = new Set(reuse ? record[4] : [])
+    // a vault read for the first time gets a random age, so the weekly full reads are spread across runs
+    const checkedAt = reuse ? record[0] : record ? now : now - Math.floor(Math.random() * POSITIONS_RECHECK_SECONDS)
+    const state = pending[vault] = { ids: vaultIds.filter(id => id != null).map(Number), live: [], empty: [], tokens: new Set(reuse ? record[5] : []), checkedAt }
+    for (const id of state.ids) {
+      if (knownEmpty.has(id)) state.empty.push(id)
+      else toRead.push({ id, vault })
     }
-  })
-  if (!calls.length) return []
+  }
 
-  const tokenIds = await api.multiCall({
-    abi: abis.tokenOfOwnerByIndex,
-    target: nftIdFetcher,
-    calls,
-    permitFailure: false,
+  const positions = await api.multiCall({ abi: abis.positions[kind], target: nfpm, calls: toRead.map(({ id }) => id), permitFailure: true })
+  positions.forEach((position, i) => {
+    const { id, vault } = toRead[i]
+    if (!position) return failed.add(vault)
+    const state = pending[vault]
+    // the pair of every position, emptied ones included: a vault that exited a position may still hold its tokens idle
+    state.tokens.add(position.token0.toLowerCase())
+    state.tokens.add(position.token1.toLowerCase())
+    if (position.liquidity === '0') return state.empty.push(id)
+    state.live.push(id)
+    liveIds.push({ id, vault })
   })
 
-  return tokenIds
-    .map((tokenId, i) => tokenId == null ? null : { tokenId, owner: callOwners[i] })
-    .filter(i => i)
+  for (const { vault } of toEnumerate) {
+    const state = pending[vault]
+    state.tokens.forEach(token => vaultTokens[vault].add(token))
+    if (failed.has(vault)) delete stored[vault]
+    else stored[vault] = [state.checkedAt, state.ids[state.ids.length - 1], state.ids.length, state.live, state.empty, [...state.tokens]]
+  }
+  failed.forEach(vault => unreadable.add(vault))
+
+  liveIds.forEach(({ vault }) => withLiquidity.add(vault))
+  if (!liveIds.length) return
+  const positionIds = liveIds.map(({ id }) => id)
+  const unwrap = kind === 'slipstream' ? unwrapSlipstreamNFT : unwrapUniswapV3NFT
+  await unwrap({ api, nftAddress: nfpm, positionIds, uniV3ExtraConfig: { positionIds } })
 }
 
-async function addPositions(api, { nfpm, nftIdFetcher = nfpm, owners, kind, vaultTokens }) {
-  const positionIds = await getPositionIds(api, { nftIdFetcher, owners })
-  if (!positionIds.length) return
+const MULTICALL3 = '0xcA11bde05977b3631167028862bE2a173976CA11'
 
-  const tokenIds = positionIds.map(i => i.tokenId)
+// Idle balances of the vaults that hold no position with liquidity, read per vault so the low-value ones can be stored.
+async function addIdleBalances(api, { vaults, tokensOf, lowValue }) {
+  if (!vaults.length) return
+  const native = await api.multiCall({ target: MULTICALL3, abi: 'function getEthBalance(address addr) view returns (uint256 balance)', calls: vaults, permitFailure: true })
+  const calls = vaults.flatMap(vault => tokensOf(vault).map(token => ({ target: token, params: vault })))
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true })
 
-  // Attribute each position's pair back to the vault that owns it, so the idle-balance pass below
-  // only has to check the tokens a vault actually deals in rather than a chain-wide token list.
-  const positions = await api.multiCall({ abi: abis.positions[kind], target: nfpm, calls: tokenIds, permitFailure: false })
-  positions.forEach((position, i) => {
-    if (!position) return
-    const tokens = vaultTokens[positionIds[i].owner]
-    tokens.add(position.token0)
-    tokens.add(position.token1)
+  const complete = []
+  let offset = 0
+  vaults.forEach((vault, i) => {
+    const held = { [ADDRESSES.null]: native[i] }
+    for (const token of tokensOf(vault)) held[token] = balances[offset++]
+    // a failed read is counted as missing for this run only, and the vault is read again next run
+    if (Object.values(held).some(amount => amount == null))
+      Object.entries(held).forEach(([token, amount]) => { if (amount != null) api.add(token, amount) })
+    else complete.push([vault, held])
   })
-
-  const unwrap = kind === 'slipstream' ? unwrapSlipstreamNFT : unwrapUniswapV3NFT
-  await unwrap({ api, nftAddress: nfpm, positionIds: tokenIds, uniV3ExtraConfig: { positionIds: tokenIds } })
+  await lowValue.record(complete)
 }
 
 async function tvl(api) {
   const chainConfig = config[api.chain]
   if (!chainConfig) return
 
-  const { factory, fromBlock, uniV3Nfpms = [], slipstreamNfpms = [], farms = [], idleTokens = [] } = chainConfig
+  const { factory, fromBlock } = chainConfig
 
   const logs = await getLogs({
     api,
@@ -192,25 +254,53 @@ async function tvl(api) {
     onlyArgs: true,
   })
 
-  const vaults = [...new Set(logs.map(i => i.vault.toLowerCase()))]
-  if (!vaults.length) return
+  const allVaults = [...new Set(logs.map(i => i.vault.toLowerCase()))]
+  if (!allVaults.length) return
+
+  // The stored position lists and low-value vaults are only true for now: a run at a past block reads everything and stores nothing.
+  const now = Math.floor(Date.now() / 1000)
+  const isCurrentRun = !api.timestamp || api.timestamp > now - 3600
+  const positionsCacheKey = `autofarm-positions/${api.chain}`
+  const storedPositions = isCurrentRun ? await getCache('krystal', positionsCacheKey) : {}
+
+  // A vault that holds no position with liquidity and next to no idle balance is stored with its balances and read again
+  // once a week. Vaults go through in groups and both stores are saved after each group: a run that is cut short
+  // (this adapter used to be killed before finishing) leaves the next one less to read.
+  const lowValue = await getLowValueCache({ api, project: 'krystal', key: `autofarm-${api.chain}`, checkpointEvery: 1 })
+  for (const vaults of sliceIntoChunks(lowValue.filter(allVaults), VAULTS_PER_GROUP)) {
+    await addVaults(api, { vaults, chainConfig, lowValue, storedPositions, now })
+    if (isCurrentRun) await setCache('krystal', positionsCacheKey, storedPositions)
+  }
+  await lowValue.save()
+}
+
+async function addVaults(api, { vaults, chainConfig, lowValue, storedPositions, now }) {
+  const { uniV3Nfpms = [], slipstreamNfpms = [], farms = [], idleTokens = [] } = chainConfig
+
+  const vaultTokens = {} // pair tokens of each vault's positions, emptied ones included
+  vaults.forEach(vault => vaultTokens[vault] = new Set())
+  const withLiquidity = new Set()
+  const unreadable = new Set()
+
+  const sources = [
+    ...uniV3Nfpms.map(nfpm => ({ nfpm, fetcher: nfpm, kind: 'uniV3' })),
+    // unstaked only - gauge-staked positions are not enumerable, see the note at the top of the file
+    ...slipstreamNfpms.map(nfpm => ({ nfpm, fetcher: nfpm, kind: 'slipstream' })),
+    ...farms.map(({ nfpm, nftIdFetcher }) => ({ nfpm, fetcher: nftIdFetcher, kind: 'uniV3' })),
+  ]
+  for (const source of sources) {
+    const key = source.fetcher.toLowerCase()
+    storedPositions[key] = storedPositions[key] ?? {}
+    await addPositions(api, { ...source, vaults, vaultTokens, withLiquidity, unreadable, stored: storedPositions[key], now })
+  }
 
   // Native plus the chain's major assets are checked against every vault: a vault that has exited
   // all of its positions still holds real value, and has no position to discover tokens from.
-  const vaultTokens = {}
-  vaults.forEach(vault => vaultTokens[vault] = new Set([ADDRESSES.null, ...idleTokens]))
+  const tokensOf = vault => [...new Set([...idleTokens, ...vaultTokens[vault]].map(token => token.toLowerCase()))]
+  const everyRun = vaults.filter(vault => withLiquidity.has(vault) || unreadable.has(vault))
+  await sumTokens2({ api, ownerTokens: everyRun.map(vault => [[ADDRESSES.null, ...tokensOf(vault)], vault]) })
 
-  for (const nfpm of uniV3Nfpms)
-    await addPositions(api, { nfpm, owners: vaults, kind: 'uniV3', vaultTokens })
-
-  // unstaked only - gauge-staked positions are not enumerable, see the note at the top of the file
-  for (const nfpm of slipstreamNfpms)
-    await addPositions(api, { nfpm, owners: vaults, kind: 'slipstream', vaultTokens })
-
-  for (const { nfpm, nftIdFetcher } of farms)
-    await addPositions(api, { nfpm, nftIdFetcher, owners: vaults, kind: 'uniV3', vaultTokens })
-
-  await sumTokens2({ api, ownerTokens: vaults.map(vault => [[...vaultTokens[vault]], vault]) })
+  await addIdleBalances(api, { vaults: vaults.filter(vault => !withLiquidity.has(vault) && !unreadable.has(vault)), tokensOf, lowValue })
 }
 
 module.exports = { config, tvl }

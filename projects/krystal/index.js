@@ -11,10 +11,8 @@ chains.forEach(chain => {
   module.exports[chain] = {
     // each returns early on a chain it has no factory on, so the union of chains is safe
     tvl: async api => {
-      await Promise.all([
-        autofarm.tvl(api),
-        legacyShareVaults.tvl(api),
-      ]);
+      await autofarm.tvl(api);
+      await legacyShareVaults.tvl(api);
     },
   };
 });

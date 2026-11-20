@@ -1,7 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getCache, setCache } = require('../helper/cache')
-const { getCreateAddress } = require('ethers')
+const { getSqrtPriceX96AtTick } = require('../helper/utils/tick')
+const { getCreateAddress, keccak256, AbiCoder } = require('ethers')
 
 // ArgusPad launches a tax token and seeds a single concentrated-liquidity position with the whole
 // supply. The LP NFT is minted to a locker clone created for that launch, and the locker has no
@@ -146,26 +147,104 @@ async function getLaunches(api) {
   return launches
 }
 
+// There are ~190k v4 launches, each with its own pool, so reading pool key, liquidity and price for
+// every one on every run cost ~11.5k eth_calls. Two things cut that down:
+//  - a locked position never changes: its pool, tick range and liquidity are read once and cached,
+//    leaving one getSlot0 per position;
+//  - most launches never trade, and a position whose pool price has not left its starting edge holds
+//    no quote asset at all. Those are re-checked once a week instead of every run, so the quote side
+//    of a launch that gets its first buy can be missing for up to a week.
+// Cached per positionId as [poolId, quote asset index (-1: the other side is not a quote asset),
+// quote is token0 (1/0), tickLower, tickUpper, liquidity, time it was last seen holding no quote (0: holds some)].
+const V4_POSITIONS_CACHE_KEY = 'arc-v4-positions'
+const DORMANT_RECHECK_SECONDS = 7 * 24 * 3600
+const V4_ABI = {
+  poolAndPositionInfo: 'function getPoolAndPositionInfo(uint256 tokenId) view returns ((address token0, address token1, uint24 fee, int24 tickSpacing, address hook), uint256 info)',
+  positionLiquidity: 'function getPositionLiquidity(uint256 tokenId) view returns (uint128 liquidity)',
+  slot0: 'function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)',
+}
+const toInt24 = value => (value & 0x800000) ? value - (1 << 24) : value
+
+async function addV4Positions(api, launches) {
+  const cache = await getCache('arguspad', V4_POSITIONS_CACHE_KEY)
+  const now = Math.floor(Date.now() / 1000)
+  // dormancy is what is true now, so a run at a past block prices every position and records nothing
+  const isCurrentRun = !api.timestamp || api.timestamp > now - 3600
+  let updated = false
+
+  const missing = launches.filter(([, positionId]) => !cache[positionId])
+  if (missing.length) {
+    const ids = missing.map(([, positionId]) => positionId)
+    const infos = await api.multiCall({ target: POSITION_MANAGER_V4, abi: V4_ABI.poolAndPositionInfo, calls: ids, permitFailure: true })
+    const liquidities = await api.multiCall({ target: POSITION_MANAGER_V4, abi: V4_ABI.positionLiquidity, calls: ids, permitFailure: true })
+    missing.forEach(([token, positionId], i) => {
+      if (!infos[i] || liquidities[i] == null) return
+      const [key, packed] = infos[i]
+      const poolId = keccak256(AbiCoder.defaultAbiCoder().encode(['address', 'address', 'uint24', 'int24', 'address'], [key.token0, key.token1, key.fee, key.tickSpacing, key.hook]))
+      const info = BigInt(packed)
+      // only the side that is not the launch token can count, and only when it is a quote asset. This also covers
+      // ARGUS and ARCASH, which were themselves launched here: their own token is the excluded launch side.
+      const tokenIsToken0 = key.token0.toLowerCase() === token
+      const quoteIndex = QUOTE_ASSETS.findIndex(asset => asset.toLowerCase() === (tokenIsToken0 ? key.token1 : key.token0).toLowerCase())
+      cache[positionId] = [poolId, quoteIndex, tokenIsToken0 ? 0 : 1, toInt24(Number((info >> 8n) & 0xFFFFFFn)), toInt24(Number((info >> 32n) & 0xFFFFFFn)), String(liquidities[i]), 0]
+      updated = true
+    })
+  }
+
+  const toPrice = []
+  for (const [, positionId] of launches) {
+    const record = cache[positionId]
+    if (!record || record[1] < 0) continue
+    if (isCurrentRun && record[6] && now - record[6] < DORMANT_RECHECK_SECONDS) continue
+    toPrice.push(record)
+  }
+
+  const slots = await api.multiCall({ target: STATE_VIEW, abi: V4_ABI.slot0, calls: toPrice.map(record => record[0]), permitFailure: true })
+  toPrice.forEach((record, i) => {
+    if (!slots[i]) return
+    const [, quoteIndex, quoteIsToken0, tickLower, tickUpper, liquidity, dormantSince] = record
+    // same valuation as the shared v4 helper: priced from sqrtPriceX96 with exact tick edges
+    const sp = Number(slots[i].sqrtPriceX96) / 2 ** 96
+    const sa = Number(getSqrtPriceX96AtTick(tickLower)) / 2 ** 96
+    const sb = Number(getSqrtPriceX96AtTick(tickUpper)) / 2 ** 96
+    let amount0 = 0
+    let amount1 = 0
+    if (sp <= sa) amount0 = liquidity * (sb - sa) / (sa * sb)
+    else if (sp < sb) {
+      amount0 = liquidity * (sb - sp) / (sp * sb)
+      amount1 = liquidity * (sp - sa)
+    } else amount1 = liquidity * (sb - sa)
+
+    const quoteAmount = quoteIsToken0 ? amount0 : amount1
+    if (quoteAmount > 0) api.add(QUOTE_ASSETS[quoteIndex], quoteAmount)
+    if (!isCurrentRun) return
+    // first-time dormant positions get a random age so the weekly re-checks spread across runs
+    const nextDormantSince = quoteAmount > 0 ? 0 : dormantSince ? now : now - Math.floor(Math.random() * DORMANT_RECHECK_SECONDS)
+    if (nextDormantSince !== dormantSince) {
+      record[6] = nextDormantSince
+      updated = true
+    }
+  })
+
+  if (updated) await setCache('arguspad', V4_POSITIONS_CACHE_KEY, cache)
+}
+
 async function tvl(api) {
   const launches = await getLaunches(api)
+  await addV4Positions(api, launches.v4)
 
-  // ARGUS and ARCASH were themselves launched on ArgusPad, so their own positions are summed with
-  // the launch token blacklisted; every other position only has its quote side whitelisted.
+  // The 59 retired v3 positions go through the shared helper. ARGUS and ARCASH were themselves launched
+  // on ArgusPad, so their own positions are summed with the launch token blacklisted; every other
+  // position only has its quote side whitelisted.
   const groups = {}
-  for (const version of ['v3', 'v4']) {
-    for (const [token, positionId] of launches[version]) {
-      const self = QUOTE_SET.has(token) ? token : ''
-      groups[self] = groups[self] ?? { v3: [], v4: [] }
-      groups[self][version].push(positionId)
-    }
+  for (const [token, positionId] of launches.v3) {
+    const self = QUOTE_SET.has(token) ? token : ''
+    groups[self] = groups[self] ?? []
+    groups[self].push(positionId)
   }
 
-  for (const [self, { v3, v4 }] of Object.entries(groups)) {
-    const config = { api, uniV3WhitelistedTokens: QUOTE_ASSETS, blacklistedTokens: self ? [self] : [] }
-    if (v3.length) config.uniV3ExtraConfig = { nftAddress: POSITION_MANAGER_V3, positionIds: v3 }
-    if (v4.length) config.uniV4ExtraConfig = { nftAddress: POSITION_MANAGER_V4, stateViewer: STATE_VIEW, positionIds: v4 }
-    await sumTokens2(config)
-  }
+  for (const [self, positionIds] of Object.entries(groups))
+    await sumTokens2({ api, uniV3WhitelistedTokens: QUOTE_ASSETS, blacklistedTokens: self ? [self] : [], uniV3ExtraConfig: { nftAddress: POSITION_MANAGER_V3, positionIds } })
 }
 
 module.exports = {

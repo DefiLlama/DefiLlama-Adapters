@@ -1,4 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
+const { getLowValueCache } = require('../helper/cache/lowValue')
 
 // Legacy share vaults - the earlier generation of publicly depositable vaults, created by a series
 // of vault factories that have since been superseded by SharedVaultFactory (see community.js).
@@ -104,15 +105,22 @@ async function tvl(api) {
     })
   }
 
-  const [vaultConfigs, vaultTotalValues, customOwnerFeeConfigs, customOwnerFeeTotalValues] = await Promise.all([
-    api.multiCall({ abi: abis.getVaultConfig, calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: abis.getTotalValue, calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: abis.getVaultConfigWithCustomOwnerFee, calls: vaultsWithCustomOwnerFee, permitFailure: false }),
-    api.multiCall({ abi: abis.getTotalValue, calls: vaultsWithCustomOwnerFee, permitFailure: false }),
-  ])
+  // vaults worth next to nothing are stored with their value and read again once a week
+  const lowValue = await getLowValueCache({ api, project: 'krystal', key: `legacy-${api.chain}` })
+  await addVaults(api, lowValue, lowValue.filter(vaults), abis.getVaultConfig)
+  await addVaults(api, lowValue, lowValue.filter(vaultsWithCustomOwnerFee), abis.getVaultConfigWithCustomOwnerFee)
+  await lowValue.save()
+}
 
-  api.addTokens(vaultConfigs.map(i => i.principalToken), vaultTotalValues)
-  api.addTokens(customOwnerFeeConfigs.map(i => i.principalToken), customOwnerFeeTotalValues)
+async function addVaults(api, lowValue, vaults, configAbi) {
+  const configs = await api.multiCall({ abi: configAbi, calls: vaults, permitFailure: true })
+  const totalValues = await api.multiCall({ abi: abis.getTotalValue, calls: vaults, permitFailure: true })
+  const results = []
+  vaults.forEach((vault, i) => {
+    if (!configs[i] || totalValues[i] == null) return
+    results.push([vault, { [configs[i].principalToken]: totalValues[i] }])
+  })
+  await lowValue.record(results)
 }
 
 module.exports = { config, tvl }
