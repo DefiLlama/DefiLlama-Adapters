@@ -9,15 +9,20 @@ const M = '0x866a2bf4e572cbcf37d5071a7a58503bfb36be1b';
 const PYUSDx = '0xebdb0942ce16386ab90718c7bd10c91cdb66b14d';
 const USDC = ADDRESSES.ethereum.USDC;
 // Saturn USDC Morpho vaults (co-curated with Hyperithm; Hyperithm agreed deposits count as Saturn's).
+const CONFIDENTIAL_VAULT = '0x7F876BF31089A8D13ccF8F1158Ef7bFecA2dDF94';
 const VAULTS = {
-  ethereum: ['0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240'],
+  ethereum: [
+    '0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240',
+    CONFIDENTIAL_VAULT, // Confidential Tokenized Equity Vault
+  ],
   monad: ['0x75753e494e5e374C52E1d84fc04EB14B10F2C079'],
   bsc: ['0x87e01662febb5145ff648c1fa7b73d81519d9c66'], // Lista USDT vault; excluded from lista-lending
 };
 const BSC_VAULT_START = 1788497446; // vault deployed at block 119857679 (2026-09-04)
+const CONFIDENTIAL_VAULT_START = 1794471971; // vault deployed at block 26397653 (2026-11-12)
 
 async function vaultTvl(api) {
-  const vaults = VAULTS[api.chain];
+  const vaults = VAULTS[api.chain].filter((v) => !(v === CONFIDENTIAL_VAULT && api.timestamp < CONFIDENTIAL_VAULT_START));
   const [assets, totals] = await Promise.all([
     api.multiCall({ abi: 'address:asset', calls: vaults }),
     api.multiCall({ abi: 'uint256:totalAssets', calls: vaults }),

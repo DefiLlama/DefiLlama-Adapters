@@ -16,7 +16,7 @@ const vaultConfigs = {
         '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
         '0x16fa314141C76D4a0675f5e8e3CCBE4E0fA22C7c'
       ],
-      excludedVaults: ['0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240'], // Saturn USDC vault, counted under saturn-protocol
+      excludedVaults: ['0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240', '0x7F876BF31089A8D13ccF8F1158Ef7bFecA2dDF94'], // Saturn USDC vault, counted under saturn-protocol
       euler: [
         '0x3cd3718f8f047aA32F775E2cb4245A164E1C99fB',
       ],
