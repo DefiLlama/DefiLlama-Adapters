@@ -88,6 +88,8 @@ const DEFAULTS = {
   // chains with no provider in the SDK providers list (chainid.network RPCs)
   AREA_RPC: 'https://mainnet-rpc.areum.network,https://mainnet-rpc2.areum.network', // Areum Network, chainId 463
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030
+  BXN_RPC: 'https://rpc.blackfort.network/mainnet/rpc', // BlackFort Exchange Network, chainId 488
+  BXN_RPC_MULTICALL: '0x8a3Bc57784CFe3df17C5fBB1a935a600224879Dd', // Multicall3 (verified on blackfortscan)
   // p2p/everstake neon proxies are gone (dns), thirdweb refuses the chain; blockscout's eth-rpc proxy still serves it
   NEON_EVM_RPC: 'https://neon.blockscout.com/api/eth-rpc',
   ETN_RPC: 'https://blockexplorer.electroneum.com/api/eth-rpc',
