@@ -20,6 +20,12 @@ function erc4626ExportFn(chainConfigs, options = {}) {
 }
 
 const configs = {
+  'goddess-sovereign-vault': {
+    start: 1795130547,
+    doublecounted: true,
+    methodology: 'TVL is the native USDC managed by the gUSDC vault, measured using totalAssets(). Assets deployed into Aave V3, Curve, and Pendle may already be counted by those protocols.',
+    arbitrum: ['0xbf732b50c1003e12b978cc85b36bd9455bf0e91f'],
+  },
   'webera': {
     start: '2025-02-18',
     berachain: [
