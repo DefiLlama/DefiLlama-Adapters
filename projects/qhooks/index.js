@@ -98,7 +98,7 @@ async function discoverPools(api) {
     await Promise.all(regs.slice(i, i + 10).map(async (r) => {
       const [log] = await getLogs2({ api, target: poolManager, eventAbi: initializeAbi, topics: [INITIALIZE_TOPIC, r.id], fromBlock: r.block, toBlock: r.block + 1, skipCache: true, useIndexer: false })
       if (!log || log.hooks.toLowerCase() !== r.hook) throw new Error(`QHooks: no Initialize with the QHooks hook for ${r.id}`)
-      pools.push({ id: log.id, token0: log.currency0, token1: log.currency1, spacing: Number(log.tickSpacing), launched: r.token })
+      pools.push({ id: log.id, token0: log.currency0, token1: log.currency1, spacing: Number(log.tickSpacing) })
     }))
   }
   if (pools.length !== byId.size) throw new Error(`QHooks: ${byId.size} pools registered but ${pools.length} Initialize events`)
@@ -108,17 +108,15 @@ async function discoverPools(api) {
 const quoteAssets = (chain) => new Set([ADDRESSES.null, ...Object.values(ADDRESSES[chain] ?? {})].map((a) => a.toLowerCase()))
 const cache = {}
 
-// Pool reserves split into protocol-token pools (QHOOKS, pool2) and every other QHooks pool (tvl).
+// Reserves of every QHooks pool by token, shared by tvl and staking.
 async function poolBalances(api) {
   const key = `${api.chain}-${api.block}`
   if (!cache[key]) cache[key] = (async () => {
     const pools = await discoverPools(api)
-    const out = { tvl: {}, pool2: {} }
-    for (const [bucket, list] of [['pool2', pools.filter((p) => p.launched === QHOOKS)], ['tvl', pools.filter((p) => p.launched !== QHOOKS)]]) {
-      const recorder = { multiCall: (...args) => api.multiCall(...args), add: (token, amount) => { token = token.toLowerCase(); out[bucket][token] = (out[bucket][token] ?? 0) + Number(amount) } }
-      await addUniV4PoolReserves({ api: recorder, pools: list, stateView: config[api.chain].stateView })
-    }
-    return out
+    const balances = {}
+    const recorder = { multiCall: (...args) => api.multiCall(...args), add: (token, amount) => { token = token.toLowerCase(); balances[token] = (balances[token] ?? 0) + Number(amount) } }
+    await addUniV4PoolReserves({ api: recorder, pools, stateView: config[api.chain].stateView })
+    return balances
   })()
   return cache[key]
 }
@@ -126,20 +124,18 @@ async function poolBalances(api) {
 async function tvl(api) {
   await api.getBlock()
   const quotes = quoteAssets(api.chain)
-  const { tvl: balances } = await poolBalances(api)
-  // quote side only: launched tokens are not counted, and QHOOKS never counts as TVL
+  const balances = await poolBalances(api)
+  // quote side only: launched tokens are not counted, QHOOKS goes to staking
   Object.entries(balances).forEach(([token, amount]) => { if (token !== QHOOKS && quotes.has(token)) api.add(token, amount) })
   // quote assets committed to sales that have not settled yet (held by QSaleLaunch)
-  if (config[api.chain].sale) await sumTokens2({ api, owner: SALE, tokens: [...quotes].filter((t) => t !== QHOOKS), permitFailure: true })
-}
-
-async function pool2(api) {
-  await api.getBlock()
-  const { pool2: balances } = await poolBalances(api)
-  Object.entries(balances).forEach(([token, amount]) => api.add(token, amount))
+  // sUSD_OLD is an ethereum core asset whose balanceOf reverts
+  if (config[api.chain].sale) await sumTokens2({ api, owner: SALE, tokens: [...quotes].filter((t) => t !== QHOOKS), blacklistedTokens: [ADDRESSES.ethereum.sUSD_OLD] })
 }
 
 async function staking(api) {
+  await api.getBlock()
+  const balances = await poolBalances(api)
+  if (balances[QHOOKS]) api.add(QHOOKS, balances[QHOOKS])
   return sumTokens2({ api, owner: STAKE_VAULT, tokens: [QHOOKS] })
 }
 
@@ -148,11 +144,12 @@ module.exports = {
   methodology:
     'TVL is the quote-asset side (native coin, WETH, stablecoins and other core assets) of the liquidity in QHooks launch pools: ' +
     'Uniswap v4 pools whose hook is a QHooks launch contract, found from the launch contracts\' Launched and Settled events, plus quote ' +
-    'assets committed to QHooks sales that have not settled. Launched tokens are not counted. Pool2 is the QHOOKS/WETH pool (including ' +
-    'the protocol-owned floor and flywheel liquidity in it). Staking is QHOOKS staked in the QHooks stake vault.',
+    'assets committed to QHooks sales that have not settled. Launched tokens are not counted. QHOOKS was launched through QHooks, so the ' +
+    'WETH side of its QHOOKS/WETH pool counts as TVL like any other launch. Staking is QHOOKS staked in the QHooks stake vault plus the ' +
+    'QHOOKS held in QHooks pools.',
 }
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl }
 })
-module.exports.robinhood = { tvl, pool2, staking }
+module.exports.robinhood = { tvl, staking }
