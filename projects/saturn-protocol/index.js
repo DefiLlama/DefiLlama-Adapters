@@ -10,7 +10,10 @@ const PYUSDx = '0xebdb0942ce16386ab90718c7bd10c91cdb66b14d';
 const USDC = ADDRESSES.ethereum.USDC;
 // Saturn USDC Morpho vaults (co-curated with Hyperithm; Hyperithm agreed deposits count as Saturn's).
 const VAULTS = {
-  ethereum: ['0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240'],
+  ethereum: [
+    '0xAbe418cc8c06D265E4EB009C02eA4B265eCA7240',
+    '0x7F876BF31089A8D13ccF8F1158Ef7bFecA2dDF94', // Confidential Tokenized Equity Vault
+  ],
   monad: ['0x75753e494e5e374C52E1d84fc04EB14B10F2C079'],
   bsc: ['0x87e01662febb5145ff648c1fa7b73d81519d9c66'], // Lista USDT vault; excluded from lista-lending
 };
