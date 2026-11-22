@@ -1159,7 +1159,7 @@ module.exports = {
     }
   },
   "tacit": {
-    "methodology": "TVL is the assets held by Tacit's contracts: the ETH, USDC, USDT and wstETH wrapped into the ConfidentialPool on Ethereum, the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain, and the wstETH escrowed in the CollateralEngine that backs Bitcoin locks. Balances are read from the contracts; Tacit's own token (TAC) is not counted.",
+    "methodology": "TVL is the assets held by Tacit's contracts: the ETH, USDC, USDT, wstETH and SPX6900 wrapped into the ConfidentialPool on Ethereum, the ETH shielded in the TacitEvmPool on Ethereum, Base and Robinhood Chain, and the wstETH escrowed in the CollateralEngine that backs Bitcoin locks. Balances are read from the contracts; Tacit's own token (TAC) is not counted.",
     "start": "2026-09-17",
     "ethereum": {
       "owners": [
@@ -1171,7 +1171,8 @@ module.exports = {
         ADDRESSES.null,
         ADDRESSES.ethereum.WSTETH,
         ADDRESSES.ethereum.USDC,
-        ADDRESSES.ethereum.USDT
+        ADDRESSES.ethereum.USDT,
+        "0xE0f63A424a4439cBE457D80E4f4b51aD25b2c56C"
       ]
     },
     "base": {
