@@ -23,13 +23,16 @@ async function tvl(api) {
   })
 
   // The pool receives LSTs in exchange for SOL. Ignore unsolicited non-LST tokens.
-  const stakePools = await Promise.all(stakePoolPrograms.map(programId => svm.getProgramAccounts({
-    programId, filters: [{ dataSize: 611 }], dataSlice: { offset: 162, length: 32 },
-  })))
-  const lstMints = new Set(stakePools.flat().map(({ account }) => new PublicKey(Buffer.from(account.data[0], 'base64')).toBase58()))
-  const accounts = await Promise.all([svm.TOKEN_PROGRAM_ID, svm.TOKEN_2022_PROGRAM_ID].map(programId =>
-    svm.call({ method: 'getTokenAccountsByOwner', params: [pool, { programId }, { encoding: 'jsonParsed' }] })))
-  for (const { value } of accounts) {
+  const lstMints = new Set()
+  for (const programId of stakePoolPrograms) {
+    const stakePools = await svm.getProgramAccounts({
+      programId, filters: [{ dataSize: 611 }], dataSlice: { offset: 162, length: 32 },
+    })
+    for (const { account } of stakePools)
+      lstMints.add(new PublicKey(Buffer.from(account.data[0], 'base64')).toBase58())
+  }
+  for (const programId of [svm.TOKEN_PROGRAM_ID, svm.TOKEN_2022_PROGRAM_ID]) {
+    const { value } = await svm.call({ method: 'getTokenAccountsByOwner', params: [pool, { programId }, { encoding: 'jsonParsed' }] })
     for (const { account } of value) {
       const { mint, tokenAmount } = account.data.parsed.info
       if (lstMints.has(mint)) api.add(mint, tokenAmount.amount)
@@ -39,6 +42,8 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
+  methodology: 'SOL and stake accounts held by the unstake pool, plus the liquid staking tokens it has received in exchange for SOL. Other tokens sent to the pool are ignored.',
   solana: {
     tvl
   },
