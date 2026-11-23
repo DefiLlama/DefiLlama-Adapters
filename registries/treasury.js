@@ -5015,6 +5015,15 @@ const configs = {
       owner: '0x0a39701e5D5BB5A6146aEEba66638297D0947f04'
     }
   },
+  'treasury/raydium': {
+    solana: {
+      owners: [
+        'GThUX1Atko4tqhN2NaiTazWSeFWMuiUvfFnyJyUghFMJ', // protocol multisig, owns the CLMM/CPMM USDC treasury and pool-creation fee accounts
+        'DdHDoz94o2WJmD9myRobHCwtx1bESpHTd4SSPe6VEZaz', // RAY buyback holding
+      ],
+      ownTokens: ['4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R'],
+    },
+  },
   'treasury/rarible': {
     ethereum: {
       tokens: [
