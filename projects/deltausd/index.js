@@ -8,6 +8,12 @@ const xlayerAaveOwner = '0xacc5b404eb5b31728e225040830162a9482a81f9'
 const dUSD = '0x1851302297e318d658829fd94b89d5ae6528cb9e' // dUSD token, also the mint/redeem contract
 const operator = '0x929c98a6e23721f379b5e27cc694744a2b6d46c2' // dUSD owner
 
+const venusLens = '0xe797804c5d4410777c70ef8769c4eb9c39bef662'
+const venusMarkets = {
+  '0x6cfdec747f37daf3b87a35a1d9c8ad3063a1a8a0': ADDRESSES.bsc.wBETH,
+  '0xf508fcd89b8bd15579dc79a6827cb4686a3592c8': ADDRESSES.bsc.ETH,
+}
+
 // Aave V3-style pool data providers, one per chain where the wallet has positions
 const aaveDataProviders = {
   base: '0x0f43731eb8d45a581f4a36dd74f5f358bc90c73a',
@@ -47,6 +53,15 @@ async function addAave(api, account = owner) {
 }
 
 async function bsc(api) {
+  // Venus Core: underlying deposits minus debt, with interest accrued by the lens call.
+  const positions = await api.call({
+    target: venusLens,
+    abi: 'function vTokenBalancesAll(address[] vTokens, address account) returns ((address vToken, uint256 balanceOf, uint256 borrowBalanceCurrent, uint256 balanceOfUnderlying, uint256 tokenBalance, uint256 tokenAllowance)[])',
+    params: [Object.keys(venusMarkets), owner],
+  })
+  for (const { vToken, balanceOfUnderlying, borrowBalanceCurrent } of positions)
+    api.add(venusMarkets[vToken.toLowerCase()], BigInt(balanceOfUnderlying) - BigInt(borrowBalanceCurrent))
+
   return sumTokens2({ api, owners: [dUSD, operator, owner], tokens: [ADDRESSES.bsc.USDT, ADDRESSES.null] })
 }
 
