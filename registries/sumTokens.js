@@ -27091,7 +27091,8 @@ const configs = {
           "addr1wy2gch9ua0700a3dg423wxcwx4p886m4ny5u3aqs66sluqcly9uud",
           "addr1wxzar75lms9547xdz4slxk7r362rs4g4ccurl22g764akngjhjtzp",
           "addr1w88zvhrrlqj6kl94mel769v348khd5w3jz3av33ksp8wgvss6msuw",
-          "addr1w9ygqdx9law3waqgm6eamf2xhxs5x83r0pfka928jmydkuc6ykls3"
+          "addr1w9ygqdx9law3waqgm6eamf2xhxs5x83r0pfka928jmydkuc6ykls3",
+          "addr1x9ygqdx9law3waqgm6eamf2xhxs5x83r0pfka928jmydkuewpqm665lqq6jx772x2wg4j986v0ejj8g3uts94lrn0dqsz0eas6"
         ]
       },
       "staking": {
@@ -27109,7 +27110,9 @@ const configs = {
         "tokens": [
           ADDRESSES.ethereum.USDC,
           "0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a", // enzoBTC
-          "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c" // aEthUSDC
+          "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c", // aEthUSDC
+          ADDRESSES.ethereum.WSTETH,
+          "0x8F18f2C97d2f5EC0e1d5B91c1D2ce245a9151972" // sUSD1+
         ]
       }
     }
