@@ -2472,6 +2472,22 @@ const uniV2Configs = {
   'afraswap': {
     bsc: { factory: '0xa098751D407796d773032f5Cc219c3e6889fB893', staking: ["0x259C852834375864b65202375558AB11B2d330fd", "0x5badD826AeFa700446Fa6d784e6ff97eD6eeDca9", "0x1Da189c1BA3d718Cc431a2ed240a3753f89CD47A", "wbnb"] },
   },
+  'alienbase': {
+    methodology: 'Tokens in Alien Base V2 pairs. Staking is the ALB held by the esALB and govALB escrow contracts, plus legacy ALB still escrowed until migration closes.',
+    base: {
+      factory: '0x3E84D913803b02A4a7f027165E8cA42C14C0FdE7',
+      staking: {
+        __sumTokens: {
+          tokensAndOwners: [
+            ['0x1B23704e3f4bC7081FB00Cec582183e3fE43cEf7', '0x32D9F29170a023794025375Df6949f56844E4473'], // ALB in esALB
+            ['0x1B23704e3f4bC7081FB00Cec582183e3fE43cEf7', '0x7fdb2cBe3Dd946b6b4521D4a2CCE62296ec1441D'], // ALB in govALB
+            ['0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4', '0x365c6d588e8611125De3bEA5B9280C304FA54113'], // legacy esALB
+            ['0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4', '0x52eaeCAC2402633d98b95213d0b473E069D86590'], // legacy masterchef
+          ],
+        },
+      },
+    },
+  },
   'alienfi': {
     arbitrum: { factory: '0xac9d019B7c8B7a4bbAC64b2Dbf6791ED672ba98B', staking: { tokensAndOwners: [['0x6740Acb82ac5C63A7ad2397ee1faed7c788F5f8c', '0xCf8D01c1a20dabcC025368607020473cCb119F5C']], lps: ['0xE145A5710Be68C3C9C50c5288909E813c5e92F4e'] } },
   },
