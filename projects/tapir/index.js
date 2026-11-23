@@ -16,37 +16,32 @@ const config = {
 }
 
 // The factory stores pools in a private array with no length getter;
-// getDepegModule(i) reverts past the end, so read indexes in batches until one fails.
-// Under permitFailure a failed RPC batch also comes back as nulls, so a null is
-// re-read on its own: only the out-of-bounds panic (Panic 0x32) past the last pool
-// ends the list, any other error fails the run instead of returning a partial pool list.
-const GET_DEPEG_MODULE =
-  'function getDepegModule(uint256 index) view returns (tuple(address dpAsset, address ybAsset, address depegPool))'
+// getDepegModule(i) reverts with Panic(0x32) past the end. Indexes are read in
+// batches through Multicall3 tryAggregate, which returns each call's revert data:
+// only the out-of-bounds panic ends the list. Any other revert, or a failed RPC
+// call, fails the run instead of returning a partial pool list.
+const MULTICALL3 = '0xcA11bde05977b3631167028862bE2a173976CA11'
+const TRY_AGGREGATE =
+  'function tryAggregate(bool requireSuccess, tuple(address target, bytes callData)[] calls) view returns (tuple(bool success, bytes returnData)[] returnData)'
+const GET_DEPEG_MODULE = '0xd09081b7' // getDepegModule(uint256) -> (address dpAsset, address ybAsset, address depegPool)
+const PANIC_OUT_OF_BOUNDS = '0x4e487b71' + '32'.padStart(64, '0') // Panic(uint256) with code 0x32
 const BATCH = 20
-
-async function readPool(api, factory, index) {
-  try {
-    const m = await api.call({ target: factory, abi: GET_DEPEG_MODULE, params: index })
-    return m.depegPool
-  } catch (e) {
-    if (/array out-of-bounds access \(0x32\)/.test(String(e && e.message))) return null // past the last pool
-    throw e
-  }
-}
 
 async function getPools(api, factory) {
   const pools = []
   for (let start = 0; ; start += BATCH) {
-    const res = await api.multiCall({
-      target: factory,
-      abi: GET_DEPEG_MODULE,
-      calls: Array.from({ length: BATCH }, (_, i) => start + i),
-      permitFailure: true,
-    })
+    const calls = Array.from({ length: BATCH }, (_, i) => [
+      factory,
+      GET_DEPEG_MODULE + (start + i).toString(16).padStart(64, '0'),
+    ])
+    const res = await api.call({ target: MULTICALL3, abi: TRY_AGGREGATE, params: [false, calls] })
     for (let i = 0; i < res.length; i++) {
-      const pool = res[i] ? res[i].depegPool : await readPool(api, factory, start + i)
-      if (!pool) return pools
-      pools.push(pool)
+      const { success, returnData } = res[i]
+      if (!success) {
+        if (returnData.toLowerCase() === PANIC_OUT_OF_BOUNDS) return pools
+        throw new Error(`tapir: getDepegModule(${start + i}) reverted: ${returnData}`)
+      }
+      pools.push('0x' + returnData.slice(-40)) // depegPool is the last 32-byte word
     }
   }
 }
