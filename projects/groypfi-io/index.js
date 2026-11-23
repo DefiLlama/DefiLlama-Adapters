@@ -1,22 +1,24 @@
 /**
- * TVL = protocol-owned liquidity on DeDust.io (CPMM v2 pools).
+ * GroypFi — TVL on TON (DefiLlama/DefiLlama-Adapters -> projects/groypfi-io/index.js)
  *
- * DeDust CPMM v2 does NOT use LP jettons: each liquidity provider owns a
- * per-pool `Position` contract, derived from the pool via
- * `get_position_address(owner)`. For every (owner, pool) pair in the static
- * list below the adapter:
- *   1. Resolves the owner's Position contract for that pool and reads its
- *      `liquidity` via `get_position_data`.
- *   2. Reads the pool's `reserve_x` / `reserve_y` / `liquidity` via
- *      `get_pool_data` and credits the owner's pro-rata share of both sides.
+ * 1. Protocol-owned liquidity on DeDust.io CPMM v2 pools (unchanged from the live adapter).
+ *    DeDust CPMM v2 has no LP jettons: each liquidity provider owns a per-pool `Position`
+ *    contract, derived from the pool via `get_position_address(owner)`. For every (owner, pool)
+ *    pair in the static list below the owner's `liquidity` is read via `get_position_data` and
+ *    converted into a pro-rata share of the pool's `reserve_x` / `reserve_y` (`get_pool_data`).
+ *    Any RPC failure throws instead of silently under-reporting TVL.
+ *      Owner wallets: UQClgkR0eLgWAR0tZh8YbQyDqa-Jn5wUP1XHPLDB6RmAPySF, UQDu4AiT__JKuqT0Znje0RoXIQMPcj4uIGYZme3UK4hFlE_Q
  *
- * The pool list is static (no transaction scanning), so the adapter's cost is
- * constant over time and positions never get undercounted. Any RPC failure
- * throws instead of silently under-reporting TVL.
+ * 2. GroypFi OTC Desk escrow: tokens locked in open sell orders. Every order is its own OtcOrder
+ *    escrow contract, deployed only by an official GroypFi OtcFactory (InitOrder, op 0x4f544332).
+ *    An order turns ACTIVE (status 3) only after the seller deposits exactly the listed amount, and
+ *    `amountLeft` of `jettonMaster` stays locked until bought or cancelled by the seller. Amounts come
+ *    from each order's own get_order_data (never indexer balances), so tokens sent to an order by
+ *    anyone else cannot inflate TVL.
+ *      OtcFactory v3: EQA8rZQmgwZFIrjOjYtsXaIKVhIQigd98h9PvQ-0yu9cp1AY
+ *      OtcFactory v2: 0:d5a966d0bcc9a4685d49dc925236e412f0af3d0bb31ce389c0a17b158f921718
  *
- * Owner wallets:
- *   UQClgkR0eLgWAR0tZh8YbQyDqa-Jn5wUP1XHPLDB6RmAPySF
- *   UQDu4AiT__JKuqT0Znje0RoXIQMPcj4uIGYZme3UK4hFlE_Q
+ * Website: https://groypfi.io  ·  OTC Desk: https://groypfi.io/otc
  */ 
 
 const { get } = require("../helper/http");
@@ -122,7 +124,7 @@ async function safeGet(url, tries = 4) {
   throw new Error(`groypfi: TonAPI request failed (${url}): ${lastError && lastError.message}`);
 }
 
-async function tvl(api) {
+async function polTvl(api) {
   for (const [owner, pools] of Object.entries(POSITIONS)) {
     for (const pool of pools) {
       const posRes = await safeGet(
@@ -168,10 +170,62 @@ async function tvl(api) {
   }
 }
 
+
+// ---------- GroypFi OTC Desk escrow ----------
+
+const { ton } = require('@defillama/sdk').chains
+const { getUniqueAddresses, sliceIntoChunks } = require('../helper/utils')
+
+const OTC_FACTORIES = [
+  '0:3cad942683064522b8ce8d8b6c5da20a5612108a077df21f4fbd0fb4caef5ca7', // v3
+  '0:d5a966d0bcc9a4685d49dc925236e412f0af3d0bb31ce389c0a17b158f921718', // v2
+]
+const OTC_INIT_ORDER_OP = '0x4f544332'
+const OTC_START = 1794684130 // first OtcFactory v2 transaction, 2026-11-14
+const OTC_STATUS_ACTIVE = 3 // otc-constants.tolk
+
+async function otcTvl(api) {
+  const orders = []
+  for (const factory of OTC_FACTORIES) {
+    const msgs = await ton.getMessages({ source: factory, opcode: OTC_INIT_ORDER_OP, startTimestamp: OTC_START, endTimestamp: api.timestamp + 1, limit: 1000 })
+    msgs.forEach((m) => { if (m.destination) orders.push(m.destination) })
+  }
+  const unique = getUniqueAddresses(orders.map((a) => ton.normalizeAddress(a)), api.chain)
+
+  // Only orders that hold a jetton balance can be ACTIVE; their state is then read from chain.
+  const holders = new Set()
+  for (const chunk of sliceIntoChunks(unique, 100)) {
+    const wallets = await ton.getJettonWallets({ owner: chunk, excludeZeroBalance: true })
+    wallets.forEach(({ owner }) => holders.add(ton.normalizeAddress(owner)))
+  }
+
+  const locked = {} // raw jetton master -> units locked in active orders
+  for (const order of holders) {
+    // [status, factory, maker, nonce, jettonMaster, feeWallet, jettonWallet, amountTotal, amountLeft, totalPrice, minFill, privateTaker]
+    const data = await ton.call({ target: order, method: 'get_order_data' })
+    if (Number(data[0]) !== OTC_STATUS_ACTIVE) continue
+    const factory = data[1]
+    if (!OTC_FACTORIES.some((f) => ton.compareAddress(f, factory))) throw new Error(`groypfi: OTC ${order} reports foreign factory ${factory}`)
+    const jettonMaster = data[4]
+    const amountLeft = BigInt(data[8])
+    if (!jettonMaster || amountLeft <= 0n) continue
+    const key = ton.toRawAddress(jettonMaster).toLowerCase()
+    locked[key] = (locked[key] ?? 0n) + amountLeft
+  }
+
+  for (const [master, amount] of Object.entries(locked)) api.add(ton.normalizeAddress(master), amount.toString())
+}
+
+async function tvl(api) {
+  await polTvl(api)
+  await otcTvl(api)
+}
+
 module.exports = {
   timetravel: false,
   doublecounted: true,
+  hallmarks: [["2026-11-14", "OTC Desk launch"]],
   methodology:
-    "TVL counts GroypFi's protocol-owned liquidity on DeDust.io CPMM v2 pools. For each protocol wallet and each pool it provides liquidity to (static list), the wallet's Position contract liquidity is read on-chain and converted into a pro-rata share of the pool's reserves, priced in USD.",
+    "TVL counts (1) GroypFi's protocol-owned liquidity on DeDust.io CPMM v2 pools: for each protocol wallet and each pool it provides liquidity to (static list), the wallet's Position contract liquidity is read on-chain and converted into a pro-rata share of the pool's reserves; and (2) tokens locked in open GroypFi OTC Desk sell orders: for every escrow order deployed by an official GroypFi OtcFactory that is active, the unsold amount (amountLeft) of the listed token read from the order contract.",
   ton: { tvl },
 };

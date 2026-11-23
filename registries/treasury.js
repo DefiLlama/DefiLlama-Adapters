@@ -91,6 +91,22 @@ const configs = {
       owners: ['0x586b9b2F8010b284A0197f392156f1A7Eb5e86e9', '0xfc64382c9ce89ba1c21692a68000366a35ff0336'],
     },
   },
+  'treasury/groypfi': {
+    ton: {
+      owners: [
+        'UQDu4AiT__JKuqT0Znje0RoXIQMPcj4uIGYZme3UK4hFlE_Q', // house wallet + $GROYP buybacks (groypfihouse.ton)
+        'UQCvlNDUcVJq55xVNV9BvCC1KUaMVUetnUkr_sSovHTLmTsj', // house wallet
+        'UQAuMfZUcQoiOt-S4vWJhlT2Qlewgrmi99AQ4ISEjDCAIR-i', // house wallet
+        'UQDz_6Hyrq2AgMIWw4S5xPH9OBMcaerRp14y94T-cRJistBx', // house wallet
+        'EQCDgsSX3XV1PHIK59-pCcn8GpsqYT7rixgd4EhWGiaKK6Vt', // GroypFi multisig
+        'UQCnkAaVs7fNpub-w3NfFVYmQtVUldPc7RZj2_CMiKoXfikn', // GroypFi $GROYP reserve wallet
+      ],
+      tokens: [nullAddress, ADDRESSES.ton.USDT],
+      onlyWhitelistedTokens: true,
+      useTonApiForPrices: false,
+      ownTokens: ['EQAtwo6qMNwtr0iTA9eKVZ32cuACFJ0VKd78GrBWOe83-X1P'],
+    },
+  },
   'treasury/hegic': {
     arbitrum: {
       tokens: [nullAddress],
