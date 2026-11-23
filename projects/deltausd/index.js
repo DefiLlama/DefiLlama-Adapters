@@ -23,6 +23,7 @@ const aaveDataProviders = {
 
 const MORPHO = '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb'
 const morphoMarket = '0x2ea32f6f734f87db12a3b72cfe2b7381837f115411eb57171f672e2d03ed7cf7' // SOL loan / JitoSOL collateral
+const morphoUsdcVault = '0x36cfe1568461e499391ef0a555300f1ae2da2439' // Api3 dCOMP USDC vault shares on Ethereum
 
 const aeroPool = '0xf634058dc94e6bf8e828e27621320c423bc8b18e'
 const aeroGauge = '0xd424ba8ca9d4e278753de76651a0095451e65cd1'
@@ -50,6 +51,10 @@ async function addAave(api, account = owner) {
   })
   positions.forEach((p, i) => api.add(tokens[i], BigInt(p.currentATokenBalance) - BigInt(p.currentStableDebt) - BigInt(p.currentVariableDebt)))
   return tokens
+}
+
+async function ethereum(api) {
+  return sumTokens2({ api, owner, tokens: [morphoUsdcVault] })
 }
 
 async function bsc(api) {
@@ -133,6 +138,7 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   methodology: 'Counts tracked on-chain DeltaUSD reserve balances and DeFi positions, minus borrowing. Excludes issued dUSD, off-chain assets and untracked positions. DeFi deposits are also counted in the TVL of the protocols used.',
+  ethereum: { tvl: ethereum },
   bsc: { tvl: bsc },
   base: { tvl: base },
   xlayer: { tvl: xlayer },
