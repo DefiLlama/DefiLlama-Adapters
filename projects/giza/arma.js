@@ -56,10 +56,8 @@ const abi = {
 };
 
 async function getMergedOwners(api, chainId) {
-    const [ownersOldRaw, ownersNewRaw] = await Promise.all([
-        getConfig(`giza/arma/${api.chain}`, `https://api.arma.xyz/api/v1/${chainId}/smart-accounts`),
-        getConfig(`giza/arma/gizatech/${api.chain}`, `https://api.gizatech.xyz/api/v1/${chainId}/smart-accounts`),
-    ]);
+    const ownersOldRaw = await getConfig(`giza/arma/${api.chain}`, `https://api.arma.xyz/api/v1/${chainId}/smart-accounts`);
+    const ownersNewRaw = await getConfig(`giza/arma/gizatech/${api.chain}`, `https://api.gizatech.xyz/api/v1/${chainId}/smart-accounts`);
 
     const ownersOld = Array.isArray(ownersOldRaw) ? ownersOldRaw : [];
     const ownersNew = Array.isArray(ownersNewRaw) ? ownersNewRaw : [];

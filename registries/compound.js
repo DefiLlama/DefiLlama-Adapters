@@ -540,7 +540,11 @@ const configs = {
         // comptroller reverts on getAllMarkets since mid-2026; market list read at merlin block 28744793
         markets: ['0xE3b51F15dc086fbA15426B8D42b4CD6FeB46968e', '0x8b180546d38F437273D1B71c4b9cA6Fc44E16425', '0x4409BF9EC77c8c6607Fe00E373df3B99d529A976', '0xF60e9c878FAb7555D30e0AE52Fe5e2870CaF2f23', '0xc3190A4e6A989b84F8a20c84C9ddD7eF5b1D4540', '0xba36B01387eF05C2E77f133366A891721012e338'],
       },
-      { comptroller: '0xe7464Caa3fD31A1A8B458a634e72F94A00695d17' },
+      {
+        comptroller: '0xe7464Caa3fD31A1A8B458a634e72F94A00695d17',
+        // this comptroller reverts on getAllMarkets too; market list read at merlin block 28744793
+        markets: ['0x119ba862B59427a05d2a7157F4b8142CeE2f7Db3', '0xa35FAFDA03705Cf918db97fcB615dEb30E8DCb53', '0x59D62c0Be90210b13AB9B393d4Bf22bA55E4f745', '0xfC9060207617df24d0D42857f2161b24e3cF1639', '0xeAF03Ac94db4AE00a91df86EcB5f3c9dbb9FE433', '0xcb953b765b74f9476ca9Ebc10f3ba8e2EaeCe3f8'],
+      },
     ],
   },
   'keom': {

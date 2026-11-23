@@ -41,6 +41,14 @@ async function sumTokens(config) {
     for (const owner of owners)
       await sumTokens({ ...rest, owner, api, skiTransform: true })
     return transformBalances(api.chain, api.getBalances())
+  } else if (owner.startsWith('C')) {
+    // Soroban contract: it has no Horizon account, its holdings are balances in token contracts (pass them as `tokens`)
+    const tokens = config.tokens ?? []
+    if (!tokens.length) console.log(`[stellar] ${owner} is a contract, pass the token contracts to read as tokens`)
+    for (const token of tokens) {
+      const balance = await stellar.callSoroban({ contractId: token, method: 'balance', args: [owner] })
+      api.add(token, balance.toString())
+    }
   } else {
     const balances = await stellar.getAccountBalances({ address: owner })
     if (!balances.length) console.log(`[stellar] account ${owner} not found on-chain, skipping`)

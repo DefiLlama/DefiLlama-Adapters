@@ -20,11 +20,10 @@ async function tvl(api) {
   const vaults = [...new Set(created.map(l => l.vault))]
 
   const marketLogs = await getLogs2({ api, target: NEG_RISK_ADAPTER, eventAbi: MARKET_PREPARED, fromBlock: NEG_RISK_FROM_BLOCK, extraKey: 'MarketPrepared' })
-  const wcols = await api.multiCall({ abi: 'function wcolOf(bytes32) view returns (address)', calls: marketLogs.map(l => ({ target: NEG_RISK_ADAPTER, params: [l.marketId] })) })
+  const wcols = await api.multiCall({ abi: 'function wcolOf(bytes32) view returns (address)', calls: marketLogs.map(l => ({ target: NEG_RISK_ADAPTER, params: [l.marketId] })), permitFailure: true })
   const clones = wcols.filter(a => a && a !== ADDRESSES.null)
 
   const owners = [CONDITIONAL_TOKENS].concat(vaults, clones)
-  console.log(owners.len)
   // sum idle USDC.e in all vaults, ConditionalTokens, and neg-risk WrappedCollateral clones
   return sumTokens2({ api, owners, token: ADDRESSES.adi.USDC_e, sumChunkSize: 5000})
   // await api.sumTokens({ owners, tokens: [ADDRESSES.adi.USDC_e] }) // USDC.e

@@ -15,8 +15,11 @@ const config = {
 
 async function tvl(api) {
   const { vaultRegistry, marginPools } = config[api.chain]
-  const vaults = await api.call({ abi: 'function getAllVaults() view returns (address[])', target: vaultRegistry })
-  const collaterals = (await api.multiCall({ abi: 'function collateralAsset() view returns (address)', calls: vaults })).map(c => c.toLowerCase())
+  const allVaults = await api.call({ abi: 'function getAllVaults() view returns (address[])', target: vaultRegistry })
+  // some registered vaults are proxies without a working implementation and do not answer collateralAsset()
+  const allCollaterals = await api.multiCall({ abi: 'function collateralAsset() view returns (address)', calls: allVaults, permitFailure: true })
+  const vaults = allVaults.filter((_, i) => allCollaterals[i])
+  const collaterals = allCollaterals.filter(Boolean).map(c => c.toLowerCase())
   const uniqueCollaterals = [...new Set(collaterals)]
 
   const vaultCalls = vaults.map((vault, i) => ({ target: collaterals[i], params: vault }))

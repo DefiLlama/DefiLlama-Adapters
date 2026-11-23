@@ -1,6 +1,7 @@
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { request } = require("graphql-request");
 const sdk = require("@defillama/sdk");
+const { getEnvioChainData } = require('../helper/sablier')
 
 const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/53b7e25/v1/graphql';
 
@@ -46,12 +47,6 @@ const config = {
   ...SUBGRAPH_ENDPOINTS
 };
 
-const envioPayload = `
-query getChainData($chainId: numeric!) {
-  Contract(where: { _and: { chainId: { _eq: $chainId } , category: {_eq:"flow"}}}) { id address category }
-  Asset(where: { _and: { chainId: { _eq: $chainId }, flowStreams_aggregate: { count: { predicate: { _gt:0 }}}}}) { id chainId symbol }
-}
-`
 const subgraphPayload = `
 {
   contracts { id address }
@@ -66,12 +61,12 @@ async function getTokensConfig(api, isVesting) {
   const isSubgraph = !!SUBGRAPH_ENDPOINTS[api.chain];
   const result = isSubgraph
     ? await request(sdk.graph.modifyEndpoint(endpoint), subgraphPayload)
-    : await request(ENVIO_ENDPOINT, envioPayload, { chainId: CHAIN_IDS_ENVIO[api.chain] });
+    : await getEnvioChainData('flow', CHAIN_IDS_ENVIO[api.chain]);
 
-  if (!result || (!isSubgraph && !CHAIN_IDS_ENVIO[api.chain])) return { ownerTokens: [] };
+  if (!result) return { ownerTokens: [] };
 
-  const contracts = result.contracts || result.Contract || [];
-  const assets = result.assets || result.Asset || [];
+  const contracts = result.contracts || [];
+  const assets = result.assets || [];
 
   const owners = contracts.map(i => i.address);
 

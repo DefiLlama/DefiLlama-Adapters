@@ -8,12 +8,14 @@ const USDC = ADDRESSES.arbitrum.USDC_CIRCLE
 const aArbUSDCn = '0x724dc807b04555b71ed48a6896b6f41593b8c637'
 const compoundUSDC = '0x9c4ec768c28520b50860ea7a15bd7213a9ff58bf'
 
+// KFC (KryptoX Finance Coin), the protocol's own token, was added as a supported asset; it is not counted as TVL.
+const KFC = '0x2e3ED33859efE1F05BB2952bD44D5146D8ef82D1'
+
 async function tvl(api) {
   const supported = await api.call({ target: CORE, abi: 'address[]:getSupportedAssets' })
-  if (supported.some(asset => asset.toLowerCase() !== USDC.toLowerCase()))
-    throw new Error('Koo collateral assets changed; update the custody/strategy mapping')
+  const tokens = supported.filter(asset => asset.toLowerCase() !== KFC.toLowerCase())
 
-  return sumTokens2({ api, owner: CORE, tokens: [USDC, aArbUSDCn, compoundUSDC] })
+  return sumTokens2({ api, owner: CORE, tokens: [...new Set([USDC, ...tokens, aArbUSDCn, compoundUSDC])] })
 }
 
 module.exports = {

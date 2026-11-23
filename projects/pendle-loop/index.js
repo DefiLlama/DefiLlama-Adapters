@@ -17,6 +17,9 @@ const config = {
 
 const abi = {
   PositionIncreased: 'event PositionIncreased(address indexed owner, bytes32 indexed boxId, bytes32 requestHash, uint256 nonce, uint256 preInBalance, uint256 netPtToMM, uint256 postDebtBalance)',
+  moneyMarketView: 'function moneyMarketView(address spokeMMBeacon) view returns (address)',
+  computePositionBox: 'function computePositionBox(address owner, bytes32 boxId) view returns (address box, bytes32 salt, bool deployed)',
+  moneyMarketBalances: 'function moneyMarketBalances(address box) returns (uint256 mmPtBalance, uint256 mmDebtBalance)',
   boxData: 'function boxData(bytes32 boxId) view returns ((uint32 hubChainId, uint32 spokeChainId, address hubPt, address hubDebtToken, address spokePt, address spokeDebtToken, address spokeMMBeacon, bytes32 mmPayload))',
   getAll: 'function getAll(address owner, bytes32 boxId) returns ((uint256 mmPtBalance, uint256 mmDebtBalance, uint256 ltv, uint256 liquidationThreshold, uint256 borrowingLiquidity, uint256 lendingLiquidity, (address token, uint256 claimable)[] borrowingRewards, (address token, uint256 claimable)[] lendingRewards, (uint256 minBorrowing, uint256 maxBorrowing, uint256 minBorrowingForRewards, uint256 minLending, uint256 maxLending, uint256 minLendingForRewards) limits, uint256 borrowingRate, uint256 lendingRate, uint256 ptDebtRateWad))',
 }
@@ -36,11 +39,29 @@ async function tvl(api) {
   })
 
   const boxIds = [...new Set(positions.map(p => p.boxId))]
-  const boxes = await api.multiCall({ abi: abi.boxData, target: BOX_FACTORY, calls: boxIds })
+  const boxes = await api.multiCall({ abi: abi.boxData, target: BOX_FACTORY, calls: boxIds, permitFailure: true })
   const boxById = Object.fromEntries(boxIds.map((id, i) => [id, boxes[i]]))
 
-  const balances = await api.multiCall({ abi: abi.getAll, target: LOOPER_VIEW, calls: positions.map(p => ({ params: [p.owner, p.boxId] })) })
-  balances.forEach((balance, i) => api.add(boxById[positions[i].boxId].spokePt, balance.mmPtBalance))
+  const balances = await api.multiCall({ abi: abi.getAll, target: LOOPER_VIEW, calls: positions.map(p => ({ params: [p.owner, p.boxId] })), permitFailure: true })
+  const failed = []
+  balances.forEach((balance, i) => {
+    if (!boxById[positions[i].boxId]) return
+    if (balance) api.add(boxById[positions[i].boxId].spokePt, balance.mmPtBalance)
+    else failed.push(positions[i])
+  })
+  if (!failed.length) return
+
+  // getAll also reads ltv/rates, so it reverts for a whole box when the money market's oracle does (eg. FeedDeviation).
+  // The collateral balance does not need the oracle: read it from the money market view of the box.
+  const beacons = [...new Set(failed.map(p => boxById[p.boxId].spokeMMBeacon))]
+  const mmViews = await api.multiCall({ abi: abi.moneyMarketView, target: LOOPER_VIEW, calls: beacons, permitFailure: true })
+  const mmViewByBeacon = Object.fromEntries(beacons.map((beacon, i) => [beacon, mmViews[i]]))
+  const boxAddresses = await api.multiCall({ abi: abi.computePositionBox, target: BOX_FACTORY, calls: failed.map(p => ({ params: [p.owner, p.boxId] })), permitFailure: true })
+  const retry = failed.map((p, i) => ({ ...p, box: boxAddresses[i]?.box, mmView: mmViewByBeacon[boxById[p.boxId].spokeMMBeacon] })).filter(p => p.box && p.mmView)
+  const mmBalances = await api.multiCall({ abi: abi.moneyMarketBalances, calls: retry.map(p => ({ target: p.mmView, params: [p.box] })), permitFailure: true })
+  mmBalances.forEach((balance, i) => {
+    if (balance) api.add(boxById[retry[i].boxId].spokePt, balance.mmPtBalance)
+  })
 }
 
 module.exports = {

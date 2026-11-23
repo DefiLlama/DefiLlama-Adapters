@@ -163,46 +163,20 @@ module.exports = {
 
       strategies.forEach(({ vault, pendleAddress }) => tokensAndOwners.push([pendleAddress, vault]));
 
-      await api.sumTokens({ tokensAndOwners });
-
+      // ezETH vaults: the oracle used before (getUnderlyingPrice) reverts now, ezETH is priced directly
       const ezETH = {
         vault: "0x497eB27Ca1ed7566653edf811b03d6418a03FC9d",
         reStakingToken: ADDRESSES.blast.ezETH,
-        oracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117", //Renzo
-        oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
       };
 
       const ezETH1x = {
         vault: "0x9c96d0Cc5341654167ee35DB4F288ae523fe8779",
         reStakingToken: ADDRESSES.blast.ezETH,
-        oracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117", //Renzo
-        oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
       };
 
-      const balOfezETH = await api.call({
-        abi: contractAbis.balanceOf,
-        target: ezETH.reStakingToken,
-        params: [ezETH.vault],
-      });
+      [ezETH, ezETH1x].forEach(({ vault, reStakingToken }) => tokensAndOwners.push([reStakingToken, vault]));
 
-      const balOfezETH1x = await api.call({
-        abi: contractAbis.balanceOf,
-        target: ezETH.reStakingToken,
-        params: [ezETH1x.vault],
-      });
-
-      const priceOfezETH = await api.call({
-        target: ezETH.oracle,
-        abi: contractAbis.getUnderlyingPrice,
-        params: [ezETH.oracleToken],
-      });
-
-      const ezETHBalInETH = (balOfezETH * priceOfezETH) / 1e18;
-
-      const ezETH1xBalInETH = (balOfezETH1x * priceOfezETH) / 1e18;
-
-      api.add(ADDRESSES.mode.WETH, ezETHBalInETH);
-      api.add(ADDRESSES.mode.WETH, ezETH1xBalInETH);
+      await api.sumTokens({ tokensAndOwners });
     },
   },
 

@@ -77,7 +77,9 @@ const DEFAULTS = {
   // explorer.arc.io/api/eth-rpc answers every programmatic request with HTTP 403.
   ARC_ARCHIVAL_RPC: 'https://rpc.arc-scan.org,https://rpc.blockdaemon.mainnet.arc.io,https://rpc.nodeflare.app/arc/public', // public archive fallbacks; use <=100k-block log ranges
   // Arc is not in the SDK Multicall3 deployment map; canonical Multicall3 is deployed there.
-  ARC_MULTICALL_CHUNK_SIZE: '50',
+  // 300 calls per batch return the same results as 50 on drpc, rpc.mainnet.arc.io and blockdaemon (3000 x positions()),
+  // with 6x fewer requests: lift-v1, argus-world and the uniswap v3/v4 listings each sent 1000+ per run at 50.
+  ARC_MULTICALL_CHUNK_SIZE: '300',
   // Bitcoin Swap (482120): canonical Multicall3 is not deployed; this is the verified Multicall3 deployment on the chain.
   BTCWCHAIN_RPC: 'https://rpc.btcw.tech',
   BTCWCHAIN_RPC_CHAIN_ID: '482120',
@@ -85,6 +87,10 @@ const DEFAULTS = {
   ZILLIQA_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   RLS_ARCHIVAL_RPC: 'https://mainnet-archive.rayls.com',
   CRONOS_RPC: 'https://evm.cronos.org,https://rpc.vvs.finance,https://cronos.drpc.org,https://cronos.rpc.sentio.xyz,https://evm-cronos.crypto.org',
+  // the SDK defaults cronos to 50 calls per batch; 300 works now (1500 x allPairs + getReserves, same results) and
+  // cuts requests 6x for the uni-v2 forks there (VVS, MM Finance: 1300-2800 requests per run). A batch that is
+  // too heavy is split by the SDK and retried, so this is never worse than 50.
+  CRONOS_MULTICALL_CHUNK_SIZE: '300',
   // chains with no provider in the SDK providers list (chainid.network RPCs)
   AREA_RPC: 'https://mainnet-rpc.areum.network,https://mainnet-rpc2.areum.network', // Areum Network, chainId 463
   BCYPHER_RPC: 'https://mainapi.bchscan.io', // BC Hyper Chain, chainId 3030

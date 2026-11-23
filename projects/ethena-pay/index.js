@@ -37,11 +37,9 @@ async function tvl(api) {
   // today's share price too, on purpose: it stays in the vault's assets until it is redeemed.
   const block = await api.getBlock();
   if (block < EARN_START_BLOCK) return;
-  const [balances, sharePrice] = await Promise.all([
-    api.multiCall({ abi: 'erc20:balanceOf', target: PUSDE, calls: [...accounts, EARN_VAULT] }),
-    api.call({ abi: 'uint256:getSharePrice', target: EARN_VAULT }),
-  ]);
-  const shares = balances.reduce((sum, b) => sum + BigInt(b), 0n);
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', target: PUSDE, calls: [...accounts, EARN_VAULT], permitFailure: true });
+  const sharePrice = await api.call({ abi: 'uint256:getSharePrice', target: EARN_VAULT });
+  const shares = balances.reduce((sum, b) => sum + BigInt(b ?? 0), 0n);
   api.add(USDE, (shares * BigInt(sharePrice) / 10n ** 18n).toString());
 }
 
