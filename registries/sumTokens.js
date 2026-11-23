@@ -25728,7 +25728,8 @@ const configs = {
     },
   },
   "sodex": {
-    "methodology": "TVL is calculated as the sum of all assets held in SoDex custody addresses across multiple chains. SOSO token holdings are tracked separately as staking.",
+    "methodology": "TVL is calculated as the sum of all assets held in SoDex custody addresses across multiple chains. SOSO token holdings are tracked separately as staking. Most of the Base TVL is SSI index tokens (MAG7.ssi, sMAG7.ssi, DEFI.ssi, MEME.ssi), whose underlying basket is already counted by SoSoValue Indexes, so the listing is marked as doublecounted.",
+    "doublecounted": true,
     "timetravel": false,
     "bitcoin": {
       "owners": [
@@ -25831,9 +25832,9 @@ const configs = {
         "ownerTokens": [
           [
             [
-              // sMAG7.ssi
-              "0x9e6a46f294bb67c20f1d1e7afb0bbef614403b55",
               // MAG7.ssi
+              "0x9e6a46f294bb67c20f1d1e7afb0bbef614403b55",
+              // sMAG7.ssi
               "0x3d8f0ddb4bb9332Cb89dEC22d273d9be1a91530b",
               // DEFI.ssi
               "0x164ffdaE2fe3891714bc2968f1875ca4fA1079D0",
