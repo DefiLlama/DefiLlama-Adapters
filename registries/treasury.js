@@ -5038,6 +5038,16 @@ const configs = {
       ownTokens: ['0xFca59Cd816aB1eaD66534D82bc21E7515cE441CF'],
     },
   },
+  'treasury/realize': {
+    solana: {
+      // Revenue Router legs the protocol keeps: buyback vault (40%), operations and security (15%), Builder Rewards (5%)
+      owners: [
+        '5YkYBwNEYZ6dGpLRLetYjcBcanwMB5QbR2mQmEyt1EGp',
+        'Ec72a1cXtLWf4BdMmzStGZkip7hAieZ4J38ZVvBnUMee',
+        'ABjqEqWP3Pvtnzo2VZXTQRC4zTUCwy2FHutZ8ksDMbdk',
+      ],
+    },
+  },
   'treasury/realms': {
     ethereum: {
       tokens: [
