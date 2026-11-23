@@ -23806,6 +23806,15 @@ const configs = {
       "owner": "0xe0eeb0f14dbc2793a1fb701c507f184f6d44f1cee08f83fe3837b8ef41f55818"
     },
   },
+  "realize": {
+    "timetravel": false,
+    "methodology": "TVL is the SOL held by the realize Launch Reserve vault, a program-owned PDA that holds the SOL supplied by depositors and the house and funds Partner launches on Pump.fun.",
+    "solana": {
+      "solOwners": [
+        "8Bdjs9bes4z8xs7b2SydS4NPRVRVAEMpTTDU1358wJsg"
+      ]
+    },
+  },
   "redstone-oracles": {
     "timetravel": true,
     "ethereum": {
