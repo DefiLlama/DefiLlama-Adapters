@@ -216,13 +216,13 @@ const config = {
     "owners": [
       "TBA6CypYJizwA9XdC7Ubgc5F1bxrQ7SqPt",
       "TCYpJ6MMzd9ytoUvD82HnS58iV75QimPh6",
-      "TDHkXgDHEiK5WhaKTccJenZKRyUMTxoREx",
-      "TN1K2zNVA399AHbp51yyPPfjaD9JNLfQpo",
-      "TUt2HuZFZvXAMmF9uh7BqujvMXsZ4F1pif",
+      // "TDHkXgDHEiK5WhaKTccJenZKRyUMTxoREx",
+      // "TN1K2zNVA399AHbp51yyPPfjaD9JNLfQpo",
+      // "TUt2HuZFZvXAMmF9uh7BqujvMXsZ4F1pif",
       "TCr9697xxWMbZznvpJh8uVQzAQR9cLXZm9",
-      "TDyR4wBeodpigiKmnwyBQC8UfsCH1T25XF",
-      "THhVZfr2Q4J3spWK84Je4ALiFyrnnSq6nN",
-      "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2",
+      // "TDyR4wBeodpigiKmnwyBQC8UfsCH1T25XF",
+      // "THhVZfr2Q4J3spWK84Je4ALiFyrnnSq6nN",
+      // "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2",
       "TYAavN2xCDro5Gdip8UU6W9oQmM43rNxzQ",
       "TLsUUQZCkcrBRxEKqZbpekdq9LWfmnndPg"
     ]
