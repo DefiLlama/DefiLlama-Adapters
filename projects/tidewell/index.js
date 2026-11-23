@@ -1,4 +1,4 @@
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 const { staking } = require('../helper/staking')
 
@@ -48,12 +48,12 @@ async function vaults(api) {
 
 async function tvl(api) {
   const all = await vaults(api)
-  const ids = await api.multiCall({ abi: abis.positionIds, calls: all.map(v => v.vault), permitFailure: true })
+  const ids = await api.multiCall({ abi: abis.positionIds, calls: all.map(v => v.vault) })
 
   const calls = { v3: [], v4: [], v3Shaped: [], v4Shaped: [] }
   all.forEach((v, i) => {
     const type = (v.v4 ? 'v4' : 'v3') + (v.shaped ? 'Shaped' : '')
-    for (const id of ids[i] ?? []) calls[type].push({ target: v.vault, params: [id] })
+    for (const id of ids[i]) calls[type].push({ target: v.vault, params: [id] })
   })
   const read = (type) => calls[type].length ? api.multiCall({ abi: abis[type], calls: calls[type] }) : []
   const [p3, p4, p3s, p4s] = await Promise.all([read('v3'), read('v4'), read('v3Shaped'), read('v4Shaped')])
@@ -74,15 +74,16 @@ async function tvl(api) {
 
   await sumTokens2({
     api,
-    tokensAndOwners: tokensAndOwners.map(([t, o]) => [t === nullAddress ? nullAddress : t, o]),
+    tokensAndOwners,
     owners: v3Owners,
     resolveUniV3: v3Owners.length > 0,
+    blacklistedTokens: [TIDE], // own token is not tvl
   })
-  if (v4Ids.length) await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds: v4Ids } })
+  if (v4Ids.length) await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds: v4Ids }, blacklistedTokens: [TIDE] })
 }
 
 module.exports = {
-  methodology: 'TVL is the liquidity in every Tidewell vault: the Uniswap v3 and v4 positions each vault holds (one per position, or one per band for shaped positions), valued at the current pool price, plus tokens waiting in the vaults to be reinvested. Staking is TIDE staked in The Well.',
+  methodology: 'TVL is the liquidity in every Tidewell vault: the Uniswap v3 and v4 positions each vault holds (one per position, or one per band for shaped positions), valued at the current pool price, plus tokens waiting in the vaults to be reinvested. TIDE is excluded from tvl. Staking is TIDE staked in The Well.',
   doublecounted: true, // the liquidity sits in Uniswap pools
   robinhood: {
     tvl,
