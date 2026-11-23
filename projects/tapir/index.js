@@ -17,9 +17,22 @@ const config = {
 
 // The factory stores pools in a private array with no length getter;
 // getDepegModule(i) reverts past the end, so read indexes in batches until one fails.
+// Under permitFailure a failed RPC batch also comes back as nulls, so a null is
+// re-read on its own: only a contract revert ends the list, any other error fails
+// the run instead of returning a partial pool list.
 const GET_DEPEG_MODULE =
   'function getDepegModule(uint256 index) view returns (tuple(address dpAsset, address ybAsset, address depegPool))'
 const BATCH = 20
+
+async function readPool(api, factory, index) {
+  try {
+    const m = await api.call({ target: factory, abi: GET_DEPEG_MODULE, params: index })
+    return m.depegPool
+  } catch (e) {
+    if (/revert/i.test(String(e && e.message))) return null // past the last pool
+    throw e
+  }
+}
 
 async function getPools(api, factory) {
   const pools = []
@@ -30,9 +43,10 @@ async function getPools(api, factory) {
       calls: Array.from({ length: BATCH }, (_, i) => start + i),
       permitFailure: true,
     })
-    for (const m of res) {
-      if (!m) return pools
-      pools.push(m.depegPool)
+    for (let i = 0; i < res.length; i++) {
+      const pool = res[i] ? res[i].depegPool : await readPool(api, factory, start + i)
+      if (!pool) return pools
+      pools.push(pool)
     }
   }
 }
