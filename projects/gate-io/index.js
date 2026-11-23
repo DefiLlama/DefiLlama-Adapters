@@ -2210,6 +2210,8 @@ const earnReceiptTokens = {
       '0xC453E33Ae2d465d36fEA462BfE810cD6ab408916',
       "0xba622437b70d86EADd6F2f5fB7A5124270c35705",
       '0x7cce98e315e406a8946acce9768093d37a90372b', // Compound V3 Institutional USDC supplier
+      '0xFeBF3D13f88B613441B85519A7101dF0b6b41C89', // Aave V3 USDT supplier
+      '0x0b96F5A83F210181795cd4C63FFC00604ae207ff', // Aave V3 USDT supplier
     ],
     tokens: [
       '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aEthUSDT (Aave v3)
