@@ -138,6 +138,7 @@ const uniV3Configs = {
     },
   },
   'alienbase-v3': {
+    methodology: 'Token balances in Alien Base V3 pools, including liquidity managed by the vaults.',
     base: {
       factory: '0x0Fd83557b2be93617c9C1C1B6fd549401C74558C',
       fromBlock: 7150708,
