@@ -213,17 +213,7 @@ async function otcTvl(api) {
     locked[key] = (locked[key] ?? 0n) + amountLeft
   }
 
-  const masters = Object.keys(locked)
-  if (!masters.length) return
-  const [rates, infos] = await Promise.all([ton.getTokenRates({ tokens: masters }), ton.getJettonsInfo({ addresses: masters })])
-  const decimalsOf = {}
-  infos.forEach(({ metadata }) => { if (metadata?.address) decimalsOf[metadata.address.toLowerCase()] = Number(metadata.decimals) })
-  for (const master of masters) {
-    const price = rates[master]
-    const decimals = decimalsOf[master]
-    if (price > 0 && Number.isFinite(decimals)) api.add('tether', Number(locked[master]) * price / 10 ** decimals, { skipChain: true })
-    else api.add(ton.normalizeAddress(master), locked[master].toString())
-  }
+  for (const [master, amount] of Object.entries(locked)) api.add(ton.normalizeAddress(master), amount.toString())
 }
 
 async function tvl(api) {
@@ -234,12 +224,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  hallmarks: [
-    [1788912000, "TopBlast V2 launches tradable on GroypFi"], // 2026-09-09
-    [1793145600, "Hyperliquid Perps launch"], // 2026-10-28
-    [1794614400, "OTC Desk launch"], // 2026-11-14
-    [1795132800, "Anthropic (ANTx) live on Swaps & Perps"], // 2026-11-20
-  ],
+  hallmarks: [["2026-11-14", "OTC Desk launch"]],
   methodology:
     "TVL counts (1) GroypFi's protocol-owned liquidity on DeDust.io CPMM v2 pools: for each protocol wallet and each pool it provides liquidity to (static list), the wallet's Position contract liquidity is read on-chain and converted into a pro-rata share of the pool's reserves; and (2) tokens locked in open GroypFi OTC Desk sell orders: for every escrow order deployed by an official GroypFi OtcFactory that is active, the unsold amount (amountLeft) of the listed token read from the order contract.",
   ton: { tvl },
