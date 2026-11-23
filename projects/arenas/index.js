@@ -7,8 +7,6 @@ const config = {
   ],
   base: [
     '0x6bbbc3543e395d29e109b55a4553ad5dba144d01', // Arenas USDC RWA
-    '0x9895b699699c2fe9f69e7bb1de6c45224760178b', // USDC lending pool
-    '0x8600ef30c65f96ae52b10262bc2874a4d82dc636', // USDC lending pool
   ],
 }
 
