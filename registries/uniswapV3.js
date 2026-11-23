@@ -138,7 +138,7 @@ const uniV3Configs = {
     },
   },
   'alienbase-v3': {
-    methodology: 'Token balances in Alien Base V3 pools (fee tiers 0.01% to 1%), discovered from factory PoolCreated events. Includes the liquidity managed by the Alien Base vaults (Bunni hubs 0xDC53487e2a6eF468260Bc938F645f84caaccAC6F and 0xd1Fac4F51457E4a6D35BdC7311718e5D6de92BB9), which own V3 positions in these pools; vault fees go 50% to vault LPs and 50% to esALB/govALB stakers as WETH.',
+    methodology: 'Token balances in Alien Base V3 pools, including liquidity managed by the vaults. Half of vault fees is paid to esALB holders.',
     base: {
       factory: '0x0Fd83557b2be93617c9C1C1B6fd549401C74558C',
       fromBlock: 7150708,

@@ -16,7 +16,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: 'TVL = tokens in v2 pairs (16 bps swap fee, 1/6 to treasury). Staking = ALB represented by esALB + govALB shares in the staking contract, plus legacy ALB still escrowed in the pre-AIP-5 contracts until migration closes.',
+  methodology: 'TVL is the tokens in V2 pairs. Staking is esALB and govALB shares, counted 1:1 as ALB, plus legacy ALB still escrowed until migration closes.',
   base: {
     tvl: getUniTVL({ factory: '0x3E84D913803b02A4a7f027165E8cA42C14C0FdE7', useDefaultCoreAssets: true }),
     staking,
