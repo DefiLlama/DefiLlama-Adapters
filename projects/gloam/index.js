@@ -22,7 +22,7 @@ async function poolAssets(api, fromBlock) {
 const fromLogs = (fromBlock) => async (api) => api.sumTokens({ owner: POOL, tokens: await poolAssets(api, fromBlock) })
 
 module.exports = {
-  methodology: 'TVL is the tokens held by the Gloam shielded pool on Robinhood Chain, Tempo, Base, Ethereum, Elysium and BNB Chain. On Robinhood Chain, Base and Ethereum the accepted assets are discovered from the pool\'s DepositLimitSet events. $GLOAM held in the pool is the protocol\'s own token and is counted under staking.',
+  methodology: 'TVL is the tokens held by the Gloam shielded pool on Robinhood Chain, Tempo, Base, Ethereum, Elysium and BNB Chain. On Robinhood Chain, Base and Ethereum the accepted assets are discovered from the pool\'s DepositLimitSet events. $GLOAM held in the pool is the protocol\'s own token and is counted under staking. Gloam also runs on Solana, on Helius Privacy Rings: that pool is shared with other apps, so Gloam\'s Solana balances cannot be told apart and are not counted.',
   start: '2026-10-21',
   robinhood: {
     tvl: fromLogs(94194599),
