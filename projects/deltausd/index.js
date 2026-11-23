@@ -53,14 +53,16 @@ async function addAave(api, account = owner) {
 }
 
 async function bsc(api) {
-  // Venus Core: underlying deposits minus debt, with interest accrued by the lens call.
+  // Venus Core: value supplied vTokens directly and deduct accrued debt in the underlying.
   const positions = await api.call({
     target: venusLens,
     abi: 'function vTokenBalancesAll(address[] vTokens, address account) returns ((address vToken, uint256 balanceOf, uint256 borrowBalanceCurrent, uint256 balanceOfUnderlying, uint256 tokenBalance, uint256 tokenAllowance)[])',
     params: [Object.keys(venusMarkets), owner],
   })
-  for (const { vToken, balanceOfUnderlying, borrowBalanceCurrent } of positions)
-    api.add(venusMarkets[vToken.toLowerCase()], BigInt(balanceOfUnderlying) - BigInt(borrowBalanceCurrent))
+  for (const { vToken, balanceOf, borrowBalanceCurrent } of positions) {
+    api.add(vToken, balanceOf)
+    api.add(venusMarkets[vToken.toLowerCase()], -BigInt(borrowBalanceCurrent))
+  }
 
   return sumTokens2({ api, owners: [dUSD, operator, owner], tokens: [ADDRESSES.bsc.USDT, ADDRESSES.null] })
 }
