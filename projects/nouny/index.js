@@ -15,8 +15,14 @@ const AGENT_VAULT_FACTORIES = [
   { address: '0x842dB2d736F66A0132EaB3816C426Bc21bb746Ec', fromBlock: 115989053 }, // current
   { address: '0x0315841Ff9eC63321Faa050e937FD8402053C090', fromBlock: 113701344 }, // previous
 ]
-const PAYROLL_FACTORIES = ['0x5767a297bdc0083684720fc75580d51cB160DccE', '0xeD9cE03E385554Bc829879EBa77cCBC1DeDce5bD']
-const LP_VAULT_FACTORIES = ['0x7823d963A7daB90Ae3D2a71415Dc10182D237c44', '0x804a52aDbF958FaAd15884C20A2fFE157A94c6eE']
+const PAYROLL_FACTORIES = [
+  { address: '0x5767a297bdc0083684720fc75580d51cB160DccE', fromBlock: 115989661 }, // current
+  { address: '0xeD9cE03E385554Bc829879EBa77cCBC1DeDce5bD', fromBlock: 113688874 }, // previous
+]
+const LP_VAULT_FACTORIES = [
+  { address: '0x7823d963A7daB90Ae3D2a71415Dc10182D237c44', fromBlock: 115990202 }, // current
+  { address: '0x804a52aDbF958FaAd15884C20A2fFE157A94c6eE', fromBlock: 114099412 }, // previous
+]
 
 const abi = {
   vaultCreated: 'event VaultCreated(address indexed owner, address vault)',
@@ -41,16 +47,21 @@ async function tvl(api) {
   const tokenLists = await api.multiCall({ abi: abi.allowedTokens, calls: agentVaults })
   agentVaults.forEach((vault, i) => ownerTokens.push([tokenLists[i], vault]))
 
+  // factories deployed after this block (historical runs) are skipped, so a failed count read throws
+  const block = await api.getBlock()
+  const liveFactories = (list) => list.filter((f) => block >= f.fromBlock).map((f) => f.address)
+
   // PayrollVaults
-  // a factory not yet deployed at this block (historical runs) has no code: its count reads as 0
-  const payrollCounts = (await api.multiCall({ abi: abi.payrollCount, calls: PAYROLL_FACTORIES, permitFailure: true })).map((n) => n ?? 0)
-  const payrollCalls = PAYROLL_FACTORIES.map((target, i) => ({ target, params: [0, payrollCounts[i]] })).filter((c) => +c.params[1] > 0)
+  const payrollFactories = liveFactories(PAYROLL_FACTORIES)
+  const payrollCounts = await api.multiCall({ abi: abi.payrollCount, calls: payrollFactories })
+  const payrollCalls = payrollFactories.map((target, i) => ({ target, params: [0, payrollCounts[i]] })).filter((c) => +c.params[1] > 0)
   const payrolls = (await api.multiCall({ abi: abi.payrolls, calls: payrollCalls })).flat()
   payrolls.forEach((payroll) => ownerTokens.push([[USDG], payroll]))
 
   // NounyLPVaults: idle balances plus the position in the hooked pool
-  const lpCounts = (await api.multiCall({ abi: abi.vaultCount, calls: LP_VAULT_FACTORIES, permitFailure: true })).map((n) => n ?? 0)
-  const lpCalls = LP_VAULT_FACTORIES.map((target, i) => ({ target, params: [0, lpCounts[i]] })).filter((c) => +c.params[1] > 0)
+  const lpFactories = liveFactories(LP_VAULT_FACTORIES)
+  const lpCounts = await api.multiCall({ abi: abi.vaultCount, calls: lpFactories })
+  const lpCalls = lpFactories.map((target, i) => ({ target, params: [0, lpCounts[i]] })).filter((c) => +c.params[1] > 0)
   const lpVaults = (await api.multiCall({ abi: abi.vaults, calls: lpCalls })).flat()
   if (lpVaults.length) {
     const keys = await api.multiCall({ abi: abi.poolKey, calls: lpVaults })
