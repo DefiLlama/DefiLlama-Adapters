@@ -6,10 +6,10 @@
 // DP / YB tokens and the DP/YB AMM liquidity are claims on that same
 // collateral, so they are NOT counted (would double count).
 //
-// The live base asset is zvUSDC, an ERC-4626 vault share of Zircuit Finance,
-// which DefiLlama does not price. Vault shares are converted to the vault's
-// underlying (zUSDC, priced) with convertToAssets. Because the collateral sits
-// inside Zircuit Finance, the protocol is flagged doublecounted.
+// The live base asset is zvUSDC, an ERC-4626 vault share of Zircuit Finance
+// (underlying zUSDC). Held tokens are reported as is; pricing is left to the
+// coins service. Because the collateral sits inside Zircuit Finance, the
+// protocol is flagged doublecounted.
 
 const config = {
   base: { factory: '0xc0C409aEdCE4fE91Fa26971EdF23E7d97C81d1c5' }, // DepegFactory v1.1
@@ -42,29 +42,13 @@ async function tvl(api) {
   if (!pools.length) return
 
   const assets = await api.multiCall({ abi: 'address:ASSET', calls: pools })
-  const balances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: pools.map((pool, i) => ({ target: assets[i], params: [pool] })),
-  })
-
-  // ERC-4626 base assets: unwrap to the underlying. Plain ERC-20s: add as is.
-  const underlyings = await api.multiCall({ abi: 'address:asset', calls: assets, permitFailure: true })
-  const assetAmounts = await api.multiCall({
-    abi: 'function convertToAssets(uint256) view returns (uint256)',
-    calls: assets.map((a, i) => ({ target: a, params: [balances[i]] })),
-    permitFailure: true,
-  })
-
-  assets.forEach((asset, i) => {
-    if (underlyings[i] && assetAmounts[i] != null) api.add(underlyings[i], assetAmounts[i])
-    else api.add(asset, balances[i])
-  })
+  return api.sumTokens({ tokensAndOwners2: [assets, pools] })
 }
 
 module.exports = {
   doublecounted: true,
   methodology:
-    'TVL is the collateral held in Tapir DepegPools. Live collateral is Zircuit Finance zvUSDC vault shares, valued at the underlying zUSDC via convertToAssets. DP and YB tranche tokens and their AMM liquidity are claims on the same collateral and are not counted.',
+    'TVL is the collateral held in Tapir DepegPools. Live collateral is Zircuit Finance zvUSDC (ERC-4626 vault shares on zUSDC), reported as held. DP and YB tranche tokens and their AMM liquidity are claims on the same collateral and are not counted.',
   start: '2026-08-03',
 }
 
