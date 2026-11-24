@@ -159,7 +159,11 @@ const config = {
   morph: {
     morphoBlue: "0xAd10d07901Dc3195c3cb5e78E061F4EA8D9B4905",
     fromBlock: 23180020,
-  }
+  },
+  xlayer: {
+    morphoBlue: "0xeb00C490E888286357dC5B0a35D37D9260D11Ab5",
+    fromBlock: 73110254,
+  },
 }
 
 // chains morpho dropped - exported as zero so historical tvl is preserved
