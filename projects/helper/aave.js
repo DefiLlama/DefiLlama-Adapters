@@ -440,6 +440,7 @@ function aaveV4Export(config) {
     const isInsolvent = chainConfig.isInsolvent || false
     const blacklistedTokens = chainConfig.blacklistedTokens || []
     const blacklistedUsers = chainConfig.blacklistedUsers || []
+    const blacklistedTokenSet = new Set(blacklistedTokens.map(t => t.toLowerCase()))
 
     async function getHubAssets(api) {
       const assetCounts = await api.multiCall({ abi: abi.getAssetCount, calls: hubs })
@@ -461,6 +462,7 @@ function aaveV4Export(config) {
       const userCalls = []
       reserves.forEach(({ underlying, hub }, i) => {
         if (!hubSet.has(hub.toLowerCase())) return;
+        if (blacklistedTokenSet.has(underlying.toLowerCase())) return;
         blacklistedUsers.forEach(user => userCalls.push({ target: reserveCalls[i].target, params: [reserveCalls[i].params[0], user], underlying }))
       })
       const calls = userCalls.map(({ target, params }) => ({ target, params }))
@@ -484,7 +486,9 @@ function aaveV4Export(config) {
         abi: abi.getAssetTotalOwed,
         calls: hubAssets.map(({ hub, assetId }) => ({ target: hub, params: [assetId] })),
       })
-      owed.forEach((amount, i) => api.add(hubAssets[i].underlying, amount))
+      owed.forEach((amount, i) => {
+        if (!blacklistedTokenSet.has(hubAssets[i].underlying.toLowerCase())) api.add(hubAssets[i].underlying, amount)
+      })
       const positions = await getBlacklistedPositions(api, hubAssets)
       positions.forEach(({ underlying, debt }) => api.add(underlying, -debt))
       return sumTokens2({ api, blacklistedTokens })
