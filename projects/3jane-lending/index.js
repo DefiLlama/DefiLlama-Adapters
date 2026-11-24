@@ -9,7 +9,7 @@ const WA_ETH_USDC = '0xd4fa2d31b7968e448877f69a96de69f5de8cd23e'; // Wrapped Aav
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true, // off-chain assets
-  methodology: "Assets are deposited on-chain into the USD3 vault, then moved off-chain to 3Jane's bank account and lent through loan originators. TVL is the bank cash, read hourly from the bank api, plus idle USDC and waEthUSDC still in the USD3 vault and lending contract. Borrowed is the outstanding principal of off-chain loans, counted from loan originators' reports.",
+  methodology: "Assets are deposited on-chain into the USD3 vault, then moved off-chain to 3Jane's bank account and lent through loan originators. TVL sums the outstanding principal of off-chain loans, the bank cash, and idle USDC and waEthUSDC still in the USD3 vault and lending contract.",
   hallmarks: [
     ['2026-11-24', 'Methodology change: counts off-chain loans and bank cash from verified reports'],
   ],
@@ -28,18 +28,16 @@ module.exports = {
         }
       }
 
+      // loans: category -> originator -> { principalUsd, reportDate }
+      for (const originators of Object.values(data.loans)) {
+        for (const loan of Object.values(originators)) {
+          api.addUSDValue(loan.principalUsd);
+        }
+      }
+
       // on-chain: idle USDC and waEthUSDC not yet sent to the bank
       // on-chain borrowed is not counted, it is the same money as the off-chain loans and bank cash
       await sumTokens2({ api, tokens: [ADDRESSES.ethereum.USDC, WA_ETH_USDC], owners: [LENDING, USD3] });
     },
-    borrowed: async (api) => {
-      const data = await getVerifiedProject('3jane');
-      for (const item of Object.values(data.loans)) {
-        for (const value of Object.values(item)) {
-         api.addUSDValue(value.principalUsd);
-        }
-      }
-    }
   }
 };
-
