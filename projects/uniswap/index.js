@@ -86,7 +86,13 @@ const uniV3Config = {
   tempo: { factory: '0x24a3d4757e330890a8b8978028c9e58e04611fd6', fromBlock: 6455886, },
   '0g': { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 6673868 },
   megaeth: { factory: '0x3a5f0cd7d62452b7f899b2a5758bfa57be0de478', fromBlock: 7009646 },
-  robinhood: { factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', fromBlock: 8930 },
+  // 450k+ pools, nearly all 1% launchpad token/WETH: rewriting the PoolCreated log cache alone outlasts the run,
+  // and reading both sides means ~900k balance calls and ~440k tokens to price, of which ~420 have a price
+  // pools under 0.05 WETH / 100 USDG held ~1.3% of the chain's TVL when this was set, mostly unsold launch supply
+  robinhood: {
+    factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', fromBlock: 8930, useIndexerSql: true,
+    minQuoteBalances: { [ADDRESSES.robinhood.WETH]: 0.05e18, [ADDRESSES.robinhood.USDG]: 100e6 },
+  },
   ink: { factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424', fromBlock: 284117 },
   arc: { factory: '0xf0db7b58379503491d857db50ac9ece64c653918', fromBlock: 1946500 },
   elysium: { factory: '0x1707327F626496A7b5b3872e7E4d2879Df7d7a9f', fromBlock: 256055 },
