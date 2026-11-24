@@ -14042,6 +14042,19 @@ const configs = {
       }
     },
   },
+  "eloscape": {
+    "start": "2026-11-12",
+    "methodology": "TVL counts the native HYPE held by the Eloscape grid mining contract: HYPE deployed in open rounds, prepaid standing positions and unclaimed winnings. Staking counts the ELO held by the ELO staking contract.",
+    "elysium": {
+      "tvl": {
+        "owner": "0xFa5856b6f352C0E7863D7F5502564130215bf80F",
+        "tokens": [ADDRESSES.null]
+      },
+      "staking": {
+        "__staking": ["0x60448a43d96d6050824ab1c55Cb661f7887B7DB0", "0xe107e5D99910F544f88ef961E3cA6d88F06f29DD"]
+      }
+    },
+  },
   "elysiumBridge": {
     "polygon": {
       "tokens": [
