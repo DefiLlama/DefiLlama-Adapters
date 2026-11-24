@@ -419,6 +419,12 @@ function aaveV4Export(config) {
     getAssetUnderlyingAndDecimals: "function getAssetUnderlyingAndDecimals(uint256) view returns (address, uint8)",
     getAssetTotalOwed: "function getAssetTotalOwed(uint256) view returns (uint256)",
     getAssetCount: "uint256:getAssetCount",
+    getSpokeCount: "function getSpokeCount(uint256) view returns (uint256)",
+    getSpokeAddress: "function getSpokeAddress(uint256, uint256) view returns (address)",
+    getReserveCount: "uint256:getReserveCount",
+    getReserve: "function getReserve(uint256) view returns ((address underlying, address hub, uint16 assetId, uint8 decimals, uint24 dynamicConfigKey, uint24 collateralRisk, uint8 flags))",
+    getUserSuppliedAssets: "function getUserSuppliedAssets(uint256, address) view returns (uint256)",
+    getUserTotalDebt: "function getUserTotalDebt(uint256, address) view returns (uint256)",
   }
 
   const exports = {
@@ -433,6 +439,7 @@ function aaveV4Export(config) {
 
     const isInsolvent = chainConfig.isInsolvent || false
     const blacklistedTokens = chainConfig.blacklistedTokens || []
+    const blacklistedUsers = chainConfig.blacklistedUsers || []
 
     async function getHubAssets(api) {
       const assetCounts = await api.multiCall({ abi: abi.getAssetCount, calls: hubs })
@@ -441,9 +448,34 @@ function aaveV4Export(config) {
       return assets.map(([underlying], i) => ({ underlying, hub: calls[i].target, assetId: calls[i].params[0] }))
     }
 
+    // User positions live on the spokes, so walk hub -> spokes -> reserves and read each blacklisted user's supply and debt
+    async function getBlacklistedPositions(api, hubAssets) {
+      if (!blacklistedUsers.length) return []
+      const hubSet = new Set(hubs.map(h => h.toLowerCase()))
+      const spokeCounts = await api.multiCall({ abi: abi.getSpokeCount, calls: hubAssets.map(({ hub, assetId }) => ({ target: hub, params: [assetId] })) })
+      const spokeCalls = hubAssets.flatMap(({ hub, assetId }, i) => Array.from({ length: spokeCounts[i] }, (_, j) => ({ target: hub, params: [assetId, j] })))
+      const spokes = [...new Set(await api.multiCall({ abi: abi.getSpokeAddress, calls: spokeCalls }))]
+      const reserveCounts = await api.multiCall({ abi: abi.getReserveCount, calls: spokes, permitFailure: true })
+      const reserveCalls = spokes.flatMap((spoke, i) => Array.from({ length: reserveCounts[i] || 0 }, (_, reserveId) => ({ target: spoke, params: [reserveId] })))
+      const reserves = await api.multiCall({ abi: abi.getReserve, calls: reserveCalls })
+      const userCalls = []
+      reserves.forEach(({ underlying, hub }, i) => {
+        if (!hubSet.has(hub.toLowerCase())) return;
+        blacklistedUsers.forEach(user => userCalls.push({ target: reserveCalls[i].target, params: [reserveCalls[i].params[0], user], underlying }))
+      })
+      const calls = userCalls.map(({ target, params }) => ({ target, params }))
+      const supplied = await api.multiCall({ abi: abi.getUserSuppliedAssets, calls })
+      const debt = await api.multiCall({ abi: abi.getUserTotalDebt, calls })
+      return userCalls.map(({ underlying }, i) => ({ underlying, supplied: BigInt(supplied[i]), debt: BigInt(debt[i]) }))
+    }
+
     async function tvl(api) {
       const hubAssets = await getHubAssets(api)
-      return sumTokens2({ api, tokensAndOwners: hubAssets.map(({ underlying, hub }) => [underlying, hub]), blacklistedTokens })
+      await sumTokens2({ api, tokensAndOwners: hubAssets.map(({ underlying, hub }) => [underlying, hub]), blacklistedTokens })
+      // hub cash = supplies - borrows, so removing a user takes out their supply net of what they borrowed
+      const positions = await getBlacklistedPositions(api, hubAssets)
+      positions.forEach(({ underlying, supplied, debt }) => api.add(underlying, debt - supplied))
+      return api.getBalances()
     }
 
     async function borrowed(api) {
@@ -453,6 +485,8 @@ function aaveV4Export(config) {
         calls: hubAssets.map(({ hub, assetId }) => ({ target: hub, params: [assetId] })),
       })
       owed.forEach((amount, i) => api.add(hubAssets[i].underlying, amount))
+      const positions = await getBlacklistedPositions(api, hubAssets)
+      positions.forEach(({ underlying, debt }) => api.add(underlying, -debt))
       return sumTokens2({ api, blacklistedTokens })
     }
 

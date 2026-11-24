@@ -10,9 +10,16 @@ module.exports = aaveV4Export({
   base: [
     "0xa4d5947Eb727A052bae69C593FfC84247EC9864E", // Equities Hub
   ],
-  avax: [
-    "0xd07369fAE4A5BB13c9Ce446B052c7867B1AbDf6e", // Core Hub
-  ],
+  avax: {
+    hubs: [
+      "0xd07369fAE4A5BB13c9Ce446B052c7867B1AbDf6e", // Core Hub
+    ],
+    // Ethena USDe/USDT loop: the USDT lender (also excluded on aave-v3) and the wallet borrowing it against USDe
+    blacklistedUsers: [
+      "0xb8734a14fbd4aa2d44e6aa830405ffc861ba313c",
+      "0xe08af7283607f7884012c79fc585763eae5de506",
+    ],
+  },
   arc: [
     "0x17288dfc86205301064577b98B02b81017e6F79C", // Core Hub
   ],
