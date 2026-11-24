@@ -11,6 +11,7 @@ const PHAROS_CHAIN_IDENTIFIER = "pharos";
 const BASE_CHAIN_IDENTIFIER = "base";
 const MONAD_CHAIN_IDENTIFIER = "monad";
 const ARBITRUM_CHAIN_IDENTIFIER = "arbitrum";
+const BSC_CHAIN_IDENTIFIER = "bsc";
 
 // there are only one deposit address
 const blacklistedVaults = [
@@ -78,5 +79,8 @@ module.exports = {
   },
   arbitrum: {
     tvl: (api) => evmTvl(api, ARBITRUM_CHAIN_IDENTIFIER),
+  },
+  bsc: {
+    tvl: (api) => evmTvl(api, BSC_CHAIN_IDENTIFIER),
   }
 };
