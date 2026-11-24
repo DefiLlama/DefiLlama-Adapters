@@ -26,10 +26,11 @@ const TRY_AGGREGATE =
 const GET_DEPEG_MODULE = '0xd09081b7' // getDepegModule(uint256) -> (address dpAsset, address ybAsset, address depegPool)
 const PANIC_OUT_OF_BOUNDS = '0x4e487b71' + '32'.padStart(64, '0') // Panic(uint256) with code 0x32
 const BATCH = 20
+const MAX_POOLS = 1000
 
 async function getPools(api, factory) {
   const pools = []
-  for (let start = 0; ; start += BATCH) {
+  for (let start = 0; start < MAX_POOLS; start += BATCH) {
     const calls = Array.from({ length: BATCH }, (_, i) => [
       factory,
       GET_DEPEG_MODULE + (start + i).toString(16).padStart(64, '0'),
@@ -41,9 +42,12 @@ async function getPools(api, factory) {
         if (returnData.toLowerCase() === PANIC_OUT_OF_BOUNDS) return pools
         throw new Error(`tapir: getDepegModule(${start + i}) reverted: ${returnData}`)
       }
+      if (start + i === 0 && returnData === '0x') return pools // factory not deployed yet at this block
+      if (returnData.length !== 2 + 3 * 64) throw new Error(`tapir: getDepegModule(${start + i}) returned ${returnData}`)
       pools.push('0x' + returnData.slice(-40)) // depegPool is the last 32-byte word
     }
   }
+  throw new Error(`tapir: more than ${MAX_POOLS} pools, raise MAX_POOLS`)
 }
 
 async function tvl(api) {
