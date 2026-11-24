@@ -1,5 +1,6 @@
 const { getConfig } = require('../helper/cache');
 const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokensLowValue } = require('../helper/cache/lowValue');
 
 // Base chain protocol addresses
 const BASE_PROTOCOLS = {
@@ -70,142 +71,26 @@ async function getMergedOwners(api, chainId) {
     return [...new Set(owners)];
 }
 
-async function baseTvl(api) {
-    // For Base chain
-    const owners = await getMergedOwners(api, 8453);
+// Every smart account is checked against every protocol token while most accounts hold next to nothing (tens of
+// thousands of accounts on Base). An account worth under $100 is stored with its balances, counted from the store, and
+// read again once a week.
+function armaTvl({ chainId, dataProvider, asset, tokens }) {
+    return async (api) => {
+        const owners = await getMergedOwners(api, chainId);
 
-    api.log(`[Arma] Found ${owners.length} smart accounts on Base`);
+        api.log(`[Arma] Found ${owners.length} smart accounts on ${api.chain}`);
 
-    // Get aUSDC token from Aave Pool Data Provider
-    const USDC = ADDRESSES.base.USDC;
-    const aaveReserveData = await api.call({
-        target: BASE_PROTOCOLS.aavePoolDataProvider,
-        abi: abi.getReserveTokensAddresses,
-        params: [USDC]
-    });
+        // aToken of the asset, from the Aave V3 (Hyperlend on HyperEVM) Pool Data Provider
+        const reserveData = await api.call({ target: dataProvider, abi: abi.getReserveTokensAddresses, params: [asset] });
 
-    const allTokens = [
-        ...BASE_PROTOCOLS.tokens,
-        aaveReserveData.aTokenAddress // Add the actual aUSDC token
-    ];
-
-    // Build tokensAndOwners array for each token-owner combination
-    const tokensAndOwners = [];
-    allTokens.forEach(token => {
-        owners.forEach(owner => {
-            tokensAndOwners.push([token, owner]);
-        });
-    });
-
-    return api.sumTokens({
-        tokensAndOwners,
-        permitFailure: true
-    });
+        await sumTokensLowValue({ api, project: 'giza', key: `arma-${api.chain}`, owners, tokens: [...tokens, reserveData.aTokenAddress] });
+        return api.getBalances();
+    };
 }
-
-async function plasmaTvl(api) {
-    // For Plasma chain
-    const owners = await getMergedOwners(api, 9745);
-
-    api.log(`[Arma] Found ${owners.length} smart accounts on Plasma`);
-
-    // Get aUSDT0 token from Aave Pool Data Provider
-    const USDT0 = ADDRESSES.plasma.USDT0;
-    const aaveReserveData = await api.call({
-        target: PLASMA_PROTOCOLS.aavePoolDataProvider,
-        abi: abi.getReserveTokensAddresses,
-        params: [USDT0]
-    });
-
-    const allTokens = [
-        ...PLASMA_PROTOCOLS.tokens,
-        aaveReserveData.aTokenAddress // Add the actual aUSDT0 token
-    ];
-
-    // Build tokensAndOwners array for each token-owner combination
-    const tokensAndOwners = [];
-    allTokens.forEach(token => {
-        owners.forEach(owner => {
-            tokensAndOwners.push([token, owner]);
-        });
-    });
-
-    return api.sumTokens({
-        tokensAndOwners,
-        permitFailure: true
-    });
-}
-
-async function arbitrumTvl(api) {
-    // For Arbitrum chain
-    const owners = await getMergedOwners(api, 42161);
-
-    api.log(`[Arma] Found ${owners.length} smart accounts on Arbitrum`);
-
-    // Get aUSDC token from Aave Pool Data Provider
-    const USDC = ADDRESSES.arbitrum.USDC_CIRCLE;
-    const aaveReserveData = await api.call({
-        target: ARBITRUM_PROTOCOLS.aavePoolDataProvider,
-        abi: abi.getReserveTokensAddresses,
-        params: [USDC]
-    });
-
-    const allTokens = [
-        ...ARBITRUM_PROTOCOLS.tokens,
-        aaveReserveData.aTokenAddress // Add the actual aUSDC token
-    ];
-
-    // Build tokensAndOwners array for each token-owner combination
-    const tokensAndOwners = [];
-    allTokens.forEach(token => {
-        owners.forEach(owner => {
-            tokensAndOwners.push([token, owner]);
-        });
-    });
-
-    return api.sumTokens({
-        tokensAndOwners,
-        permitFailure: true
-    });
-}
-
-async function hyperevmTvl(api) {
-    // For HyperEVM chain
-    const owners = await getMergedOwners(api, 999);
-
-    api.log(`[Arma] Found ${owners.length} smart accounts on HyperEVM`);
-
-    // Get aUSDT0 token from Hyperlend Pool Data Provider
-    const USDT0 = ADDRESSES.hyperliquid.USDT0;
-    const aaveReserveData = await api.call({
-        target: HYPEREVM_PROTOCOLS.hyperlendPoolDataProvider,
-        abi: abi.getReserveTokensAddresses,
-        params: [USDT0]
-    });
-
-    const allTokens = [
-        ...HYPEREVM_PROTOCOLS.tokens,
-        aaveReserveData.aTokenAddress // Add the actual aUSDT0 token
-    ];
-
-    // Build tokensAndOwners array for each token-owner combination
-    const tokensAndOwners = [];
-    allTokens.forEach(token => {
-        owners.forEach(owner => {
-            tokensAndOwners.push([token, owner]);
-        });
-    });
-
-    return api.sumTokens({
-        tokensAndOwners,
-        permitFailure: true
-    });
-}
-
 
 module.exports = {
-    base: { tvl: baseTvl },
-    plasma: { tvl: plasmaTvl },
-    arbitrum: { tvl: arbitrumTvl },
-    hyperliquid: { tvl: hyperevmTvl }
+    base: { tvl: armaTvl({ chainId: 8453, dataProvider: BASE_PROTOCOLS.aavePoolDataProvider, asset: ADDRESSES.base.USDC, tokens: BASE_PROTOCOLS.tokens }) },
+    plasma: { tvl: armaTvl({ chainId: 9745, dataProvider: PLASMA_PROTOCOLS.aavePoolDataProvider, asset: ADDRESSES.plasma.USDT0, tokens: PLASMA_PROTOCOLS.tokens }) },
+    arbitrum: { tvl: armaTvl({ chainId: 42161, dataProvider: ARBITRUM_PROTOCOLS.aavePoolDataProvider, asset: ADDRESSES.arbitrum.USDC_CIRCLE, tokens: ARBITRUM_PROTOCOLS.tokens }) },
+    hyperliquid: { tvl: armaTvl({ chainId: 999, dataProvider: HYPEREVM_PROTOCOLS.hyperlendPoolDataProvider, asset: ADDRESSES.hyperliquid.USDT0, tokens: HYPEREVM_PROTOCOLS.tokens }) },
 };

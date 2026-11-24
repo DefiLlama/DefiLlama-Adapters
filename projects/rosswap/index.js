@@ -23,7 +23,7 @@ async function tvl(api) {
       token1Bal: r._reserve1,
     })
   })
-  return transformDexBalances({ chain: api.chain, data, })
+  return transformDexBalances({ chain: api.chain, data, skipUnknownTokens: true, })
 }
 
 module.exports = {

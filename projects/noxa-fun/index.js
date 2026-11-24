@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumUniV3PositionsLowValue } = require('../helper/cache/lowValue')
 
 // NOXA Fun launchpad: LP is single-sided Uniswap V3 liquidity locked forever in the Launch Locker.
 // TVL = value of the whitelisted (pair-token) side of the univ3 NFT positions held by the locker,
@@ -51,7 +51,11 @@ Object.keys(config).forEach(chain => {
   const { locker, nftManager, whitelistedTokens } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      return sumTokens2({ api, owners: [locker], resolveUniV3: true, uniV3WhitelistedTokens: whitelistedTokens, uniV3ExtraConfig: { nftAddress: nftManager } })
+      // The locker holds one position per launch (60k+ on robinhood) and most are worth next to nothing. Nothing ever
+      // leaves it, so its position list is stored and only extended, and a position worth under $100 is stored with
+      // its balance, counted from the store, and read again once a week. The newest positions are always read.
+      await sumUniV3PositionsLowValue({ api, project: 'noxa-fun', nftAddress: nftManager, lockedOwner: locker, whitelistedTokens })
+      return api.getBalances()
     },
   }
 })

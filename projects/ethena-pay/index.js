@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { getAddress, getLogs2 } = require('../helper/cache/getLogs');
+const { sumTokensLowValue } = require('../helper/cache/lowValue');
 
 // Ethena Pay (https://pay.ethena.fi) gives each card user an account on Avalanche C-Chain: a beacon proxy
 // (beacon 0xc831ea25deb7654679a438c78c4c5d1c313c8448, owned by the registry). The registry creates them; both of its
@@ -31,16 +32,27 @@ async function getAccounts(api) {
 async function tvl(api) {
   const accounts = await getAccounts(api);
   // what the accounts hold: USDe for card spending, plus AVAX (cashback), USDC and USDT
-  await api.sumTokens({ owners: accounts, tokens: [USDE, ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt] });
+  const tokens = [USDE, ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt];
   // pUSDe held by the accounts or queued in the vault, valued in USDe at the vault's share price: together that is the
   // whole Earn vault. The vault's own USDe is part of what backs pUSDe, so it is not added again. Queued pUSDe is valued at
   // today's share price too, on purpose: it stays in the vault's assets until it is redeemed.
   const block = await api.getBlock();
-  if (block < EARN_START_BLOCK) return;
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', target: PUSDE, calls: [...accounts, EARN_VAULT], permitFailure: true });
-  const sharePrice = await api.call({ abi: 'uint256:getSharePrice', target: EARN_VAULT });
-  const shares = balances.reduce((sum, b) => sum + BigInt(b ?? 0), 0n);
-  api.add(USDE, (shares * BigInt(sharePrice) / 10n ** 18n).toString());
+  const earnLive = block >= EARN_START_BLOCK;
+  let sharePrice = 0n;
+  if (earnLive) {
+    tokens.push(PUSDE);
+    sharePrice = BigInt(await api.call({ abi: 'uint256:getSharePrice', target: EARN_VAULT }));
+    const queued = await api.call({ abi: 'erc20:balanceOf', target: PUSDE, params: EARN_VAULT });
+    api.add(USDE, (BigInt(queued) * sharePrice / 10n ** 18n).toString());
+  }
+  const usde = USDE.toLowerCase();
+  const toUSDe = ({ [PUSDE]: shares, ...balances }) => {
+    if (shares !== undefined) balances[usde] = (BigInt(balances[usde] ?? 0) + BigInt(shares) * sharePrice / 10n ** 18n).toString();
+    return balances;
+  };
+  // There are tens of thousands of accounts and most hold next to nothing: an account worth under $100 is stored with
+  // its balances, counted from the store, and read again once a week.
+  await sumTokensLowValue({ api, project: 'ethena-pay', owners: accounts, tokens, transform: toUSDe, freshCount: 2000 });
 }
 
 module.exports = {

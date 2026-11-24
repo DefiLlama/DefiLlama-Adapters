@@ -655,7 +655,9 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   }
 
   const positionsAbi = isShadow ? shadowV3PositionsABI : slipstreamNftABI.positions
-  const positions = (await api.multiCall({ abi: positionsAbi, target: nftAddress, calls: positionIds, }))
+  // positions() reverts for an id that was burned (ids can come from a list that is a little behind the chain):
+  // such a position is skipped instead of failing every other one
+  const positions = (await api.multiCall({ abi: positionsAbi, target: nftAddress, calls: positionIds, permitFailure: true, })).filter(Boolean)
 
   const lpInfo = {}
   positions.forEach(position => lpInfo[getKey(position)] = position)

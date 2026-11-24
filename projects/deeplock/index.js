@@ -1,9 +1,14 @@
 const { pool2s } = require("../helper/pool2");
-const { getUniqueAddresses } = require('../helper/utils')
+const sdk = require('@defillama/sdk')
+const { getUniqueAddresses, sliceIntoChunks } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper, } = require("../helper/unknownTokens")
+const { getLPList } = require('../helper/cache/sumUnknownTokens')
+const { getLowValueCache } = require('../helper/cache/lowValue')
+const { getCoreAssets } = require('../helper/tokenMapping')
 
 const abi = {
+  getReserves: "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
   depositId: "uint256:depositId",
   lockedToken: "function lockedToken(uint256) view returns (address tokenAddress, address withdrawalAddress, uint256 tokenAmount, uint256 unlockTime, bool withdrawn)",
 }
@@ -54,6 +59,64 @@ const blacklist = [
   '0xf0ee026f572c4a229dc67a692244e90abac29ec2',
 ].map(i => i.toLowerCase())
 
+const LPS_PER_GROUP = 5000
+
+// The lockers hold 50k+ LP tokens and almost all of them are worth next to nothing, yet each one cost a balance, a
+// total supply and a reserves read on every run. For an LP paired with a core asset the vesting helper counts exactly
+// (locker balance / total supply) of the pool's core side, twice, so that is what is stored for such an LP when it is
+// worth under $100: it is then counted from the store and read again once a week. Every other LP (worth more, paired
+// with no core asset, or with a failed read) still goes through the vesting helper on every run.
+async function addLockedLPs(api, cache, vault, tokens) {
+  const coreAssets = new Set(getCoreAssets(api.chain))
+  tokens = getUniqueAddresses(tokens).filter(token => !blacklist.includes(token))
+  // the helper counts only LP tokens (judged by symbol, stored in `cache`), so the same list is used here
+  const lps = await getLPList({ lps: tokens, chain: api.chain, block: api.block, cache })
+  const lowValue = await getLowValueCache({ api, project: 'deeplock', key: `${api.chain}-${vault.toLowerCase()}`, checkpointEvery: LPS_PER_GROUP })
+  const prices = await sdk.coins.getPrices([...coreAssets].map(token => `${api.chain}:${token}`), 'now')
+  if (!cache.pairData) cache.pairData = {}
+  const rest = []
+
+  for (const group of sliceIntoChunks(lowValue.filter(lps), LPS_PER_GROUP)) {
+    const unknown = group.filter(lp => !cache.pairData[lp]?.token0Address || !cache.pairData[lp]?.token1Address)
+    const token0s = await api.multiCall({ abi: 'address:token0', calls: unknown, permitFailure: true })
+    const token1s = await api.multiCall({ abi: 'address:token1', calls: unknown, permitFailure: true })
+    unknown.forEach((lp, i) => {
+      if (token0s[i] && token1s[i]) cache.pairData[lp] = { token0Address: token0s[i].toLowerCase(), token1Address: token1s[i].toLowerCase() }
+    })
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: group.map(lp => ({ target: lp, params: vault })), permitFailure: true })
+    const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: group, permitFailure: true })
+    const reserves = await api.multiCall({ abi: abi.getReserves, calls: group, permitFailure: true })
+
+    const results = []
+    group.forEach((lp, i) => {
+      const pair = cache.pairData[lp]
+      if (balances[i] == null || supplies[i] == null || !reserves[i] || !pair?.token0Address) return rest.push(lp)
+      if (+balances[i] === 0) return results.push([lp, {}]) // withdrawn
+      const isCore0 = coreAssets.has(pair.token0Address)
+      const isCore1 = coreAssets.has(pair.token1Address)
+      if (!isCore0 && !isCore1) return rest.push(lp)
+      const ratio = Math.min(1, +supplies[i] > 0 ? +balances[i] / +supplies[i] : 0)
+      const multiplier = isCore0 && isCore1 ? 1 : 2
+      const held = {}
+      let usdValue = 0
+      const add = (token, reserve) => {
+        const amount = reserve * multiplier * ratio
+        const price = prices[`${api.chain}:${token}`]
+        usdValue += price?.price === undefined ? Infinity : amount / 10 ** (price.decimals ?? 0) * price.price
+        held[token] = BigInt(Math.floor(amount)).toString()
+      }
+      if (isCore0) add(pair.token0Address, +reserves[i]._reserve0)
+      if (isCore1) add(pair.token1Address, +reserves[i]._reserve1)
+      if (usdValue < 90) results.push([lp, held]) // a margin under the $100 the store keeps, so its own check agrees
+      else rest.push(lp)
+    })
+    await lowValue.record(results)
+  }
+  await lowValue.save()
+
+  if (rest.length) await vestingHelper({ api, cache, useDefaultCoreAssets: true, blacklist, owner: vault, tokens: rest, })
+}
+
 async function tvl(api) {
   const cache = (await getCache(project, api.chain)) || {}
   if (!cache.vaults) cache.vaults = {}
@@ -70,10 +133,12 @@ async function tvl(api) {
     for (let id = cCache.lastTotalId; id <= length; id++) calls.push({ target: vault, params: id })
     cCache.lastTotalId = length + 1
 
-    const locks = await api.multiCall({ abi: abi.lockedToken, calls })
-    cCache.tokens = getUniqueAddresses([...cCache.tokens, ...locks.map(i => i.tokenAddress)])
+    const locks = await api.multiCall({ abi: abi.lockedToken, calls, permitFailure: true })
+    // a failed read is tried again next run: the ids are only marked as seen when all of them were read
+    if (locks.some(lock => !lock)) cCache.lastTotalId -= calls.length
+    cCache.tokens = getUniqueAddresses([...cCache.tokens, ...locks.filter(Boolean).map(i => i.tokenAddress)])
 
-    await vestingHelper({ api, cache, useDefaultCoreAssets: true, blacklist, owner: vault, tokens: cCache.tokens, })
+    await addLockedLPs(api, cache, vault, cCache.tokens)
   }
 
   await setCache(project, api.chain, cache)

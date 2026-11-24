@@ -4,6 +4,7 @@ module.exports = {
 
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensLowValue } = require('../helper/cache/lowValue')
 
 const config = {
   ethereum: {
@@ -53,13 +54,13 @@ Object.keys(config).forEach(chain => {
       }
       api.log(chain, owners.length, tokens.length)
       if (chain === 'avax') {
-        const avaxDebt = await api.multiCall({ abi: 'function  borrowBalanceStored(address) view returns (uint256)', calls: owners, target: '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c' })
-        const avaxDebtSum = avaxDebt.reduce((acc, borrow) => acc + +borrow, 0)
+        const avaxDebt = await api.multiCall({ abi: 'function  borrowBalanceStored(address) view returns (uint256)', calls: owners, target: '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c', permitFailure: true })
+        const avaxDebtSum = avaxDebt.reduce((acc, borrow) => acc + +(borrow ?? 0), 0)
         api.addGasToken(avaxDebtSum * -1)
       }
-      for (const token of tokens) {
-        await api.sumTokens({ owners, tokens: [token], })
-      }
+      // every account is checked against every token while most accounts hold next to nothing: an account worth
+      // under $100 is stored with its balances, counted from the store, and read again once a week
+      await sumTokensLowValue({ api, project: 'cian-automation', owners, tokens })
       return api.getBalances()
     }
   }

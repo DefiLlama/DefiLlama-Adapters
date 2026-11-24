@@ -1,6 +1,7 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokensLowValue } = require('../helper/cache/lowValue')
 
 const VAULT_FACTORY = '0xc16B8b190064451c2FeEb2e77c4B2aC4c7009552'
 const CONDITIONAL_TOKENS = '0xD28B8295Cd57F205e4d080Ff4c6d23C06a9EEe3a' // locks collateral backing open positions
@@ -23,10 +24,11 @@ async function tvl(api) {
   const wcols = await api.multiCall({ abi: 'function wcolOf(bytes32) view returns (address)', calls: marketLogs.map(l => ({ target: NEG_RISK_ADAPTER, params: [l.marketId] })), permitFailure: true })
   const clones = wcols.filter(a => a && a !== ADDRESSES.null)
 
-  const owners = [CONDITIONAL_TOKENS].concat(vaults, clones)
-  // sum idle USDC.e in all vaults, ConditionalTokens, and neg-risk WrappedCollateral clones
-  return sumTokens2({ api, owners, token: ADDRESSES.adi.USDC_e, sumChunkSize: 5000})
-  // await api.sumTokens({ owners, tokens: [ADDRESSES.adi.USDC_e] }) // USDC.e
+  // idle USDC.e in the user vaults. There are 140k+ of them and most are empty: a vault worth under $100 is stored with
+  // its balance, counted from the store, and read again once a week
+  await sumTokensLowValue({ api, project: 'predictstreet', key: 'vaults', owners: vaults, tokens: [ADDRESSES.adi.USDC_e], groupSize: 5000, freshCount: 2000 })
+  // plus ConditionalTokens and the neg-risk WrappedCollateral clones
+  return sumTokens2({ api, owners: [CONDITIONAL_TOKENS].concat(clones), token: ADDRESSES.adi.USDC_e })
 }
 
 module.exports = {

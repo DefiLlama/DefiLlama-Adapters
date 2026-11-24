@@ -1,5 +1,6 @@
 const { sumTokens2, unwrapSlipstreamNFT } = require("../helper/unwrapLPs");
 const utils = require('../helper/utils')
+const { getCache, setCache } = require('../helper/cache')
 
 const config = {
   base: {
@@ -230,6 +231,33 @@ async function fetchAssetData(accountGroup, chainId) {
   throw lastError;
 }
 
+const CACHE_PROJECT = 'arcadia-finance-v2'
+const EMPTY_RECHECK_SECONDS = 24 * 3600
+const FRESH_ACCOUNTS = 500
+
+/**
+ * Every account the factory created. The factory's list only grows, so it is stored and only the
+ * accounts past the stored length are read.
+ * @param {object} api DefiLlama ChainApi
+ * @param {string} factory Arcadia factory
+ * @param {boolean} isCurrentRun false for a run at a past timestamp, which reads the whole list
+ * @returns {Promise<string[]>} account addresses, oldest first
+ */
+async function getAccounts(api, factory, isCurrentRun) {
+  const count = +(await api.call({ target: factory, abi: 'uint256:allAccountsLength' }))
+  let { accounts = [] } = isCurrentRun ? await getCache(CACHE_PROJECT, `accounts/${api.chain}`) : {}
+  if (accounts.length > count) accounts = []
+  if (accounts.length === count) return accounts
+
+  const calls = Array.from({ length: count - accounts.length }, (_, i) => accounts.length + i)
+  const more = await api.multiCall({ target: factory, abi: 'function allAccounts(uint256) view returns (address)', calls, permitFailure: true })
+  const complete = more.every(Boolean)
+  accounts = accounts.concat(more.filter(Boolean))
+  // a list with a failed read in it is used for this run only
+  if (isCurrentRun && complete) await setCache(CACHE_PROJECT, `accounts/${api.chain}`, { accounts })
+  return accounts
+}
+
 /**
  * Sums the value of every Arcadia account plus the protocol's own pools on one chain.
  * @param {object} api DefiLlama ChainApi
@@ -248,57 +276,60 @@ async function tvl (api) {
     await api.sumTokens({ blacklistedTokens: allNfts, tokensAndOwners2: [uTokens, pools] });
   }
 
-  const accounts = await api.fetchList({ lengthAbi: 'allAccountsLength', itemAbi: 'allAccounts', target: factory, })
+  const now = Math.floor(Date.now() / 1000)
+  // what is stored below describes the present, so a run at a past timestamp reads everything and stores nothing
+  const isCurrentRun = !api.timestamp || api.timestamp > now - 3600
+  const accounts = await getAccounts(api, factory, isCurrentRun)
 
   // Account version 1 has a stored state of all assets, and can be fetched using generateAssetData()
   // Account version 2 has no such stored state, and must be fetched with external api calls.
-  const versions = await api.multiCall({abi: 'function ACCOUNT_VERSION() view returns (uint256)', calls: accounts,});
+  const versions = await api.multiCall({abi: 'function ACCOUNT_VERSION() view returns (uint256)', calls: accounts, permitFailure: true });
   const v1Accounts = accounts.filter((_, i) => versions[i] === '1' || versions[i] === '3');
   const v2Accounts = accounts.filter((_, i) => versions[i] === '2' || versions[i] === '4');
 
   // This endpoint uses the following logic:
-  // 1. Uses batches of all v2Accounts (to prevent rate limiting)
+  // 1. Uses groups of v2Accounts, one request after another (to prevent rate limiting)
   // 2. calls Arcadia's endpoint to fetch the asset data of a V2 account
   // 3. verifies onchain that the ownership of the NFTs is indeed correct
   // 4. Return format is then transformed to be identical to the format of the V1 assetData
-
+  //
+  // Most v2 accounts are empty, and asking the api about every one of them took 600+ requests per run. An account the
+  // api reported empty is asked about again a day later (the first time after a random part of a day, so the re-checks
+  // spread across runs); the newest accounts are always asked about. An old empty account that is funded again can
+  // therefore be missing for up to a day.
   const addressesPerRequest = 5;
-  const parallelRequests = 25;
-  const accountsPerBatch = addressesPerRequest * parallelRequests;
+  const emptyCacheKey = `empty-v2-accounts/${api.chain}`
+  const { seenEmpty = {} } = isCurrentRun ? await getCache(CACHE_PROJECT, emptyCacheKey) : {}
+  const firstFresh = v2Accounts.length - FRESH_ACCOUNTS
+  const v2ToFetch = v2Accounts.filter((account, i) => i >= firstFresh || !seenEmpty[account] || now - seenEmpty[account] >= EMPTY_RECHECK_SECONDS)
 
-  for (let i = 0; i < v2Accounts.length; i += accountsPerBatch) {
-    const batchAccounts = v2Accounts.slice(i, i + accountsPerBatch);
+  for (let i = 0; i < v2ToFetch.length; i += addressesPerRequest) {
+    const accountGroup = v2ToFetch.slice(i, i + addressesPerRequest);
+    const assetDataCall = await fetchAssetData(accountGroup, chainId);
 
-    // Create sub-batches of 5 addresses each
-    const requestBatches = [];
-    for (let j = 0; j < batchAccounts.length; j += addressesPerRequest) {
-      requestBatches.push(batchAccounts.slice(j, j + addressesPerRequest));
-    }
+    // Process each account's data from the batched response
+    assetDataCall.data.forEach((assetData, index) => {
+      const account = accountGroup[index];
+      if (!assetData || !assetData[0][0] || assetData[0][0].length < 1) {
+        seenEmpty[account] = seenEmpty[account] ? now : now - Math.floor(Math.random() * EMPTY_RECHECK_SECONDS)
+        return;
+      }
+      delete seenEmpty[account]
 
-    await Promise.all(requestBatches.map(async (accountGroup) => {
-      const assetDataCall = await fetchAssetData(accountGroup, chainId);
+      ownerTokens.push([assetData[0][0], account])
+      if (!assetData[0][0].length || !assetData[0][1].length || assetData[0][1] == "0") return;
+      ownerIds.push([assetData[0][0], assetData[0][1], account])
+      accs.push(account)
 
-      // Process each account's data from the batched response
-      assetDataCall.data.forEach((assetData, index) => {
-        const account = accountGroup[index];
-        if (!assetData || !assetData[0][0] || assetData[0][0].length < 1) return;
-
-        ownerTokens.push([assetData[0][0], account])
-        if (!assetData[0][0].length || !assetData[0][1].length || assetData[0][1] == "0") return;
-        ownerIds.push([assetData[0][0], assetData[0][1], account])
-        accs.push(account)
-
-        for (let i = 0; i < assetData[0][0].length; i++) {
-          if (assetData[0][0][i] === uniV4NFT) {
-            uniV4Ids.push(assetData[0][1][i]);
-          }
+      for (let i = 0; i < assetData[0][0].length; i++) {
+        if (assetData[0][0][i] === uniV4NFT) {
+          uniV4Ids.push(assetData[0][1][i]);
         }
-      });
-    }));
-
-    api.log(`[arcadia] Processed batch ${Math.ceil((i + accountsPerBatch) / accountsPerBatch)} of ${Math.ceil(v2Accounts.length / accountsPerBatch)} for v2 accounts.`);
-
+      }
+    });
   }
+  api.log(`[arcadia] asked the api about ${v2ToFetch.length} of ${v2Accounts.length} v2 accounts`);
+  if (isCurrentRun) await setCache(CACHE_PROJECT, emptyCacheKey, { seenEmpty })
 
   const assetDatasV1 = await api.multiCall({ abi: abi.generateAssetData, calls: v1Accounts, permitFailure: true })
   v1Accounts.forEach((account, i) => {

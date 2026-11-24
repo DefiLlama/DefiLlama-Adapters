@@ -1,5 +1,4 @@
 const { getLogs, getLogs2 } = require('../helper/cache/getLogs')
-const { getHookPools, addUniV4PoolReserves } = require('../helper/uniswapV4')
 
 const abi = {
   "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
@@ -15,27 +14,29 @@ module.exports = {
 const initializeAbi = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'
 
 // Aegis hook pools on Ink. poolManager + fromBlock match the uniswap-v4 and calamari adapters, so the Initialize log cache is shared with them
-const inkAegisUniswap = { poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', fromBlock: 4580556, hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc', stateView: '0x76fd297e2d437cd7f76d50f01afe6160f86e9990' }
+const inkAegisUniswap = { poolManager: '0x360e68faccca8ca495c1b759fd9eee466db9fb32', fromBlock: 4580556, hook: '0xe449e013004db4a5681e9622ca10c5ba0ea610cc' }
 const inkAegisCalamari = { poolManager: '0x6E4723A612831AfB9f5B2a5aE22723c37aAB9560', fromBlock: 54652108, hook: '0x2f449fa3f078960313749bc45ffcde0987f790cc' }
-// Calamari has no StateView, so its pools are read through ReservesLens, which walks the same tick liquidity inside one call
+// ReservesLens walks a pool's tick liquidity inside one call and takes the pool manager as a parameter, so it reads
+// the Uniswap pools as well as the Calamari ones (which have no StateView). Walking the tick bitmap of the ~100
+// Uniswap pools through StateView instead took ~400k calls per run for the same numbers (checked token by token).
 const reservesLens = '0x0000001b173C3bbF3984D417d8614E3eed34865B'
 
 async function addInkAegisPools(api) {
-  const uniPools = await getHookPools({ api, ...inkAegisUniswap })
-  await addUniV4PoolReserves({ api, pools: uniPools, stateView: inkAegisUniswap.stateView })
-
-  const { poolManager, fromBlock, hook } = inkAegisCalamari
-  const logs = await getLogs2({ api, target: poolManager, eventAbi: initializeAbi, fromBlock })
-  const pools = logs.filter((log) => log.hooks.toLowerCase() === hook)
-  const reserves = await api.multiCall({
-    target: reservesLens,
-    abi: abi.getPoolTVL,
-    calls: pools.map((p) => ({ params: [poolManager, [p.currency0, p.currency1, p.fee, p.tickSpacing, p.hooks]] })),
-  })
-  reserves.forEach((r, i) => {
-    api.add(pools[i].currency0, r.coreAmount0)
-    api.add(pools[i].currency1, r.coreAmount1)
-  })
+  for (const { poolManager, fromBlock, hook } of [inkAegisUniswap, inkAegisCalamari]) {
+    const logs = await getLogs2({ api, target: poolManager, eventAbi: initializeAbi, fromBlock })
+    const pools = logs.filter((log) => log.hooks.toLowerCase() === hook)
+    const reserves = await api.multiCall({
+      target: reservesLens,
+      abi: abi.getPoolTVL,
+      calls: pools.map((p) => ({ params: [poolManager, [p.currency0, p.currency1, p.fee, p.tickSpacing, p.hooks]] })),
+      permitFailure: true,
+    })
+    reserves.forEach((r, i) => {
+      if (!r) return
+      api.add(pools[i].currency0, r.coreAmount0)
+      api.add(pools[i].currency1, r.coreAmount1)
+    })
+  }
 }
 
 const eventAbi = 'event ICHIVaultCreated (address indexed sender, address ichiVault, address tokenA, bool allowTokenA, address tokenB, bool allowTokenB, uint24 fee, uint256 count)'

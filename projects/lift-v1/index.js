@@ -1,5 +1,5 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumUniV3PositionsLowValue } = require('../helper/cache/lowValue')
 
 // LaunchpadFactory generations; the first no longer launches, its pools still trade
 const FACTORIES = [
@@ -16,12 +16,15 @@ async function tvl(api) {
   for (const factory of FACTORIES)
     launches.push(...await getLogs2({ api, target: factory, eventAbi: TOKEN_LAUNCHED, fromBlock: FROM_BLOCK, extraKey: 'lift-v1-launches' }))
 
-  // only the launch positions held by the LpVaults are counted, and only their quote side
-  return sumTokens2({
-    api,
-    uniV3WhitelistedTokens: [...new Set(launches.map((l) => l.quote))],
-    uniV3ExtraConfig: { nftAddress: POSITION_MANAGER, positionIds: launches.map((l) => String(l.positionId)) },
+  // only the launch positions held by the LpVaults are counted, and only their quote side.
+  // There are 20k+ of them and most are worth next to nothing: a position worth under $100 is stored with its balance,
+  // counted from the store, and read again once a week. The newest positions are always read.
+  await sumUniV3PositionsLowValue({
+    api, project: 'lift-v1', nftAddress: POSITION_MANAGER,
+    positionIds: launches.map((l) => String(l.positionId)),
+    whitelistedTokens: [...new Set(launches.map((l) => l.quote))],
   })
+  return api.getBalances()
 }
 
 module.exports = {

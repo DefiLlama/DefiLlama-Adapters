@@ -1,5 +1,6 @@
 const arma = require('./arma');
 const { getConfig } = require('../helper/cache');
+const { sumTokensLowValue } = require('../helper/cache/lowValue');
 
 // Arbitrum Pendle PT token addresses (all ETH PT tokens)
 const ARBITRUM_PT_TOKENS = [
@@ -16,18 +17,9 @@ async function arbitrumTvl(api) {
 
     api.log(`[Pulse] Found ${owners.length} smart accounts on Arbitrum`);
 
-    // Build tokensAndOwners array for each PT token-owner combination
-    const tokensAndOwners = [];
-    ARBITRUM_PT_TOKENS.forEach(token => {
-        owners.forEach(owner => {
-            tokensAndOwners.push([token, owner]);
-        });
-    });
-
-    return api.sumTokens({
-        tokensAndOwners,
-        permitFailure: true
-    });
+    // accounts worth under $100 are stored with their balances and read again once a week (see arma.js)
+    await sumTokensLowValue({ api, project: 'giza', key: 'pulse-arbitrum', owners, tokens: ARBITRUM_PT_TOKENS });
+    return api.getBalances();
 }
 const pulse = {
     arbitrum: { tvl: arbitrumTvl }

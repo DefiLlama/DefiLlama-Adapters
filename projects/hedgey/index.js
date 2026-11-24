@@ -1,4 +1,6 @@
 const { isWhitelistedToken } = require('../helper/streamingHelper')
+const { getCache, setCache } = require('../helper/cache')
+const { nullAddress } = require('../helper/tokenMapping')
 
 const BASE_CONFIG = {
   tokenVesting: "0x2CDE9919e81b20B4B33DD562a48a84b54C48F00C",
@@ -44,37 +46,52 @@ const abis = {
 };
 
 const cacheData = {};
+const WEEK = 7 * 24 * 3600
+const TAIL = 500
 
-const fetchVestingData = async (api) => {
-  const config = CONFIG[api.chain];
-  if (!config) return;
+// tvl and vesting of a chain run at the same time and need the same data: both wait for one fetch
+const fetchVestingData = (api) => {
+  if (!cacheData[api.chain]) cacheData[api.chain] = _fetchVestingData(api).catch(e => { delete cacheData[api.chain]; throw e })
+  return cacheData[api.chain]
+}
 
-  const targets = Object.values(config);
+// The plans are only read to learn which tokens the contracts hold: tens of thousands of plans for a few dozen tokens.
+// The token list is stored. Once a week every plan is read again, and in between only the last TAIL plans of each
+// contract are (new plans are appended at the end of the list), so the token of a new plan is found right away.
+// A run at a past timestamp reads every plan and stores nothing.
+const _fetchVestingData = async (api) => {
+  const targets = Object.values(CONFIG[api.chain]);
+  const now = Math.floor(Date.now() / 1000)
+  const isCurrentRun = !api.timestamp || api.timestamp > now - 3600
+  const cache = isCurrentRun ? await getCache('hedgey', api.chain) : {}
+  const fullScan = !cache.lastFullScan || now - cache.lastFullScan > WEEK
 
-  // Single fetchList across all contracts: tokenByIndex -> plans(tokenId).token
-  const plans = await api.fetchList({
-    targets,
-    lengthAbi: abis.totalSupply,
-    itemAbi: abis.tokenByIndex,
-    itemAbi2: abis.plans,
-    field2: 'token',
-    permitFailure: true,
-  });
+  const supplies = await api.multiCall({ abi: abis.totalSupply, calls: targets, permitFailure: true })
+  const indexCalls = []
+  targets.forEach((target, i) => {
+    const supply = +(supplies[i] ?? 0)
+    for (let j = fullScan ? 0 : Math.max(0, supply - TAIL); j < supply; j++) indexCalls.push({ target, params: j })
+  })
+  const planIds = await api.multiCall({ abi: abis.tokenByIndex, calls: indexCalls, permitFailure: true })
+  const planCalls = indexCalls.map(({ target }, i) => ({ target, params: planIds[i] })).filter(call => call.params != null)
+  const plans = await api.multiCall({ abi: abis.plans, calls: planCalls, permitFailure: true })
 
-  const rawTokens = [...new Set(plans.filter(Boolean).map(t => t.toLowerCase()))]
+  const found = plans.filter(plan => plan && plan.token !== nullAddress).map(plan => plan.token.toLowerCase())
+  const rawTokens = [...new Set([...(cache.tokens ?? []), ...found])]
+  if (isCurrentRun && (fullScan || rawTokens.length !== (cache.tokens ?? []).length))
+    await setCache('hedgey', api.chain, { lastFullScan: fullScan ? now : cache.lastFullScan, tokens: rawTokens })
+
   const symbols = await api.multiCall({ calls: rawTokens, abi: 'erc20:symbol', permitFailure: true })
   const tokens = rawTokens.map((token, index) => {
     if (!symbols[index]) return null;
     return { token, symbol: symbols[index] }
   }).filter(Boolean)
 
-  cacheData[api.chain] = { owners: targets, tokens }
-  return cacheData[api.chain]
+  return { owners: targets, tokens }
 };
 
 const computeBalances = async (api, isVesting) => {
-  if (!cacheData[api.chain]) return;
-  const { owners, tokens } = cacheData[api.chain]
+  const { owners, tokens } = await fetchVestingData(api)
 
   const whitelisted = []
   const notWhitelisted = []
@@ -92,13 +109,7 @@ const computeBalances = async (api, isVesting) => {
 
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = {
-    tvl: async (api) => {
-      if (!cacheData[api.chain]) await fetchVestingData(api);
-      await computeBalances(api, false);
-    },
-    vesting: async (api) => {
-      if (!cacheData[api.chain]) await fetchVestingData(api);
-      await computeBalances(api, true);
-    },
+    tvl: (api) => computeBalances(api, false),
+    vesting: (api) => computeBalances(api, true),
   };
 });
