@@ -140,6 +140,7 @@ const ENV_KEYS = [
   'HIRO_API_KEY',
   'APTOS_API_KEY',
   'CANTON_API', // <base url>?key=<api key>
+  'LLAMA_VERIFIED_API',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

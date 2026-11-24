@@ -1,37 +1,45 @@
-const { getLogs } = require("../helper/cache/getLogs");
-const { sumTokens2 } = require('../helper/unwrapLPs')
-const abi = require("../helper/abis/morpho.json");
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { getVerifiedProject } = require('../helper/verified');
 
-const ADDRESSES = require('../helper/coreAssets.json')
-
-const contract = "0xde6e08ac208088cc62812ba30608d852c6b0ecbc"
-const fromBlock = 23214670
-
-async function tvl(api) {
-  const jane3 = '0x056B269Eb1f75477a8666ae8C7fE01b64dD55eCc'
-  return sumTokens2({ tokens: ["0xd4fa2d31b7968e448877f69a96de69f5de8cd23e", ADDRESSES.ethereum.USDC], owners: [contract, jane3], api })
-}
-
-const eventAbis = {
-  createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv, address creditLine) marketParams)'
-}
-
-async function borrowed(api) {
-  const logs = await getLogs({ api, target: contract, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true })
-  const markets = logs.map((i) => i.id.toLowerCase())
-  const marketInfos = await api.multiCall({ target: contract, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
-  const marketDatas = await api.multiCall({ target: contract, calls: markets, abi: abi.morphoBlueFunctions.market })
-  
-  marketDatas.forEach((data, idx) => {
-    const { loanToken } = marketInfos[idx];
-    api.add(loanToken, data.totalBorrowAssets);
-  });
-}
+const LENDING = '0xde6e08ac208088cc62812ba30608d852c6b0ecbc'; // 3Jane lending contract (Morpho Blue fork)
+const USD3 = '0x056B269Eb1f75477a8666ae8C7fE01b64dD55eCc'; // USD3 vault
+const WA_ETH_USDC = '0xd4fa2d31b7968e448877f69a96de69f5de8cd23e'; // Wrapped Aave Ethereum USDC
 
 module.exports = {
-  methodology: `We count the tokens on the contract`,
+  timetravel: false,
+  misrepresentedTokens: true, // off-chain assets
+  methodology: "TVL is 3Jane's bank cash, read hourly from the bank api, plus idle USDC and waEthUSDC in the USD3 vault and lending contract. Borrowed is the outstanding principal of off-chain loans, counted from loan originators' reports.",
+  hallmarks: [
+    ['2026-11-24', 'Methodology change: counts off-chain loans and bank cash from verified reports'],
+  ],
   ethereum: {
-    tvl,
-    borrowed,
+    tvl: async (api) => {
+      const data = await getVerifiedProject('3jane');
+      const now = Math.floor(Date.now() / 1000);
+      // balances: category -> bank -> { balanceUsd, timestamp (unix seconds) }
+      for (const [category, banks] of Object.entries(data.balances)) {
+        for (const [bank, item] of Object.entries(banks)) {
+          const age = now - item.timestamp;
+          // written as !(age <= max) so a missing timestamp (NaN age) also fails
+          if (!(age <= 3 * 3600)) throw new Error(`3jane balance ${category}/${bank} is stale: timestamp ${item.timestamp}, ${(age / 3600).toFixed(1)}h old, max 3h`);
+
+          api.addUSDValue(item.balanceUsd);
+        }
+      }
+
+      // on-chain: idle USDC and waEthUSDC not yet sent to the bank
+      // on-chain borrowed is not counted, it is the same money as the off-chain loans and bank cash
+      await sumTokens2({ api, tokens: [ADDRESSES.ethereum.USDC, WA_ETH_USDC], owners: [LENDING, USD3] });
+    },
+    borrowed: async (api) => {
+      const data = await getVerifiedProject('3jane');
+      for (const item of Object.values(data.loans)) {
+        for (const value of Object.values(item)) {
+         api.addUSDValue(value.principalUsd);
+        }
+      }
+    }
   }
-}
+};
+
