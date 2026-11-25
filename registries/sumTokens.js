@@ -28116,6 +28116,19 @@ const configs = {
       ]
     },
   },
+  "tine": {
+    "doublecounted": true,
+    "start": "2026-11-25",
+    "methodology": "Counts the wstETH held by the Tine savings contract.",
+    "ethereum": {
+      "tokensAndOwners": [
+        [
+          "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+          "0x9d0d94339707b8Ad977A68d9322Df81791643B7E"
+        ]
+      ]
+    },
+  },
   "tokenfi": {
     "methodology": "We count the FLOKI on 0xb8D2471E35eE033Db509e0456c8eFc4135f4EE43",
     "ethereum": {
