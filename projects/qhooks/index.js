@@ -2,12 +2,24 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { addUniV4PoolReserves } = require('../helper/uniswapV4')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConnection } = require('../helper/solana')
+const { PublicKey } = require('@solana/web3.js')
 
 // QHooks (https://qhooks.com) launches tokens into Uniswap v4 pools whose hook is the QHooks launch contract itself.
 // Each launch contract (QSimpleLaunch generations, and QSaleLaunch for sale-first launches) emits one event per pool.
 const QHOOKS = '0x20429af7ca3b0ce4d99edbaa0693f26c5df05195' // protocol token, Robinhood Chain only
 const STAKE_VAULT = '0x6248098bfa019b9035a21722a86bdee3f6e9b934' // QHOOKS staking (the timed QStakeLock deposits into it)
 const SALE = '0x707d79c32bea8f9773a81569fbacc64ab0502044' // QSaleLaunch, same address on every EVM chain
+
+// Solana launches use one Meteora Dynamic Bonding Curve config. Migrated pools
+// are excluded because their liquidity is counted by Meteora DAMM v2.
+const DBC_PROGRAM = new PublicKey('dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN')
+const QHOOKS_DBC_CONFIG = 'AFBWuEXpP78Sgk6BZuHc2eHNJKdabFwrGk57kscvurmd'
+const VIRTUAL_POOL_DISC = 'cmrfVvtHrjd'
+const VIRTUAL_POOL_CONFIG_OFFSET = 72
+const VIRTUAL_POOL_QUOTE_RESERVE_OFFSET = 240
+const VIRTUAL_POOL_MIGRATED_OFFSET = 305
+const NOT_MIGRATED = '1' // base58 encoding of a zero byte
 
 const launchedAbi = 'event Launched(bytes32 indexed poolId, address indexed token, address indexed creator, address quote, string name, string symbol, string meta, uint8 style, address blocks, int24 startTick, int24 targetTick, uint256 supply, uint24 fee)'
 const settledAbi = 'event Settled(uint256 indexed saleId, address indexed token, bytes32 indexed poolId, uint256 clearPrice, uint256 raised, uint256 sold, uint256 poolTokens)'
@@ -139,6 +151,23 @@ async function staking(api) {
   return sumTokens2({ api, owner: STAKE_VAULT, tokens: [QHOOKS] })
 }
 
+async function solanaTvl(api) {
+  const connection = getConnection()
+  const config = await connection.getAccountInfo(new PublicKey(QHOOKS_DBC_CONFIG))
+  if (!config) throw new Error(`QHooks: DBC config ${QHOOKS_DBC_CONFIG} not found`)
+  const quoteMint = new PublicKey(config.data.subarray(8, 40)).toBase58()
+  const pools = await connection.getProgramAccounts(DBC_PROGRAM, {
+    filters: [
+      { memcmp: { offset: 0, bytes: VIRTUAL_POOL_DISC } },
+      { memcmp: { offset: VIRTUAL_POOL_CONFIG_OFFSET, bytes: QHOOKS_DBC_CONFIG } },
+      { memcmp: { offset: VIRTUAL_POOL_MIGRATED_OFFSET, bytes: NOT_MIGRATED } },
+    ],
+    dataSlice: { offset: VIRTUAL_POOL_QUOTE_RESERVE_OFFSET, length: 8 },
+  })
+  // Each VirtualPool reserve is one quote vault balance; add it once.
+  for (const { account: { data } } of pools) api.add(quoteMint, data.readBigUInt64LE(0).toString())
+}
+
 module.exports = {
   doublecounted: true, // QHooks pools are Uniswap v4 pools, also counted by the uniswap-v4 adapter
   methodology:
@@ -146,10 +175,12 @@ module.exports = {
     'Uniswap v4 pools whose hook is a QHooks launch contract, found from the launch contracts\' Launched and Settled events, plus quote ' +
     'assets committed to QHooks sales that have not settled. Launched tokens are not counted. QHOOKS was launched through QHooks, so the ' +
     'WETH side of its QHOOKS/WETH pool counts as TVL like any other launch. Staking is QHOOKS staked in the QHooks stake vault plus the ' +
-    'QHOOKS held in QHooks pools.',
+    'QHOOKS held in QHooks pools. On Solana, TVL is the quote reserve in non-migrated Meteora DBC pools created under the QHooks config; ' +
+    'graduated pools move to DAMM v2 and are counted by the Meteora adapter, as with other DBC launchpads.',
 }
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl }
 })
 module.exports.robinhood = { tvl, staking }
+module.exports.solana = { tvl: solanaTvl }
