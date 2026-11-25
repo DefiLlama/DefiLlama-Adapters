@@ -421,7 +421,8 @@ const configs = {
         "0x0988533bCB2e747351F08a365b33E46456C965A1",
         "0x76B0aB5067B3be922ef4698390Ca8bd5812A5080",
         "0x6Fe39F2831caF58529779EFDB73341Aa64df50Ab",
-        "0x431CA183bD6c2fd4a160ac28363D1719f3F12779"
+        "0x431CA183bD6c2fd4a160ac28363D1719f3F12779",
+        "0x044f8A217ed77f89f6Cf2081fB10338Ce44fEee9"
       ]
     },
     ripple: {
@@ -434,7 +435,16 @@ const configs = {
     tron: {
       owners: [
         "TGxnRqZTkpVk53djTt4ptzTagJe5t7c4jV",
-        "TBNafQuxJYNR2zoF2i6KQoKV86x66XwgSa"
+        "TBNafQuxJYNR2zoF2i6KQoKV86x66XwgSa",
+        "THoW5StbzYdfhh9XUopYYhPJbJWJehoCjo",
+        "TDcgiw8HxnhHEhwPf7PYu5RUMpP7EygAXr",
+        "THgxDnzzGJYhZXnKKXm6cg1594vhLzmTGx",
+        "TRLEKU5ySBEoCSAFUuzYyZN5wxbx2Ho2jt",
+        "TG3NXULKi8WVUFtw7Lg7RM6ahGyvY5mhC2",
+        "TAS4yce3Jh5Rrk94SrViMq9mER3NXkqUXi",
+        "TVUuCWs6mUVvMrB527mVspe6nfh4nUdDWR",
+        "TFmCzjvmDN3Juk5VbLPctbZ3gx2ziK8ui4",
+        "TRkR8FnSr18tdd1cTXPVhvAUwqLyXFfFtw"
       ]
     },
     arbitrum: {
