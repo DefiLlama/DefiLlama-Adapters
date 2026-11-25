@@ -79,7 +79,9 @@ async function getContractEvents({ contractId, topic, lookbackLedgers = 100_000,
       if (topic && topics[0] !== topic) continue
       events.push({ ...ev, topics, data: stellar.parseScVal(ev.value) })
     }
-    if (page.length < limit) break
+    // one request scans a limited span of ledgers (10,000) and returns a cursor at the end of it, so a short or empty
+    // page is not the end: follow the cursor ("<toid>-<index>", ledger = high 32 bits of the toid) up to the chain tip
+    if (!res.cursor || Number(BigInt(String(res.cursor).split('-')[0]) >> 32n) >= res.latestLedger) break
     params = { filters, pagination: { limit, cursor: res.cursor } }
   }
   return events
