@@ -141,6 +141,8 @@ const config = {
       "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
       "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
+      "0x17a30350771d02409046a683b18fe1c13ccfc4a8",
+      "0x2933782b5a8d72f2754103d1489614f29bfa4625",
     ],
   },
   near: {
@@ -148,10 +150,15 @@ const config = {
       "kucoinc.near",
       "e589457354361489a89039b8be6737cbc2db4d13919b6ccf23889a60f3b0d8f3",
       "7b865db190b966fe6ea30d0e7cc44ce42c4ea4f159a4b0b937122f166fc3ae28",
+      "403c128749a4cec73405adff535426c783ee65b1a2e4eac4965d0ae81ce51413",
     ],
   },
   eos: {
-    owners: ["qlwzviixzm1h", "kucoinrise11", "kucoinatwarm"],
+    owners: ["qlwzviixzm1h", "kucoinrise11", "kucoinatwarm",
+      "kucoinrise12",
+      "kucoinsscwc1",
+      "kucoinstake1",
+    ],
   },
   optimism: {
     owners: [
@@ -159,6 +166,9 @@ const config = {
       "0xebb8ea128bbdff9a1780a4902a9380022371d466",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
       "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
+      "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
+      "0xc1274c580c5653cdf8246695c2e0112492a99d6f",
+      "0x2933782b5a8d72f2754103d1489614f29bfa4625",
     ],
   },
   solana: {
@@ -190,6 +200,7 @@ const config = {
       "rPjmhP2WK4mfTZX9Ywoqz3eMPzfWj2vezU",
       "rAnqRGVpsS6XaUbQjwpQmoE4y1MthZhT9",
       "rp73u3gCNorHW3AmNtvDok8WWFA9BsFptW",
+      "rsf5FAyMDnTiA5Rm63xvEKnSy5MxHUnZvA",
     ],
   },
   bsc: {
@@ -207,6 +218,13 @@ const config = {
       "0x69be413d648ae00f0fbd9856f1355e22b36ee5e0",
       "0x6d6cc65e2060d0a280fcd47b6c22ec5636797fec",
       "0x8dac80ce96f69f9762bc450faa4d7fbd5891ae18",
+      "0xcded3bb9d2dc98f6e4e772095b48051acfb84df9",
+      "0x635308e731a878741bfec299e67f5fd28c7553d9",
+      "0x2d964ee844c35a72c6a9d498d54c8a9910cf6914",
+      "0x46d85c2e20c4eaa7f60c5e64f8134091cb1b9679",
+      "0xdc1ffc87ec47736d6211295d7468e335d226b2b8",
+      "0x32f29dc6d8da9d264f2f4ee270bafb5321e1f224",
+      "0x7b403c20adb5674e31fbbc040945999739a874c8",
     ],
   },
   kava: {
@@ -214,11 +232,18 @@ const config = {
       "0x1dd9319a115d36bd0f71c276844f67171678e17b",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
       "0xfb6a733bf7ec9ce047c1c5199f18401052eb062d",
+      "0x2933782b5a8d72f2754103d1489614f29bfa4625",
+      "0x2db219b373f3513d3bedc49bbf73e0bfaa07eba7",
+      "0x1e427a44864acee6bac9b1b56235a7a0aac755a8",
+      "0x168f3952620abdb1074cf0f23caab7bc9a1c0a3e",
     ],
   },
   starknet: {
     owners: [
       "0x0566ec9d06c79b1ca32970519715a27f066e76fac8971bbd21b96a50db826d90",
+      "0x06262a22f80cc8b4fa73f7a38c5ea437c0a6d2f0c24ea27061ff032386ea294f",
+      "0x04c19907a16f39d242ec1297e67fab4e76bfdbdb161078c846e5bbc5b4a70dab",
+      "0x01b2bb0e7b4821d4dec4201056262a748bcb4fa5ee3d44105f0901dfbc8d7c11",
     ],
   },
   aptos: {
@@ -257,6 +282,7 @@ const config = {
       "addr1q9h4f2vhh5vnqgnsejan3psw6mj3a504fxlqm2eh3262qufesdvfs83ulr22vprsv9mwnt0vgkfwxlflxkns32twqzdqjpq2na",
       "addr1x86wkztx2pqvvh9nlqclpfn3lc43gh8gjgqe258hp7fflr05avykv5zqcewt87p37zn8rl3tz3ww3yspj4g0wrujn7xsn3ekxy",
       "addr1x8z7n429sfah3edwj5cgle7hjur5ge6z20shr644lrxe9l79a825tqnm0rj6a9fs3lna09c8g3n5y5lpw84tt7xdjtlslelrez",
+      "addr1qywgh46dqu7lq6mp5c6tzldpmzj6uwx335ydrpq8k7rru4q6yhkfqn5pc9f3z76e4cr64e5mf98aaeht6zwf8xl2nc9qr66sqg",
     ],
   },
   sui: {
@@ -281,7 +307,9 @@ const config = {
       "0xdc46d78750022e3b9b6c3a9e96c4ce046344eb876192f5c6bca2ca68bca261a9",
       "0xe53c0bb62fd140bb87055c6c838089badaf217f812d989f9c105f16e177c7505",
       "0xdc46d78750022e3b9b6c3a9e96c4ce046344eb8761929cd005e86415de46a5b4",
-      "0xe53c0bb62fd140bb87055c6c838089badaf217f812d9515b8d8e2f7efb77a932"
+      "0xe53c0bb62fd140bb87055c6c838089badaf217f812d9515b8d8e2f7efb77a932",
+      "0x69c6fe69c6a68a8c001157b9ef807dc0ef9f929e1214928390d78df06f46628e",
+      "0xff93d227e7a8022201889c8e8528ca27d4eeb841f557efe708b7e2422ea4ffd0",
     ],
   },
   ton: {
@@ -322,16 +350,34 @@ const config = {
       // "EQB4tenLXVbU58tFHcXEWY4UCldJBYx2hRa9aioMvLP74isO",
       // "EQCoXkxpimacDL-4KgoxVlc4cRzga3M1_oTapjTGO80S9MXC",
       "EQDyoucGvxKV-mOI4wqZxDHOKUrvACcnlG0BOoXfwVVDF57R",
+      "EQA7hl8xdtMpwYKAuzZHei7OSnJpVaznO7JwFLVYjY4At9Ol",
+      "EQBbQJe23kk5H77ruxpwPNbnZRArUiWTNt8Qorqti_ICFdsi",
     ],
   },
   polygon: {
-    owners: ["0x2933782B5A8D72F2754103D1489614F29BFA4625"],
+    owners: [
+      "0x2933782B5A8D72F2754103D1489614F29BFA4625",
+      "0xfe5bf6a8beb26d9cfbce4c5ad3fec8ea844b5bc9",
+      "0x17a30350771d02409046a683b18fe1c13ccfc4a8",
+      "0x9ac5637d295fea4f51e086c329d791cc157b1c84",
+      "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
+      "0xe58c8d45477d894bb9a1501bb0d0a32af8419eda",
+      "0xd6216fc19db775df9774a6e33526131da7d19a2c",
+    ],
   },
   polkadot: {
     owners: ["165tzcxR1o2EUkpZVr17DxQsdJwtEkB6HAh69hQubmKGL93f"],
   },
   doge: {
-    owners: ["A4pFXcvnZdCm7Z3iZR1u12NozWTHk1avAg", "AEn5XzY4vpLfqGTouwsB33BHnhxURWzrg4"],
+    owners: ["A4pFXcvnZdCm7Z3iZR1u12NozWTHk1avAg", "AEn5XzY4vpLfqGTouwsB33BHnhxURWzrg4",
+      "9y6mxqRstcQ9pdFupqwFGGajEEsq8BxtwK",
+      "9rgFNXJnwN9Zfq1EU7z9gMDDTQMXjarFoA",
+      "DEthb6RcyXPRwhfzWhmE3FngsXzctSHxkT",
+      "DAXQys85qfyeccsQY3zoseQGDHp31rvMQQ",
+      "AEwDT5YDwbx7wNGddDc9hWXyFamkpz1PRw",
+      "DEZpQPv5E9fPQhZDVuWtL2aB3y2e1iojiR",
+      "DN5Hp2kCkvCsdwr5SPmwHpiJgjKnC5wcT7",
+    ],
   },
   avax: {
     owners: [
