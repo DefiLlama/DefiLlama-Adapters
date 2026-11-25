@@ -83,13 +83,14 @@ async function postGraphql(endpoint, variables) {
   if (payload.errors?.length) {
     throw new Error(payload.errors.map((error) => error.message).join(', '))
   }
-  return payload.data?.search_output_prefix || []
+  const rows = payload.data?.search_output_prefix
+  if (!Array.isArray(rows)) throw new Error('Missing genesis query results')
+  return rows
 }
 
 async function discoverGenesisTransactions() {
-  const transactions = new Map()
-
   for (const endpoint of GRAPHQL_ENDPOINTS) {
+    const transactions = new Map()
     try {
       for (let offset = 0; ; offset += PAGE_SIZE) {
         const page = await postGraphql(endpoint, {
@@ -403,21 +404,24 @@ async function tvl() {
     livePoolUtxos.set(`${utxo.tx_hash}:${utxo.tx_pos}`, utxo)
   }
 
-  const bchReserveSats = [...livePoolUtxos.values()].reduce(
-    (sum, utxo) => sum + BigInt(utxo.value || 0),
-    0n
-  )
-
-  // Guanaco pools hold BCH and one CashToken side. The interface reports both
-  // sides at the pool spot price, so the BCH-denominated value is 2x reserves.
-  return { 'bitcoin-cash': Number(bchReserveSats * 2n) / 1e8 }
+  let bchReserveSats = 0n
+  const tokenAmounts = new Map()
+  for (const utxo of livePoolUtxos.values()) {
+    const { category, amount } = utxo.token_data
+    if (!/^[a-f0-9]{64}$/.test(category)) throw new Error('Invalid CashToken category')
+    const key = `bitcoincash:${category}`
+    tokenAmounts.set(key, (tokenAmounts.get(key) || 0n) + BigInt(amount))
+    bchReserveSats += BigInt(utxo.value)
+  }
+  const balances = { 'bitcoin-cash': Number(bchReserveSats) / 1e8 }
+  for (const [key, amount] of tokenAmounts) balances[key] = amount.toString()
+  return balances
 }
 
 module.exports = {
   methodology:
-    'Discovers Guanaco pool genesis transactions from the public GUANAC locking-bytecode prefix, extracts P2SH32 pool contracts, queries their live CashToken UTXOs through public Rostrum endpoints, and values both sides of each BCH-CashToken pool at the pool spot price.',
+    'Discovers Guanaco pool genesis transactions from the public GUANAC locking-bytecode prefix, extracts P2SH32 pool contracts, queries their live CashToken UTXOs through public Rostrum endpoints, and returns the actual BCH and fungible CashToken reserves by category.',
   timetravel: false,
-  misrepresentedTokens: true,
   start: '2024-11-01',
   bitcoincash: { tvl },
 }
