@@ -1970,6 +1970,11 @@ const uniV3Configs = {
     methodology: 'Value of the tokens held in the Camelot V4 (Algebra Integral) pools on Arbitrum, discovered from the factory Pool events.',
     arbitrum: { factory: '0xBefC4b405041c5833f53412fF997ed2f697a2f37', fromBlock: 391829824, isAlgebra: true },
   },
+  'theorem': {
+    // https://app.theorem.markets/markets, Algebra Integral fork; all pools come from the factory Pool event (no custom-deployer pools)
+    methodology: 'Value of the tokens held in the Theorem (Algebra Integral) pools on Ethereum, discovered from the factory Pool events.',
+    ethereum: { factory: '0xd265f57c36AC60d3F7931eC5c7396966F0C246A7', fromBlock: 24924425, isAlgebra: true },
+  },
   'vectaswap': {
     arbitrum: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 518470299},
     base: { factory: '0xe84FA17C2Ea423E0dea3C986EE3E1560D684bb2d', fromBlock: 53245146}
