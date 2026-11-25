@@ -11,10 +11,13 @@ const QHOOKS = '0x20429af7ca3b0ce4d99edbaa0693f26c5df05195' // protocol token, R
 const STAKE_VAULT = '0x6248098bfa019b9035a21722a86bdee3f6e9b934' // QHOOKS staking (the timed QStakeLock deposits into it)
 const SALE = '0x707d79c32bea8f9773a81569fbacc64ab0502044' // QSaleLaunch, same address on every EVM chain
 
-// Solana launches use one Meteora Dynamic Bonding Curve config. Migrated pools
-// are excluded because their liquidity is counted by Meteora DAMM v2.
+// Solana launches are Meteora Dynamic Bonding Curve pools under the configs whose fee claimer is the QHooks wallet.
+// Migrated pools are excluded because their liquidity is counted by Meteora DAMM v2.
 const DBC_PROGRAM = new PublicKey('dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN')
-const QHOOKS_DBC_CONFIG = 'AFBWuEXpP78Sgk6BZuHc2eHNJKdabFwrGk57kscvurmd'
+const QHOOKS_FEE_CLAIMER = 'Coqq8o1uYxrAFggNtLCcUcGZWDUF3aUPkaFEMezCMwHh' // created configs AFBWu… (11-11) and 9898n… (11-21)
+const POOL_CONFIG_DISC = '5RKzUGPpkkA'
+const CONFIG_QUOTE_MINT_OFFSET = 8
+const CONFIG_FEE_CLAIMER_OFFSET = 40
 const VIRTUAL_POOL_DISC = 'cmrfVvtHrjd'
 const VIRTUAL_POOL_CONFIG_OFFSET = 72
 const VIRTUAL_POOL_QUOTE_RESERVE_OFFSET = 240
@@ -153,19 +156,27 @@ async function staking(api) {
 
 async function solanaTvl(api) {
   const connection = getConnection()
-  const config = await connection.getAccountInfo(new PublicKey(QHOOKS_DBC_CONFIG))
-  if (!config) throw new Error(`QHooks: DBC config ${QHOOKS_DBC_CONFIG} not found`)
-  const quoteMint = new PublicKey(config.data.subarray(8, 40)).toBase58()
-  const pools = await connection.getProgramAccounts(DBC_PROGRAM, {
+  const configs = await connection.getProgramAccounts(DBC_PROGRAM, {
     filters: [
-      { memcmp: { offset: 0, bytes: VIRTUAL_POOL_DISC } },
-      { memcmp: { offset: VIRTUAL_POOL_CONFIG_OFFSET, bytes: QHOOKS_DBC_CONFIG } },
-      { memcmp: { offset: VIRTUAL_POOL_MIGRATED_OFFSET, bytes: NOT_MIGRATED } },
+      { memcmp: { offset: 0, bytes: POOL_CONFIG_DISC } },
+      { memcmp: { offset: CONFIG_FEE_CLAIMER_OFFSET, bytes: QHOOKS_FEE_CLAIMER } },
     ],
-    dataSlice: { offset: VIRTUAL_POOL_QUOTE_RESERVE_OFFSET, length: 8 },
+    dataSlice: { offset: CONFIG_QUOTE_MINT_OFFSET, length: 32 },
   })
-  // Each VirtualPool reserve is one quote vault balance; add it once.
-  for (const { account: { data } } of pools) api.add(quoteMint, data.readBigUInt64LE(0).toString())
+  if (!configs.length) throw new Error(`QHooks: no DBC configs with fee claimer ${QHOOKS_FEE_CLAIMER}`)
+  for (const { pubkey, account } of configs) {
+    const quoteMint = new PublicKey(account.data).toBase58()
+    const pools = await connection.getProgramAccounts(DBC_PROGRAM, {
+      filters: [
+        { memcmp: { offset: 0, bytes: VIRTUAL_POOL_DISC } },
+        { memcmp: { offset: VIRTUAL_POOL_CONFIG_OFFSET, bytes: pubkey.toBase58() } },
+        { memcmp: { offset: VIRTUAL_POOL_MIGRATED_OFFSET, bytes: NOT_MIGRATED } },
+      ],
+      dataSlice: { offset: VIRTUAL_POOL_QUOTE_RESERVE_OFFSET, length: 8 },
+    })
+    // quote_reserve excludes the unclaimed fees that sit in the same quote vault
+    for (const { account: { data } } of pools) api.add(quoteMint, data.readBigUInt64LE(0).toString())
+  }
 }
 
 module.exports = {
@@ -175,7 +186,7 @@ module.exports = {
     'Uniswap v4 pools whose hook is a QHooks launch contract, found from the launch contracts\' Launched and Settled events, plus quote ' +
     'assets committed to QHooks sales that have not settled. Launched tokens are not counted. QHOOKS was launched through QHooks, so the ' +
     'WETH side of its QHOOKS/WETH pool counts as TVL like any other launch. Staking is QHOOKS staked in the QHooks stake vault plus the ' +
-    'QHOOKS held in QHooks pools. On Solana, TVL is the quote reserve in non-migrated Meteora DBC pools created under the QHooks config; ' +
+    'QHOOKS held in QHooks pools. On Solana, TVL is the quote reserve in non-migrated Meteora DBC pools created under the QHooks configs; ' +
     'graduated pools move to DAMM v2 and are counted by the Meteora adapter, as with other DBC launchpads.',
 }
 
