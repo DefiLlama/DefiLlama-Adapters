@@ -20,6 +20,10 @@ function fetchallchain(chainId) {
 
 module.exports = {
   timetravel: false,
+  deadFrom: '2026-11-08',
+  hallmarks: [
+    ['2026-11-08', 'Vaults exploited, protocol deprecated'],
+  ],
   methodology: "Acryptos TVL is the USD value of token within the vault and farm contracts",
   misrepresentedTokens: true,
   ethereum: {
