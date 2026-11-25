@@ -1323,8 +1323,9 @@ module.exports = {
     },
   },
   "ipusd": {
-    "methodology": "ipUSD reserves (USDSC and USDC.e held by the IPUSDWrapper contract) plus the reserve assets backing sIPUSD, the yield-bearing version of ipUSD (PGIP+ held by the IP Vault contract). ipUSD held inside the IP Vault is excluded to avoid counting the same reserves twice.",
+    "methodology": "ipUSD reserves (USDSC and USDC.e held by the IPUSDWrapper contract) plus the reserve assets backing sIPUSD, the yield-bearing version of ipUSD (PGIP+ held by the IP Vault contract). ipUSD held inside the IP Vault is excluded to avoid counting the same reserves twice. Marked doublecounted because the USDSC reserves are Startale USD, whose $M backing is already counted by startale-usd.",
     "start": "2026-10-24",
+    "doublecounted": true,
     "soneium": {
       "tvl": {
         "tokensAndOwners": [
