@@ -9,7 +9,8 @@ const SPETH = '0xd06f6a56c5f599cb375b616df306f32b7f6f4a0e'
 const SPETH_LAUNCH_BLOCK = 22776239
 
 async function tvl(api) {
-  if (api.block && api.block < SPETH_LAUNCH_BLOCK) {
+  const block = await api.getBlock()
+  if (block < SPETH_LAUNCH_BLOCK) {
     const supply = await api.call({ abi: 'uint256:totalSupply', target: MPETH, })
     api.add(ADDRESSES.null, supply)
     return
