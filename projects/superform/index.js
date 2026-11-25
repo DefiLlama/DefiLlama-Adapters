@@ -72,6 +72,9 @@ const tvl = async (api) => {
   })
 
 
+}
+
+const v2Tvl = async (api) => {
   // SuperVault v2 TVL
   const superVaults = await api.call({ abi: 'function getAllSuperVaults() view returns (address[])', target: SUPERVAULT_AGGREGATOR, permitFailure: true })
   if (superVaults && superVaults.length > 0) {
@@ -96,4 +99,13 @@ module.exports = {
 };
 
 
-Object.keys(CONFIG).forEach(chain => module.exports[chain] = { tvl })
+Object.keys(CONFIG).forEach(chain => module.exports[chain] = {
+  tvl: async (api) => {
+    await tvl(api)
+    await v2Tvl(api)
+  },
+})
+
+module.exports.katana = { tvl: v2Tvl }
+module.exports.flare = { tvl: v2Tvl }
+module.exports.robinhood = { tvl: v2Tvl }
