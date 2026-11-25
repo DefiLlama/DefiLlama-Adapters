@@ -222,7 +222,10 @@ const uniV2Configs = {
     ham: '0x7304e5751973113fA7c4FFf677871B926258f27e',
   },
   'bdex-v2': {
-    bot: '0x117115f3B72C8d1989178089A67D0C26f8EE0AA3',
+    _options: {
+      blacklistedPools: ['0xF513CAB4C84516b3bb47Ad9A28C9FB964a9F4737'], // USDT/SOLEN: single-wallet pool, the LP holds the whole SOLEN supply and made the only swap
+    },
+    bot:'0x117115f3B72C8d1989178089A67D0C26f8EE0AA3',
   },
   'beam-swap': {
     beam: '0x662b526FB70EBB508962f3f61c9F735f687C8fA5',
