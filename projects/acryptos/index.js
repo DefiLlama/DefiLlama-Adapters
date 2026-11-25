@@ -3,18 +3,10 @@ const { toUSDTBalances } = require('../helper/balances');
 let _response
 
 
-// The API carries the unix time of its last refresh in `last`. It stopped refreshing on
-// 2025-07-02 and kept serving that snapshot, so refuse anything older than a day instead of
-// republishing a frozen number as current TVL.
-const MAX_AGE = 24 * 3600
-
 function fetchallchain(chainId) {
   return async () => {
     if (!_response) _response = utils.fetchURL('https://api.unrekt.net/api/v2/acryptos-asset')
     const response = await _response;
-
-    const age = Date.now() / 1000 - Number(response.data.last)
-    if (!(age <= MAX_AGE)) throw new Error(`acryptos api snapshot is stale: last=${response.data.last}, ${(age / 86400).toFixed(1)} days old`)
 
     let tvl  = 0;
     const total_tvl = response.data.acryptos.total_tvl;
@@ -28,6 +20,10 @@ function fetchallchain(chainId) {
 
 module.exports = {
   timetravel: false,
+  deadFrom: '2026-11-08',
+  hallmarks: [
+    ['2026-11-08', 'Vaults exploited, protocol deprecated'],
+  ],
   methodology: "Acryptos TVL is the USD value of token within the vault and farm contracts",
   misrepresentedTokens: true,
   ethereum: {
