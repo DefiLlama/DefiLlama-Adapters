@@ -459,6 +459,7 @@ module.exports = {
     "3D7pZri6kLqXDQMbf5G8De39K36eBaNKBG",
     "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5",
     "bc1qdg5fr2zq0w0r8l3hggm25uhdc7rjqs5r0az508",
+    "bc1qqvh272ufc4mnpdhlruk09d24wq6fc72m683ey9",
   ],
   bitvenus: [
     //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
