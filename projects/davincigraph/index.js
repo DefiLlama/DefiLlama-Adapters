@@ -1,4 +1,5 @@
 const { get } = require("../helper/http")
+const { getConfig } = require("../helper/cache")
 
 const MIRROR = 'https://mainnet-public.mirrornode.hedera.com'
 const CONTRACTS_API = 'https://locker.davincigraph.io/api/v3/contracts'
@@ -21,7 +22,7 @@ async function getTokenBalances(accountId) {
 // SaucerSwap V1 LP tokens held by the Token Locker and Black Hole contracts, unwrapped into the
 // pool's two tokens pro rata to lpTokenReserve (the LP token's total supply).
 const tvl = async (api) => {
-  const contracts = Object.values(await get(CONTRACTS_API))
+  const contracts = Object.values(await getConfig('davincigraph/contracts', CONTRACTS_API))
     .filter(({ type }) => type === 'LOCKER' || type === 'BLACKHOLE')
     .map(({ contractId }) => contractId)
   if (!contracts.length) throw new Error('davincigraph: no locker contracts returned')
