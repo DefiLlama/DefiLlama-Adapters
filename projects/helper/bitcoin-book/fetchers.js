@@ -21,6 +21,37 @@ function isValidBitcoinAddress(addr) {
   }
 }
 
+// P2WPKH (bech32, BIP173) address of a 64 byte uncompressed secp256k1 public key (x || y)
+function p2wpkhAddress(pubKey) {
+  const key = Buffer.from(pubKey.replace(/^0x/, ''), 'hex')
+  if (key.length !== 64) throw new Error(`unexpected public key length: ${key.length}`)
+  const compressed = Buffer.concat([Buffer.from([key[63] & 1 ? 3 : 2]), key.subarray(0, 32)])
+  const hash160 = crypto.createHash('ripemd160').update(sha256(compressed)).digest()
+  const words = [0] // witness version 0
+  let acc = 0, bits = 0
+  for (const byte of hash160) {
+    acc = (acc << 8) | byte
+    bits += 8
+    while (bits >= 5) {
+      bits -= 5
+      words.push((acc >> bits) & 31)
+    }
+  }
+  const hrp = 'bc'
+  const values = [...[...hrp].map(c => c.charCodeAt(0) >> 5), 0, ...[...hrp].map(c => c.charCodeAt(0) & 31), ...words, 0, 0, 0, 0, 0, 0]
+  const GEN = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
+  let chk = 1
+  for (const v of values) {
+    const top = chk >> 25
+    chk = ((chk & 0x1ffffff) << 5) ^ v
+    for (let i = 0; i < 5; i++) if ((top >> i) & 1) chk ^= GEN[i]
+  }
+  chk ^= 1
+  const checksum = Array.from({ length: 6 }, (_, i) => (chk >> (5 * (5 - i))) & 31)
+  const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+  return `${hrp}1${[...words, ...checksum].map(i => CHARSET[i]).join('')}`
+}
+
 module.exports = {
   btcfi_cdp: async () => {
     const target = "0x0000000000000000000000000000000000000100";
@@ -210,9 +241,17 @@ module.exports = {
     //   "bc1qyghykrhmkk5ztn4l5pjaqywpsxkg6e9rdm22mt",
     //   "bc1q04phgdeyx7nneh2ux4ynxhew4vwqfduk3wt6hc"
     // ]
-    const API_URL = 'https://api.tbtcscan.com/tbtc/proof-of-funds'
-    const { wallets } = await getConfig('tbtc/wallets', API_URL)
-    return wallets.filter(i => +i.walletBitcoinBalance > 0).map(wallet => wallet.walletBitcoinAddress)
+    // api.tbtcscan.com was retired, each wallet registry group of the Threshold subgraph is a tBTC wallet
+    return getConfig('tbtc/subgraph-wallets', undefined, {
+      fetcher: async () => {
+        const query = `query { randomBeaconGroups(first: 1000, orderBy: createdAt, orderDirection: desc) { id isWalletRegistry groupPublicKey { pubKey } } }`
+        const { data, errors } = await post('https://api.threshold.network/subgraph/mainnet', { query })
+        const groups = data?.randomBeaconGroups
+        if (errors?.length || !groups?.length) throw new Error('tbtc: bad subgraph response')
+        if (groups.length >= 1000) throw new Error('tbtc: 1000 groups reached, add pagination')
+        return groups.filter(i => i.isWalletRegistry).map(i => p2wpkhAddress(i.groupPublicKey.pubKey))
+      }
+    })
   },
   exsatBridge: async () => {
     const API_URL = 'https://raw.githubusercontent.com/exsat-network/exsat-defillama/refs/heads/main/bridge-bitcoin.json'
