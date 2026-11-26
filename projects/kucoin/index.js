@@ -557,16 +557,9 @@ const config = {
   },
   conflux: {
     owners: [
-      "0x2403384a45edc33582ca845867828f2394987bde",
-      "0xa53c3dff4c95553da9b1aff70a6e15665024501b",
-      "0xde2b78f72de0bb6fa13b0f4e92ad4deadafbe2f7",
       "cfx:aaprbgcd6ycy6rnavxj6nc3f3eyn9a5bja10t8s1ec",
-      "0x30fd9bf1c778bae95429b06ef490d86f34f3cd1a",
       "cfx:aarupjjhhw4r59x9tccz8wc0k4y5jhy7c26ufnggxv",
-      "0xfe8f89b5c47685158c194352cd3aa84dda8a5ece",
       "cfx:aampx35e3hf4ujyxb81n59wxy2nsdhn0zy6khw503n",
-      "0x9ad374b9d8db33eca4a511ba6bf90ca1643ba22f",
-      "0x0e87a7a093dc68af8599fa851ec138b47becc30d",
       "cfx:aajjvc8v4hkfxppenvcpxezvmrptp5b9xpx7yjdtdr",
     ],
   },
@@ -626,9 +619,6 @@ const config = {
       "dydx1m0p3yg04c9tx8s490xtcvd0ywwn7q2uxlu8ugd",
     ],
   },
-  eclipse: {
-    owners: ["FKE1Ui8Zkd8u2nJ9NefcmUrCYZ4WFZq3VeFEtjQxaxZ9"],
-  },
   etn: {
     owners: [
       "0x92f0bac0f513ccafc2b4101365e2d1afcf9874e4",
@@ -654,7 +644,6 @@ const config = {
   },
   ergo: {
     owners: [
-      "9how9k2dp67jXDnCM6TeRPKtQrToCs5MYL2JoSgyGHLXm1eHxWs",
       "9fpUtN7d22jS3cMWeZxBbzkdnHCB46YRJ8qiiaVo2wRCkaBar1Z",
     ],
   },
@@ -696,13 +685,6 @@ const config = {
       "0xeaafa733f774fbdd8776ba8fac6cc79eb0cb497c",
     ],
   },
-  flow: {
-    owners: [
-      "0x180de7e1789d4e4a",
-      "0xa75dc99389b28584",
-      "0x63ba653df2dcba51",
-    ],
-  },
   flux: {
     owners: [
       "t1bVAMF4KUxcyVZa3X3sPB4Tx5jmdgS876X",
@@ -740,9 +722,6 @@ const config = {
       "0xd18d7ec1c12b8a88f1cc3c7d7b7f4af6f8a94e4a",
       "0xf447ff9a69a5df096669a4369d43ecf2a2ed45ac",
     ],
-  },
-  icon: {
-    owners: ["hxbb984f278abd66ae2155edbd91f8c87ce98411c8"],
   },
   icp: {
     owners: [
@@ -991,13 +970,6 @@ const config = {
   ronin: {
     owners: ["0xc5d17e2ce4f4abf69b4459a76c29b53039ddd3af"],
   },
-  rvn: {
-    owners: [
-      "RTacWkAJvtvq9bZ6b1qopgCTkQJG9KS4Kq",
-      "RMKd7jAm9y682pLc6QiHSUFTxZReSRKZfe",
-      "RL5kW97jQnDkSMTgvK2RgFwvqJXCdh5XaP",
-    ],
-  },
   scroll: {
     owners: [
       "0xc968424cc26ba4e4a72f5754b17dac2474e42a6c",
@@ -1158,13 +1130,6 @@ const config = {
       "0x930f4c41078e0bde990073a1d6b1e4c09145870f",
       "0x0452042e4f2f41ca85cc463ea9a9e452214f2beb",
       "0x3fb604a9b40e4c1abf0eb91a67bb90fc06dfb27e",
-    ],
-  },
-  waves: {
-    owners: [
-      "3P3L9SrRCGbJxxtTdVrzoDL78pk2cqDc2Jz",
-      "3PMc2KUpP1owXEDo4hsdMGgtt5G6mgLTVv6",
-      "3P3R4whZjPMjLPwdTwSLWEvA7ofPvDsQgfb",
     ],
   },
   wc: {
