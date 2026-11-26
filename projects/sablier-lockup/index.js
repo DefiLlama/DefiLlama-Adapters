@@ -47,6 +47,13 @@ const config = {
   ...SUBGRAPH_ENDPOINTS
 };
 
+// Tokens whose price feed is too sparse to value reliably: they only show up on the days a price exists, causing spikes
+const blacklistedTokens = {
+  xdai: [
+    '0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce', // REG (RealToken Ecosystem Governance), 50M locked, see #21873
+  ],
+};
+
 const subgraphPayload = `
 {
   contracts { id address category }
@@ -70,9 +77,11 @@ async function getTokensConfig(api, isVesting) {
 
   const owners = contracts.map(i => i.address);
 
+  const blacklist = blacklistedTokens[api.chain] || [];
   const tokens = assets
     .filter(asset => isWhitelistedToken(asset.symbol, asset.id, isVesting))
-    .map(asset => asset.id.split('-')[2]);
+    .map(asset => asset.id.split('-')[2])
+    .filter(token => !blacklist.includes(token.toLowerCase()));
 
   const ownerTokens = owners.map(owner => [tokens, owner]);
   return { ownerTokens };
