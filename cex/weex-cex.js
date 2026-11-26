@@ -2,6 +2,8 @@ module.exports = {
   ethereum: {
     ownTokens: ['0x1b66474c8eca3827f16202907f41f63785579716'], // WXT
     owners: [
+      "0x7cBb29a07D63853EC09B84b41B6525354b2771b6",
+      "0x4dd41d72d53a7ccc240a00017673996e734b2f7f",
       "0x7bceb96a8757114d79c7dcd6b52c460202f17d13",
       "0xc3b77c3f5a733986558c91e0faf95f1659b1b9b6",
       "0x425c91fbde3d472279b914b7c4c9142266d35004",
@@ -55,6 +57,7 @@ module.exports = {
   },
   bsc: {
     owners: [
+      "0x7cBb29a07D63853EC09B84b41B6525354b2771b6",
       "0xc3b77c3f5a733986558c91e0faf95f1659b1b9b6",
       "0x7cb8e2896234cbc8494f858e05be30b13ad5ddb7",
       "0xf7e38e6aa48ce79efa7694a1b9c5bb178253bd98",
@@ -79,6 +82,7 @@ module.exports = {
   },
   arbitrum: {
     owners: [
+      "0x7cBb29a07D63853EC09B84b41B6525354b2771b6",
       "0xc3b77c3f5a733986558c91e0faf95f1659b1b9b6",
       "0x0b2b7edbdb241f11ce0a47374836a2a8643a7cf0",
       "0x9f6d65052ad5818768fcbac3b799a67f2b8e7170",
@@ -103,6 +107,7 @@ module.exports = {
   },
   tron: {
     owners: [
+      "TKDQfaPfJ4crtk8hSz4N4zwefb5ApYf8y5",
       "TMyVbp3jMTdXpcjjxMZy7Xv4FeXTp4xXTf",
       "TLivLCvVQrUfSQcddhg23JDgM58ML91mQf",
       "TRqwFyiNwEnMUM85qC9tQqKDZh6dwo6yKd",
@@ -120,6 +125,7 @@ module.exports = {
   },
   solana: {
     owners: [
+      "B6mPsnnuF8Kg5MxLLcGh5SheLkL1X8XFr4xjBSkud9ZM",
       "eKfAkykrMPx2CqhcbywnbTkpGAyfkppNvXQ2VPNiQWL",
       "Dw4JrqHdzh489rkQqf5RaATpyLBSJABwBb2C3PAYDQgX",
       "BCGzwLX1MmAosKrfMH1NauCSB6pej7uojeuNZrZCR9BL",
@@ -159,5 +165,11 @@ module.exports = {
   },
   op_bnb: {
     owners: ["0x1a715fddeef8cea02b5bcc451fc8913fe2781698"],
+  },
+  robinhood: {
+    owners: ["0x54e6741a081b107a713f87340c4e85d913429545"],
+  },
+  linea: {
+    owners: ["0x66147b98457f3ccf04eb00eefbf88c7b21b24a9c"],
   },
 }
