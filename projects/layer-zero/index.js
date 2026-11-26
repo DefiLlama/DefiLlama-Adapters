@@ -53,6 +53,15 @@ const WRAPPER_ESCROWS = new Set([
   'hyperliquid:0x904861a24f30ec96ea7cfc3be9ea4b476d237e98', // USDT0.s
 ])
 
+// Tokens whose issuer moved (nearly) the whole supply into its own OFT escrow. There is no circulating
+// float or market behind them, so counting the escrow balance books the token's full FDV as TVL (#22402).
+const BLACKLISTED_TOKENS = {
+  polygon: [
+    '0x7abe9edf5c544a04da83e9110cf46dbc4759170c', // WPAY, 99.7% of supply in escrow 0xf168376569850ab69501e8b13b42f261917a02c3
+    '0x7b12598e3616261df1c05ec28de0d2fb10c1f206', // COCA, 99.6% of supply in escrow 0x283fba7a6e3a2fcf3a887f22ff6bdf202d446f5f
+  ],
+}
+
 function getEscrows(meta, chain) {
   const tokens = meta[CHAIN_MAP[chain] || chain]?.tokens || {}
   const escrows = []
@@ -94,7 +103,7 @@ async function tvl(api) {
     tokensAndOwners.push([underlying, proxy])
   }
 
-  await sumTokens2({ api, tokensAndOwners })
+  await sumTokens2({ api, tokensAndOwners, blacklistedTokens: BLACKLISTED_TOKENS[api.chain] })
 }
 
 async function tronTvl(api) {
