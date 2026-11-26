@@ -6,6 +6,7 @@ module.exports = aaveV4Export({
     "0x06002e9c4412CB7814a791eA3666D905871E536A", // Plus Hub
     "0x943827DCA022D0F354a8a8c332dA1e5Eb9f9F931", // Prime Hub
     "0x62d63197660c080236193CA60b70E49A08E90368", // Global Dollar Hub
+    "0xD138FcB0E8C52fDbB2Ac4573FA4d8925cf11e9c2", // Sentora Hub
   ],
   base: [
     "0xa4d5947Eb727A052bae69C593FfC84247EC9864E", // Equities Hub
