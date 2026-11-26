@@ -1,0 +1,202 @@
+{
+  "manager": "0x6c7e7176e594ed05b506930bd2e06370e8f5cb70",
+  "oracle": "0xa631b42fda4adeb4d91e43bc421aebd807c900dd",
+  "excludedTokens": [
+    "0x136def507a47d5ebd3e86bb16d8e9ad72b4bf2cd",
+    "0x769e9bf9de45c74632d2a83ce2419c2e3b0a6ab0"
+  ],
+  "vaults": [
+    {
+      "symbol": "JBTC",
+      "long": "0xfe7fe5d5de9a8b0bcf39d8676d0c92065a3ca20f",
+      "short": "0x7c7900e40652a9c2225cf6d1e96c38606407e5b0"
+    },
+    {
+      "symbol": "JETH",
+      "long": "0x1c1f3e586895646168594da2690ab9b57da3b11a",
+      "short": "0x048527d5bd1f9c55e3604e528663a8973d1ab7ed"
+    },
+    {
+      "symbol": "SKHY",
+      "long": "0xb9810a5443669c9719f6253a4ee8b0ea90442326",
+      "short": "0x8336f758a1622a8307529d82267839a2b575f09b"
+    },
+    {
+      "symbol": "CBBTC",
+      "long": "0xa6c517881ea3adc89c88b1d8db60236e92d930fe",
+      "short": "0xfa41a8701e68e945eaf0bbb2cf996253199e8cf5"
+    },
+    {
+      "symbol": "JVBTC",
+      "long": "0x2a427e5bdc1b1a65a4c4c218d16f57e981db1d55",
+      "short": "0x247d6775ffffcbf85d0653267785bcd791e81a96"
+    },
+    {
+      "symbol": "XAU",
+      "long": "0xac2893b48b572ef8210043241b9a249f45a1a319",
+      "short": "0x668474ebe6dc75c006f8e7b08e9b17382b29448e"
+    },
+    {
+      "symbol": "NVDA",
+      "long": "0xe34a99bc8f630f677e93e88cb8921aee66bf2583",
+      "short": "0xeb7d9752de3195bb95f4204da64386cd1bb42432"
+    },
+    {
+      "symbol": "CL",
+      "long": "0x323f228ad679f99ec644c7685193b38672d00042",
+      "short": "0x68588deb1a71c8975ff65d26a41dc56c577291ff"
+    },
+    {
+      "symbol": "TSLA",
+      "long": "0x41628a279bb49eaafa23f7def0089e2efac42041",
+      "short": "0xf4e28ff6e35ffb6cba803a18f46092170158787b"
+    },
+    {
+      "symbol": "MU",
+      "long": "0xd31358e9ba67285ca843f22ca70d03f71d463e29",
+      "short": "0x223b0c24bf3f7ec52d6f7d8aded97fe68a5f6d09"
+    },
+    {
+      "symbol": "TQQQ",
+      "long": "0x2da20174981d210ad7113b4fe101b2aca0c1d3cd",
+      "short": "0x9f04e9ce194d636bb19afcb6001f6c0279701b78"
+    },
+    {
+      "symbol": "CRCL",
+      "long": "0x7a6c6ab349940a3f11359aad72e44a0ddfe457b2",
+      "short": "0x3ace558675dc916e120d0345f779b2f9754a70dd"
+    },
+    {
+      "symbol": "ANT",
+      "long": "0x191c9146ae8fc761ce5c5706f0c915ea03893025",
+      "short": "0x3066cd25b9877e1baf4df7d9b1c402b2e6bc00b6"
+    }
+  ],
+  "tokens": {
+    "0xcb9d5ae34cc0476bd8cb22aa9c21545be4e38bf2": {
+      "symbol": "JBTC",
+      "decimals": 8,
+      "feedId": "0xf216ffe3421f37a52d14650d1ff3fa1d0200c7d7509cf4096a26bcf88c2cc230"
+    },
+    "0x567717052247c5fa302fb2e8df681a07d63e9faf": {
+      "symbol": "JUSDC",
+      "decimals": 6,
+      "usdPeg": true
+    },
+    "0x821df7b83c9fcba013b37490cfc4b5a0bde36220": {
+      "symbol": "CBBTC",
+      "decimals": 8,
+      "feedId": "0xf216ffe3421f37a52d14650d1ff3fa1d0200c7d7509cf4096a26bcf88c2cc230"
+    },
+    "0x23559fcf18896ed3280c4d7106ca74ffda14bd79": {
+      "symbol": "USDC",
+      "decimals": 6,
+      "usdPeg": true
+    },
+    "0x54c90ec322561fdc7b876d5a29bafe1e1824e267": {
+      "symbol": "AAPL",
+      "decimals": 8,
+      "feedId": "0xcac9b8be6789aab0f8df254efae6267c22762475ae2ea3b2c3fd5b03f28258de"
+    },
+    "0xa2cd1c82d729b2f1409af20bf07fbf1701b2c9e8": {
+      "symbol": "NVDA",
+      "decimals": 8,
+      "feedId": "0x8d57fd16d13e1689d23105bf3e68c1eb40d3d1669a288ef273ef33592c501a1a"
+    },
+    "0x740fb63badf535de0e57d843e4271f53f9db2631": {
+      "symbol": "TSLA",
+      "decimals": 8,
+      "feedId": "0x7b230e38b116768666edf535d619103eb6455741bfbe1aa38e4d68d2a3dd1759"
+    },
+    "0x6b9b2fb11f70c90328b1147bf9a932c45149bf8e": {
+      "symbol": "META",
+      "decimals": 8,
+      "feedId": "0xfcc8a769e770aa467674d87106f4a7702e5f484559d5c912e92ff10f7b436345"
+    },
+    "0x51c13ae7d25a958077e5608fe473ad2412d9fbf0": {
+      "symbol": "PLTR",
+      "decimals": 8,
+      "feedId": "0x40ea145ba7a6bb9b36ba031b32c8a7cd97307510f78e450cb9836246ef92a727"
+    },
+    "0x4e53b23d72832de8871594cea2234669be219f62": {
+      "symbol": "COIN",
+      "decimals": 8,
+      "feedId": "0x288c230be3ec4d2efc8bc493be67983232029d620f299d4d560a2b5baf9fbf91"
+    },
+    "0x24d2b27aaee108dd6ab5ded9c54b191be5ad27f5": {
+      "symbol": "AMD",
+      "decimals": 8,
+      "feedId": "0x2e6ef198b02362b21d840b3c8fa1fa0cabdf92d65fb85d37f0b59917e7b7b3dc"
+    },
+    "0x4db9db628efa04d3152c39ff34edbd382f1b6a0f": {
+      "symbol": "AVGO",
+      "decimals": 8,
+      "feedId": "0xe2d625ca7c558ee1f708f61e9d66674d4f6dcc506735ffc76e8be67f818adf5d"
+    },
+    "0xac180047b469e485781ba7961bcf497172165bc7": {
+      "symbol": "MU",
+      "decimals": 8,
+      "feedId": "0xc944265f2c12c4a86f7875f0073412c8ee737d625bb919ea41cf2da18db7d45f"
+    },
+    "0xdfc75f01c1df1a38ee0443ccee1b5fd54a7bd863": {
+      "symbol": "SPCX",
+      "decimals": 8,
+      "feedId": "0xa59c4db2bd039280953ae6652e36251f7ba70b80e42e8c9b653845c5e8ca7163"
+    },
+    "0x579c4057fdf8c4e98df8b199dd053fdac1bec339": {
+      "symbol": "SKHYNIX",
+      "decimals": 8,
+      "feedId": "0xa9d67bd9e957d73d23d74425db5427de8b62250c6bc5b804b29166dd152c0455"
+    },
+    "0xbca5e3e6a42db17fe968df3b65c999792c6740e9": {
+      "symbol": "SKHY",
+      "decimals": 8,
+      "feedId": "0x39d397af86470c279fe19450191616fab3d8f5e24cdb0841f9cf7d79e608142f"
+    },
+    "0x364e60c9b9aff5b5d3a7e0de61ba64f1ea30f84a": {
+      "symbol": "JETH",
+      "decimals": 8,
+      "feedId": "0x43d1e326e13e8b5d4007cddc60bd8351ac294b639bbf209cf3195486884b5f85"
+    },
+    "0xa68d4490a1d607483105f84eb7d9b389b0d5e972": {
+      "symbol": "QQQ",
+      "decimals": 8,
+      "feedId": "0x89fa2a08a2894bbece4f70af6644dac152f16c390c6e7ad070996aee01810ada"
+    },
+    "0xef0e26e1d136abaeba01330d907ab525ada62d13": {
+      "symbol": "XAU",
+      "decimals": 8,
+      "feedId": "0xcb0b7b337da69839f5e1f0faa073b325806acd9ad04c462b57ff9182d94b0405"
+    },
+    "0x74713e32dda33488836b9622dde3d53e526d55d1": {
+      "symbol": "CL",
+      "decimals": 8,
+      "feedId": "0xdd4c5ccf89ee27d12d8b2a375366620f87312c005c61b4e4651c04eac9735bb5"
+    },
+    "0xb460702689c5f8a5dedbe2871591c7d57bb35caa": {
+      "symbol": "JVBTC",
+      "decimals": 8,
+      "feedId": "0xf216ffe3421f37a52d14650d1ff3fa1d0200c7d7509cf4096a26bcf88c2cc230"
+    },
+    "0x9f0d236f71a093737070c4c0ebf05f5809ed14b8": {
+      "symbol": "JVUSD",
+      "decimals": 6,
+      "usdPeg": true
+    },
+    "0xa3309e56fa68954cf8da23d4b01ffcb17e133b2a": {
+      "symbol": "TQQQ",
+      "decimals": 8,
+      "feedId": "0x638de8132e4f247f4ad6766fd7d21c2d396d73446a7169b1b2a4ad3e52fc3432"
+    },
+    "0x663598b38ec076373bb68192f513187c7e350e7f": {
+      "symbol": "CRCL",
+      "decimals": 8,
+      "feedId": "0x4ffec17ebf4a5ca62c9c67522873db499274dec795c0208fe71b07e480017b32"
+    },
+    "0x012eb7b9056f8a816c52b04f2831f31e4d3c62fb": {
+      "symbol": "ANT",
+      "decimals": 8,
+      "feedId": "0xd1079a1c5319be1135bb413a682cbef46653dff138b4447d906996ee957b73a3"
+    }
+  }
+}

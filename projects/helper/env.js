@@ -9,6 +9,9 @@ const BOOL_KEYS = [
 const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 
 const DEFAULTS = {
+  JASPERVAULT_RPC: 'https://rpc-2.jaspervault.io',
+  JASPERVAULT_RPC_CHAIN_ID: '55531',
+  JASPERVAULT_RPC_MULTICALL_V3: '0xca11bde05977b3631167028862be2a173976ca11',
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   SEI_BLOCK_LOW: "150023881",
   STARKNET_RPC: 'https://api.zan.top/public/starknet-mainnet',
