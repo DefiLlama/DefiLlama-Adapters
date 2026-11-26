@@ -28,13 +28,14 @@ function portalFactory({ factory, fromBlock }) {
 }
 
 async function tvl(api) {
-  const portals = await Promise.all(PORTAL_SOURCES.map((source) => source(api)))
-  return api.sumTokens({ tokensAndOwners: portals.flat() })
+  const tokensAndOwners = []
+  for (const source of PORTAL_SOURCES) tokensAndOwners.push(...(await source(api)))
+  return api.sumTokens({ tokensAndOwners })
 }
 
 module.exports = {
   start: '2026-09-25',
   methodology:
-    "TVL is the tokens held by zk.money's Ethereum portals, which back private balances on Aztec.",
+    "TVL is the tokens (DAI, sUSDS, steakUSDC) held by zk.money's Ethereum portals, which back private balances on Aztec.",
   ethereum: { tvl },
 }
