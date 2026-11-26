@@ -7,7 +7,21 @@ const CURVE = '0x918d32f8a0b349584e96113ec425708374161d4798f8c28d63362602831b33e
 const QCURVE = '0xfe9f27187eff1c0d1bb236166df360d0c12be4c0bd99d40ce1d3a51771cbe428::qcurve::QCurve' // curves priced in USDC, wBTC, ETH, XAUM
 const LEND = '0xed3220b79cb14da863fe5cb746a3a69a47c1be4080ddc60b63c1defdff98f8c3' // lending vaults and loans
 
-const typeArgs = (type) => type.slice(type.indexOf('<') + 1, type.lastIndexOf('>')).split(',').map(i => i.trim())
+// Type arguments of `Name<A, B>`, split at top-level commas only: an argument may be generic itself (`LP<X, Y>`).
+function typeArgs(type) {
+  const inner = type.slice(type.indexOf('<') + 1, type.lastIndexOf('>'))
+  const args = []
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < inner.length; i++) {
+    const c = inner[i]
+    if (c === '<') depth++
+    else if (c === '>') depth--
+    else if (c === ',' && depth === 0) { args.push(inner.slice(start, i).trim()); start = i + 1 }
+  }
+  args.push(inner.slice(start).trim())
+  return args
+}
 
 // Quote coins raised on curves that have not graduated yet. A graduated curve's liquidity sits in a Cetus pool with its
 // LP position burned, so it is counted by Cetus, not here; the launched tokens themselves are not counted.
