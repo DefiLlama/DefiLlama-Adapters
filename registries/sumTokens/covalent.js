@@ -55,7 +55,10 @@ module.exports = {
         "0x6A23F4940BD5BA117Da261f98aae51A8BFfa210A"  // Livepeer LPT escrow (L1LPTGateway.l1LPTEscrow())
       ],
       "fetchCoValentTokens": true,
-      "permitFailure": true
+      "permitFailure": true,
+      "blacklistedTokens": [
+        "0x0ff5a8451a839f5f0bb3562689d9a44089738d11" // rDPX: only L1 price is a dead uni v2 pair last traded 2023-11, ~50x market
+      ]
     },
   },
   "arbitrumNova": {
