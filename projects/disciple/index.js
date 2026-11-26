@@ -11,11 +11,6 @@ const MIGRATION = '0x0fCD7FE98Eed9234A1d1c2aAb6AEec210809747b'
 const TICK_SPACING = 60 // Migration.TICK_SPACING, every DISCIPLE pool uses it
 const FROM_BLOCK = 118816228 // mainnet deploy block (2026-11-20)
 
-// Pair coins not yet priced by their Robinhood Chain address: priced through their CoinGecko id instead.
-const COINGECKO_IDS = {
-  '0x168661c52e5922288dfb2b3f323b6cf90eb21e18': 'strategy-coin', // STRATEGY
-}
-
 const LAUNCHED = 'event Launched(address indexed token, address indexed curve, address indexed creator, address quote, string name, string ticker, uint256 creatorTaxBps)'
 const MIGRATED = 'event Migrated(address indexed token, address indexed quote, bytes32 poolId, uint256 tokenAmount, uint256 quoteAmount, uint160 sqrtPriceX96)'
 
@@ -39,16 +34,6 @@ async function tvl(api) {
   })
   await addUniV4PoolReserves({ api, pools, stateView: chainConfig.robinhood.stateView })
 
-  // 4. Move pair coins without an on-chain price to their CoinGecko id.
-  const balances = api.getBalances()
-  for (const [token, cgId] of Object.entries(COINGECKO_IDS)) {
-    const key = Object.keys(balances).find((k) => k.toLowerCase() === `robinhood:${token}`)
-    const raw = key && balances[key]
-    if (!raw) continue
-    const decimals = await api.call({ abi: 'erc20:decimals', target: token })
-    api.removeTokenBalance(token)
-    api.addCGToken(cgId, Number(raw) / 10 ** Number(decimals))
-  }
   return api.getBalances()
 }
 
