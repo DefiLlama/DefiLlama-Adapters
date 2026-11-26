@@ -327,11 +327,6 @@ module.exports = {
     "start": "2026-04-10",
     "ethereum": { "owner": "0x57C3571f10767E49C9d7b60feb6c67804783B7aE", "tokens": ["0x27f6c8289550fCE67f6B50BeD1F519966aFE5287"] },
   },
-  "zk-money": {
-    "start": "2026-09-25",
-    "methodology": "TVL is the DAI held in zk.money's Ethereum portal, which backs private DAI balances on Aztec. USDC and USDT deposits are swapped to DAI before entering the portal.",
-    "ethereum": { "owner": "0xdf410ad448A0f7165181FBdB32f8896f4a0d9449", "tokens": [ADDRESSES.ethereum.DAI] },
-  },
   "aeva-bridge": {
     "methodology": "TVL counts the USDG locked in the Aeva bridge's Hyperlane collateral router on Robinhood Chain, which backs aeUSD on Aeva Mainnet. $AEVA locked in the AEVA router is Aeva's own token and is counted under staking.",
     "start": "2026-09-28",
