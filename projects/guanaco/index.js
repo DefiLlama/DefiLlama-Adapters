@@ -19,6 +19,8 @@ const ROSTRUM_ENDPOINTS = [
 // Guanaco CashToken market is included (GUA, PUSD, MUSD, and future tokens).
 const GUANACO_PREFIX = '6a064755414e4143'
 const GUANACO_GENESIS_BLOCK = 869145
+// GUA, the protocol token, is counted under staking
+const GUA_KEY = 'bitcoincash:742a7585d0d5cb35b2a45d26425e23b059b72e82d7036dd97e85da5ab57a8d6c'
 const PAGE_SIZE = 1000
 const REQUEST_TIMEOUT_MS = 15000
 
@@ -386,7 +388,7 @@ async function fetchPoolUtxos(addresses) {
   throw lastError || new Error('Unable to query Guanaco pool UTXOs')
 }
 
-async function tvl() {
+async function poolBalances() {
   const genesisTransactions = await discoverGenesisTransactions()
   // Do not filter by token category here: this is the TVL of the whole DEX,
   // not only the GUA/BCH market.
@@ -418,10 +420,20 @@ async function tvl() {
   return balances
 }
 
+async function tvl() {
+  const balances = await poolBalances()
+  delete balances[GUA_KEY]
+  return balances
+}
+
+async function staking() {
+  const balances = await poolBalances()
+  return balances[GUA_KEY] ? { [GUA_KEY]: balances[GUA_KEY] } : {}
+}
+
 module.exports = {
   methodology:
-    'Discovers Guanaco pool genesis transactions from the public GUANAC locking-bytecode prefix, extracts P2SH32 pool contracts, queries their live CashToken UTXOs through public Rostrum endpoints, and returns the actual BCH and fungible CashToken reserves by category.',
-  timetravel: false,
-  start: '2024-11-01',
-  bitcoincash: { tvl },
+    'TVL counts the BCH and fungible CashToken reserves held by live Guanaco v1 pool UTXOs. Pools are found from GUANAC-marked pool genesis transactions and their balances are read from Electrum (Fulcrum/Rostrum) servers. GUA held in the pools is counted under staking.',
+  start: '2025-09-08',
+  bitcoincash: { tvl, staking },
 }
