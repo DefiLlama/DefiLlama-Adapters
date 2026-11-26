@@ -18,12 +18,15 @@ async function curves(api) {
   qCurves.forEach(i => api.add(typeArgs(i.type)[1], i.fields.quote_reserve))
 }
 
-// Lending: cash idle in the vaults, plus the collateral locked in open loans. What is lent out is reported as borrowed.
+// Lending: cash idle in the vaults, plus the collateral locked in open loans: peer-to-peer loans (`loan::Loan<C, L>`) and
+// the vaults' own loans and shorts (`safe::SafeLoan<C, L>`). What is lent out is reported as borrowed.
 async function lending(api) {
   const vaults = await sui.getObjectsByType(`${LEND}::vault::Vault`)
   vaults.forEach(i => api.add(typeArgs(i.type)[0], i.fields.cash))
   const loans = await sui.getObjectsByType(`${LEND}::loan::Loan`)
   loans.forEach(i => api.add(typeArgs(i.type)[0], i.fields.collateral))
+  const safeLoans = await sui.getObjectsByType(`${LEND}::safe::SafeLoan`)
+  safeLoans.forEach(i => api.add(typeArgs(i.type)[0], i.fields.collateral))
 }
 
 async function tvl(api) {
@@ -38,6 +41,6 @@ async function borrowed(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL counts the quote coins (SUI, USDC and others) held by bonding curves that have not graduated yet, the cash in the lending vaults and the collateral locked in open loans. Graduated tokens trade in Cetus pools whose LP is burned, counted under Cetus. Borrowed is the principal lent out by the lending vaults.',
+  methodology: 'TVL counts the quote coins (SUI, USDC and others) held by bonding curves that have not graduated yet, the cash in the lending vaults and the collateral locked in open loans (peer-to-peer and vault loans). Graduated tokens trade in Cetus pools whose LP is burned, counted under Cetus. Borrowed is the principal lent out by the lending vaults.',
   sui: { tvl, borrowed },
 }
