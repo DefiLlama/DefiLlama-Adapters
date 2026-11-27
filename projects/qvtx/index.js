@@ -11,14 +11,14 @@ const PQUSD           = '0x8d58dEbF89740Da1416d5f1904E4286096174B5A'
 const WQVTX           = '0xb171FD8d04Ef43C1Fd3FE14cba5a09A7FBe3d5B4'
 
 async function tvl(api) {
-  const tokensAndOwners = [
-    [PQUSD,  WQVTX_QUSD_POOL],
-    [WQVTX, WQVTX_QUSD_POOL],
-  ]
-  return sumTokens2({ api, tokensAndOwners })
+  return sumTokens2({ api, tokensAndOwners: [[PQUSD, WQVTX_QUSD_POOL]] })
+}
+
+async function pool2(api) {
+  return sumTokens2({ api, tokensAndOwners: [[WQVTX, WQVTX_QUSD_POOL]] })
 }
 
 module.exports = {
-  methodology: 'Sum of tokens locked in the QVTX wQVTX/pQUSD liquidity pool on Polygon. pQUSD is a fiat-backed USD stablecoin; wQVTX is the wrapped governance token.',
-  polygon: { tvl },
+  methodology: 'TVL counts pQUSD (fiat-backed USD stablecoin) locked in the QVTX wQVTX/pQUSD pool on Polygon. pool2 tracks wQVTX (governance token) in the same pool.',
+  polygon: { tvl, pool2 },
 }
