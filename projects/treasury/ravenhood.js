@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { sumTokensExport, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
+const ethers = require('ethers')
+const { sumTokensExport, sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../helper/unwrapLPs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
 // RavenhoodVault — permanently locked, protocol-owned RVH/WETH Uniswap V3 position
 const VAULT = '0x5e1485137E025bf7774F52DE4E33fa6E498f6ede'
@@ -40,6 +42,39 @@ const ALANDALE_V2_RVH_WETH_GAUGE = '0x97C920CD393300Fb886F7E8036107F309808f050'
 const VELUTE_NFT = '0xc1a79e3A7b04c3f21C6409a78Ab58A8C822bE7dC'
 
 const VELUTE_STATE_ABI = 'function getNftState(uint256 tokenId) view returns (tuple(tuple(int128 amount,uint256 end,bool isPermanentLocked) locked,bool isVoted,bool isAttached,uint256 lastTranferBlock,uint256 pointEpoch))'
+
+// Uniswap V4 positions (most of them in pools with Ravenhood's own hooks).
+// The V4 PositionManager has no tokenOfOwnerByIndex and there is no V4
+// subgraph for Robinhood Chain, so discover the DAO's position NFTs from
+// Transfer logs into the DAO wallet and keep the ones it still owns.
+const V4_POSITION_MANAGER = '0x58daec3116aae6d93017baaea7749052e8a04fa7'
+const V4_FROM_BLOCK = 4813836 // first V4 position NFT received by the DAO wallet
+const V4_TRANSFER_ABI = 'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
+
+async function getV4PositionIds(api) {
+  const transfers = await getLogs2({
+    api, target: V4_POSITION_MANAGER, eventAbi: V4_TRANSFER_ABI, fromBlock: V4_FROM_BLOCK, extraKey: 'ravenhood-dao-v4-in',
+    topics: [ethers.id('Transfer(address,address,uint256)'), null, ethers.zeroPadValue(DAO_WALLET.toLowerCase(), 32)],
+  })
+  const ids = [...new Set(transfers.map((i) => i.tokenId.toString()))]
+  if (!ids.length) return []
+  const owners = await api.multiCall({ abi: 'function ownerOf(uint256) view returns (address)', target: V4_POSITION_MANAGER, calls: ids, permitFailure: true })
+  return ids.filter((_, i) => owners[i] && owners[i].toLowerCase() === DAO_WALLET.toLowerCase())
+}
+
+async function v4Tvl(api) {
+  const positionIds = await getV4PositionIds(api)
+  if (positionIds.length)
+    await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds, nftAddress: V4_POSITION_MANAGER, blacklistedTokens: [RVH_TOKEN] } })
+  return api.getBalances()
+}
+
+async function v4OwnTokens(api) {
+  const positionIds = await getV4PositionIds(api)
+  if (positionIds.length)
+    await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds, nftAddress: V4_POSITION_MANAGER, whitelistedTokens: [RVH_TOKEN] } })
+  return api.getBalances()
+}
 
 const lower = (v) => v.toLowerCase()
 
@@ -176,12 +211,14 @@ module.exports = {
       (api) => alandaleCl({ api, blacklistedTokens: [RVH_TOKEN] }),
       (api) => alandaleV2({ api, blacklistedTokens: [RVH_TOKEN] }),
       veLuteTvl,
+      v4Tvl,
     ]),
     ownTokens: sdk.util.sumChainTvls([
       univ3OwnTokens,
       updexOwnTokens,
       (api) => alandaleCl({ api, whitelistedTokens: [RVH_TOKEN] }),
       (api) => alandaleV2({ api, whitelistedTokens: [RVH_TOKEN] }),
+      v4OwnTokens,
     ]),
   },
 }
