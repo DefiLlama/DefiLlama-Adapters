@@ -1,10 +1,8 @@
-const sdk = require('@defillama/sdk')
-
 const PQUSD = '0x8d58dEbF89740Da1416d5f1904E4286096174B5A'
 
 async function tvl(api) {
   const supply = await api.call({ abi: 'erc20:totalSupply', target: PQUSD })
-  api.addUSDValue(supply / 1e18)
+  api.add(PQUSD, supply)
 }
 
 module.exports = {
