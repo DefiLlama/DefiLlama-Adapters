@@ -699,6 +699,7 @@ const configs = {
           erc4626: [
             // Lagoon
             "0xdae854d0896ad2fee335689a3f7b4a95fd1a3e46", // Lagoon - Gami USDC
+            "0x9ff1883ec71d6f6990cb50575cce8ee83f9b8fed", // Lagoon - Gami USDC High Yield (ghUSDC)
             "0x33e1339567c183fbadcb43f72d11c47229d468ab", // Lagoon - Gami Stake DAO USDC
             "0x57e6824a8b15b709cefb4ccef644ba1349057e77", // Lagoon - xBTCY (cbBTC)
             "0x2a676c2744421b4fae65ce86b47adacb620047d4", // Lagoon - Gami hemiBTC
