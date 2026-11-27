@@ -166,6 +166,14 @@ const configs = {
       '0x440e339a46eaa3bE8d723c2cBED2A30af74536D5', // SPRING, the parent protocol's token
     ] },
   },
+  'frontier-fi': {
+    _options: { helperType: 'v3' },
+    methodology: 'TVL is the total value of tokens held in the Frontier Finance Balancer V3 Vault across all registered pools.',
+    start: '2026-11-12', // Base vault deployed 2026-11-12
+    ethereum: { vault: '0xFF00009C1A83Ec25434522ef355b99e9a70000FF', fromBlock: 26444019 },
+    base: { vault: '0xFF00009C1A83Ec25434522ef355b99e9a70000FF', fromBlock: 56621235 },
+    monad: { vault: '0xFF00009C1A83Ec25434522ef355b99e9a70000FF', fromBlock: 124803594 },
+  },
 
   // ===== Balancer V1 (v1Tvl) =====
   'valueliquid': {
