@@ -26,7 +26,7 @@ module.exports = {
       const data = await getData();
 
       // --- RWA (Nova), Rental and Lend pools hold plain USDC: one indexer query covers every pool ---
-      api.addBalances(await sumTokens({ api, owners: [...data.NOVA_POOLS, ...data.RENTAL_POOLS, ...(data.LEND_POOLS ?? [])], tokens: [USDC_FA] }))
+      api.addBalances(await sumTokens({ api, owners: [...data.NOVA_POOLS, ...data.RENTAL_POOLS, ...data.LEND_POOLS], tokens: [USDC_FA] }))
 
       // ---- RWA assets current values in USDC ---
       for (const pool of data.RWA_POOLS) {
@@ -78,7 +78,7 @@ module.exports = {
     borrowed: async (api) => {
       const data = await getData();
       // get_pool_utilization returns [pool value, borrowed, cash] in raw USDC
-      for (const lendPool of data.LEND_POOLS ?? []) {
+      for (const lendPool of data.LEND_POOLS) {
         const [, borrowed] = await function_view({
           functionStr: `${lendPool}::propbase_lend::get_pool_utilization`,
           chain: "aptos",
