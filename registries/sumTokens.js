@@ -12486,9 +12486,15 @@ const configs = {
     },
   },
   "curveball": {
-    methodology: 'Counts the WETH held by the Curveball launchpad, which backs its active bonding curves. Liquidity that has graduated into Icarus pools is not counted.',
+    methodology: 'Counts the WETH held by the Curveball launchpads (the current launchpad and the retired original), which backs their active bonding curves. Liquidity that has graduated into Icarus pools is not counted.',
     start: '2026-11-09',
-    rise: { owner: '0xCD07f89C29E1FAE77EC1a342b5D47D9008E9a72d', tokens: ['0x4200000000000000000000000000000000000006'] },
+    rise: {
+      owners: [
+        '0xCD07f89C29E1FAE77EC1a342b5D47D9008E9a72d', // original launchpad (retired 2026-11-25)
+        '0xC2C337301303d8bE4803042425aA5A325d30e6d7', // current launchpad (oracle-v3)
+      ],
+      tokens: ['0x4200000000000000000000000000000000000006'],
+    },
   },
   "curves": {
     "methodology": "We count the ETH locked in the Curves trading contracts (0xEad4138380B508949Ccd48B97AD930bd89aAb719, 0x88c7484d19E49B09233484824698a5214d81f866)",
