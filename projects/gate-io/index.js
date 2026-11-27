@@ -652,8 +652,7 @@ const config = {
   },
   "canton": {
     "owners": [
-      "Gate::1220660fcee9042e5d36a50eccee8b6ff3e79cc3612ad41b7ec056c5c6cddacf864b",
-      "Gate::1220a3b8e299e47c98d7561ccfc9481810aabfaebb18f8032fa4c731717d06ce8e81"
+      "Gate::1220660fcee9042e5d36a50eccee8b6ff3e79cc3612ad41b7ec056c5c6cddacf864b"
     ]
   },
   "bittensor": {
