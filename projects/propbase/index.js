@@ -11,19 +11,22 @@ const getData = () => getConfig('propbase/config', `https://contractaddress.prop
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: `TVL includes USDC tokens deposited in Nova pools (RWA) and Rental pools.
+  methodology: `TVL includes USDC tokens deposited in Nova pools (RWA), Rental pools and the Lend pool.
   RWA assets are paired with USDC in on - chain liquidity pools built on Trader Joe’s CLMM contracts,
   which allows users to buy and sell property tokens directly against USDC.
   Redemption is AMM- based and depends on pool liquidity and active price bins,
-  not a guaranteed 1: 1 stablecoin redemption.PROPS tokens are reported separately under staking.`,
+  not a guaranteed 1: 1 stablecoin redemption.PROPS tokens are reported separately under staking.
+  Lend: TVL counts the USDC held by the Lend contract (lender deposits not yet lent out, plus the interest reserve).
+  USDC lent to borrowers is reported under borrowed. Property tokens pledged as collateral stay in the
+  borrower's wallet and are already counted in the RWA value, so they are not counted again.`,
 
   aptos: {
     tvl: async (api) => {
       const chain = "aptos";
       const data = await getData();
 
-      // --- RWA (Nova) and Rental pools hold plain USDC: one indexer query covers every pool ---
-      api.addBalances(await sumTokens({ api, owners: [...data.NOVA_POOLS, ...data.RENTAL_POOLS], tokens: [USDC_FA] }))
+      // --- RWA (Nova), Rental and Lend pools hold plain USDC: one indexer query covers every pool ---
+      api.addBalances(await sumTokens({ api, owners: [...data.NOVA_POOLS, ...data.RENTAL_POOLS, ...(data.LEND_POOLS ?? [])], tokens: [USDC_FA] }))
 
       // ---- RWA assets current values in USDC ---
       for (const pool of data.RWA_POOLS) {
@@ -70,6 +73,18 @@ module.exports = {
       // PROPS is a coin-paired FA, which the indexer reports under the coin type
       const balances = await sumTokens({ api, owners: data.STAKING_POOLS, tokens: [PROPS_COIN] })
       api.add(PROPS_FA, balances[`aptos:${PROPS_COIN}`] ?? 0)
+    },
+
+    borrowed: async (api) => {
+      const data = await getData();
+      // get_pool_utilization returns [pool value, borrowed, cash] in raw USDC
+      for (const lendPool of data.LEND_POOLS ?? []) {
+        const [, borrowed] = await function_view({
+          functionStr: `${lendPool}::propbase_lend::get_pool_utilization`,
+          chain: "aptos",
+        });
+        api.add(USDC_FA, borrowed);
+      }
     },
   },
 };
