@@ -19,8 +19,6 @@ const ROSTRUM_ENDPOINTS = [
 // Guanaco CashToken market is included (GUA, PUSD, MUSD, and future tokens).
 const GUANACO_PREFIX = '6a064755414e4143'
 const GUANACO_GENESIS_BLOCK = 869145
-// GUA, the protocol token, is counted under staking
-const GUA_KEY = 'bitcoincash:742a7585d0d5cb35b2a45d26425e23b059b72e82d7036dd97e85da5ab57a8d6c'
 const PAGE_SIZE = 1000
 const REQUEST_TIMEOUT_MS = 15000
 
@@ -388,7 +386,7 @@ async function fetchPoolUtxos(addresses) {
   throw lastError || new Error('Unable to query Guanaco pool UTXOs')
 }
 
-async function poolBalances() {
+async function tvl() {
   const genesisTransactions = await discoverGenesisTransactions()
   // Do not filter by token category here: this is the TVL of the whole DEX,
   // not only the GUA/BCH market.
@@ -407,33 +405,19 @@ async function poolBalances() {
   }
 
   let bchReserveSats = 0n
-  const tokenAmounts = new Map()
   for (const utxo of livePoolUtxos.values()) {
-    const { category, amount } = utxo.token_data
-    if (!/^[a-f0-9]{64}$/.test(category)) throw new Error('Invalid CashToken category')
-    const key = `bitcoincash:${category}`
-    tokenAmounts.set(key, (tokenAmounts.get(key) || 0n) + BigInt(amount))
+    if (!/^[a-f0-9]{64}$/.test(utxo.token_data.category)) throw new Error('Invalid CashToken category')
     bchReserveSats += BigInt(utxo.value)
   }
-  const balances = { 'bitcoin-cash': Number(bchReserveSats) / 1e8 }
-  for (const [key, amount] of tokenAmounts) balances[key] = amount.toString()
-  return balances
-}
 
-async function tvl() {
-  const balances = await poolBalances()
-  delete balances[GUA_KEY]
-  return balances
-}
-
-async function staking() {
-  const balances = await poolBalances()
-  return balances[GUA_KEY] ? { [GUA_KEY]: balances[GUA_KEY] } : {}
+  // At each 50/50 AMM pool's reserve-implied price, both sides have equal value.
+  return { 'bitcoin-cash': Number(bchReserveSats * 2n) / 1e8 }
 }
 
 module.exports = {
   methodology:
-    'TVL counts the BCH and fungible CashToken reserves held by live Guanaco v1 pool UTXOs. Pools are found from GUANAC-marked pool genesis transactions and their balances are read from Electrum (Fulcrum/Rostrum) servers. GUA held in the pools is counted under staking.',
+    'TVL estimates both sides of live Guanaco v1 BCH/CashToken AMM pools, including GUA/BCH. Pools are discovered from GUANAC-marked genesis transactions and reserves are read from Electrum. The BCH side is doubled to value each 50/50 pool at its implied CashToken price, using the same approach as Cauldron.',
   start: '2025-09-08',
-  bitcoincash: { tvl, staking },
+  misrepresentedTokens: true,
+  bitcoincash: { tvl },
 }
