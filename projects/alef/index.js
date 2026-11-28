@@ -9,6 +9,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL equals the circulating supply of ALEF fund tokens multiplied by the Raydium CLMM market price. ALEF is a leveraged growth fund on Solana; each token represents pro-rata ownership of the fund\'s multi-chain portfolio.',
+  methodology: 'TVL equals the circulating supply of ALEF fund tokens multiplied by the Raydium CLMM market price. ALEF is an actively managed fund on Solana with adjustable market exposure; the fund runs internal leverage, and holders can pair their position with USDC to tune their net exposure. Each token represents pro-rata ownership of the fund\'s multi-chain portfolio.',
   solana: { tvl },
 }
