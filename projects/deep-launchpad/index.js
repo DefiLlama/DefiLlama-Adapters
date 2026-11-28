@@ -8,6 +8,8 @@ const { getConnection } = require('../helper/solana')
 // At graduation the quote moves to a DeepSwap pool (counted by the deepswap adapter) and the
 // program sets real_sol_reserves to 0, so a graduated curve adds nothing here.
 const DEEP_CURVE_PROGRAM = '7czURwVLkQpcF1HVhhZU5GGzvPA8YniogZY1BhZHCDtA'
+// The protocol's own token: reserves of DEEP-quoted curves are reported as staking, not tvl.
+const DEEP_MINT = 'DpyVL7crxmDAgKuCZ6heGVkPzGAWyx7fkRDRrASadeep'
 
 // Anchor discriminator of the account: sha256("account:BondingCurve")[0..8]
 const BONDING_CURVE_DISCRIMINATOR = Buffer.from([23, 183, 248, 55, 96, 216, 172, 96])
@@ -24,7 +26,7 @@ const OFFSET_RENT_QUOTE_SPENT = 228
 const TOKEN_CURVE_SIZE = 236
 const SLICE_LENGTH = TOKEN_CURVE_SIZE - OFFSET_REAL_SOL_RESERVES
 
-async function tvl(api) {
+async function getReservesByQuote() {
   const connection = getConnection()
   // The slice is cut short to the account's own length, so a SOL curve returns 108 bytes.
   const curves = await connection.getProgramAccounts(new PublicKey(DEEP_CURVE_PROGRAM), {
@@ -47,12 +49,23 @@ async function tvl(api) {
     byQuote[quote] = (byQuote[quote] ?? 0n) + amount
   }
 
-  for (const [quote, amount] of Object.entries(byQuote)) api.add(quote, amount.toString())
+  return byQuote
+}
+
+async function tvl(api) {
+  const byQuote = await getReservesByQuote()
+  for (const [quote, amount] of Object.entries(byQuote))
+    if (quote !== DEEP_MINT) api.add(quote, amount.toString())
+}
+
+async function staking(api) {
+  const byQuote = await getReservesByQuote()
+  if (byQuote[DEEP_MINT]) api.add(DEEP_MINT, byQuote[DEEP_MINT].toString())
 }
 
 module.exports = {
   timetravel: false, // getProgramAccounts reads the current state only
   methodology:
-    'TVL is what buyers have paid into the bonding curves of tokens that have not graduated yet, in each curve\'s quote asset (SOL, or an approved token such as DEEP): the sum of real_sol_reserves over every BondingCurve account of the Deep Curve program, less the quote a token-paired curve has already spent on its graduation rent, grouped by quote asset. Not counted: the curve\'s virtual reserves (a pricing parameter, not assets), the launched tokens still held by a curve (they have no market outside their own curve), trading fees and creator or holder rewards that sit on a curve account until they are claimed, and graduated tokens, whose liquidity is in a DeepSwap pool.',
-  solana: { tvl },
+    'TVL is what buyers have paid into the bonding curves of tokens that have not graduated yet, in each curve\'s quote asset (SOL, or an approved token such as DEEP): the sum of real_sol_reserves over every BondingCurve account of the Deep Curve program, less the quote a token-paired curve has already spent on its graduation rent, grouped by quote asset. Reserves of curves quoted in DEEP, the protocol\'s own token, are reported under staking instead of TVL. Not counted: the curve\'s virtual reserves (a pricing parameter, not assets), the launched tokens still held by a curve (they have no market outside their own curve), trading fees and creator or holder rewards that sit on a curve account until they are claimed, and graduated tokens, whose liquidity is in a DeepSwap pool.',
+  solana: { tvl, staking },
 }
