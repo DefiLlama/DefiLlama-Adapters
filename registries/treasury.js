@@ -6837,6 +6837,62 @@ const configs = {
       tokens: [nullAddress, ADDRESSES.ink.WETH, ADDRESSES.ink.USDT0, ADDRESSES.ink.USDC, '0xe343167631d89B6Ffc58B88d6b7fB0228795491D'], // + USDG
     },
   },
+  'treasury/alef': {
+    // Reserve addresses published on alef.money. The EVM address is a Safe used on both chains.
+    ethereum: {
+      owners: ['0xfB6b384a64BA407Ee964DF70bf48A6Ef993B1Fd4'],
+      tokens: [
+        nullAddress,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.WBTC,
+        ADDRESSES.ethereum.WETH,
+        '0x45804880de22913dafe09f4980848ece6ecbaf78', // PAXG
+        '0x68749665ff8d2d112fa859aa293f07a622782f38', // XAUt
+        '0x6c3ea9036406852006290770bedfcaba0e23a0e8', // PYUSD
+        '0xa45cd7ac9865b9539166ebaf2abc362df4736580', // TQQQon
+        '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf', // cbBTC
+        // Aave V3 aTokens
+        '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
+        '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a', // aEthUSDT
+        '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // aEthWETH
+        '0x5Ee5bf7ae06D1Be5997A1A72006FE6C607eC6DE8', // aEthWBTC
+        '0x0C0d01AbF3e6aDfcA0989eBbA9d6e85dD58EaB1E', // aEthPYUSD
+      ],
+    },
+    bsc: {
+      owners: ['0xfB6b384a64BA407Ee964DF70bf48A6Ef993B1Fd4'],
+      tokens: [
+        nullAddress,
+        ADDRESSES.bsc.USDT,
+        ADDRESSES.bsc.USDC,
+        '0x02fca66c1d1afb4e2a7884261eb00f63598a7436', // NVDAB
+        '0x5b1910eaad6450e50f816082aa078c41f10c292f', // TSLAB
+        '0x7425889fe94f9d693e8daefe88bcced6acfef4c0', // METAB
+        '0x3f53de71c126bdabae20f9cd64848d317f6c3238', // GOOGLB
+        '0x8b872732b07be325a8803cdb480d9d20b6f8d11b', // SLVon
+        // Venus vTokens
+        '0xA07c5b74C9B40447a954e1466938b865b6BBea36', // vBNB
+        '0xfd5840cd36d94d7229439859c0112a4185bc0255', // vUSDT
+        '0xeca88125a5adbe82614ffc12d0db554e2e2867c8', // vUSDC
+      ],
+    },
+    solana: {
+      owners: [
+        '9W22wgpcSsbcAjoGvGQfcvVUns5q7LMuWNPCnM4eVXse',
+        '9JRZdE4rcSUQRDRUTqNrqsFtxm7caT4GfyiNxFJqBHUe',
+      ],
+      ownTokens: ['FBHd9upXFkeWSwe9qEdcgRLa4Y6uzsLCSawrpfPkQZGg'], // ALEF
+    },
+    tron: {
+      owners: ['TFMDSKrH2FJx3pdGACb5oHoKPJRzaH8dKv'],
+      tokens: [nullAddress, ADDRESSES.tron.USDT],
+    },
+    bitcoin: {
+      owners: ['bc1qmqcggscd9mfddzywukrxksrrfamx5mevr5jr40llmf6ggtdmwyeqcaekt4'],
+      tokens: [nullAddress],
+    },
+  },
 }
 
 const protocols = {}
