@@ -34,7 +34,7 @@ const dexExports = {}
 Object.entries(dex).forEach(([chain, factory]) => {
   dexExports[chain] = { tvl: getUniTVL({ factory, useDefaultCoreAssets: true }) }
 })
-// Chain start only. A root start would hide Soneium, Astar, and BSC history.
+// Chain start only. A root start would hide Soneium and BSC history.
 // Factory creation: block 521383212, 2026-11-05T05:04:30Z,
 // tx 0xd2cebb74373f703a9b8ca8e1d2cc059f33fabd40713701dfc46c374079e6635d.
 // Block lookup may land up to 5 minutes early, so this start is 05:09:30Z.
@@ -67,4 +67,6 @@ Object.entries(lending).forEach(([chain, config]) => {
 })
 
 module.exports = mergeExports([dexExports, soneiumNewExports, bscNewExports, lendingExports])
+// Astar deployment retired 2026-11-23; empty export keeps its history
+module.exports.astar = { tvl: () => ({}), borrowed: () => ({}) }
 module.exports.methodology = 'DEX TVL: reserves of all VibeSwap pairs created by the factories (core assets only). On Soneium this includes the original factory 0x06C0b58287794a0bdce20ce768b601CA974618DC, kept for history, and the drain-free factory 0x77b141dCFDa726e239efF005E3DE7A47AeBFf948 from block 30574105 (2026-11-10). On BSC this includes the original factory 0xaf905e66038EcE89e03D843B35a11D262053B630, kept for history, and the factory 0x26b13e7e923e964b0514B3167A90901B49DAe205 from block 135015600 (2026-11-22). Lending TVL: underlying tokens held by SoneVibe cTokens listed by the comptroller; borrowed = total borrows. Arbitrum counts those factory reserves only; that chain has no comptroller or cTokens. Astar was retired on 2026-11-23 and is no longer counted in new snapshots; historical TVL already stored is left untouched.'
