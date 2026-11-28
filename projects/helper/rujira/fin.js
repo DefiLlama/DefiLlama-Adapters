@@ -154,7 +154,9 @@ async function getFinOrders(address, height, version, excludedOwners = []) {
     try {
       return await getCurrentFinOrders(address, height)
     } catch (error) {
-      if (!error.message.includes('out of gas')) throw error
+      // the paged all-orders query can run out of gas, or panic inside the contract on one market
+      // ("attempt to subtract with overflow"); both are read per owner from raw state instead
+      if (!error.message.includes('out of gas') && !error.message.includes('Error calling the VM')) throw error
     }
   }
   return getOrdersByRawOwners(address, height, version, excluded)

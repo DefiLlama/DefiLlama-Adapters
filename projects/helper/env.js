@@ -109,6 +109,10 @@ const DEFAULTS = {
   // Viction: canonical Multicall3 is deployed (since block 87169904) but missing from the SDK deployment map, so every call went out as a single eth_call.
   // The SDK map entry is added too; drop this line once that sdk version is in use, the map also knows the deployment block.
   TOMOCHAIN_RPC_MULTICALL_V3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  // evm.mantrachain.io pruned its block results ("height N is not available, lowest height is 19.7M"), so logs before that only come from the archive node
+  MANTRA_ARCHIVAL_RPC: 'https://evm.archive.mantrachain.io,https://blockscout.mantrascan.io/api/eth-rpc',
+  // Elysium (chainId 99901): the SDK only knows rpc.elysium.kinetiq.xyz, which answers 429 to a single adapter run
+  ELYSIUM_RPC: 'https://elysium.drpc.org,https://rpc.elysium.kinetiq.xyz',
   KUSAMA_ASSETHUB_SUBSTRATE_RPC: 'https://kusama-asset-hub-rpc.polkadot.io,https://statemine.api.onfinality.io/public',
 }
 

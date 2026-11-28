@@ -18,6 +18,8 @@ const OMITTED_CONTRACTS = new Set([
   'thor1ycnr44val8v9rexn0qa06m920gr4rrrnldkcnf3pah5nr0lkdsxsnxnwsm', // retired Ghost cbBTC vault
 ])
 
+const HEAD_LAG_BLOCKS = 10
+
 const blockCache = new Map()
 const contractCache = new Map()
 const contractStateCache = new Map()
@@ -177,7 +179,9 @@ async function findBlock(timestamp) {
   const status = (await getWithRetry(`${THORCHAIN_RPC}/status`)).result.sync_info
   const latest = Number(status.latest_block_height)
   const latestTimestamp = Math.floor(Date.parse(status.latest_block_time) / 1000)
-  if (!timestamp || timestamp >= latestTimestamp - 600) return latest
+  // the gateway balances over several nodes: stay a few blocks (about 1 minute) behind the head one of them
+  // reported, or a node that is slightly behind rejects the query with "cannot query with height in the future"
+  if (!timestamp || timestamp >= latestTimestamp - 600) return latest - HEAD_LAG_BLOCKS
 
   // THORChain's post-hard-fork chain begins here; every Rujira deployment is later.
   let low = Math.max(4_786_560, Number(status.earliest_block_height) || 4_786_560)

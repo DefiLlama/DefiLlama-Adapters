@@ -9,9 +9,12 @@ const abi = {
 }
 
 const tvl = async (api) => {
-  const tokens = await api.multiCall({ calls: CONFIG[api.chain], abi: abi.token })
-  const suppliesInToken = await api.multiCall({ calls: CONFIG[api.chain], abi: abi.calcPoolValueInToken })
-  api.add(tokens, suppliesInToken)
+  const tokens = await api.multiCall({ calls: CONFIG[api.chain], abi: abi.token, permitFailure: true })
+  const suppliesInToken = await api.multiCall({ calls: CONFIG[api.chain], abi: abi.calcPoolValueInToken, permitFailure: true })
+  // a vault whose valuation call reverts (two of the klaytn KLAY vaults) is skipped, the rest are still counted
+  tokens.forEach((token, i) => {
+    if (token && suppliesInToken[i]) api.add(token, suppliesInToken[i])
+  })
 }
 
 const staking = async (api) => {

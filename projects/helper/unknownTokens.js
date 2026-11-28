@@ -178,7 +178,9 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
       })
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
-      const tokenLPs = [...tokens].filter(i => !nativeTokens.includes(i))
+      // blacklisted tokens are left out of the balances below, so they must not be probed as LPs either
+      const blacklistedSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
+      const tokenLPs = [...tokens].filter(i => !nativeTokens.includes(i) && !blacklistedSet.has(i))
       const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens, skipFixBalances: true, permitFailure: true, })
       nativeTokens.forEach(nativeToken => {
         if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])

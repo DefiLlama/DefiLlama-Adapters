@@ -163,6 +163,8 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
         await Promise.all(symbols.output.map(async (symbol, idx) => {
             const balance = tokenBalances.output[idx].output;
             const token = symbol.input.target.toLowerCase();
+            // the balance call is made with permitFailure: a pool token that is not an ERC20 has no balance, skip that pool
+            if (balance === null || balance === undefined) return;
             if (token === stakingToken) {
                 sdk.util.sumSingleBalance(balances.staking, transformAddress(token), balance)
             } else if (isLP(symbol.output, symbol.input.target, chain)) {

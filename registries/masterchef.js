@@ -747,7 +747,8 @@ const configs = {
   'tenet': {
     misrepresentedTokens: true,
     ethereum: { masterchef: '0xdA842fad0BDb105c88399e845aD4D00dE3AEb911', nativeToken: '0x74159651a992952e2bf340d7628459aa4593fc05', poolInfoABI: 'function poolSettingInfo(uint256) view returns (address lpToken, address tokenAddr, address projectAddr, uint256 tokenAmount, uint256 startBlock, uint256 endBlock, uint256 tokenPerBlock, uint256 tokenBonusEndBlock, uint256 tokenBonusMultipler)' },
-    bsc: { masterchef: '0x3F4c79EB1220BeBBf5eF4B3e7c59E5cf38200b62', nativeToken: '0xdFF8cb622790b7F92686c722b02CaB55592f152C', poolInfoABI: 'function poolSettingInfo(uint256) view returns (address lpToken, address tokenAddr, address projectAddr, uint256 tokenAmount, uint256 startBlock, uint256 endBlock, uint256 tokenPerBlock, uint256 tokenBonusEndBlock, uint256 tokenBonusMultipler)' },
+    // blacklisted: three pool lp tokens whose contracts no longer answer token0/token1
+    bsc: { masterchef: '0x3F4c79EB1220BeBBf5eF4B3e7c59E5cf38200b62', nativeToken: '0xdFF8cb622790b7F92686c722b02CaB55592f152C', blacklistedTokens: ['0x452a8ee77407d004fad12b8a4a19fe73ef82c481', '0xdbd99e9978efb8b9869207fbaf27f4945081d008', '0x1bbeb29a6e602c89411a40a32fe82c1ddcbd2594'], poolInfoABI: 'function poolSettingInfo(uint256) view returns (address lpToken, address tokenAddr, address projectAddr, uint256 tokenAmount, uint256 startBlock, uint256 endBlock, uint256 tokenPerBlock, uint256 tokenBonusEndBlock, uint256 tokenBonusMultipler)' },
   },
   'salem': {
     misrepresentedTokens: true,
