@@ -48,6 +48,9 @@ const fixBalancesTokens = {
   xom: {
     '0x81f4072fcca24d373ffcb34c248995dfc6c1219c': { coingeckoId: 'usd-coin', decimals: 6 },
   },
+  fetchhub: {
+    'afet': { coingeckoId: 'fetch-ai', decimals: 18 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
