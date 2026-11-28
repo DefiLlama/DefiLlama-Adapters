@@ -1998,6 +1998,9 @@
   "genesys": {
     "WGSYS": "0xAa7aE83eb30DDdd14A017D4222121776317EA8Ba"
   },
+  "bxn": {
+    "BXUSD": "0x756de4cc5578CBC0E68153D6590a048adBc884f8"
+  },
   "ggchain": {
     "bUSDT": "0xe77F05c01DaC30901de8346c23242C4284DCb4AB"
   },
